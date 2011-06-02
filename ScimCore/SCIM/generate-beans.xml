@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ========================================================== -->
+<!--                                                            -->
+<!--                    Generate SCIM Source                    -->
+<!--                                                            -->
+<!-- ========================================================== -->
+<project name="build-all" default="build">
+       <property name="build.compiler" value="modern"/>
+       <property name="build.sysclasspath" value="ignore"/>
+       <property name="debug" value="true"/>
+              		
+	<target name="build" depends="init, scim" />
+	
+	<!-- init target to set up all paths -->
+	<target name="init">
+
+		<!-- Set directories and filenames -->	
+		<property name="scim.dir" value="."/>	
+		<property name="xmlbeans.lib" value="."/>
+		<property name="src.dir" value="src/"/>
+		<property name="classes.dir" value="classes/"/>
+		
+		<!-- add xmlbeans to classpath -->
+		<property name="xmlbeansjar" value="xbean.jar"/>
+		<property name="xmlbeansjsr173" value="jsr173_api.jar"/>
+		<path id="javac.classpath">
+			<pathelement location="${xmlbeansjar}"/>
+			<pathelement location="${xmlbeansjsr173}"/>
+		</path>
+		
+		<!-- create classpath references. dspp needs pskc to be on the path. -->
+		<path id="scim.path">
+			<fileset dir="${xmlbeans.lib}" includes="*.jar"/>
+		</path>
+		
+		<taskdef name="xmlbean" 
+				classname="org.apache.xmlbeans.impl.tool.XMLBean" 
+				classpathref="scim.path"/>
+
+		<echo message="xmlbeans folder: ${xmlbeans.lib}"/>
+		
+	</target>
+
+	<!-- Build dskpp, needs pskc to be built. Uses local schemas --> 
+	<target name="scim">
+		<xmlbean schema="scim.xsd" 
+			destfile="scim.jar"
+			srcgendir="${src.dir}"
+			classgendir="${classes.dir}"
+			download="false"
+			debug="on"
+			javasource="1.6"
+			classpathref="javac.classpath"/>
+	</target>
+</project>
+	
