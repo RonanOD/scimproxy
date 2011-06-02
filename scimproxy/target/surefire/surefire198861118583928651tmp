@@ -1,0 +1,37 @@
+#surefire
+#Thu Jun 02 19:34:12 CEST 2011
+testClassesDirectory=/Volumes/untitled/dev/scim2/scimproxy/target/test-classes
+classPathUrl.4=/Users/erwah/.m2/repository/commons-lang/commons-lang/2.2/commons-lang-2.2.jar
+classPathUrl.3=/Users/erwah/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar
+classPathUrl.2=/Users/erwah/.m2/repository/junit/junit/4.8.1/junit-4.8.1.jar
+useManifestOnlyJar=true
+classPathUrl.1=/Volumes/untitled/dev/scim2/scimproxy/target/classes
+reportsDirectory=/Volumes/untitled/dev/scim2/scimproxy/target/surefire-reports
+classPathUrl.0=/Volumes/untitled/dev/scim2/scimproxy/target/test-classes
+dirscanner.0=directoryScannerOptions
+providerConfiguration=org.apache.maven.surefire.junit4.JUnit4Provider
+testSuiteDefinitionTestSourceDirectory=/Volumes/untitled/dev/scim2/scimproxy/src/test/java
+surefireClassPathUrl.1=/Users/erwah/.m2/repository/org/apache/maven/surefire/surefire-api/2.7.1/surefire-api-2.7.1.jar
+surefireClassPathUrl.0=/Users/erwah/.m2/repository/org/apache/maven/surefire/surefire-junit4/2.7.1/surefire-junit4-2.7.1.jar
+report.2=org.apache.maven.surefire.report.XMLReporter
+useSystemClassLoader=true
+report.1=org.apache.maven.surefire.report.BriefFileReporter
+report.0=org.apache.maven.surefire.report.ForkingConsoleReporter
+excludes0=**/*$*
+isTrimStackTrace=true
+dirscanner.0.params=/Volumes/untitled/dev/scim2/scimproxy/target/test-classes|[**/Test*.java, **/*Test.java, **/*TestCase.java]|[**/*$*]
+includes2=**/*TestCase.java
+enableAssertions=true
+includes1=**/*Test.java
+failIfNoTests=false
+includes0=**/Test*.java
+classPathUrl.12=/Users/erwah/.m2/repository/org/mortbay/jetty/jetty-security/7.0.0.pre5/jetty-security-7.0.0.pre5.jar
+dirscanner.0.types=java.io.File|java.util.ArrayList|java.util.ArrayList
+classPathUrl.11=/Users/erwah/.m2/repository/org/mortbay/jetty/jetty-xml/7.0.0.pre5/jetty-xml-7.0.0.pre5.jar
+classPathUrl.10=/Users/erwah/.m2/repository/org/mortbay/jetty/jetty-util/7.0.0.pre5/jetty-util-7.0.0.pre5.jar
+classPathUrl.9=/Users/erwah/.m2/repository/org/mortbay/jetty/servlet-api/3.0.pre4/servlet-api-3.0.pre4.jar
+classPathUrl.8=/Users/erwah/.m2/repository/org/mortbay/jetty/jetty/7.0.0.pre5/jetty-7.0.0.pre5.jar
+classPathUrl.7=/Users/erwah/.m2/repository/org/mortbay/jetty/jetty-webapp/7.0.0.pre5/jetty-webapp-7.0.0.pre5.jar
+childDelegation=false
+classPathUrl.6=/Users/erwah/.m2/repository/org/mortbay/jetty/jetty-servlet-tester/7.0.0.pre5/jetty-servlet-tester-7.0.0.pre5.jar
+classPathUrl.5=/Users/erwah/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar
