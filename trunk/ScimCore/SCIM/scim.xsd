@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema version='1.0'
+	xmlns='http://www.w3.org/2001/XMLSchema' 
+	xmlns:scim='urn:scim:schemas:core:1.0' 
+	targetNamespace="urn:scim:schemas:core:1.0">
+
+
+	<!-- User -->
+	<element name="ScimUser" type="scim:ScimUserType"/>
+	<complexType name='ScimUserType'>
+		<sequence>
+			<element ref='scim:id' minOccurs='1' maxOccurs='1'/>
+			<element ref='scim:externalId' minOccurs='0' maxOccurs='1'/>
+			<element ref='scim:userName' minOccurs='1' maxOccurs='1' />
+			
+			<element ref='scim:name' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:displayName' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:nickName' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:profileUrl' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:employeeNumber' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:userType' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:title' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:manager' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:preferredLanguage' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:locale' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:utcOffset' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:costCenter' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:organization' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:division' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:department' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:meta' minOccurs='0' maxOccurs='1' />
+			
+			<element ref='scim:emails' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:phoneNumbers' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:ims' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:photos' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:groups' minOccurs='0' maxOccurs='1' />
+			<element ref='scim:addresses' minOccurs='0' maxOccurs='1' />
+			
+			<any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+
+
+	<!-- Identifiers -->
+	<element name='id' type='scim:NonEmptyString'/>
+
+	<element name='externalId' type='scim:NonEmptyString'/>
+
+	<element name='userName' type='scim:NonEmptyString'/>
+
+
+	<!-- Singular Fields -->
+	<element name='name' type='scim:NameType'/>
+	<complexType name='NameType'>
+		<sequence>
+			<element name='formatted' type='string' />
+			<element name='familyName' type='string' />
+			<element name='givenName' type='string' />
+			<element name='middleName' type='string' />
+			<element name='honorificPrefix' type='string' />
+			<element name='honorificSuffix' type='string' />
+		</sequence>
+	</complexType>
+	
+	<element name='displayName' type='scim:NonEmptyString'/>
+	
+	<element name='nickName' type='string'/>
+	
+	<element name='profileUrl' type='string'/> <!-- url -->
+	
+	<element name='employeeNumber' type="scim:AlphanumericString"/>
+	<simpleType name='AlphanumericString'>
+		<restriction base='string'>
+			<pattern value='([a-zA-Z0-9])*' />
+		</restriction>
+	</simpleType>
+
+	<element name='userType' type='string' />
+
+	<element name='title' type='string' />
+
+	<element name='manager' type='string' />
+
+	<element name='preferredLanguage' type='string' />
+
+	<element name='locale' type='string' />
+
+	<element name='utcOffset' type='dateTime' />  <!--TBD dateTime offset-->
+
+	<element name='costCenter' type='string' />
+
+	<element name='organization' type='string' />
+
+	<element name='division' type='string' />
+
+	<element name='department' type='string' />
+
+	<element name='meta' type='scim:MetaType' />
+	<complexType name='MetaType' mixed='true'>
+		<sequence>
+			<element name='created' type='dateTime' />
+			<element name='lastModified' type='dateTime' />
+		</sequence>
+	</complexType>
+
+
+	<!-- Plural Fields -->
+	<element name='emails' type='scim:EmailsType' />
+	<complexType name='EmailsType'>
+		<sequence>
+			<element ref='scim:email' minOccurs='1' maxOccurs='unbounded' />
+		</sequence>
+	</complexType>
+	<element name='email' type='scim:EmailType' /> <!--non-empty-->
+	<complexType name='EmailType' mixed='true'>
+		<simpleContent>
+			<extension base='scim:Plural' />
+		</simpleContent>
+	</complexType>
+
+	<element name='phoneNumbers' type='scim:PhoneNumbersType' />
+	<complexType name='PhoneNumbersType' mixed='true'>
+		<sequence>
+			<element ref='scim:phoneNumber' minOccurs='1' maxOccurs='unbounded' />
+		</sequence>
+	</complexType>
+	<element name='phoneNumber' type='scim:PhoneNumberType' />
+	<complexType name='PhoneNumberType' mixed='true'>
+		<simpleContent>
+			<extension base='scim:Plural' />
+		</simpleContent>
+	</complexType>
+	
+	<element name='ims' type='scim:ImsType' />
+	<complexType name='ImsType'>
+		<sequence>
+			<element ref='scim:im' minOccurs='1' maxOccurs='unbounded' />
+		</sequence>
+	</complexType>
+	<element name='im' type='scim:ImType' />
+	<complexType name='ImType' mixed='true'>
+		<simpleContent>
+			<extension base='scim:Plural' />
+		</simpleContent>
+	</complexType>
+
+	<element name='photos' type='scim:PhotosType' />
+	<complexType name='PhotosType'>
+		<sequence>
+			<element ref='scim:photo' minOccurs='1' maxOccurs='unbounded' />
+		</sequence>
+	</complexType>
+	<element name='photo' type='scim:PhotoType' />
+	<complexType name='PhotoType' mixed='true'>
+		<simpleContent>
+			<extension base='scim:Plural' />
+		</simpleContent>
+	</complexType>
+
+	<element name='addresses' type='scim:AddressesType' />
+	<complexType name='AddressesType' mixed='true' >
+		<sequence>
+			<element ref='scim:address' minOccurs='1' maxOccurs='unbounded' />
+		</sequence>
+	</complexType>
+	<element name='address' type='scim:AddressType' />
+	<complexType name='AddressType'>
+		<sequence>
+			<element name='formatted' type='string' minOccurs='0' maxOccurs='1' />
+			<element name='streetAddress' type='string' minOccurs='0' maxOccurs='1' />
+			<element name='locality' type='string' minOccurs='0' maxOccurs='1' />
+			<element name='region' type='string' minOccurs='0' maxOccurs='1' />
+			<element name='postalCode' type='string' minOccurs='0' maxOccurs='1' />
+			<element name='country' type='string' minOccurs='0' maxOccurs='1' />
+		</sequence>
+		<attribute name='type' type='string' use='optional' />
+		<attribute name='primary' type='boolean' use='optional' />
+	</complexType>
+
+	<element name='groups' type='scim:GroupsType' />
+	<complexType name='GroupsType' mixed='true'>
+		<sequence>
+			<element ref='scim:group' minOccurs='1' maxOccurs='unbounded' />
+		</sequence>
+	</complexType>
+	<element name='group' type='scim:GroupType' />
+	<complexType name='GroupType' mixed='true'>
+		<simpleContent>
+			<extension base='scim:Plural' />
+		</simpleContent>
+	</complexType>
+
+	<complexType name='Plural' abstract='true'>
+		<simpleContent>
+			<extension base='scim:NonEmptyString'>
+				<attribute name='type' type='string' use='optional'/>
+				<attribute name='primary' type='boolean' use='optional'/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<simpleType name='NonEmptyString'>
+		<restriction base='string'>
+			<minLength value='1' />
+		</restriction>
+	</simpleType>
+</schema>
