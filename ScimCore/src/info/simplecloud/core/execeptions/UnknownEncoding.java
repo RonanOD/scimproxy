@@ -1,9 +1,9 @@
 package info.simplecloud.core.execeptions;
 
 @SuppressWarnings("serial")
-public class UnknowEncodingException extends Exception {
+public class UnknownEncoding extends Exception {
 
-    public UnknowEncodingException(String encoding) {
+    public UnknownEncoding(String encoding) {
         super("The encoding '" + encoding + "' is unknown.");
     }
 
