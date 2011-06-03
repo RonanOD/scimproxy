@@ -6,12 +6,12 @@ import info.simplecloud.core.decoding.XmlDecoder;
 import info.simplecloud.core.encoding.IUserEncoder;
 import info.simplecloud.core.encoding.JsonEncoder;
 import info.simplecloud.core.encoding.XmlEncoder;
+import info.simplecloud.core.execeptions.EncodingFailed;
 import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.execeptions.UnknownAttribute;
 import info.simplecloud.core.execeptions.UnknownEncoding;
 
-import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ScimUser extends ComplexType {
@@ -32,6 +32,22 @@ public class ScimUser extends ComplexType {
     public static final String               ATTRIBUTE_ORGANIZATION       = "organization";
     public static final String               ATTRIBUTE_DIVISION           = "division";
     public static final String               ATTRIBUTE_DEPARTMENT         = "department";
+    public static final String[]             simple                       = { ATTRIBUTE_ID, ATTRIBUTE_EXTERNALID, ATTRIBUTE_USER_NAME,
+            ATTRIBUTE_DISPLAY_NAME, ATTRIBUTE_NICK_NAME, ATTRIBUTE_PROFILE_URL, ATTRIBUTE_EMPLOYEE_NUMBER, ATTRIBUTE_USER_TYPE,
+            ATTRIBUTE_TITLE, ATTRIBUTE_MANAGER, ATTRIBUTE_PREFERRED_LANGUAGE, ATTRIBUTE_LOCALE, ATTRIBUTE_UTC_OFFSET,
+            ATTRIBUTE_COST_CENTER, ATTRIBUTE_ORGANIZATION, ATTRIBUTE_DIVISION, ATTRIBUTE_DEPARTMENT };
+
+    public static final String               ATTRIBUTE_NAME               = "name";
+    public static final String               ATTRIBUTE_META               = "meta";
+    public static final String[]             complex                      = { ATTRIBUTE_NAME, ATTRIBUTE_META };
+
+    public static final String               ATTRIBUTE_IMS                = "ims";
+    public static final String               ATTRIBUTE_EMAILS             = "emails";
+    public static final String               ATTRIBUTE_PHOTOS             = "photos";
+    public static final String               ATTRIBUTE_GROUPS             = "groups";
+    public static final String               ATTRIBUTE_ADDRESSES          = "addresses";
+    public static final String[]             plural                       = { ATTRIBUTE_IMS, ATTRIBUTE_EMAILS, ATTRIBUTE_PHOTOS,
+            ATTRIBUTE_GROUPS, ATTRIBUTE_ADDRESSES                        };
 
     private static Map<String, IUserEncoder> encoders                     = new HashMap<String, IUserEncoder>();
     private static Map<String, IUserDecoder> decoders                     = new HashMap<String, IUserDecoder>();
@@ -51,7 +67,11 @@ public class ScimUser extends ComplexType {
         decoder.decode(user, this);
     }
 
-    public String getUser(String encoding) throws UnknownEncoding {
+    public ScimUser() {
+
+    }
+
+    public String getUser(String encoding) throws UnknownEncoding, EncodingFailed {
         IUserEncoder encoder = encoders.get(encoding);
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
@@ -61,19 +81,47 @@ public class ScimUser extends ComplexType {
         return encoder.encode(this);
     }
 
-    public String getAttribute(String... name) {
-
-        return null;
-    }
-
-    // TODO setters for all attributes
-
-    public Comparable getRaw(String attributeId) throws UnknownAttribute {
+    public Comparable getComparable(String attributeId) {
         Object object = super.getAttribute(attributeId);
-        if (object instanceof Comparable) {
+        if (object != null && object instanceof Comparable) {
             return (Comparable) object;
         }
         return null;
+    }
+
+    public Name getName() {
+        Object name = super.getAttribute(ATTRIBUTE_NAME);
+        return (name == null ? null : (Name) name);
+    }
+
+    public Meta getMeta() {
+        Object meta = super.getAttribute(ATTRIBUTE_META);
+        return (meta == null ? null : (Meta) meta);
+    }
+
+    public List<PluralType<String>> getEmails() {
+        Object emails = super.getAttribute(ATTRIBUTE_EMAILS);
+        return (emails == null ? null : (List<PluralType<String>>) emails);
+    }
+
+    public List<PluralType<String>> getIms() {
+        Object ims = super.getAttribute(ATTRIBUTE_IMS);
+        return (ims == null ? null : (List<PluralType<String>>) ims);
+    }
+
+    public List<PluralType<String>> getPhotos() {
+        Object photos = super.getAttribute(ATTRIBUTE_PHOTOS);
+        return (photos == null ? null : (List<PluralType<String>>) photos);
+    }
+
+    public List<PluralType<String>> getGroups() {
+        Object groups = super.getAttribute(ATTRIBUTE_GROUPS);
+        return (groups == null ? null : (List<PluralType<String>>) groups);
+    }
+
+    public List<PluralType<Address>> getAddresses() {
+        Object addresses = super.getAttribute(ATTRIBUTE_ADDRESSES);
+        return (addresses == null ? null : (List<PluralType<Address>>) addresses);
     }
 
 }
