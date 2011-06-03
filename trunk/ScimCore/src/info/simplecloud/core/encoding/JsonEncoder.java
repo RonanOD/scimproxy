@@ -57,6 +57,7 @@ public class JsonEncoder implements IUserEncoder {
             appendPlural(result, scimUser.getEmails(), ScimUser.ATTRIBUTE_EMAILS);
             appendPlural(result, scimUser.getPhotos(), ScimUser.ATTRIBUTE_PHOTOS);
             appendPlural(result, scimUser.getGroups(), ScimUser.ATTRIBUTE_GROUPS);
+            appendPlural(result, scimUser.getGroups(), ScimUser.ATTRIBUTE_PHONE_NUMBERS);
 
             List<PluralType<Address>> list = scimUser.getAddresses();
             if (list != null) {
