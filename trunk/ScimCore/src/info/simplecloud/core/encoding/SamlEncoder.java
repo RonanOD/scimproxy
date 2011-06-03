@@ -4,7 +4,7 @@ import java.util.Map;
 
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.decoding.IUserDecoder;
-import info.simplecloud.core.execeptions.InvalidUserException;
+import info.simplecloud.core.execeptions.InvalidUser;
 
 public class SamlEncoder implements IUserDecoder {
 
@@ -15,7 +15,7 @@ public class SamlEncoder implements IUserDecoder {
     }
 
     @Override
-    public void decode(String user, ScimUser scimUser) throws InvalidUserException {
+    public void decode(String user, ScimUser scimUser) throws InvalidUser {
         // TODO Auto-generated method stub
 
     }
