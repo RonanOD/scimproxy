@@ -10,6 +10,7 @@ import info.simplecloud.core.execeptions.EncodingFailed;
 import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnknownEncoding;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,9 @@ public class ScimUser extends ComplexType {
     public static final String               ATTRIBUTE_PHOTOS             = "photos";
     public static final String               ATTRIBUTE_GROUPS             = "groups";
     public static final String               ATTRIBUTE_ADDRESSES          = "addresses";
+    public static final String               ATTRIBUTE_PHONE_NUMBERS      = "phoneNumbers";
     public static final String[]             plural                       = { ATTRIBUTE_IMS, ATTRIBUTE_EMAILS, ATTRIBUTE_PHOTOS,
-            ATTRIBUTE_GROUPS, ATTRIBUTE_ADDRESSES                        };
+            ATTRIBUTE_GROUPS, ATTRIBUTE_ADDRESSES, ATTRIBUTE_PHONE_NUMBERS };
 
     private static Map<String, IUserEncoder> encoders                     = new HashMap<String, IUserEncoder>();
     private static Map<String, IUserDecoder> decoders                     = new HashMap<String, IUserDecoder>();
@@ -89,6 +91,74 @@ public class ScimUser extends ComplexType {
         return null;
     }
 
+    public String getId() {
+        return super.getAttributeString(ATTRIBUTE_ID);
+    }
+
+    public String getExternalId() {
+        return super.getAttributeString(ATTRIBUTE_EXTERNALID);
+    }
+
+    public String getUserName() {
+        return super.getAttributeString(ATTRIBUTE_USER_NAME);
+    }
+
+    public String getDisplayName() {
+        return super.getAttributeString(ATTRIBUTE_DISPLAY_NAME);
+    }
+
+    public String getNickName() {
+        return super.getAttributeString(ATTRIBUTE_NICK_NAME);
+    }
+
+    public String getProfileUrl() {
+        return super.getAttributeString(ATTRIBUTE_PROFILE_URL);
+    }
+
+    public String getEmployeeNumber() {
+        return super.getAttributeString(ATTRIBUTE_EMPLOYEE_NUMBER);
+    }
+
+    public String getUserType() {
+        return super.getAttributeString(ATTRIBUTE_USER_TYPE);
+    }
+
+    public String getTitle() {
+        return super.getAttributeString(ATTRIBUTE_TITLE);
+    }
+
+    public String getManager() {
+        return super.getAttributeString(ATTRIBUTE_MANAGER);
+    }
+
+    public String getPreferredLanguage() {
+        return super.getAttributeString(ATTRIBUTE_PREFERRED_LANGUAGE);
+    }
+
+    public String getLocale() {
+        return super.getAttributeString(ATTRIBUTE_LOCALE);
+    }
+
+    public Calendar getUtcOffset() {
+        return super.getAttributeCalendar(ATTRIBUTE_UTC_OFFSET);
+    }
+
+    public String getCostCenter() {
+        return super.getAttributeString(ATTRIBUTE_COST_CENTER);
+    }
+
+    public String getOrganization() {
+        return super.getAttributeString(ATTRIBUTE_ORGANIZATION);
+    }
+
+    public String getDivision() {
+        return super.getAttributeString(ATTRIBUTE_DIVISION);
+    }
+
+    public String getDepartment() {
+        return super.getAttributeString(ATTRIBUTE_DEPARTMENT);
+    }
+
     public Name getName() {
         Object name = super.getAttribute(ATTRIBUTE_NAME);
         return (name == null ? null : (Name) name);
@@ -97,6 +167,11 @@ public class ScimUser extends ComplexType {
     public Meta getMeta() {
         Object meta = super.getAttribute(ATTRIBUTE_META);
         return (meta == null ? null : (Meta) meta);
+    }
+
+    public List<PluralType<String>> getPhoneNumbers() {
+        Object phoneNumbers = super.getAttribute(ATTRIBUTE_PHONE_NUMBERS);
+        return (phoneNumbers == null ? null : (List<PluralType<String>>) phoneNumbers);
     }
 
     public List<PluralType<String>> getEmails() {
@@ -124,4 +199,127 @@ public class ScimUser extends ComplexType {
         return (addresses == null ? null : (List<PluralType<Address>>) addresses);
     }
 
+    public void setId(String id) {
+        super.setAttribute(ATTRIBUTE_ID, id);
+    }
+
+    public void setExternalId(String externalId) {
+        super.setAttribute(ATTRIBUTE_EXTERNALID, externalId);
+    }
+
+    public void setUserName(String userName) {
+        super.setAttribute(ATTRIBUTE_USER_NAME, userName);
+    }
+
+    public void setDisplayName(String displayName) {
+        super.setAttribute(ATTRIBUTE_DISPLAY_NAME, displayName);
+    }
+
+    public void setNickName(String nickName) {
+        super.setAttribute(ATTRIBUTE_NICK_NAME, nickName);
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        super.setAttribute(ATTRIBUTE_PROFILE_URL, profileUrl);
+    }
+
+    public void setEmployeeNumber(String employeeNumber) {
+        super.setAttribute(ATTRIBUTE_EMPLOYEE_NUMBER, employeeNumber);
+    }
+
+    public void setUserType(String userType) {
+        super.setAttribute(ATTRIBUTE_USER_TYPE, userType);
+    }
+
+    public void setTitle(String title) {
+        super.setAttribute(ATTRIBUTE_TITLE, title);
+    }
+
+    public void setManager(String manager) {
+        super.setAttribute(ATTRIBUTE_MANAGER, manager);
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        super.setAttribute(ATTRIBUTE_PREFERRED_LANGUAGE, preferredLanguage);
+    }
+
+    public void setLocale(String locale) {
+        super.setAttribute(ATTRIBUTE_LOCALE, locale);
+    }
+
+    public void setUtcOffset(Calendar utcOffset) {
+        super.setAttribute(ATTRIBUTE_UTC_OFFSET, utcOffset);
+    }
+
+    public void setCostCenter(String costCenter) {
+        super.setAttribute(ATTRIBUTE_COST_CENTER, costCenter);
+    }
+
+    public void setOrganization(String organization) {
+        super.setAttribute(ATTRIBUTE_ORGANIZATION, organization);
+    }
+
+    public void setDivision(String division) {
+        super.setAttribute(ATTRIBUTE_DIVISION, division);
+    }
+
+    public void setDepartment(String department) {
+        super.setAttribute(ATTRIBUTE_DEPARTMENT, department);
+    }
+
+    public void setName(Name name) {
+        super.setAttribute(ATTRIBUTE_NAME, name);
+    }
+
+    public void setMeta(Meta meta) {
+        super.setAttribute(ATTRIBUTE_META, meta);
+    }
+
+    public void setPhoneNumbers(List<PluralType<String>> phoneNumbers) {
+        super.setAttribute(ATTRIBUTE_PHONE_NUMBERS, phoneNumbers);
+    }
+
+    public void setEmails(List<PluralType<String>> emails) {
+        super.setAttribute(ATTRIBUTE_EMAILS, emails);
+    }
+
+    public void setIms(List<PluralType<String>> ims) {
+        super.setAttribute(ATTRIBUTE_IMS, ims);
+    }
+
+    public void setPhotos(List<PluralType<String>> photos) {
+        super.setAttribute(ATTRIBUTE_PHOTOS, photos);
+    }
+
+    public void setGroups(List<PluralType<String>> groups) {
+        super.setAttribute(ATTRIBUTE_GROUPS, groups);
+    }
+
+    public void setAddresses(List<PluralType<Address>> address) {
+        super.setAttribute(ATTRIBUTE_ADDRESSES, address);
+    }
+
+    public void addPhoneNumbers(PluralType<String> phoneNumbers) {
+        super.addPluralAttribute(ATTRIBUTE_PHONE_NUMBERS, phoneNumbers);
+    }
+
+    public void addEmails(PluralType<String> emails) {
+        super.addPluralAttribute(ATTRIBUTE_EMAILS, emails);
+    }
+
+    public void addIms(PluralType<String> ims) {
+        super.addPluralAttribute(ATTRIBUTE_IMS, ims);
+    }
+
+    public void addPhotos(PluralType<String> photos) {
+        super.addPluralAttribute(ATTRIBUTE_PHOTOS, photos);
+    }
+
+    public void addGroups(PluralType<String> groups) {
+        super.addPluralAttribute(ATTRIBUTE_GROUPS, groups);
+    }
+
+    public void addAddresses(PluralType<Address> address) {
+        super.addPluralAttribute(ATTRIBUTE_ADDRESSES, address);
+    }
 }
