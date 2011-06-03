@@ -1,7 +1,7 @@
 package info.simplecloud.core.decoding;
 
 import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.execeptions.InvalidUserException;
+import info.simplecloud.core.execeptions.InvalidUser;
 
 import java.util.Map;
 
@@ -20,13 +20,13 @@ public class XmlDecoder implements IUserDecoder {
     }
 
     @Override
-    public void decode(String user, ScimUser scimUser) throws InvalidUserException {
+    public void decode(String user, ScimUser scimUser) throws InvalidUser {
         try {
             ScimUserType scimUserBean = ScimUserType.Factory.parse(user);
             scimUserBean.getId();
             // TODO put all elements in to scimUser with getters and setters
         } catch (XmlException e) {
-            throw new InvalidUserException("Failed to parse user", e);
+            throw new InvalidUser("Failed to parse user", e);
         }
     }
 

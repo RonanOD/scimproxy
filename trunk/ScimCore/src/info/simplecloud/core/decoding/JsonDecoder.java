@@ -1,7 +1,7 @@
 package info.simplecloud.core.decoding;
 
 import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.execeptions.InvalidUserException;
+import info.simplecloud.core.execeptions.InvalidUser;
 
 import java.util.Map;
 
@@ -19,13 +19,13 @@ public class JsonDecoder implements IUserDecoder {
     }
 
     @Override
-    public void decode(String user, ScimUser scimUser) throws InvalidUserException {
+    public void decode(String user, ScimUser scimUser) throws InvalidUser {
         try {
             JSONObject scimUserJson = new JSONObject(user);
             scimUserJson.get("id");
             // TODO put all elements in to scimUser with getters and setters
         } catch (JSONException e) {
-            throw new InvalidUserException("Failed to parse user", e);
+            throw new InvalidUser("Failed to parse user", e);
         }
     }
 }
