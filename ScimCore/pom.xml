@@ -39,6 +39,8 @@
 				<version>2.3.3</version>
 				<executions>
 					<execution>
+						<id />
+			            <phase>generate-sources</phase>
 						<goals>
 							<goal>xmlbeans</goal>
 						</goals>
