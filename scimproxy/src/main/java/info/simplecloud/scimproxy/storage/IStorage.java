@@ -1,8 +1,6 @@
 package info.simplecloud.scimproxy.storage;
 
-import java.util.ArrayList;
-
-import info.simplecloud.core.ScimUser;
+import java.util.List;
 
 public interface IStorage {
 
@@ -23,7 +21,7 @@ public interface IStorage {
 	 * Returns all SCIM users in the storage.
 	 * @return All users. ArrayList with size 0 if empty.
 	 */
-	public ArrayList<ScimUser> getList();
+	public List<ScimUser> getList();
 
 	
 }
