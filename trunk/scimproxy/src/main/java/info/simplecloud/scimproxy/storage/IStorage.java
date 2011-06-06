@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy.storage;
 
+import java.util.ArrayList;
+
 import info.simplecloud.core.ScimUser;
 
 public interface IStorage {
@@ -16,6 +18,13 @@ public interface IStorage {
 	 * @param user A fully populated SCIM user.
 	 */
 	public void addUser(ScimUser user);
+	
+	/**
+	 * Returns all SCIM users in the storage.
+	 * @return All users. ArrayList with size 0 if empty.
+	 */
+	public ArrayList<ScimUser> getList();
+
 	
 }
 
