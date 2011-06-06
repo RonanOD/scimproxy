@@ -57,4 +57,22 @@ public class Address extends ComplexType {
     public void setCountry(String country) {
         super.setAttribute(ATTRIBUTE_CONTRY, country);
     }
+
+    @Override
+    public boolean equals(Object otherObj) {
+        if (this == otherObj) {
+            return true;
+        }
+        if (!(otherObj instanceof Address)) {
+            return false;
+        }
+        Address otherAddress = (Address) otherObj;
+
+        return super.equals(otherAddress, simple);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString(simple);
+    }
 }
