@@ -57,4 +57,22 @@ public class Name extends ComplexType {
     public void setHonorificSuffix(String honorificSuffix) {
         super.setAttribute(ATTRIBUTE_HONORIFIC_SUFFIX, honorificSuffix);
     }
+
+    @Override
+    public boolean equals(Object otherObj) {
+        if (this == otherObj) {
+            return true;
+        }
+        if (!(otherObj instanceof Name)) {
+            return false;
+        }
+        Name otherName = (Name) otherObj;
+
+        return super.equals(otherName, simple);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString(simple);
+    }
 }

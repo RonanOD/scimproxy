@@ -61,4 +61,55 @@ public class ComplexType {
         }
         list.add(item);
     }
+
+    public boolean equals(ComplexType otherCt, String... attributeIds) {
+
+        for (String id : attributeIds) {
+            Object me = this.data.get(id);
+            Object other = otherCt.data.get(id);
+            if (!(me == other) && me != null && !me.equals(other)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object otherObj) {
+        if (otherObj == this) {
+            return true;
+        }
+
+        if (!(otherObj instanceof ComplexType)) {
+            return false;
+        }
+        ComplexType otherCt = (ComplexType) otherObj;
+
+        if (this.data.size() != otherCt.data.size()) {
+            return false;
+        }
+
+        return this.equals(otherCt, this.data.keySet().toArray(new String[] {}));
+    }
+
+    public String toString(String... attributeIds) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String id : attributeIds) {
+            Object obj = this.data.get(id);
+            if (obj != null) {
+                stringBuilder.append(id);
+                stringBuilder.append(": ");
+                stringBuilder.append(id);
+                stringBuilder.append(", ");
+            }
+        }
+
+        return stringBuilder.substring(0, stringBuilder.length() - 2);
+    }
+
+    @Override
+    public String toString() {
+        return this.toString(this.data.keySet().toArray(new String[] {}));
+    }
 }
