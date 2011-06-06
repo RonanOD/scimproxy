@@ -27,4 +27,27 @@ public class ComplexTypeTest {
         Assert.assertNull(ct.getAttribute("unknown"));
         Assert.assertNull(ct.getAttribute("parent.child.unknown"));
     }
+    
+    @Test
+    public void equals() {
+        ComplexType ct = new ComplexType().setAttribute("testid1", "Test value 1");
+        ComplexType ctEquals1 = new ComplexType().setAttribute("testid1", "Test value 1");
+        ComplexType ctEquals2 = ct;
+        ComplexType ctNotEquals1 = new ComplexType().setAttribute("testid1", "Test value not equals");
+        ComplexType ctNotEquals2 = new ComplexType().setAttribute("notFound", "Test value 1");
+        ComplexType ctNotEquals3 = new ComplexType().setAttribute("testid1", "Test value 1").setAttribute("testid2", "Test value 2");
+        ComplexType ctNotEquals4 = new ComplexType().setAttribute("testid1", new Object());
+        
+        Assert.assertTrue(ct.equals(ctEquals1));
+        Assert.assertTrue(ct.equals(ctEquals2));
+        Assert.assertTrue(ct.equals(ctEquals1));
+        Assert.assertTrue(ct.equals(ctEquals1));
+        Assert.assertTrue(ct.equals(ctEquals1));
+        
+        Assert.assertFalse(ct.equals(new Object()));
+        Assert.assertFalse(ct.equals(ctNotEquals1));
+        Assert.assertFalse(ct.equals(ctNotEquals2));
+        Assert.assertFalse(ct.equals(ctNotEquals3));
+        Assert.assertFalse(ct.equals(ctNotEquals4));
+    }
 }
