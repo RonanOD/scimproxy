@@ -63,6 +63,7 @@ public class ScimUserServlet extends HttpServlet {
 			resp.setContentType(CONTENT_TYPE_XML);
 
 			// TODO: SPEC: REST: Should the Location header be included in more then POST? Like in this response?
+			// TODO: SPEC: REST: Also include the location in meta data for the user?
 			// TODO: SPEC: REST: Should ETag be added in more places in spec?
 			
 			JsonEncoder encoder = new JsonEncoder();
