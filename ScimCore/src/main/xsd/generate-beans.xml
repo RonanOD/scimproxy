@@ -58,7 +58,11 @@
 			download="false"
 			debug="on"
 			javasource="1.6"
-			classpathref="javac.classpath"/>
+			classpathref="javac.classpath">
+
+			<!-- Add xsdcconfig to set packagename. -->
+			<fileset dir="${xsd.dir}" includes="scim.xsdconfig"/>
+		</xmlbean>
 	</target>
 
 	<!-- Cleanup src and classes -->
