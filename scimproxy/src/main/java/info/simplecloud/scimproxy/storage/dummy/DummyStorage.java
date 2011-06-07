@@ -5,21 +5,12 @@ import info.simplecloud.core.ComplexType;
 import info.simplecloud.core.Name;
 import info.simplecloud.core.PluralType;
 import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.decoding.JsonDecoder;
-import info.simplecloud.core.encoding.JsonEncoder;
-import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.execeptions.UnknownEncoding;
-import info.simplecloud.scimproxy.ScimUserServlet;
 import info.simplecloud.scimproxy.storage.IStorage;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import org.apache.xmlbeans.impl.util.Base64;
-
-import x0.scimSchemasCore1.ScimUserType;
 
 public class DummyStorage implements IStorage {
 
