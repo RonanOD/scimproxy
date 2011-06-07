@@ -35,6 +35,12 @@ public class JsonEncoderTest {
 
         scimUser.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, addresses);
 
-        System.out.println(new JsonEncoder().encode(scimUser));
+        
+        String jsonUser = new JsonEncoder().encode(scimUser);
+        jsonUser.contains("Sweeden");
+        jsonUser.contains("England");
+        jsonUser.contains("samuel@erdtman.se");
+        jsonUser.contains("samuel.erdtman@nexussafe.com");
+        jsonUser.contains("yhgty-ujhyu-iolki");
     }
 }
