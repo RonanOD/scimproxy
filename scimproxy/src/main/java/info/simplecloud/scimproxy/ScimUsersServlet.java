@@ -27,24 +27,11 @@ public class ScimUsersServlet extends Authenticated {
 		DummyStorage storage = DummyStorage.getInstance();
 		ArrayList<ScimUser> users = storage.getList();
 
-		// TODO: SPEC: REST: Really missing an XML represenation of two or more
+		// TODO: SPEC: REST: Really missing an XML representation of two or more
 		// nodes in List/Query a response.
 		try {
-
 			String response = "";
-
-			response = "{\n" + "\t\"totalResults\": " + users.size() + ",\n" + "\t\"entry\": [\n";
-
-			// TODO: Should this be done in core? Return the JSON list of more resporces when you send an List into encode method?
-			for(int i=0; i<users.size(); i++) {
-				ScimUser scimUser = users.get(i);
-				if(i != 0) {
-					response += ",";
-				}
-				response += new JsonEncoder().encode(scimUser) + "\n";
-			}
-
-			response += "\t]\n" + "}\n";
+			response += new JsonEncoder().encode(users);
 
 			resp.setContentType(CONTENT_TYPE_JSON);
 			resp.getWriter().print(response);
