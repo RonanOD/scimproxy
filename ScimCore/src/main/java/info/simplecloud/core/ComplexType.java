@@ -67,7 +67,7 @@ public class ComplexType {
         for (String id : attributeIds) {
             Object me = this.data.get(id);
             Object other = otherCt.data.get(id);
-            if (!(me == other) && me != null && !me.equals(other)) {
+            if (me != null && !me.equals(other)) {
                 return false;
             }
         }
