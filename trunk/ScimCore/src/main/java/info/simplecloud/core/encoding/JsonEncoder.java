@@ -8,6 +8,7 @@ import info.simplecloud.core.PluralType;
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.execeptions.EncodingFailed;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ import org.json.JSONObject;
 public class JsonEncoder implements IUserEncoder {
     private static String[] names = { "json", "JSON" };
 
+
+    @Override
     public void addMe(Map<String, IUserEncoder> encoders) {
         for (String name : names) {
             encoders.put(name, this);
@@ -80,6 +83,33 @@ public class JsonEncoder implements IUserEncoder {
             throw new EncodingFailed("Failed to encode JSON", e);
         }
     }
+
+	@Override
+	public String encode(List<ScimUser> scimUsers) throws EncodingFailed {
+
+		String response = "";
+		
+		if(scimUsers == null) {
+			scimUsers = new ArrayList<ScimUser>();
+		}
+
+		response = "{\n" + "\t\"totalResults\": " + scimUsers.size() + ",\n" + "\t\"entry\": [\n";
+
+		// TODO: Should this be done in core? Return the JSON list of more resporces when you send an List into encode method?
+		for(int i=0; i<scimUsers.size(); i++) {
+			ScimUser scimUser = scimUsers.get(i);
+			if(i != 0) {
+				response += ",";
+			}
+			response += encode(scimUser) + "\n";
+		}
+
+		// TODO: SPEC: REST: Return meta location. Should location be sent to this method or always include it in storage for each user?
+		response += "\t]\n" + "}\n";
+		
+		return response;
+	}
+
 
     private static void appendPlural(JSONObject result, List<PluralType<String>> list, String id) throws JSONException {
         if (list == null) {
