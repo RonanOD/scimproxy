@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy.storage;
 
+import info.simplecloud.core.ScimUser;
+
 import java.util.List;
 
 public interface IStorage {
