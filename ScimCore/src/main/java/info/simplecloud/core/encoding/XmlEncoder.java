@@ -1,7 +1,9 @@
 package info.simplecloud.core.encoding;
 
 import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.execeptions.EncodingFailed;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -30,5 +32,11 @@ public class XmlEncoder implements IUserEncoder {
         doc.setScimUser(scimUserBean);
         return doc.xmlText();
     }
+
+	@Override
+	public String encode(List<ScimUser> scimUser) throws EncodingFailed {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
