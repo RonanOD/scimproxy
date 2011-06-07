@@ -33,7 +33,7 @@ public class PluralType<T> {
         }
         PluralType otherPlural = (PluralType) otherObj;
 
-        if (!(this.type == otherPlural.type) || (this.type != null && !this.type.equals(otherPlural.type))) {
+        if ((this.type != null && !this.type.equals(otherPlural.type))) {
             return false;
         }
 
@@ -41,7 +41,7 @@ public class PluralType<T> {
             return false;
         }
 
-        return this.value.equals(otherPlural);
+        return this.value.equals(otherPlural.value);
     }
 
     @Override
