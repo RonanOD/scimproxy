@@ -32,6 +32,7 @@ public class JsonDecoder implements IUserDecoder {
             JSONObject scimUserJson = new JSONObject(user);
 
             for (String id : ScimUser.simple) {
+                
                 if(id.equals(ScimUser.ATTRIBUTE_UTC_OFFSET)) {
                     scimUser.setUtcOffset(new GregorianCalendar()); // TODO parse time or something
                 }
@@ -39,6 +40,9 @@ public class JsonDecoder implements IUserDecoder {
             }
 
             for (String id : ScimUser.plural) {
+                if(id.equals(ScimUser.ATTRIBUTE_ADDRESSES)) {
+                    continue;
+                }
                 readPluralAttribute(scimUserJson, id, scimUser);
             }
 
@@ -104,7 +108,19 @@ public class JsonDecoder implements IUserDecoder {
             JSONArray array = scimUserJson.getJSONArray(id);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
-                list.add(new PluralType<String>(obj.getString("value"), obj.getString("type"), obj.getBoolean("primary")));
+                boolean primary;
+                try {
+                    primary = obj.getBoolean("primary");
+                } catch (JSONException e) {
+                    primary = false;
+                }
+                String type;
+                try {
+                    type = obj.getString("type");
+                } catch (JSONException e) {
+                    type = "";
+                }
+                list.add(new PluralType<String>(obj.getString("value"), type, primary));
             }
             scimUser.setAttribute(id, list);
         } catch (JSONException e) {
@@ -115,7 +131,7 @@ public class JsonDecoder implements IUserDecoder {
     private static void readAttribute(JSONObject scimUserJson, String id, ScimUser scimUser) {
         try {
             String attribute = scimUserJson.getString(id);
-            scimUser.setAttribute(ScimUser.ATTRIBUTE_ID, attribute);
+            scimUser.setAttribute(id, attribute);
         } catch (JSONException e) {
             // Ignore, attribute not found
         }
