@@ -1,0 +1,117 @@
+#summary How to setup project and running it.
+
+= Introduction =
+The ScimProxy and ScimCore are maven projects and some steps has to be done before running.
+
+
+== How to run from commandline ==
+Download the code to a new directory:
+<pre>
+$ svn checkout http://scimproxy.googlecode.com/svn/trunk/ scimproxy 
+</pre>
+Go into the ScimCore directory:
+<pre>
+$ cd scimproxy/ScimCore/
+</pre>
+Generate XML beans:
+<pre>
+$ mvn xmlbeans:xmlbeans
+</pre>
+Everything that's generated will be under the target directory, Beans, jar files, java doc, etc.
+<pre>
+<checkout location>/ScimCore/target
+</pre>
+Compile, test and package the JAR:
+<pre>
+$ mvn package
+</pre>
+Script says it building the jar file here:
+<pre>
+[INFO] Building jar: /Users/erwah/dev/scimproxy/ScimCore/target/scimcore.jar
+</pre>
+To install a JAR file in your local maven repro. It can then be used by other maven projects as a depencency:
+<pre>
+$ mvn install
+</pre>
+Scipt says it added it to the local repro:
+<pre>
+[INFO] Installing /Users/erwah/dev/scimproxy/ScimCore/target/scimcore.jar to /Users/erwah/.m2/repository/info/simplecloud/scimcore/0.1-draft1-2011-06-05/scimcore-0.1-draft1-2011-06-05.jar
+</pre>
+Clean the target directory:
+<pre>
+mvn clean
+</pre>
+Cleans everything and generate new beans, install is after compile, package and test so everything is executed:
+<pre>
+mvn clean xmlbeans:xmlbeans install
+</pre>
+You can combine the phases, in this case generate new xmlbeans and run tests:
+<pre>
+mvn xmlbeans:xmlbeans test
+</pre>
+
+
+== How to run from eclipse ==
+* Ubuntu 10.10 32bit
+* Sun Java6 JDK
+* sudo apt-get install maven2
+* Subversion
+* Eclipse Classic
+	* m2e - http://download.eclipse.org/technology/m2e/milestones/1.0
+	* subclipse - http://subclipse.tigris.org/update_1.6.x
+
+
+Download all code to a new directory:
+<pre>
+svn checkout https://scimproxy.googlecode.com/svn/trunk/ scimproxy --username <username>
+</pre>
+
+*Import ScimCore project into Eclipse.*
+Import -> Maven -> Existing Maven Project
+Browse to <checkout location>/scimproxy/ScimCore
+
+Let eclipse download everything that it needs.
+
+Make sure that it uses java 1.6 instead of 1.5.
+
+Right click on scimcore root object. "Run as" -> "Maven build". Change "Goals" to "clean install".
+
+First time all dependencies will be downloaded to compile, build and package the jar.
+
+Refresh project. All should be well.
+
+*Import ScimProxy project into Eclipse.*
+Import -> Maven -> Existing Maven Project
+Browse to /Users/erwah/dev/scimproxy/scimproxy
+
+Make sure that it uses java 1.6 instead of 1.5.
+
+Right click on scimproxy root object. "Run as" -> "Maven build". Change "Goals" to "clean install jetty:run".
+
+Point your browser to http://localhost:8080/
+
+== How to debug in eclipse ==
+
+ * Create a new "External Tools Configuration" -> Select "Program". Click the "New launch configuration" button.
+<pre>
+Name: scimproxy remote debugger
+Locations: /home/erwah/Desktop/apache-maven-3.0.3/bin/mvn
+Working Directory: ${workspace_loc:/scimproxy}
+Arguments: clean install jetty:run
+</pre>
+
+ * Under the "Environment" tab.
+<pre>
+Create new variable.
+Name: MAVEN_OPTS
+Value: -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=n
+</pre>
+
+Run the external tool. Jetty will be started as usual.
+
+ * Create a new "Debug Configurations..." -> Select "Remote Java Application" Click the "New launch configuration" button.
+<pre>
+Name: scimproxy remote debugger
+Port: 5005
+</pre>
+Connect the remote debugger to jetty. Set a break point and run one of the CURL commands.
