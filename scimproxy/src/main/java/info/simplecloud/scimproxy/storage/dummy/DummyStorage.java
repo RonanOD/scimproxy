@@ -12,14 +12,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * A dummy storage. Holds users in an in memory, non persistent, database.
+ * When initiated first time it populates it self with two users.
+ */
 public class DummyStorage implements IStorage {
 
 	private static final DummyStorage INSTANCE = new DummyStorage();
 
-	private ArrayList<ScimUser> users = new ArrayList<ScimUser>();
+	// TODO: synchronize users object
+	private ArrayList<DummyUser> users = new ArrayList<DummyUser>();
 
 	private static final Logger log = Logger.getLogger(DummyStorage.class.getName());
 
+	/**
+	 * Constructor. Adds two users to storage.
+	 */
 	private DummyStorage() {
         ScimUser scim1 = new ScimUser();
         ScimUser scim2 = new ScimUser();
@@ -57,10 +65,16 @@ public class DummyStorage implements IStorage {
                 Address.ATTRIBUTE_POSTAL_CODE, "112 50"), "home", true));
         scim2.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, addresses2);
 
-        users.add(scim1);
-		users.add(scim2);
+        
+        users.add(new DummyUser(scim1, "1"));
+		users.add(new DummyUser(scim2, "1"));
 	}
+	
 
+	/**
+	 * Returns singleton value for the storage.
+	 * @return
+	 */
 	public static DummyStorage getInstance() {
 		return INSTANCE;
 	}
@@ -71,10 +85,10 @@ public class DummyStorage implements IStorage {
 			return null;
 		}
 
-		for (ScimUser user : users) {
-			log.info(user.toString());
-			if (id.equals(user.getAttribute("id"))) {
-				return user;
+		for (DummyUser user : users) {
+			log.info(user.getScimUser().toString());
+			if (id.equals(user.getScimUser().getAttribute("id"))) {
+				return user.getScimUser();
 			}
 		}
 		
@@ -83,12 +97,52 @@ public class DummyStorage implements IStorage {
 
 	@Override
 	public void addUser(ScimUser user) {
-		users.add(user);
+		users.add(new DummyUser(user, "1"));
 	}
 	
 	@Override
 	public ArrayList<ScimUser> getList() {
-		return users;
+		ArrayList<ScimUser> list = new ArrayList<ScimUser>();
+		for (DummyUser user : users) {
+			list.add(user.getScimUser());
+		}
+		return list;
 	}
 
+	@Override
+	public void deleteUser(String id) throws UserNotFoundException {
+		boolean found = false;
+		if(id != null && !"".equals(id.trim())) {
+			for(int i=0; i<users.size(); i++) {
+				if(id.equals(users.get(i).getScimUser().getId())) {
+					users.remove(i);
+					found = true;
+					break;
+				}
+			}
+		}
+		if(!found) {
+			throw new UserNotFoundException();
+		}
+	}
+
+}
+
+class DummyUser {
+	private ScimUser user;
+	private String version;
+	
+	public DummyUser(ScimUser u, String v) {
+		this.user = u;
+		this.version = v;
+	}
+	
+	public ScimUser getScimUser() {
+		return this.user;
+	}
+	
+	public String getVersion() {
+		return this.version;
+	}
+	
 }
