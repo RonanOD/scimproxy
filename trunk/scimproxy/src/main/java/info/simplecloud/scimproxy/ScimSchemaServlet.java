@@ -11,7 +11,7 @@ curl -i -H "Accept: application/json" http://localhost:8080/Schema
  */
 
 @SuppressWarnings("serial")
-public class ScimSchemaServlet extends Authenticated {
+public class ScimSchemaServlet extends RestServlet {
 
 	/**
 	 * Schema only supports GET method.

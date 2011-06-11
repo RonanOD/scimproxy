@@ -12,7 +12,7 @@ curl -i -H "Accept: application/json" http://localhost:8080/Schemas
  */
 
 @SuppressWarnings("serial")
-public class ScimSchemasServlet extends Authenticated {
+public class ScimSchemasServlet extends RestServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		// TODO: SPEC: REST: Return value of schema is TBD in specification. How does a JSON spec look like? Needs to be defined more.

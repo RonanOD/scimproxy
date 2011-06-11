@@ -1,9 +1,13 @@
 package info.simplecloud.scimproxy.storage;
 
 import info.simplecloud.core.ScimUser;
+import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 
 import java.util.List;
 
+/**
+ * Base interface for all storages that's supported in the system. 
+ */
 public interface IStorage {
 
 	/**
@@ -25,6 +29,12 @@ public interface IStorage {
 	 */
 	public List<ScimUser> getList();
 
-	
+	/**
+	 * Deletes a SCIM user from storage.
+	 * @param id The id for the user to be deleted from storage.
+	 * @throws UserNotFoundException Thrown when user was not found in database.
+	 */
+	public void deleteUser(String id) throws UserNotFoundException;
+
 }
 
