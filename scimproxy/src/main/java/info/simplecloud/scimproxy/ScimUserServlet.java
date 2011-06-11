@@ -100,12 +100,10 @@ public class ScimUserServlet extends RestServlet {
 			} catch (EncodingFailed e) {
 				e.printStackTrace();
 				resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
-				// TODO: Include error message.
 			}
 			
 			resp.setStatus(HttpServletResponse.SC_OK); // 200
 			resp.getWriter().print(json);
-			// TODO: close connection
 		} else {
 			// TODO: SPEC: REST: What to respond when token not there? (4.2.1. Retrieving a known Resource)
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
@@ -162,7 +160,6 @@ public class ScimUserServlet extends RestServlet {
 
 			resp.setStatus(HttpServletResponse.SC_CREATED); // 201
 			resp.getWriter().print(response);	        
-			// TODO: close connection
 		} catch (InvalidUser e) {
 			e.printStackTrace();
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
@@ -227,7 +224,6 @@ public class ScimUserServlet extends RestServlet {
 
 			resp.setStatus(HttpServletResponse.SC_CREATED); // 201
 			resp.getWriter().print(response);	        
-			// TODO: close connection
 		} catch (InvalidUser e) {
 			e.printStackTrace();
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
@@ -242,9 +238,6 @@ public class ScimUserServlet extends RestServlet {
 	 * @throws IOException Servlet I/O exception.
 	 */
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		// TODO: SPEC: REST: Should X-HTTP-Method-Override: DELETE be sent over
-		// GET instead of POST?
-		
 		String user = getIdFromUri(req.getRequestURI());
 		DummyStorage storage = DummyStorage.getInstance();
 		try {
@@ -262,8 +255,6 @@ public class ScimUserServlet extends RestServlet {
 	 * @throws IOException Servlet I/O exception.
 	 */
 	public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		// TODO: SPEC: REST: Should we really use the PATCH method? It's not
-		// part of HTTP 1.1.
 		resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
 	}
 

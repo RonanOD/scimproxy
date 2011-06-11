@@ -40,12 +40,10 @@ public class ScimGroupServlet extends RestServlet {
 	}
 
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		// TODO: SPEC: REST: Should X-HTTP-Method-Override: DELETE be sent over GET instead of POST?
 		resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
 	}
 
 	public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		// TODO: SPEC: REST: Should we really use the PATCH method? It's not part of HTTP 1.1.
 		resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
 	}
 
