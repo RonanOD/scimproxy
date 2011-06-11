@@ -20,7 +20,7 @@ curl -i -H "Accept: application/json" http://localhost:8080/Users
  */
 
 @SuppressWarnings("serial")
-public class ScimUsersServlet extends Authenticated {
+public class ScimUsersServlet extends RestServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 

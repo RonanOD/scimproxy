@@ -26,7 +26,7 @@ curl -i -H "Accept: application/json" -H "X-HTTP-Method-Override: DELETE" -X GET
  */
 
 @SuppressWarnings("serial")
-public class ScimGroupServlet extends Authenticated {
+public class ScimGroupServlet extends RestServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
 	}
