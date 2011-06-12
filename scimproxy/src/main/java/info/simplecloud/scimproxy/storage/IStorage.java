@@ -36,5 +36,12 @@ public interface IStorage {
 	 */
 	public void deleteUser(String id) throws UserNotFoundException;
 
+	/**
+	 * Get version for a scim user. Used as ETag for user.
+	 * @param user The user that we want the version information for.
+	 * @throws UserNotFoundException Thrown when user was not found in database.
+	 */
+	public String getVersionForUser(ScimUser user) throws UserNotFoundException;
+
 }
 
