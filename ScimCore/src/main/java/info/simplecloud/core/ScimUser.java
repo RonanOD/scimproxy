@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 public class ScimUser extends ComplexType {
     public static final String               ATTRIBUTE_ID                 = "id";
     public static final String               ATTRIBUTE_EXTERNALID         = "externalId";
@@ -89,6 +92,48 @@ public class ScimUser extends ComplexType {
             return (Comparable) object;
         }
         return null;
+    }
+
+    /**
+     * Sets a specific attribute to null and by then clearing that value. 
+     * @param attribute The attribute name. For example, use ScimUser.ATTRIBUTE_ID for ID.
+     */
+    public void removeAttribute(String attribute) {
+		this.setAttribute(attribute, null);
+    }
+    
+    public void copyValuesFromUser(ScimUser fromUser) {
+    	
+    	for (String attribute : simple) {
+    		if(fromUser.getAttribute(attribute) != null) {
+        		this.setAttribute(attribute, fromUser.getAttribute(attribute));
+    		}
+		}
+
+    	for (String attribute : plural) {
+    		if(fromUser.getAttribute(attribute) != null) {
+        		this.setAttribute(attribute, fromUser.getAttribute(attribute));
+    		}
+		}
+
+		if(fromUser.getAttribute(ScimUser.ATTRIBUTE_NAME) != null) {
+    		this.setAttribute(ScimUser.ATTRIBUTE_NAME, fromUser.getAttribute(ScimUser.ATTRIBUTE_NAME));
+		}
+
+		if(fromUser.getAttribute(ScimUser.ATTRIBUTE_META) != null) {
+			if(fromUser.getMeta().getCreated() != null) {
+				this.getMeta().setCreated(fromUser.getMeta().getCreated());
+			}
+			if(fromUser.getMeta().getLastModified() != null) {
+				this.getMeta().setLastModified(fromUser.getMeta().getLastModified());
+			}
+			if(fromUser.getMeta().getETag() != null) {
+				this.getMeta().setETag(fromUser.getMeta().getETag());
+			}
+			if(fromUser.getMeta().getLocation() != null) {
+				this.getMeta().setLocation(fromUser.getMeta().getLocation());
+			}
+		}
     }
 
     public String getId() {
