@@ -126,6 +126,25 @@ public class DummyStorage implements IStorage {
 		}
 	}
 
+
+	@Override
+	public String getVersionForUser(ScimUser user) throws UserNotFoundException {
+
+		String version = "";
+		for(int i=0; i<users.size(); i++) {
+			if(user.getId().equals(users.get(i).getScimUser().getId())) {
+				version = users.get(i).getVersion();
+				break;
+			}
+		}
+		
+		if("".equals(version)) {
+			throw new UserNotFoundException();
+		}
+		return version;
+	}
+	
+
 }
 
 class DummyUser {

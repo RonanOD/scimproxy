@@ -16,6 +16,9 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 /*
 
 GET:
@@ -39,7 +42,17 @@ DELETE OVER POST:
 curl -i -H "Accept: application/json" -H "X-HTTP-Method-Override: DELETE" -X POST  http://localhost:8080/User/erwah-1234-5678
 
 PATCH
-curl -i -H "Accept: application/json" -H "X-HTTP-Method-Override: PATCH" -X POST -d "phone=1-800-999-9999" http://localhost:8080/User
+curl -i -H "Accept: application/json" -H "X-HTTP-Method-Override: PATCH" -X POST -d "{%22schemas%22: [%22urn:scim:schemas:core:1.0%22],%22userName%22: %22bjensen@example.com%22,%22name%22: {%22familyName%22: %22Jensen%22,%22givenName%22: %22Barbara%22},%22displayName%22: %22Babs Jensen%22, %22emails%22: [{%22value%22: %22bjensen@example.com%22,%22type%22: %22work%22,%22primary%22: true}]}" http://localhost:8080/User/erwah-1234-5678
+
+PATCH - Remove email and readd
+
+curl -i -H "Accept: application/json" -H "X-HTTP-Method-Override: PATCH" -X POST -d "%7B%22schemas%22%3A%20%5B%22urn%3Ascim%3Aschemas%3Acore%3A1.0%22%5D%2C%20%22emails%22%3A%20%5B%7B%22value%22%3A%20%22babs%40exmaple.org%22%2C%22type%22%3A%20%22home%22%7D%2C%7B%22value%22%3A%20%22babswork%40exmaple.org%22%2C%22type%22%3A%20%22work%22%7D%5D%2C%22meta%22%3A%20%7B%22attributes%22%3A%20%22emails%22%7D%7D%0A" http://localhost:8080/User/erwah-1234-5678
+
+PATCH - Remove email and displayname
+
+
+curl -i -H "Accept: application/json" -H "X-HTTP-Method-Override: PATCH" -X POST -d "%7B%22schemas%22%3A%20%5B%22urn%3Ascim%3Aschemas%3Acore%3A1.0%22%5D%2C%20%22emails%22%3A%20%5B%7B%22value%22%3A%20%22babs%40exmaple.org%22%2C%22type%22%3A%20%22home%22%7D%2C%7B%22value%22%3A%20%22babswork%40exmaple.org%22%2C%22type%22%3A%20%22work%22%7D%5D%2C%22meta%22%3A%20%7B%22attributes%22%3A%20%5B%22emails%22%2C%20%22displayName%22%5D%7D%7D" http://localhost:8080/User/erwah-1234-5678
+
 
  */
 
@@ -255,7 +268,107 @@ public class ScimUserServlet extends RestServlet {
 	 * @throws IOException Servlet I/O exception.
 	 */
 	public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+		
+		// validate input
+
+		// PRE
+		// 		get user from storage
+		// 		lock storage
+		//		check etag
+		
+		// delete
+		// 		find meta tag, and extract attributes.
+		//		clear values
+
+		// add/update 
+		//		get changed values
+
+		// singlular
+		//		update user
+		
+		// plural
+		// 		find meta tag
+		//		remove attributes
+		//		get changed value
+		//		add attributes
+		
+		// POST
+		//		save user in storage
+		//		unlock storage
+
+		
+		// adding singular. If the Resource does not already contain a value for the specified attribute the attribute value is added (or said another way “set”).
+		// adding plural. If the Resource does not already contain the value the value is added to the attribute
+		// Updating attributes (Singular): If the attribute value exists the value is replaced by the value specified in the request.
+		// 
+		
+		String query = "";
+		// TODO: SPEC: REST: Shouln't the POST message have a specific name for
+		// the value? Right now the name is the value.
+		Enumeration<?> paramNames = req.getParameterNames();
+		while (paramNames.hasMoreElements()) {
+			query = (String) paramNames.nextElement();
+		}
+
+		// TODO: SPEC: REST: Should the post message be base64 encoded in spec or not?
+		
+		String userId = getIdFromUri(req.getRequestURI());
+
+		// get a handle to a user storage.
+		DummyStorage storage = DummyStorage.getInstance();
+		ScimUser scimUser = storage.getUserForId(userId);
+		
+		// TODO: check ETag
+		try {
+			String version = storage.getVersionForUser(scimUser);
+		} catch (UserNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+
+        ScimUser tmpUser = new ScimUser();
+		try {
+			// decode the json user into an ScimUser object
+	        JsonDecoder decoder = new JsonDecoder();
+	        decoder.decode(query, tmpUser);
+
+		} catch (InvalidUser e) {
+			e.printStackTrace();
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+		}
+		
+		if(tmpUser != null) {
+			// delete
+			JSONArray attr = (JSONArray)tmpUser.getMeta().getAttributes();
+
+			for (int i=0; i<attr.length(); i++) {
+				try {
+					scimUser.removeAttribute(attr.get(i).toString());
+				} catch (JSONException e) {
+					// nothing to remove
+				}
+			}
+			
+			// update
+			scimUser.copyValuesFromUser(tmpUser);
+
+			
+		}
+		
+		JsonEncoder encoder = new JsonEncoder();
+		String json = "";
+		try {
+			// encode the user as JSON
+			json = encoder.encode(scimUser);
+		} catch (EncodingFailed e) {
+			e.printStackTrace();
+			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+		}
+		
+		resp.setStatus(HttpServletResponse.SC_OK); // 200
+		resp.getWriter().print(json);
+
 	}
 
 }
