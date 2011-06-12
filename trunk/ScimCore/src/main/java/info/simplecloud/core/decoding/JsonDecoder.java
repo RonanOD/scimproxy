@@ -86,9 +86,9 @@ public class JsonDecoder implements IUserDecoder {
             try {
                 JSONObject obj = scimUserJson.getJSONObject(ScimUser.ATTRIBUTE_META);
                 Meta meta = new Meta();
-                for (String attributeId : Name.simple) {
+                for (String attributeId : Meta.simple) {
                     try {
-                        meta.setAttribute(attributeId, obj.getString(attributeId));
+                        meta.setAttribute(attributeId, obj.get(attributeId));
                     } catch (JSONException e) {
                         // Ignore, attribute not found
                     }
