@@ -6,7 +6,6 @@ import info.simplecloud.core.execeptions.EncodingFailed;
 import java.util.List;
 import java.util.Map;
 
-
 import x0.scimSchemasCore1.ScimUserDocument;
 import x0.scimSchemasCore1.ScimUserType;
 
@@ -25,7 +24,7 @@ public class XmlEncoder implements IUserEncoder {
         ScimUserType scimUserBean = ScimUserType.Factory.newInstance();
         scimUserBean.setId("005D0000001Az1u");
         scimUserBean.setUserName("bjensen@example.com");
-        
+
         // TODO read from scimUser
 
         ScimUserDocument doc = ScimUserDocument.Factory.newInstance();
@@ -33,10 +32,22 @@ public class XmlEncoder implements IUserEncoder {
         return doc.xmlText();
     }
 
-	@Override
-	public String encode(List<ScimUser> scimUser) throws EncodingFailed {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String encode(List<ScimUser> scimUser) throws EncodingFailed {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String encode(ScimUser scimUser, List<String> attributesList) throws EncodingFailed {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String encode(List<ScimUser> arrayList, List<String> attributesList) throws EncodingFailed {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

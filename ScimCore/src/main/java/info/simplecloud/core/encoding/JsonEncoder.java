@@ -28,8 +28,16 @@ public class JsonEncoder implements IUserEncoder {
 
     @Override
     public String encode(ScimUser scimUser) throws EncodingFailed {
+        return this.encode(scimUser, new ArrayList<String>());
+    }
+
+    @Override
+    public String encode(ScimUser scimUser, List<String> attributesList) throws EncodingFailed {
         try {
-            return internalEncode(scimUser).toString(2);
+            if (attributesList.isEmpty()) {
+
+            }
+            return internalEncode(scimUser, attributesList).toString(2);
             // TODO change to non pretty-print or check if debug mode
         } catch (JSONException e) {
             throw new EncodingFailed("Failed to encode JSON", e);
@@ -38,6 +46,11 @@ public class JsonEncoder implements IUserEncoder {
 
     @Override
     public String encode(List<ScimUser> scimUsers) throws EncodingFailed {
+        return this.encode(scimUsers, new ArrayList<String>());
+    }
+
+    @Override
+    public String encode(List<ScimUser> scimUsers, List<String> includeAttributes) throws EncodingFailed {
         try {
             JSONObject result = new JSONObject();
 
@@ -51,7 +64,7 @@ public class JsonEncoder implements IUserEncoder {
             JSONArray users = new JSONArray();
 
             for (ScimUser scimUser : scimUsers) {
-                users.put(internalEncode(scimUser));
+                users.put(internalEncode(scimUser, includeAttributes));
             }
 
             result.put("entry", users);
@@ -65,59 +78,67 @@ public class JsonEncoder implements IUserEncoder {
         }
     }
 
-    private JSONObject internalEncode(ScimUser scimUser) throws JSONException {
+    private JSONObject internalEncode(ScimUser scimUser, List<String> attributesList) throws JSONException {
         JSONObject result = new JSONObject();
 
         for (String id : scimUser.getSimple()) {
-            append(result, scimUser, id);
-        }
-
-        Name name = scimUser.getName();
-        if (name != null) {
-            JSONObject jsonName = new JSONObject();
-            for (String id : name.getSimple()) {
-                append(jsonName, name, id);
+            if (attributesList.isEmpty() || attributesList.contains(id)) {
+                append(result, scimUser, id);
             }
-
-            result.put(ScimUser.ATTRIBUTE_NAME, jsonName);
         }
 
-        Meta meta = scimUser.getMeta();
-        if (meta != null) {
-            JSONObject jsonMeta = new JSONObject();
-            for (String id : meta.getSimple()) {
-                append(jsonMeta, meta, id);
-            }
-
-            result.put(ScimUser.ATTRIBUTE_META, jsonMeta);
-        }
-
-        appendPlural(result, scimUser.getIms(), ScimUser.ATTRIBUTE_IMS);
-        appendPlural(result, scimUser.getEmails(), ScimUser.ATTRIBUTE_EMAILS);
-        appendPlural(result, scimUser.getPhotos(), ScimUser.ATTRIBUTE_PHOTOS);
-        appendPlural(result, scimUser.getGroups(), ScimUser.ATTRIBUTE_GROUPS);
-        appendPlural(result, scimUser.getGroups(), ScimUser.ATTRIBUTE_PHONE_NUMBERS);
-
-        List<PluralType<Address>> list = scimUser.getAddresses();
-        if (list != null) {
-            JSONArray pluralArray = new JSONArray();
-            for (PluralType<Address> item : list) {
-                JSONObject jsonItem = new JSONObject();
-                jsonItem.put("type", item.getType());
-                jsonItem.put("primary", item.getPrimary());
-                for (String id : Address.simple) {
-                    append(jsonItem, item.getValue(), id);
+        if (attributesList.isEmpty() || attributesList.contains(ScimUser.ATTRIBUTE_NAME)) {
+            Name name = scimUser.getName();
+            if (name != null) {
+                JSONObject jsonName = new JSONObject();
+                for (String id : name.getSimple()) {
+                    append(jsonName, name, id);
                 }
-                pluralArray.put(jsonItem);
+                result.put(ScimUser.ATTRIBUTE_NAME, jsonName);
             }
-            result.put(ScimUser.ATTRIBUTE_ADDRESSES, pluralArray);
+        }
+
+        if (attributesList.isEmpty() || attributesList.contains(ScimUser.ATTRIBUTE_META)) {
+            Meta meta = scimUser.getMeta();
+            if (meta != null) {
+                JSONObject jsonMeta = new JSONObject();
+                for (String id : meta.getSimple()) {
+                    append(jsonMeta, meta, id);
+                }
+
+                result.put(ScimUser.ATTRIBUTE_META, jsonMeta);
+            }
+        }
+
+        appendPlural(result, scimUser.getIms(), ScimUser.ATTRIBUTE_IMS, attributesList);
+        appendPlural(result, scimUser.getEmails(), ScimUser.ATTRIBUTE_EMAILS, attributesList);
+        appendPlural(result, scimUser.getPhotos(), ScimUser.ATTRIBUTE_PHOTOS, attributesList);
+        appendPlural(result, scimUser.getGroups(), ScimUser.ATTRIBUTE_GROUPS, attributesList);
+        appendPlural(result, scimUser.getPhoneNumbers(), ScimUser.ATTRIBUTE_PHONE_NUMBERS, attributesList);
+
+        if (attributesList.isEmpty() || attributesList.contains(ScimUser.ATTRIBUTE_ADDRESSES)) {
+            List<PluralType<Address>> list = scimUser.getAddresses();
+            if (list != null) {
+                JSONArray pluralArray = new JSONArray();
+                for (PluralType<Address> item : list) {
+                    JSONObject jsonItem = new JSONObject();
+                    jsonItem.put("type", item.getType());
+                    jsonItem.put("primary", item.getPrimary());
+                    for (String id : Address.simple) {
+                        append(jsonItem, item.getValue(), id);
+                    }
+                    pluralArray.put(jsonItem);
+                }
+                result.put(ScimUser.ATTRIBUTE_ADDRESSES, pluralArray);
+            }
         }
 
         return result;
     }
 
-    private static void appendPlural(JSONObject result, List<PluralType<String>> list, String id) throws JSONException {
-        if (list == null) {
+    private static void appendPlural(JSONObject result, List<PluralType<String>> list, String id, List<String> attributesList)
+            throws JSONException {
+        if (list == null || (!attributesList.isEmpty() && !attributesList.contains(id))) {
             return;
         }
 

@@ -8,10 +8,14 @@ import java.util.Map;
 
 public interface IUserEncoder {
 
+    public void addMe(Map<String, IUserEncoder> encoders);
+
     String encode(ScimUser scimUser) throws EncodingFailed;
 
-    String encode(List<ScimUser> scimUser) throws EncodingFailed;
+    String encode(ScimUser scimUser, List<String> includeAttributes) throws EncodingFailed;
 
-    public void addMe(Map<String, IUserEncoder> encoders);
-    
+    String encode(List<ScimUser> scimUsers) throws EncodingFailed;
+
+    String encode(List<ScimUser> scimUsers, List<String> includeAttributes) throws EncodingFailed;
+
 }

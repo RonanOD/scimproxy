@@ -14,10 +14,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 public class ScimUser extends ComplexType {
     public static final String               ATTRIBUTE_ID                 = "id";
@@ -80,7 +76,6 @@ public class ScimUser extends ComplexType {
     public String[] getComplex() {
         return complex;
     }
-    
 
     public ScimUser(String user, String encoding) throws UnknownEncoding, InvalidUser {
         IUserDecoder decoder = decoders.get(encoding);
@@ -103,6 +98,16 @@ public class ScimUser extends ComplexType {
         // TODO check if user has mandatory data
 
         return encoder.encode(this);
+    }
+
+    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding, EncodingFailed {
+        IUserEncoder encoder = encoders.get(encoding);
+        if (encoder == null) {
+            throw new UnknownEncoding(encoding);
+        }
+        // TODO check if user has mandatory data
+
+        return encoder.encode(this, attributes);
     }
 
     public Comparable getComparable(String attributeId) {
