@@ -10,6 +10,21 @@ public class Address extends ComplexType {
     public static final String[] simple                   = { ATTRIBUTE_FORMATTED, ATTRIBUTE_STREET_ADDRESS, ATTRIBUTE_LOCALITY,
             ATTRIBUTE_REGION, ATTRIBUTE_POSTAL_CODE, ATTRIBUTE_CONTRY };
 
+    @Override
+    public String[] getSimple() {
+        return simple;
+    }
+
+    @Override
+    public String[] getPlural() {
+        return null;
+    }
+
+    @Override
+    public String[] getComplex() {
+        return null;
+    }
+
     public String getFormatted() {
         return super.getAttributeString(ATTRIBUTE_FORMATTED);
     }
