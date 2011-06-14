@@ -68,14 +68,14 @@ public class JsonEncoder implements IUserEncoder {
     private JSONObject internalEncode(ScimUser scimUser) throws JSONException {
         JSONObject result = new JSONObject();
 
-        for (String id : ScimUser.simple) {
+        for (String id : scimUser.getSimple()) {
             append(result, scimUser, id);
         }
 
         Name name = scimUser.getName();
         if (name != null) {
             JSONObject jsonName = new JSONObject();
-            for (String id : Name.simple) {
+            for (String id : name.getSimple()) {
                 append(jsonName, name, id);
             }
 
@@ -85,7 +85,7 @@ public class JsonEncoder implements IUserEncoder {
         Meta meta = scimUser.getMeta();
         if (meta != null) {
             JSONObject jsonMeta = new JSONObject();
-            for (String id : Meta.simple) {
+            for (String id : meta.getSimple()) {
                 append(jsonMeta, meta, id);
             }
 
