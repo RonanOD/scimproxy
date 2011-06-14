@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,15 +32,15 @@ public class JsonDecoder implements IUserDecoder {
         try {
             JSONObject scimUserJson = new JSONObject(user);
 
-            for (String id : ScimUser.simple) {
+            for (String id : scimUser.getSimple()) {
                 
                 if(id.equals(ScimUser.ATTRIBUTE_UTC_OFFSET)) {
-                    scimUser.setUtcOffset(new GregorianCalendar()); // TODO parse time or something
+                    scimUser.setUtcOffset(new GregorianCalendar()); // TODO has been changed to int
                 }
                 readAttribute(scimUserJson, id, scimUser);
             }
 
-            for (String id : ScimUser.plural) {
+            for (String id : scimUser.getPlural()) {
                 if(id.equals(ScimUser.ATTRIBUTE_ADDRESSES)) {
                     continue;
                 }
@@ -53,7 +54,7 @@ public class JsonDecoder implements IUserDecoder {
                     JSONObject obj = array.getJSONObject(i);
 
                     Address address = new Address();
-                    for (String attributeId : Address.simple) {
+                    for (String attributeId : address.getSimple()) {
                         try {
                             address.setAttribute(attributeId, obj.getString(attributeId));
                         } catch (JSONException e) {
@@ -71,7 +72,7 @@ public class JsonDecoder implements IUserDecoder {
             try {
                 JSONObject obj = scimUserJson.getJSONObject(ScimUser.ATTRIBUTE_NAME);
                 Name name = new Name();
-                for (String attributeId : Name.simple) {
+                for (String attributeId : name.getSimple()) {
                     try {
                         name.setAttribute(attributeId, obj.getString(attributeId));
                     } catch (JSONException e) {
@@ -86,12 +87,23 @@ public class JsonDecoder implements IUserDecoder {
             try {
                 JSONObject obj = scimUserJson.getJSONObject(ScimUser.ATTRIBUTE_META);
                 Meta meta = new Meta();
-                for (String attributeId : Meta.simple) {
+                for (String attributeId : meta.getSimple()) {
                     try {
                         meta.setAttribute(attributeId, obj.get(attributeId));
                     } catch (JSONException e) {
                         // Ignore, attribute not found
                     }
+                } 
+                
+                try {
+                    JSONArray attributes = obj.getJSONArray(Meta.ATTRIBUTE_ATTRIBUTES);
+                    List<String> attributeList = new ArrayList<String>(attributes.length());
+                    for(int i=0; i<attributes.length(); i++){
+                        attributeList.add((String)attributes.get(i));
+                    }
+                    meta.setAttributes(attributeList);
+                } catch (JSONException e) {
+                    // Ignore, attribute not found
                 }
                 scimUser.setAttribute(ScimUser.ATTRIBUTE_META, meta);
             } catch (JSONException e) {
