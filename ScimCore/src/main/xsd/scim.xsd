@@ -1,208 +1,151 @@
-<?xml version="1.0" encoding="utf-8"?>
-<schema version='1.0'
-	xmlns='http://www.w3.org/2001/XMLSchema' 
-	xmlns:scim='urn:scim:schemas:core:1.0' 
-	targetNamespace="urn:scim:schemas:core:1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:tns="urn:scim:schemas:core:1.0"
+           targetNamespace="urn:scim:schemas:core:1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+    <xs:element name="user">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:resource">
+                    <xs:sequence>
+                        <xs:element name="addresses" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="address" type="tns:address" minOccurs="1" 
+                                                maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="photoUrls" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="photoUrl" type="tns:pluralAttribute" minOccurs="1"
+                                                maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="ims" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="im" type="tns:pluralAttribute" minOccurs="1"
+                                                maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="memberOf" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="group" type="tns:pluralAttribute" minOccurs="1"
+                                                maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="phoneNumbers" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="phoneNumber" type="tns:pluralAttribute" minOccurs="1"
+                                                maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="emails" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="email" type="tns:pluralAttribute" minOccurs="1"
+                                                maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="department" type="xs:string" minOccurs="0"/>
+                        <xs:element name="division" type="xs:string" minOccurs="0"/>
+                        <xs:element name="organization" type="xs:string" minOccurs="0"/>
+                        <xs:element name="costCenter" type="xs:string" minOccurs="0"/>
+                        <xs:element name="utcOffset" minOccurs="0">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:int">
+                                    <xs:maxInclusive value="14"/>
+                                    <xs:minInclusive value="-12"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="locale" type="xs:string" minOccurs="0"/>
+                        <xs:element name="preferredLanguage" type="xs:string" minOccurs="0"/>
+                        <xs:element name="manager" type="xs:string" minOccurs="0"/>
+                        <xs:element name="title" type="xs:string" minOccurs="0"/>
+                        <xs:element name="userType" type="xs:string" minOccurs="0"/>
+                        <xs:element name="employeeNumber" type="xs:string" minOccurs="0"/>
+                        <xs:element name="profileUrl" type="xs:string" minOccurs="0"/>
+                        <xs:element name="nickName" type="xs:string" minOccurs="0"/>
+                        <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+                        <xs:element name="name" type="tns:name" minOccurs="0"/>
+                        <xs:element name="userName" type="xs:string" minOccurs="0"/>
+                        <xs:element name="externalId" type="xs:string" minOccurs="0"/>
+                        <xs:any namespace="##other" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
 
 
-	<!-- User -->
-	<element name="ScimUser" type="scim:ScimUserType"/>
-	<complexType name='ScimUserType'>
-		<sequence>
-			<element ref='scim:id' minOccurs='1' maxOccurs='1'/>
-			<element ref='scim:externalId' minOccurs='0' maxOccurs='1'/>
-			<element ref='scim:userName' minOccurs='1' maxOccurs='1' />
-			
-			<element ref='scim:name' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:displayName' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:nickName' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:profileUrl' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:employeeNumber' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:userType' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:title' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:manager' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:preferredLanguage' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:locale' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:utcOffset' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:costCenter' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:organization' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:division' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:department' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:meta' minOccurs='0' maxOccurs='1' />
-			
-			<element ref='scim:emails' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:phoneNumbers' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:ims' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:photos' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:groups' minOccurs='0' maxOccurs='1' />
-			<element ref='scim:addresses' minOccurs='0' maxOccurs='1' />
-			
-			<any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
-		</sequence>
-	</complexType>
+    <xs:element name="group">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:resource">
+                    <xs:sequence>
+                        <xs:any namespace="##other" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
 
+    <xs:complexType name="resource">
+        <xs:sequence>
+            <xs:element name="meta" type="tns:meta" minOccurs="0"/>
+            <xs:element name="id" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
-	<!-- Identifiers -->
-	<element name='id' type='scim:NonEmptyString'/>
+    <xs:complexType name="address">
+        <xs:sequence>
+            <xs:element name="type" type="xs:string" minOccurs="0"/>
+            <xs:element name="primary" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="display" type="xs:string" minOccurs="0"/>
+            <xs:element name="country" type="xs:string" minOccurs="0"/>
+            <xs:element name="postalCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="region" type="xs:string" minOccurs="0"/>
+            <xs:element name="locality" type="xs:string" minOccurs="0"/>
+            <xs:element name="streetAddress" type="xs:string" minOccurs="0"/>
+            <xs:element name="formatted" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
-	<element name='externalId' type='scim:NonEmptyString'/>
+    <xs:complexType name="pluralAttribute">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string" minOccurs="1"/>
+            <xs:element name="primary" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="type" type="xs:string" minOccurs="0"/>
+            <xs:element name="display" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
-	<element name='userName' type='scim:NonEmptyString'/>
+    <xs:complexType name="name">
+        <xs:sequence>
+            <xs:element name="honorificSuffix" type="xs:string" minOccurs="0"/>
+            <xs:element name="honorificPrefix" type="xs:string" minOccurs="0"/>
+            <xs:element name="middleName" type="xs:string" minOccurs="0"/>
+            <xs:element name="givenName" type="xs:string" minOccurs="0"/>
+            <xs:element name="familyName" type="xs:string" minOccurs="0"/>
+            <xs:element name="formatted" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
+    <xs:complexType name="meta">
+        <xs:sequence>
+            <xs:element name="location" type="xs:string" minOccurs="0"/>
+            <xs:element name="lastModified" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="created" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
 
-	<!-- Singular Fields -->
-	<element name='name' type='scim:NameType'/>
-	<complexType name='NameType'>
-		<sequence>
-			<element name='formatted' type='string' />
-			<element name='familyName' type='string' />
-			<element name='givenName' type='string' />
-			<element name='middleName' type='string' />
-			<element name='honorificPrefix' type='string' />
-			<element name='honorificSuffix' type='string' />
-		</sequence>
-	</complexType>
-	
-	<element name='displayName' type='scim:NonEmptyString'/>
-	
-	<element name='nickName' type='string'/>
-	
-	<element name='profileUrl' type='string'/> <!-- url -->
-	
-	<element name='employeeNumber' type="scim:AlphanumericString"/>
-	<simpleType name='AlphanumericString'>
-		<restriction base='string'>
-			<pattern value='([a-zA-Z0-9])*' />
-		</restriction>
-	</simpleType>
-
-	<element name='userType' type='string' />
-
-	<element name='title' type='string' />
-
-	<element name='manager' type='string' />
-
-	<element name='preferredLanguage' type='string' />
-
-	<element name='locale' type='string' />
-
-	<element name='utcOffset' type='dateTime' />  <!--TBD dateTime offset-->
-
-	<element name='costCenter' type='string' />
-
-	<element name='organization' type='string' />
-
-	<element name='division' type='string' />
-
-	<element name='department' type='string' />
-
-	<element name='meta' type='scim:MetaType' />
-	<complexType name='MetaType' mixed='true'>
-		<sequence>
-			<element name='created' type='dateTime' />
-			<element name='lastModified' type='dateTime' />
-		</sequence>
-	</complexType>
-
-
-	<!-- Plural Fields -->
-	<element name='emails' type='scim:EmailsType' />
-	<complexType name='EmailsType'>
-		<sequence>
-			<element ref='scim:email' minOccurs='1' maxOccurs='unbounded' />
-		</sequence>
-	</complexType>
-	<element name='email' type='scim:EmailType' /> <!--non-empty-->
-	<complexType name='EmailType' mixed='true'>
-		<simpleContent>
-			<extension base='scim:Plural' />
-		</simpleContent>
-	</complexType>
-
-	<element name='phoneNumbers' type='scim:PhoneNumbersType' />
-	<complexType name='PhoneNumbersType' mixed='true'>
-		<sequence>
-			<element ref='scim:phoneNumber' minOccurs='1' maxOccurs='unbounded' />
-		</sequence>
-	</complexType>
-	<element name='phoneNumber' type='scim:PhoneNumberType' />
-	<complexType name='PhoneNumberType' mixed='true'>
-		<simpleContent>
-			<extension base='scim:Plural' />
-		</simpleContent>
-	</complexType>
-	
-	<element name='ims' type='scim:ImsType' />
-	<complexType name='ImsType'>
-		<sequence>
-			<element ref='scim:im' minOccurs='1' maxOccurs='unbounded' />
-		</sequence>
-	</complexType>
-	<element name='im' type='scim:ImType' />
-	<complexType name='ImType' mixed='true'>
-		<simpleContent>
-			<extension base='scim:Plural' />
-		</simpleContent>
-	</complexType>
-
-	<element name='photos' type='scim:PhotosType' />
-	<complexType name='PhotosType'>
-		<sequence>
-			<element ref='scim:photo' minOccurs='1' maxOccurs='unbounded' />
-		</sequence>
-	</complexType>
-	<element name='photo' type='scim:PhotoType' />
-	<complexType name='PhotoType' mixed='true'>
-		<simpleContent>
-			<extension base='scim:Plural' />
-		</simpleContent>
-	</complexType>
-
-	<element name='addresses' type='scim:AddressesType' />
-	<complexType name='AddressesType' mixed='true' >
-		<sequence>
-			<element ref='scim:address' minOccurs='1' maxOccurs='unbounded' />
-		</sequence>
-	</complexType>
-	<element name='address' type='scim:AddressType' />
-	<complexType name='AddressType'>
-		<sequence>
-			<element name='formatted' type='string' minOccurs='0' maxOccurs='1' />
-			<element name='streetAddress' type='string' minOccurs='0' maxOccurs='1' />
-			<element name='locality' type='string' minOccurs='0' maxOccurs='1' />
-			<element name='region' type='string' minOccurs='0' maxOccurs='1' />
-			<element name='postalCode' type='string' minOccurs='0' maxOccurs='1' />
-			<element name='country' type='string' minOccurs='0' maxOccurs='1' />
-		</sequence>
-		<attribute name='type' type='string' use='optional' />
-		<attribute name='primary' type='boolean' use='optional' />
-	</complexType>
-
-	<element name='groups' type='scim:GroupsType' />
-	<complexType name='GroupsType' mixed='true'>
-		<sequence>
-			<element ref='scim:group' minOccurs='1' maxOccurs='unbounded' />
-		</sequence>
-	</complexType>
-	<element name='group' type='scim:GroupType' />
-	<complexType name='GroupType' mixed='true'>
-		<simpleContent>
-			<extension base='scim:Plural' />
-		</simpleContent>
-	</complexType>
-
-	<complexType name='Plural' abstract='true'>
-		<simpleContent>
-			<extension base='scim:NonEmptyString'>
-				<attribute name='type' type='string' use='optional'/>
-				<attribute name='primary' type='boolean' use='optional'/>
-			</extension>
-		</simpleContent>
-	</complexType>
-
-	<simpleType name='NonEmptyString'>
-		<restriction base='string'>
-			<minLength value='1' />
-		</restriction>
-	</simpleType>
-</schema>
