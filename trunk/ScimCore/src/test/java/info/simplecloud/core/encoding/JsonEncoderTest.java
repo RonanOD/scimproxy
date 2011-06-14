@@ -56,6 +56,68 @@ public class JsonEncoderTest {
             Assert.assertTrue(jsonUsers.contains(postcodes1[i]));
             Assert.assertTrue(jsonUsers.contains(postcodes2[i]));
         }
+        
+        
+        List<String> includeAttributes = new ArrayList<String>();
+        includeAttributes.add(ScimUser.ATTRIBUTE_ADDRESSES);
+        includeAttributes.add(ScimUser.ATTRIBUTE_NAME);
+        includeAttributes.add(ScimUser.ATTRIBUTE_EMAILS);
+        includeAttributes.add(ScimUser.ATTRIBUTE_ID);
+        jsonUsers = new JsonEncoder().encode(users, includeAttributes);
+        Assert.assertTrue(jsonUsers.contains("\"totalResults\": " + users.size()));
+        
+        for(int i=0; i<ids.length; i++) {
+            Assert.assertTrue(jsonUsers.contains(ids[i]));
+            Assert.assertTrue(jsonUsers.contains(emails1[i]));
+            Assert.assertTrue(jsonUsers.contains(emails2[i]));
+            Assert.assertTrue(jsonUsers.contains(postcodes1[i]));
+            Assert.assertTrue(jsonUsers.contains(postcodes2[i]));
+        }
+        
+        includeAttributes = new ArrayList<String>();
+        includeAttributes.add(ScimUser.ATTRIBUTE_ADDRESSES);
+        includeAttributes.add(ScimUser.ATTRIBUTE_NAME);
+        includeAttributes.add(ScimUser.ATTRIBUTE_ID);
+        jsonUsers = new JsonEncoder().encode(users, includeAttributes);
+        Assert.assertTrue(jsonUsers.contains("\"totalResults\": " + users.size()));
+        
+        for(int i=0; i<ids.length; i++) {
+            Assert.assertTrue(jsonUsers.contains(ids[i]));
+            Assert.assertFalse(jsonUsers.contains(emails1[i]));
+            Assert.assertFalse(jsonUsers.contains(emails2[i]));
+            Assert.assertTrue(jsonUsers.contains(postcodes1[i]));
+            Assert.assertTrue(jsonUsers.contains(postcodes2[i]));
+        }
+        
+        includeAttributes = new ArrayList<String>();
+        includeAttributes.add(ScimUser.ATTRIBUTE_ADDRESSES);
+        includeAttributes.add(ScimUser.ATTRIBUTE_EMAILS);
+        includeAttributes.add(ScimUser.ATTRIBUTE_ID);
+        jsonUsers = new JsonEncoder().encode(users, includeAttributes);
+        Assert.assertTrue(jsonUsers.contains("\"totalResults\": " + users.size()));
+        
+        for(int i=0; i<ids.length; i++) {
+            Assert.assertTrue(jsonUsers.contains(ids[i]));
+            Assert.assertTrue(jsonUsers.contains(emails1[i]));
+            Assert.assertTrue(jsonUsers.contains(emails2[i]));
+            Assert.assertTrue(jsonUsers.contains(postcodes1[i]));
+            Assert.assertTrue(jsonUsers.contains(postcodes2[i]));
+        }
+        
+        includeAttributes = new ArrayList<String>();
+        includeAttributes.add(ScimUser.ATTRIBUTE_NAME);
+        includeAttributes.add(ScimUser.ATTRIBUTE_EMAILS);
+        includeAttributes.add(ScimUser.ATTRIBUTE_ID);
+        jsonUsers = new JsonEncoder().encode(users, includeAttributes);
+        Assert.assertTrue(jsonUsers.contains("\"totalResults\": " + users.size()));
+        
+        for(int i=0; i<ids.length; i++) {
+            Assert.assertTrue(jsonUsers.contains(ids[i]));
+            Assert.assertTrue(jsonUsers.contains(emails1[i]));
+            Assert.assertTrue(jsonUsers.contains(emails2[i]));
+            Assert.assertFalse(jsonUsers.contains(postcodes1[i]));
+            Assert.assertFalse(jsonUsers.contains(postcodes2[i]));
+        }
     }
 
     private ScimUser getUser(String id, String name, String email1, String email2, String postcode1, String postcode2) {
