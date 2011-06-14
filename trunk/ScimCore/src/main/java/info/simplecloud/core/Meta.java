@@ -1,14 +1,31 @@
 package info.simplecloud.core;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class Meta extends ComplexType {
-    public static final String ATTRIBUTE_CREATED       = "created";
-    public static final String ATTRIBUTE_LAST_MODIFIED = "lastModified";
-    public static final String ATTRIBUTE_ETAG = "ETag";
-    public static final String ATTRIBUTE_LOCATION = "location";
-    public static final String ATTRIBUTE_ATTRIBUTE = "attributes";
-    public static final String simple[]                = { ATTRIBUTE_CREATED, ATTRIBUTE_LAST_MODIFIED, ATTRIBUTE_ETAG, ATTRIBUTE_LOCATION, ATTRIBUTE_ATTRIBUTE};
+    public static final String  ATTRIBUTE_CREATED       = "created";
+    public static final String  ATTRIBUTE_LAST_MODIFIED = "lastModified";
+    public static final String  ATTRIBUTE_ETAG          = "ETag";
+    public static final String  ATTRIBUTE_LOCATION      = "location";
+    public static final String  ATTRIBUTE_ATTRIBUTES    = "attributes";
+    private static final String simple[]                = { ATTRIBUTE_CREATED, ATTRIBUTE_LAST_MODIFIED, ATTRIBUTE_ETAG, ATTRIBUTE_LOCATION,
+            ATTRIBUTE_ATTRIBUTES                       };
+
+    @Override
+    public String[] getSimple() {
+        return simple;
+    }
+
+    @Override
+    public String[] getPlural() {
+        return null;
+    }
+
+    @Override
+    public String[] getComplex() {
+        return null;
+    }
 
     public Calendar getCreated() {
         return super.getAttributeCalendar(ATTRIBUTE_CREATED);
@@ -26,11 +43,11 @@ public class Meta extends ComplexType {
         return super.getAttributeString(ATTRIBUTE_LOCATION);
     }
 
-    public Object getAttributes() {
-        return super.getAttribute(ATTRIBUTE_ATTRIBUTE);
+    public List<String> getAttributes() {
+        Object attributeList = super.getAttribute(ATTRIBUTE_ATTRIBUTES);
+        return attributeList == null ? null : (List<String>) attributeList;
     }
 
-    
     public void setCreated(Calendar created) {
         super.setAttribute(ATTRIBUTE_CREATED, created);
     }
@@ -46,9 +63,9 @@ public class Meta extends ComplexType {
     public void setLocation(String location) {
         super.setAttribute(ATTRIBUTE_LOCATION, location);
     }
-    
-    public void setAttributes(Object attribute) {
-    	super.setAttribute(ATTRIBUTE_ATTRIBUTE, attribute);
+
+    public void setAttributes(List<String> attributes) {
+        super.setAttribute(ATTRIBUTE_ATTRIBUTES, attributes);
     }
 
     @Override
