@@ -5,8 +5,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public class ComplexType {
+public abstract class ComplexType {
     private static final String ID_SEPARATOR = ".";
     private Map<String, Object> data         = new HashMap<String, Object>();
 
@@ -112,4 +113,45 @@ public class ComplexType {
     public String toString() {
         return this.toString(this.data.keySet().toArray(new String[] {}));
     }
+
+    public void removeAttribute(String id) {
+        this.data.remove(id);
+    }
+
+    public void merge(ComplexType from, String[] simple, String[] plural, String[] complex) {
+        copyAttributes(from, simple);
+        copyAttributes(from, plural);
+
+        if (complex != null) {
+            for (String attribute : complex) {
+                if (from.getAttribute(attribute) != null) {
+                    if (this.getAttribute(attribute) != null) {
+                        ComplexType fromTmp = (ComplexType) from.getAttribute(attribute);
+                        ComplexType toTmp = (ComplexType) this.getAttribute(attribute);
+                        toTmp.merge(fromTmp, fromTmp.getSimple(), fromTmp.getPlural(), fromTmp.getComplex());
+                    } else {
+                        this.setAttribute(attribute, from.getAttribute(attribute));
+                    }
+                }
+            }
+        }
+    }
+
+    private void copyAttributes(ComplexType from, String[] attributes) {
+        if (attributes == null) {
+            return;
+        }
+
+        for (String attribute : attributes) {
+            if (from.getAttribute(attribute) != null) {
+                this.setAttribute(attribute, from.getAttribute(attribute));
+            }
+        }
+    }
+
+    public abstract String[] getSimple();
+
+    public abstract String[] getPlural();
+
+    public abstract String[] getComplex();
 }

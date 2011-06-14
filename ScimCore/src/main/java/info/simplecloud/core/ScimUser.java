@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,23 +37,25 @@ public class ScimUser extends ComplexType {
     public static final String               ATTRIBUTE_ORGANIZATION       = "organization";
     public static final String               ATTRIBUTE_DIVISION           = "division";
     public static final String               ATTRIBUTE_DEPARTMENT         = "department";
-    public static final String[]             simple                       = { ATTRIBUTE_ID, ATTRIBUTE_EXTERNALID, ATTRIBUTE_USER_NAME,
+    private static final String[]            simple                       = { ATTRIBUTE_ID, ATTRIBUTE_EXTERNALID, ATTRIBUTE_USER_NAME,
             ATTRIBUTE_DISPLAY_NAME, ATTRIBUTE_NICK_NAME, ATTRIBUTE_PROFILE_URL, ATTRIBUTE_EMPLOYEE_NUMBER, ATTRIBUTE_USER_TYPE,
             ATTRIBUTE_TITLE, ATTRIBUTE_MANAGER, ATTRIBUTE_PREFERRED_LANGUAGE, ATTRIBUTE_LOCALE, ATTRIBUTE_UTC_OFFSET,
             ATTRIBUTE_COST_CENTER, ATTRIBUTE_ORGANIZATION, ATTRIBUTE_DIVISION, ATTRIBUTE_DEPARTMENT };
 
     public static final String               ATTRIBUTE_NAME               = "name";
     public static final String               ATTRIBUTE_META               = "meta";
-    public static final String[]             complex                      = { ATTRIBUTE_NAME, ATTRIBUTE_META };
+    private static final String[]            complex                      = { ATTRIBUTE_NAME, ATTRIBUTE_META };
 
     public static final String               ATTRIBUTE_IMS                = "ims";
     public static final String               ATTRIBUTE_EMAILS             = "emails";
     public static final String               ATTRIBUTE_PHOTOS             = "photos";
     public static final String               ATTRIBUTE_GROUPS             = "groups";
-    public static final String               ATTRIBUTE_ADDRESSES          = "addresses";
     public static final String               ATTRIBUTE_PHONE_NUMBERS      = "phoneNumbers";
-    public static final String[]             plural                       = { ATTRIBUTE_IMS, ATTRIBUTE_EMAILS, ATTRIBUTE_PHOTOS,
-            ATTRIBUTE_GROUPS, ATTRIBUTE_ADDRESSES, ATTRIBUTE_PHONE_NUMBERS };
+    private static final String[]            plural                       = { ATTRIBUTE_IMS, ATTRIBUTE_EMAILS, ATTRIBUTE_PHOTOS,
+            ATTRIBUTE_GROUPS, ATTRIBUTE_PHONE_NUMBERS                    };
+
+    public static final String               ATTRIBUTE_ADDRESSES          = "addresses";
+    private static final String[]            complexPlural                = { ATTRIBUTE_ADDRESSES };
 
     private static Map<String, IUserEncoder> encoders                     = new HashMap<String, IUserEncoder>();
     private static Map<String, IUserDecoder> decoders                     = new HashMap<String, IUserDecoder>();
@@ -62,6 +65,22 @@ public class ScimUser extends ComplexType {
         new JsonDecoder().addMe(decoders);
         new XmlDecoder().addMe(decoders);
     }
+
+    @Override
+    public String[] getSimple() {
+        return simple;
+    }
+
+    @Override
+    public String[] getPlural() {
+        return plural;
+    }
+
+    @Override
+    public String[] getComplex() {
+        return complex;
+    }
+    
 
     public ScimUser(String user, String encoding) throws UnknownEncoding, InvalidUser {
         IUserDecoder decoder = decoders.get(encoding);
@@ -94,46 +113,16 @@ public class ScimUser extends ComplexType {
         return null;
     }
 
-    /**
-     * Sets a specific attribute to null and by then clearing that value. 
-     * @param attribute The attribute name. For example, use ScimUser.ATTRIBUTE_ID for ID.
-     */
-    public void removeAttribute(String attribute) {
-		this.setAttribute(attribute, null);
-    }
-    
-    public void copyValuesFromUser(ScimUser fromUser) {
-    	
-    	for (String attribute : simple) {
-    		if(fromUser.getAttribute(attribute) != null) {
-        		this.setAttribute(attribute, fromUser.getAttribute(attribute));
-    		}
-		}
+    public void patch(String patch, String encoding) throws UnknownEncoding, InvalidUser {
+        ScimUser userPatch = new ScimUser(patch, encoding);
 
-    	for (String attribute : plural) {
-    		if(fromUser.getAttribute(attribute) != null) {
-        		this.setAttribute(attribute, fromUser.getAttribute(attribute));
-    		}
-		}
+        Meta meta = userPatch.getMeta();
+        List<String> attributesToDelete = meta.getAttributes();
+        for (String id : attributesToDelete) {
+            super.removeAttribute(id);
+        }
 
-		if(fromUser.getAttribute(ScimUser.ATTRIBUTE_NAME) != null) {
-    		this.setAttribute(ScimUser.ATTRIBUTE_NAME, fromUser.getAttribute(ScimUser.ATTRIBUTE_NAME));
-		}
-
-		if(fromUser.getAttribute(ScimUser.ATTRIBUTE_META) != null) {
-			if(fromUser.getMeta().getCreated() != null) {
-				this.getMeta().setCreated(fromUser.getMeta().getCreated());
-			}
-			if(fromUser.getMeta().getLastModified() != null) {
-				this.getMeta().setLastModified(fromUser.getMeta().getLastModified());
-			}
-			if(fromUser.getMeta().getETag() != null) {
-				this.getMeta().setETag(fromUser.getMeta().getETag());
-			}
-			if(fromUser.getMeta().getLocation() != null) {
-				this.getMeta().setLocation(fromUser.getMeta().getLocation());
-			}
-		}
+        super.merge(userPatch, simple, plural, complex);
     }
 
     public String getId() {
