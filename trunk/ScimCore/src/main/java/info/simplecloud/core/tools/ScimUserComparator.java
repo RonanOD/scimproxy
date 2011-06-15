@@ -1,4 +1,6 @@
-package info.simplecloud.core;
+package info.simplecloud.core.tools;
+
+import info.simplecloud.core.ScimUser;
 
 import java.util.Comparator;
 

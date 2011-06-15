@@ -1,9 +1,9 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.ScimUserComparator;
 import info.simplecloud.core.encoding.JsonEncoder;
 import info.simplecloud.core.execeptions.EncodingFailed;
+import info.simplecloud.core.tools.ScimUserComparator;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 
 import java.io.IOException;
