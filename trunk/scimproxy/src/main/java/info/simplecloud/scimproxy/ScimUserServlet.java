@@ -1,8 +1,7 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.core.Meta;
 import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.decoding.JsonDecoder;
-import info.simplecloud.core.encoding.JsonEncoder;
 import info.simplecloud.core.execeptions.EncodingFailed;
 import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnknownEncoding;
@@ -10,16 +9,15 @@ import info.simplecloud.scimproxy.storage.IStorage;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Enumeration;
+import java.security.MessageDigest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 /*
 
@@ -69,24 +67,7 @@ public class ScimUserServlet extends RestServlet {
      * Serialize id.
      */
     private static final long serialVersionUID = -5875059636322733570L;
-
-    /**
-     * Gets an user id from a request. /User/myuserid will return myuserid.
-     * 
-     * @param query
-     *            A URI, for example /User/myuserid.
-     * @return A scim user id.
-     */
-    private String getIdFromUri(String query) {
-        // TODO: validate input
-        String id = query.substring(6);
-        try {
-            id = URLDecoder.decode(id, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            id = "";
-        }
-        return id;
-    }
+    
 
     /**
      * Returns a scim user.
@@ -107,33 +88,34 @@ public class ScimUserServlet extends RestServlet {
         ScimUser scimUser = storage.getUserForId(user);
 
         if (scimUser != null) {
-            resp.setContentType(CONTENT_TYPE_XML);
 
-            // TODO: SPEC: REST: Should the Location header be included in more
-            // then POST? Like in this response?
-            // TODO: SPEC: REST: Also include the location in meta data for the
-            // user?
-            // TODO: SPEC: REST: Should ETag be added in more places in spec?
-
-            JsonEncoder encoder = new JsonEncoder();
             String json = "";
             try {
-                // encode the user as JSON
-                json = encoder.encode(scimUser);
-            } catch (EncodingFailed e) {
-                e.printStackTrace();
+            	// TODO: get encoding from request
+				json = scimUser.getUser("JSON");
+            } catch (UnknownEncoding e) {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+                resp.getWriter().print("Error: An internal error. Using unknown encoding.");
+                return;
+            } catch (EncodingFailed e) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+                resp.getWriter().print("Error: An internal error. Failed to encode user.");
+                return;
             }
 
+            // TODO: SPEC: REST: Should the Location header be included in more then POST? 
+            // TODO: SPEC: REST: Also include the location in meta data for the user?
+            resp.setContentType(CONTENT_TYPE_JSON);
+            resp.setHeader("ETag", scimUser.getMeta().getVersion());
             resp.setStatus(HttpServletResponse.SC_OK); // 200
             resp.getWriter().print(json);
         } else {
-            // TODO: SPEC: REST: What to respond when token not there? (4.2.1.
-            // Retrieving a known Resource)
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
+            resp.getWriter().print("Specified User does not exist.");
         }
     }
 
+    
     /**
      * Create a new scim user.
      * 
@@ -146,22 +128,23 @@ public class ScimUserServlet extends RestServlet {
      */
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        String query = "";
-        // TODO: SPEC: REST: Shouln't the POST message have a specific name for
-        // the value? Right now the name is the value.
-        Enumeration<?> paramNames = req.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            query = (String) paramNames.nextElement();
+        String query = getContent(req);
+        // TODO: SPEC: REST: Should the post message be base64 encoded in spec or not?
+
+        if(query == null || "".equals(query)) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema.");
+            return;
         }
 
-        // TODO: SPEC: REST: Should the post message be base64 encoded in spec
-        // or not?
-
-        ScimUser scimUser = new ScimUser();
         try {
-            // decode the json user into an ScimUser object
-            JsonDecoder decoder = new JsonDecoder();
-            decoder.decode(query, scimUser);
+            ScimUser scimUser = new ScimUser(query, "JSON");
+            Meta meta = scimUser.getMeta();
+            if(meta == null) {
+            	meta = new Meta();
+            }
+            meta.setVersion(generateVersionString(query));
+            scimUser.setMeta(meta);
 
             // store ScimUser into storage
             DummyStorage storage = DummyStorage.getInstance();
@@ -172,6 +155,10 @@ public class ScimUserServlet extends RestServlet {
                     + "\t\"errors\" : [ ],  //TODO - not in core schema\n" + "\t\"success\" : true //TODO - not in core schema\n" + "}\n";
 
             resp.setContentType(CONTENT_TYPE_JSON);
+            
+            // TODO: REST: SPEC: Why not return scim user instead? Easier to parse.
+/*
+	ADD WHEN THEY CHANGE SPEC
 
             // generate the Location url
             String scheme = req.getScheme(); // http
@@ -185,15 +172,20 @@ public class ScimUserServlet extends RestServlet {
             String location = scheme + "://" + serverName + ":" + serverPortStr + contextPath + "/User/" + scimUser.getId();
 
             resp.setHeader("Location", location);
-
+            resp.setHeader("ETag", scimUser.getMeta().getVersion());
+*/
             resp.setStatus(HttpServletResponse.SC_CREATED); // 201
             resp.getWriter().print(response);
-        } catch (InvalidUser e) {
-            e.printStackTrace();
+        } catch (UnknownEncoding e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+            resp.getWriter().print("Error: An internal error. Using unknown encoding.");
+		} catch (InvalidUser e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
-        }
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Unknown encoding.");
+        } 
     }
 
+    
     /**
      * PUT performs a full update.
      * 
@@ -206,62 +198,79 @@ public class ScimUserServlet extends RestServlet {
      */
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+        // TODO: SPEC: REST: Should ETag be verified in PUT?
+
         // TODO: SPEC: REST: Should we keep created time?
-        String user = getIdFromUri(req.getRequestURI());
+        String userId = getIdFromUri(req.getRequestURI());
+        String query = getContent(req);
+        // TODO: SPEC: REST: Should the post message be base64 encoded in spec or not?
+
+        if(query == null || "".equals(query) || userId == null) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema.");
+            return;
+        }
+        
         DummyStorage storage = DummyStorage.getInstance();
         try {
-            storage.deleteUser(user);
+            storage.deleteUser(userId);
         } catch (UserNotFoundException e) {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
+            resp.getWriter().print("Specified User does not exist.");
+            return;
         }
 
-        String query = "";
-        // TODO: SPEC: REST: Shouln't the POST message have a specific name for
-        // the value? Right now the name is the value.
-        Enumeration<?> paramNames = req.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            query = (String) paramNames.nextElement();
-        }
-
-        // TODO: SPEC: REST: Should the post message be base64 encoded in spec
-        // or not?
-
-        ScimUser scimUser = new ScimUser();
-        try {
-            // decode the json user into an ScimUser object
-            JsonDecoder decoder = new JsonDecoder();
-            decoder.decode(query, scimUser);
-
-            // store ScimUser into storage
-            storage.addUser(scimUser);
-
-            // TODO: SPEC: REST: Define what to return in detail.
-            String response = "" + "{\n" + "\t\"id\" : \"" + scimUser.getId() + "\",\n"
-                    + "\t\"errors\" : [ ],  //TODO - not in core schema\n" + "\t\"success\" : true //TODO - not in core schema\n" + "}\n";
-
-            resp.setContentType(CONTENT_TYPE_JSON);
-
-            // generate the Location url
-            String scheme = req.getScheme(); // http
-            String serverName = req.getServerName(); // acme.com
-            int serverPort = req.getServerPort(); // 80
-            String serverPortStr = "";
-            if (("http".equals(scheme) && serverPort != 80) || ("https".equals(scheme) && serverPort != 443)) {
-                serverPortStr = Integer.toString(serverPort);
-            }
-            String contextPath = req.getContextPath();
-            String location = scheme + "://" + serverName + ":" + serverPortStr + contextPath + "/User/" + scimUser.getId();
-
-            resp.setHeader("Location", location);
-
-            resp.setStatus(HttpServletResponse.SC_CREATED); // 201
-            resp.getWriter().print(response);
-        } catch (InvalidUser e) {
-            e.printStackTrace();
+        // decode the json user into an ScimUser object
+        ScimUser scimUser;
+		try {
+			scimUser = new ScimUser(query, "JSON");
+        } catch (UnknownEncoding e1) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 (right now it's actually a 500 as long as it's hardcoded)
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Unknown encoding.");
+            return;
+        } catch (InvalidUser e1) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Failed to decode patch.");
+            return;
         }
 
+        // store ScimUser into storage
+        Meta meta = scimUser.getMeta();
+        if(meta == null) {
+        	meta = new Meta();
+        }
+        meta.setVersion(generateVersionString(query));
+        scimUser.setMeta(meta);
+        storage.addUser(scimUser);
+
+
+        // generate the Location url
+        String scheme = req.getScheme(); // http
+        String serverName = req.getServerName(); // acme.com
+        int serverPort = req.getServerPort(); // 80
+        String serverPortStr = "";
+        if (("http".equals(scheme) && serverPort != 80) || ("https".equals(scheme) && serverPort != 443)) {
+            serverPortStr = Integer.toString(serverPort);
+        }
+        String contextPath = req.getContextPath();
+        String location = scheme + "://" + serverName + ":" + serverPortStr + contextPath + "/User/" + scimUser.getId();
+
+        resp.setHeader("Location", location);
+        resp.setContentType(CONTENT_TYPE_JSON);
+        resp.setHeader("ETag", scimUser.getMeta().getVersion());
+
+        resp.setStatus(HttpServletResponse.SC_CREATED); // 201
+        try {
+			resp.getWriter().print(scimUser.getUser("JSON"));
+        } catch (UnknownEncoding e1) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 (right now it's actually a 500 as long as it's hardcoded)
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Unknown encoding.");
+        } catch (EncodingFailed e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+            resp.getWriter().print("Error: An internal error. Could not encode user that was added.");
+		}
     }
+    
 
     /**
      * Delete a scim user.
@@ -274,18 +283,26 @@ public class ScimUserServlet extends RestServlet {
      *             Servlet I/O exception.
      */
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String user = getIdFromUri(req.getRequestURI());
+        String userId = getIdFromUri(req.getRequestURI());
+        
+        if(userId == null) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Missing or malformed user id.");
+            return;
+        }
+
         DummyStorage storage = DummyStorage.getInstance();
         try {
-            storage.deleteUser(user);
+            storage.deleteUser(userId);
             resp.setStatus(HttpServletResponse.SC_OK);
         } catch (UserNotFoundException e) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
+    
 
     /**
-     * Change an attribute on a scim user.
+     * Change or remove attribute on a scim user.
      * 
      * @param req
      *            Servlet request.
@@ -296,87 +313,58 @@ public class ScimUserServlet extends RestServlet {
      */
     public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        // validate input
-
-        // PRE
-        // get user from storage
-        // lock storage
-        // check etag
-
-        // delete
-        // find meta tag, and extract attributes.
-        // clear values
-
-        // add/update
-        // get changed values
-
-        // singlular
-        // update user
-
-        // plural
-        // find meta tag
-        // remove attributes
-        // get changed value
-        // add attributes
-
-        // POST
-        // save user in storage
-        // unlock storage
-
-        // adding singular. If the Resource does not already contain a value for
-        // the specified attribute the attribute value is added (or said another
-        // way “set”).
-        // adding plural. If the Resource does not already contain the value the
-        // value is added to the attribute
-        // Updating attributes (Singular): If the attribute value exists the
-        // value is replaced by the value specified in the request.
-        //
-
         String query = "";
-        // TODO: SPEC: REST: Shouln't the POST message have a specific name for
-        // the value? Right now the name is the value.
-        Enumeration<?> paramNames = req.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            query = (String) paramNames.nextElement();
-        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(req.getInputStream()));
+		String message = null;
+		while ((message = reader.readLine()) != null) {
+			query += message;
+		}
 
+        
         // TODO: SPEC: REST: Should the post message be base64 encoded in spec
         // or not?
 
         String userId = getIdFromUri(req.getRequestURI());
-
+        String etag = req.getHeader("ETag");
+        
+        if("".equals(query) || userId == null || etag == null || "".equals(etag)) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Missing user id or ETag.");
+            return;
+        }
+        
         // get a handle to a user storage.
         // TODO change from singleton to servlet context thingi
         IStorage storage = DummyStorage.getInstance();
 
         // get user
-        // TODO make sure user is locked
+        // TODO make sure user to lock user
         ScimUser scimUser = storage.getUserForId(userId);
-
         if (scimUser == null) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
-            resp.getWriter().print("User: " + userId);
+            resp.getWriter().print("Specified User does not exist.");
+            return;
         }
 
-        // TODO: check ETag
-        try {
-            String version = storage.getVersionForUser(scimUser);
-        } catch (UserNotFoundException e1) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
-            resp.getWriter().print("Error: Failed to read version, user not found!");
+        // check that version haven't changed since loaded from server
+        String version = scimUser.getMeta().getVersion();
+        if(!etag.equals(version)) {
+            resp.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED); // 412
+            resp.getWriter().print("Error: Failed to update as Resource " + scimUser.getId() + " changed on the server since you last retrieved it.");
             return;
         }
 
         try {
             // TODO Read encoding from request
             scimUser.patch(query, "JSON");
+            scimUser.getMeta().setVersion(generateVersionString(query));
         } catch (UnknownEncoding e1) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
-            resp.getWriter().print("Error: Unknown encoding!");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Unknown encoding.");
             return;
         } catch (InvalidUser e1) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
-            resp.getWriter().print("Error: Failed to decode patch!");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Failed to decode patch.");
             return;
         }
 
@@ -385,14 +373,77 @@ public class ScimUserServlet extends RestServlet {
             resp.getWriter().print(scimUser.getUser("JSON"));
         } catch (UnknownEncoding e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
-            resp.getWriter().print("Error: Unknown encoding!");
+            resp.getWriter().print("Error: An internal error. Using unknown encoding.");
             return;
         } catch (EncodingFailed e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
-            resp.getWriter().print("Failed to encode user!");
+            resp.getWriter().print("Error: An internal error. Failed to encode user.");
             return;
         }
 
         resp.setStatus(HttpServletResponse.SC_OK); // 200
+    }
+    
+    
+    /**
+     * Gets the content from a request by looping though all lines.
+     * @param req The request to parse.
+     * @return The content of the request or null if an error occurred while parsing request.
+     */
+    private String getContent(HttpServletRequest req) {
+        String query = "";
+        BufferedReader reader;
+		try {
+			reader = new BufferedReader(new InputStreamReader(req.getInputStream()));
+			String message = null;
+			while ((message = reader.readLine()) != null) {
+				query += message;
+			}
+		} catch (IOException e) {
+			query = null;
+		}
+		return query;
+    }
+    
+    
+    /**
+     * Calculate a version number for a scim user using MD5, don't use value as real MD5 for matching. The calculation is done without the meta node with version it self that's added later.
+     * @param s A serialized scim user.
+     * @return A version number of a scim user. Null is returned if an error occurred.
+     */
+    private String generateVersionString(String s) {
+    	String version = null;
+    	if(s != null && !"".equals(s)) {
+    		try {
+    	    	byte[] bytesOfMessage = s.getBytes("UTF-8");
+    	    	MessageDigest md = MessageDigest.getInstance("MD5");
+    	    	byte[] thedigest = md.digest(bytesOfMessage);
+    	    	version = new String(thedigest);
+    		} catch (Exception e) {
+    			// implementation error, wrong encoding or hash method.
+    			e.printStackTrace();
+    			version = null;
+    		}
+    	}
+		return version;
+    }
+    
+    
+    /**
+     * Gets an user id from a request. /User/myuserid will return myuserid.
+     * 
+     * @param query
+     *            A URI, for example /User/myuserid.
+     * @return A scim user id.
+     */
+    private String getIdFromUri(String query) {
+        // TODO: validate input
+        String id = query.substring(6);
+        try {
+            id = URLDecoder.decode(id, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            id = null;
+        }
+        return id;
     }
 }
