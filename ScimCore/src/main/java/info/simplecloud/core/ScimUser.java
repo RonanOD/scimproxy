@@ -122,9 +122,13 @@ public class ScimUser extends ComplexType {
         ScimUser userPatch = new ScimUser(patch, encoding);
 
         Meta meta = userPatch.getMeta();
-        List<String> attributesToDelete = meta.getAttributes();
-        for (String id : attributesToDelete) {
-            super.removeAttribute(id);
+        if(meta != null) {
+            List<String> attributesToDelete = meta.getAttributes();
+            if(attributesToDelete != null) {
+                for (String id : attributesToDelete) {
+                    super.removeAttribute(id);
+                }
+            }
         }
 
         super.merge(userPatch, simple, plural, complex);
