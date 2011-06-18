@@ -8,15 +8,11 @@ import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.plaf.ListUI;
-
-import org.apache.commons.lang.ArrayUtils;
 
 /*
 
