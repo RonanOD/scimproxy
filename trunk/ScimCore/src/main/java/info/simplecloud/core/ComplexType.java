@@ -101,7 +101,7 @@ public abstract class ComplexType {
             if (obj != null) {
                 stringBuilder.append(id);
                 stringBuilder.append(": ");
-                stringBuilder.append(id);
+                stringBuilder.append(obj.toString());
                 stringBuilder.append(", ");
             }
         }
