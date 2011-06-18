@@ -13,8 +13,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -143,23 +146,20 @@ public class ScimUserServlet extends RestServlet {
             if(meta == null) {
             	meta = new Meta();
             }
-            meta.setVersion(generateVersionString(query));
+            meta.setVersion(generateVersionString());
             scimUser.setMeta(meta);
 
             // store ScimUser into storage
             DummyStorage storage = DummyStorage.getInstance();
             storage.addUser(scimUser);
-
+/*
+            // TODO: REST: SPEC: Why not return scim user instead? Easier to parse.
             // TODO: SPEC: REST: Define what to return in detail.
             String response = "" + "{\n" + "\t\"id\" : \"" + scimUser.getId() + "\",\n"
                     + "\t\"errors\" : [ ],  //TODO - not in core schema\n" + "\t\"success\" : true //TODO - not in core schema\n" + "}\n";
-
+*/
             resp.setContentType(CONTENT_TYPE_JSON);
             
-            // TODO: REST: SPEC: Why not return scim user instead? Easier to parse.
-/*
-	ADD WHEN THEY CHANGE SPEC
-
             // generate the Location url
             String scheme = req.getScheme(); // http
             String serverName = req.getServerName(); // acme.com
@@ -173,16 +173,19 @@ public class ScimUserServlet extends RestServlet {
 
             resp.setHeader("Location", location);
             resp.setHeader("ETag", scimUser.getMeta().getVersion());
-*/
+
             resp.setStatus(HttpServletResponse.SC_CREATED); // 201
-            resp.getWriter().print(response);
+            resp.getWriter().print(scimUser.getUser("JSON"));
         } catch (UnknownEncoding e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
             resp.getWriter().print("Error: An internal error. Using unknown encoding.");
 		} catch (InvalidUser e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
             resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Unknown encoding.");
-        } 
+        } catch (EncodingFailed e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+            resp.getWriter().print("Error: An internal error. Using unknown encoding.");
+		} 
     }
 
     
@@ -239,7 +242,7 @@ public class ScimUserServlet extends RestServlet {
         if(meta == null) {
         	meta = new Meta();
         }
-        meta.setVersion(generateVersionString(query));
+        meta.setVersion(generateVersionString());
         scimUser.setMeta(meta);
         storage.addUser(scimUser);
 
@@ -357,7 +360,7 @@ public class ScimUserServlet extends RestServlet {
         try {
             // TODO Read encoding from request
             scimUser.patch(query, "JSON");
-            scimUser.getMeta().setVersion(generateVersionString(query));
+            scimUser.getMeta().setVersion(generateVersionString());
         } catch (UnknownEncoding e1) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
             resp.getWriter().print("Error: Request is unparseable, syntactically incorrect, or violates schema. Unknown encoding.");
@@ -411,21 +414,9 @@ public class ScimUserServlet extends RestServlet {
      * @param s A serialized scim user.
      * @return A version number of a scim user. Null is returned if an error occurred.
      */
-    private String generateVersionString(String s) {
-    	String version = null;
-    	if(s != null && !"".equals(s)) {
-    		try {
-    	    	byte[] bytesOfMessage = s.getBytes("UTF-8");
-    	    	MessageDigest md = MessageDigest.getInstance("MD5");
-    	    	byte[] thedigest = md.digest(bytesOfMessage);
-    	    	version = new String(thedigest);
-    		} catch (Exception e) {
-    			// implementation error, wrong encoding or hash method.
-    			e.printStackTrace();
-    			version = null;
-    		}
-    	}
-		return version;
+	private SecureRandom random = new SecureRandom();
+    private String generateVersionString() {
+		return new BigInteger(130, random).toString(32) + Long.toString(System.currentTimeMillis());
     }
     
     

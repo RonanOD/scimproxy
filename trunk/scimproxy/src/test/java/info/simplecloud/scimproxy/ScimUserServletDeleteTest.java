@@ -9,35 +9,48 @@ import org.mortbay.jetty.testing.ServletTester;
 
 public class ScimUserServletDeleteTest extends TestCase {
 
-	HttpTester request = new HttpTester();
-	HttpTester response = new HttpTester();
-	ServletTester tester = null;
+	private HttpTester request = new HttpTester();
+	private HttpTester response = new HttpTester();
+	private ServletTester tester = null;
 
-	/**
-	 * Setup tests. Binding servlet to /User
-	 */
+	private String id = "";
+	
 	public void setUp() throws Exception {
+		tester = new ServletTester();
+		tester.addServlet(ScimUserServlet.class, "/User/*");
+	    tester.addServlet(DefaultServlet.class, "/");
+	    tester.start();
+	    
+	    ScimUser scimUser = new ScimUser();
+	    scimUser.setUserName("Alice");
+
+		request.setMethod("POST");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/User");
+		request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
+		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setContent(scimUser.getUser("JSON"));
+		response.parse(tester.getResponses(request.generate()));
+
+		ScimUser tmp = new ScimUser(response.getContent(), "JSON");
+		id = tmp.getId();
 	}
 
 
 	public void testDeleteUser() throws Exception {
-		tester = new ServletTester();
-		tester.addServlet(ScimUserServlet.class, "/User/*");
-	    tester.addServlet(DefaultServlet.class, "/");
 	    
-		tester.start();
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
 
 		// get resource to see if it's there
-		request.setURI("/User/erwah-1234-5678");
+		request.setURI("/User/" + id);
 		response.parse(tester.getResponses(request.generate()));
 
 		assertEquals(200, response.getStatus());
 		
         ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
         
-        assertEquals("erwah-1234-5678", scimUser.getId());
+        assertEquals(id, scimUser.getId());
 
         // delete resource
 
@@ -50,7 +63,7 @@ public class ScimUserServletDeleteTest extends TestCase {
 		assertEquals(200, response.getStatus());
 
 		// next request should be 404
-		request.setURI("/User/erwah-1234-5678");
+		request.setURI("/User/" + id);
 		response.parse(tester.getResponses(request.generate()));
 
 		assertTrue(response.getMethod() == null);
