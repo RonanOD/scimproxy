@@ -2,7 +2,6 @@ package info.simplecloud.scimproxy.storage.dummy;
 
 import info.simplecloud.core.Address;
 import info.simplecloud.core.ComplexType;
-import info.simplecloud.core.Meta;
 import info.simplecloud.core.Name;
 import info.simplecloud.core.PluralType;
 import info.simplecloud.core.ScimUser;
@@ -32,55 +31,49 @@ public class DummyStorage implements IStorage {
 	 * Constructor. Adds two users to storage.
 	 */
 	private DummyStorage() {
-        ScimUser scim1 = new ScimUser();
-        ScimUser scim2 = new ScimUser();
+        ScimUser carol = new ScimUser();
+        ScimUser dave = new ScimUser();
 
-        // create user 1
-        scim1.setAttribute(ScimUser.ATTRIBUTE_ID, "yhgty-ujhyu-iolki");
-        scim1.setAttribute(ScimUser.ATTRIBUTE_NAME,
-                new Name().setAttribute(Name.ATTRIBUTE_GIVEN_NAME, "Samuel").setAttribute(Name.ATTRIBUTE_HONORIFIC_PREFIX, "mr."));
+        // create carol
+        carol.setUserName("Carol");
+        carol.setAttribute(ScimUser.ATTRIBUTE_ID, generateId());
+        carol.setAttribute(ScimUser.ATTRIBUTE_NAME,
+                new Name().setAttribute(Name.ATTRIBUTE_GIVEN_NAME, "Carol").setAttribute(Name.ATTRIBUTE_HONORIFIC_PREFIX, "ms."));
 
-        List<PluralType<String>> emails = new LinkedList<PluralType<String>>();
-        emails.add(new PluralType<String>("samuel@erdtman.se", "private", true));
-        emails.add(new PluralType<String>("samuel.erdtman@nexussafe.com", "work", false));
-        scim1.setAttribute(ScimUser.ATTRIBUTE_EMAILS, emails);
+        List<PluralType<String>> carolEmail = new LinkedList<PluralType<String>>();
+        carolEmail.add(new PluralType<String>("carol@foo.bar", "private", true));
+        carolEmail.add(new PluralType<String>("carol@bar.foo", "work", false));
+        carol.setAttribute(ScimUser.ATTRIBUTE_EMAILS, carolEmail);
 
-        List<PluralType<ComplexType>> addresses = new LinkedList<PluralType<ComplexType>>();
-        addresses.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "Sweeden").setAttribute(
+        List<PluralType<ComplexType>> carolAddress = new LinkedList<PluralType<ComplexType>>();
+        carolAddress.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "Sweden").setAttribute(
                 Address.ATTRIBUTE_POSTAL_CODE, "12 345"), "home", true));
-        addresses.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "England").setAttribute(
+        carolAddress.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "USA").setAttribute(
                 Address.ATTRIBUTE_POSTAL_CODE, "67-890"), "work", false));
         
-        scim1.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, addresses);
+        carol.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, carolAddress);
 
-        Meta meta1 = new Meta();
-        meta1.setVersion("1");
-        scim1.setMeta(meta1);
         
-        // create user 2
-        scim2.setAttribute(ScimUser.ATTRIBUTE_ID, "erwah-1234-5678");
-        scim2.setAttribute(ScimUser.ATTRIBUTE_NAME,
-                new Name().setAttribute(Name.ATTRIBUTE_GIVEN_NAME, "Erik").setAttribute(Name.ATTRIBUTE_HONORIFIC_PREFIX, "mr."));
+        // create dave
+        dave.setUserName("Dave");
+        dave.setAttribute(ScimUser.ATTRIBUTE_ID, generateId());
+        dave.setAttribute(ScimUser.ATTRIBUTE_NAME,
+                new Name().setAttribute(Name.ATTRIBUTE_GIVEN_NAME, "Dave").setAttribute(Name.ATTRIBUTE_HONORIFIC_PREFIX, "mr."));
 
-        List<PluralType<String>> emails2 = new LinkedList<PluralType<String>>();
-        emails2.add(new PluralType<String>("erik@wahlstromstekniska.se", "private", false));
-        emails2.add(new PluralType<String>("erik.wahlstrom@nexussafe.com", "work", true));
-        scim2.setAttribute(ScimUser.ATTRIBUTE_EMAILS, emails2);
+        List<PluralType<String>> daveEmail = new LinkedList<PluralType<String>>();
+        daveEmail.add(new PluralType<String>("dave@foo.bar", "private", false));
+        daveEmail.add(new PluralType<String>("dave@bar.foo", "work", true));
+        dave.setAttribute(ScimUser.ATTRIBUTE_EMAILS, daveEmail);
 
-        List<PluralType<ComplexType>> addresses2 = new LinkedList<PluralType<ComplexType>>();
-        addresses2.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "Sweden").setAttribute(
+        List<PluralType<ComplexType>> daveAddress = new LinkedList<PluralType<ComplexType>>();
+        daveAddress.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "Sweden").setAttribute(
                 Address.ATTRIBUTE_POSTAL_CODE, "112 50"), "home", true));
-        scim2.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, addresses2);
+        dave.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, daveAddress);
         
-        scim2.setDisplayName("Erik Wahlström");
-
-        Meta meta2 = new Meta();
-        meta2.setVersion("1");
-        scim2.setMeta(meta2);
-
+        dave.setDisplayName("Dave");
         
-        users.add(scim1);
-        users.add(scim2);
+        users.add(carol);
+        users.add(dave);
 	}
 	
 
