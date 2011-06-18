@@ -6,10 +6,10 @@ import java.util.List;
 public class Meta extends ComplexType {
     public static final String  ATTRIBUTE_CREATED       = "created";
     public static final String  ATTRIBUTE_LAST_MODIFIED = "lastModified";
-    public static final String  ATTRIBUTE_ETAG          = "ETag";
+    public static final String  ATTRIBUTE_VERSION          = "version";
     public static final String  ATTRIBUTE_LOCATION      = "location";
     public static final String  ATTRIBUTE_ATTRIBUTES    = "attributes";
-    private static final String simple[]                = { ATTRIBUTE_CREATED, ATTRIBUTE_LAST_MODIFIED, ATTRIBUTE_ETAG, ATTRIBUTE_LOCATION,
+    private static final String simple[]                = { ATTRIBUTE_CREATED, ATTRIBUTE_LAST_MODIFIED, ATTRIBUTE_VERSION, ATTRIBUTE_LOCATION,
             ATTRIBUTE_ATTRIBUTES                       };
 
     @Override
@@ -35,8 +35,8 @@ public class Meta extends ComplexType {
         return super.getAttributeCalendar(ATTRIBUTE_LAST_MODIFIED);
     }
 
-    public String getETag() {
-        return super.getAttributeString(ATTRIBUTE_ETAG);
+    public String getVersion() {
+        return super.getAttributeString(ATTRIBUTE_VERSION);
     }
 
     public String getLocation() {
@@ -56,8 +56,8 @@ public class Meta extends ComplexType {
         super.setAttribute(ATTRIBUTE_LAST_MODIFIED, lastModified);
     }
 
-    public void setETag(String etag) {
-        super.setAttribute(ATTRIBUTE_ETAG, etag);
+    public void setVersion(String version) {
+        super.setAttribute(ATTRIBUTE_VERSION, version);
     }
 
     public void setLocation(String location) {
