@@ -12,27 +12,22 @@ public class ScimUserServletPostTest extends TestCase {
 	HttpTester request = new HttpTester();
 	HttpTester response = new HttpTester();
 	ServletTester tester = null;
-
-	/**
-	 * Setup tests. Binding servlet to /User
-	 */
+	
 	public void setUp() throws Exception {
-	}
-
-	public void testPutUser() throws Exception {
 		tester = new ServletTester();
 		tester.addServlet(ScimUserServlet.class, "/User/*");
 	    tester.addServlet(DefaultServlet.class, "/");
+		tester.start();
+	}
+
+	public void testCreateUser() throws Exception {
 	    
 	    ScimUser scimUser = new ScimUser();
 	    scimUser.setUserName("Alice");
 	    
-		tester.start();
 		request.setMethod("POST");
 		request.setVersion("HTTP/1.0");
-
 		request.setURI("/User");
-
 		request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.setContent(scimUser.getUser("JSON"));

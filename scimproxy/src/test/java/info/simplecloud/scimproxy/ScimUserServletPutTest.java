@@ -13,26 +13,39 @@ public class ScimUserServletPutTest extends TestCase {
 	HttpTester response = new HttpTester();
 	ServletTester tester = null;
 
-	/**
-	 * Setup tests. Binding servlet to /User
-	 */
+	private String id = "";
+	
 	public void setUp() throws Exception {
-	}
-
-	public void testPutUser() throws Exception {
 		tester = new ServletTester();
 		tester.addServlet(ScimUserServlet.class, "/User/*");
 	    tester.addServlet(DefaultServlet.class, "/");
+	    tester.start();
 	    
 	    ScimUser scimUser = new ScimUser();
-	    scimUser.setId("erwah-1234-5678");
-	    scimUser.setUserName("Erik W");
+	    scimUser.setUserName("Alice");
+
+		request.setMethod("POST");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/User");
+		request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
+		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setContent(scimUser.getUser("JSON"));
+		response.parse(tester.getResponses(request.generate()));
+
+		ScimUser tmp = new ScimUser(response.getContent(), "JSON");
+		id = tmp.getId();
+	}
+
+
+	public void testPutUser() throws Exception {
+	    ScimUser scimUser = new ScimUser();
+	    scimUser.setId(id);
+	    scimUser.setUserName("Bob");
 	    
-		tester.start();
 		request.setMethod("PUT");
 		request.setVersion("HTTP/1.0");
 
-		request.setURI("/User/erwah-1234-5678");
+		request.setURI("/User/" + id);
 
 		request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -43,21 +56,16 @@ public class ScimUserServletPutTest extends TestCase {
 		        
         ScimUser returnedUser = new ScimUser(response.getContent(), "JSON");
         
-        assertEquals("erwah-1234-5678", returnedUser.getId());
-        assertEquals("Erik W", returnedUser.getUserName());
+        assertEquals(id, returnedUser.getId());
+        assertEquals("Bob", returnedUser.getUserName());
 	}
 	
 
 	public void testPutInvalidUser() throws Exception {
-		tester = new ServletTester();
-		tester.addServlet(ScimUserServlet.class, "/User/*");
-	    tester.addServlet(DefaultServlet.class, "/");
-	    	    
-		tester.start();
 		request.setMethod("PUT");
 		request.setVersion("HTTP/1.0");
 
-		request.setURI("/User/erwah-1234-5678");
+		request.setURI("/User/" + id);
 
 		request.setHeader("Content-Length", Integer.toString("very invalid user".length()));
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
