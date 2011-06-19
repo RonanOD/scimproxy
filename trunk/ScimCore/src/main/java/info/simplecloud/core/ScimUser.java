@@ -1,15 +1,34 @@
 package info.simplecloud.core;
 
-import info.simplecloud.core.decoding.IUserDecoder;
-import info.simplecloud.core.decoding.JsonDecoder;
-import info.simplecloud.core.decoding.XmlDecoder;
-import info.simplecloud.core.encoding.IUserEncoder;
-import info.simplecloud.core.encoding.JsonEncoder;
-import info.simplecloud.core.encoding.XmlEncoder;
+import info.simplecloud.core.coding.ReflectionHelper;
+import info.simplecloud.core.coding.decode.IUserDecoder;
+import info.simplecloud.core.coding.decode.JsonDecoder;
+import info.simplecloud.core.coding.decode.XmlDecoder;
+import info.simplecloud.core.coding.encode.IUserEncoder;
+import info.simplecloud.core.coding.encode.JsonEncoder;
+import info.simplecloud.core.coding.encode.XmlEncoder;
+import info.simplecloud.core.coding.handlers.ComplexTypeHandler;
+import info.simplecloud.core.coding.handlers.IntegerHandler;
+import info.simplecloud.core.coding.handlers.PluralComplexListTypeHandler;
+import info.simplecloud.core.coding.handlers.PluralSimpleListTypeHandler;
+import info.simplecloud.core.coding.handlers.StringHandler;
 import info.simplecloud.core.execeptions.EncodingFailed;
+import info.simplecloud.core.execeptions.FailedToGetValue;
+import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
+import info.simplecloud.core.execeptions.UnhandledAttributeType;
+import info.simplecloud.core.execeptions.UnknowExtension;
 import info.simplecloud.core.execeptions.UnknownEncoding;
+import info.simplecloud.core.execeptions.UnknownType;
+import info.simplecloud.core.exstensions.EnterpriseAttributes;
+import info.simplecloud.core.types.Address;
+import info.simplecloud.core.types.ComplexType;
+import info.simplecloud.core.types.Meta;
+import info.simplecloud.core.types.Name;
+import info.simplecloud.core.types.PluralType;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -33,25 +52,23 @@ public class ScimUser extends ComplexType {
     public static final String               ATTRIBUTE_ORGANIZATION       = "organization";
     public static final String               ATTRIBUTE_DIVISION           = "division";
     public static final String               ATTRIBUTE_DEPARTMENT         = "department";
-    private static final String[]            simple                       = { ATTRIBUTE_ID, ATTRIBUTE_EXTERNALID, ATTRIBUTE_USER_NAME,
-            ATTRIBUTE_DISPLAY_NAME, ATTRIBUTE_NICK_NAME, ATTRIBUTE_PROFILE_URL, ATTRIBUTE_EMPLOYEE_NUMBER, ATTRIBUTE_USER_TYPE,
-            ATTRIBUTE_TITLE, ATTRIBUTE_MANAGER, ATTRIBUTE_PREFERRED_LANGUAGE, ATTRIBUTE_LOCALE, ATTRIBUTE_UTC_OFFSET,
-            ATTRIBUTE_COST_CENTER, ATTRIBUTE_ORGANIZATION, ATTRIBUTE_DIVISION, ATTRIBUTE_DEPARTMENT };
 
     public static final String               ATTRIBUTE_NAME               = "name";
     public static final String               ATTRIBUTE_META               = "meta";
-    private static final String[]            complex                      = { ATTRIBUTE_NAME, ATTRIBUTE_META };
 
     public static final String               ATTRIBUTE_IMS                = "ims";
     public static final String               ATTRIBUTE_EMAILS             = "emails";
     public static final String               ATTRIBUTE_PHOTOS             = "photos";
-    public static final String               ATTRIBUTE_GROUPS             = "groups";
+    public static final String               ATTRIBUTE_MEMBER_OF          = "groups";
     public static final String               ATTRIBUTE_PHONE_NUMBERS      = "phoneNumbers";
-    private static final String[]            plural                       = { ATTRIBUTE_IMS, ATTRIBUTE_EMAILS, ATTRIBUTE_PHOTOS,
-            ATTRIBUTE_GROUPS, ATTRIBUTE_PHONE_NUMBERS                    };
 
     public static final String               ATTRIBUTE_ADDRESSES          = "addresses";
-    private static final String[]            complexPlural                = { ATTRIBUTE_ADDRESSES };
+
+    private List<Object>                     extensions                   = new ArrayList<Object>();
+    {
+        extensions.add(this);
+        extensions.add(new EnterpriseAttributes());
+    };
 
     private static Map<String, IUserEncoder> encoders                     = new HashMap<String, IUserEncoder>();
     private static Map<String, IUserDecoder> decoders                     = new HashMap<String, IUserDecoder>();
@@ -62,22 +79,8 @@ public class ScimUser extends ComplexType {
         new XmlDecoder().addMe(decoders);
     }
 
-    @Override
-    public String[] getSimple() {
-        return simple;
-    }
-
-    @Override
-    public String[] getPlural() {
-        return plural;
-    }
-
-    @Override
-    public String[] getComplex() {
-        return complex;
-    }
-
-    public ScimUser(String user, String encoding) throws UnknownEncoding, InvalidUser {
+    public ScimUser(String user, String encoding) throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue,
+            UnknownType, InstantiationException, IllegalAccessException {
         IUserDecoder decoder = decoders.get(encoding);
         if (decoder == null) {
             throw new UnknownEncoding(encoding);
@@ -90,7 +93,7 @@ public class ScimUser extends ComplexType {
 
     }
 
-    public String getUser(String encoding) throws UnknownEncoding, EncodingFailed {
+    public String getUser(String encoding) throws UnknownEncoding, EncodingFailed, FailedToGetValue {
         IUserEncoder encoder = encoders.get(encoding);
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
@@ -100,7 +103,7 @@ public class ScimUser extends ComplexType {
         return encoder.encode(this);
     }
 
-    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding, EncodingFailed {
+    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding, EncodingFailed, FailedToGetValue {
         IUserEncoder encoder = encoders.get(encoding);
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
@@ -118,7 +121,8 @@ public class ScimUser extends ComplexType {
         return null;
     }
 
-    public void patch(String patch, String encoding) throws UnknownEncoding, InvalidUser {
+    public void patch(String patch, String encoding) throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue,
+            UnknownType, InstantiationException, IllegalAccessException, FailedToGetValue, UnknowExtension {
         ScimUser userPatch = new ScimUser(patch, encoding);
 
         Meta meta = userPatch.getMeta();
@@ -130,113 +134,150 @@ public class ScimUser extends ComplexType {
                 }
             }
         }
+        
+        for(Object extension: this.extensions) {
+            if(extension == this) {
+                continue;
+            }
+            
+            for(Method method : extension.getClass().getMethods()) {
+                if(!method.isAnnotationPresent(Attribute.class)) {
+                   continue; 
+                }
+                
+                try {
+                    Object otherObj = userPatch.getExtension(extension.getClass().newInstance());
+                    Method otherMethod = otherObj.getClass().getMethod(method.getName(), method.getParameterTypes());
+                    Object data = otherMethod.invoke(otherObj);
+                    
+                    // TODO think of something smarter
+                    String setter = "s" + method.getName().substring(1);
+                    ReflectionHelper.getMethod(setter, extension.getClass()).invoke(extension, data);
+                    
+                } catch (Exception e) {
+                    // TODO select a good exception to throw
+                    e.printStackTrace();
+                }
+            }
+        }
 
-        super.merge(userPatch, simple, plural, complex);
+        super.merge(userPatch);
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T getExtension(T type) throws UnknowExtension {
+        for (int i = 0; i < this.extensions.size(); i++) {
+            if (this.extensions.get(i).getClass().isInstance(type)) {
+                return (T) this.extensions.get(i);
+            }
+        }
+
+        // TODO create good message
+        throw new UnknowExtension("");
+    }
+
+    public List<Object> getExtensions() {
+        return this.extensions;
+    }
+
+    @Attribute(schemaName = "id", codingHandler = StringHandler.class)
     public String getId() {
         return super.getAttributeString(ATTRIBUTE_ID);
     }
 
+    @Attribute(schemaName = "externalId", codingHandler = StringHandler.class)
     public String getExternalId() {
         return super.getAttributeString(ATTRIBUTE_EXTERNALID);
     }
 
+    @Attribute(schemaName = "userName", codingHandler = StringHandler.class)
     public String getUserName() {
         return super.getAttributeString(ATTRIBUTE_USER_NAME);
     }
 
+    @Attribute(schemaName = "displayName", codingHandler = StringHandler.class)
     public String getDisplayName() {
         return super.getAttributeString(ATTRIBUTE_DISPLAY_NAME);
     }
 
+    @Attribute(schemaName = "nickName", codingHandler = StringHandler.class)
     public String getNickName() {
         return super.getAttributeString(ATTRIBUTE_NICK_NAME);
     }
 
+    @Attribute(schemaName = "profileUrl", codingHandler = StringHandler.class)
     public String getProfileUrl() {
         return super.getAttributeString(ATTRIBUTE_PROFILE_URL);
     }
 
-    public String getEmployeeNumber() {
-        return super.getAttributeString(ATTRIBUTE_EMPLOYEE_NUMBER);
-    }
-
+    @Attribute(schemaName = "userType", codingHandler = StringHandler.class)
     public String getUserType() {
         return super.getAttributeString(ATTRIBUTE_USER_TYPE);
     }
 
+    @Attribute(schemaName = "title", codingHandler = StringHandler.class)
     public String getTitle() {
         return super.getAttributeString(ATTRIBUTE_TITLE);
     }
 
-    public String getManager() {
-        return super.getAttributeString(ATTRIBUTE_MANAGER);
-    }
-
+    @Attribute(schemaName = "preferredLanguage", codingHandler = StringHandler.class)
     public String getPreferredLanguage() {
         return super.getAttributeString(ATTRIBUTE_PREFERRED_LANGUAGE);
     }
 
+    @Attribute(schemaName = "locale", codingHandler = StringHandler.class)
     public String getLocale() {
         return super.getAttributeString(ATTRIBUTE_LOCALE);
     }
 
-    public Calendar getUtcOffset() {
-        return super.getAttributeCalendar(ATTRIBUTE_UTC_OFFSET);
+    @Attribute(schemaName = "utcOffset", codingHandler = IntegerHandler.class)
+    public Integer getUtcOffset() {
+        return super.getAttributeInteger(ATTRIBUTE_UTC_OFFSET);
     }
 
-    public String getCostCenter() {
-        return super.getAttributeString(ATTRIBUTE_COST_CENTER);
-    }
-
-    public String getOrganization() {
-        return super.getAttributeString(ATTRIBUTE_ORGANIZATION);
-    }
-
-    public String getDivision() {
-        return super.getAttributeString(ATTRIBUTE_DIVISION);
-    }
-
-    public String getDepartment() {
-        return super.getAttributeString(ATTRIBUTE_DEPARTMENT);
-    }
-
+    @Attribute(schemaName = "name", codingHandler = ComplexTypeHandler.class)
     public Name getName() {
         Object name = super.getAttribute(ATTRIBUTE_NAME);
         return (name == null ? null : (Name) name);
     }
 
+    @Attribute(schemaName = "meta", codingHandler = ComplexTypeHandler.class)
     public Meta getMeta() {
         Object meta = super.getAttribute(ATTRIBUTE_META);
         return (meta == null ? null : (Meta) meta);
     }
 
+    @Attribute(schemaName = "phoneNumbers", codingHandler = PluralSimpleListTypeHandler.class)
     public List<PluralType<String>> getPhoneNumbers() {
         Object phoneNumbers = super.getAttribute(ATTRIBUTE_PHONE_NUMBERS);
         return (phoneNumbers == null ? null : (List<PluralType<String>>) phoneNumbers);
     }
 
+    @Attribute(schemaName = "emails", codingHandler = PluralSimpleListTypeHandler.class)
     public List<PluralType<String>> getEmails() {
         Object emails = super.getAttribute(ATTRIBUTE_EMAILS);
         return (emails == null ? null : (List<PluralType<String>>) emails);
     }
 
+    @Attribute(schemaName = "ims", codingHandler = PluralSimpleListTypeHandler.class)
     public List<PluralType<String>> getIms() {
         Object ims = super.getAttribute(ATTRIBUTE_IMS);
         return (ims == null ? null : (List<PluralType<String>>) ims);
     }
 
+    @Attribute(schemaName = "photos", codingHandler = PluralSimpleListTypeHandler.class)
     public List<PluralType<String>> getPhotos() {
         Object photos = super.getAttribute(ATTRIBUTE_PHOTOS);
         return (photos == null ? null : (List<PluralType<String>>) photos);
     }
 
-    public List<PluralType<String>> getGroups() {
-        Object groups = super.getAttribute(ATTRIBUTE_GROUPS);
+    @Attribute(schemaName = "memberOf", codingHandler = PluralSimpleListTypeHandler.class)
+    public List<PluralType<String>> getMemberOf() {
+        Object groups = super.getAttribute(ATTRIBUTE_MEMBER_OF);
         return (groups == null ? null : (List<PluralType<String>>) groups);
     }
 
+    @Attribute(schemaName = "addresses", codingHandler = PluralComplexListTypeHandler.class)
     public List<PluralType<Address>> getAddresses() {
         Object addresses = super.getAttribute(ATTRIBUTE_ADDRESSES);
         return (addresses == null ? null : (List<PluralType<Address>>) addresses);
@@ -266,20 +307,12 @@ public class ScimUser extends ComplexType {
         super.setAttribute(ATTRIBUTE_PROFILE_URL, profileUrl);
     }
 
-    public void setEmployeeNumber(String employeeNumber) {
-        super.setAttribute(ATTRIBUTE_EMPLOYEE_NUMBER, employeeNumber);
-    }
-
     public void setUserType(String userType) {
         super.setAttribute(ATTRIBUTE_USER_TYPE, userType);
     }
 
     public void setTitle(String title) {
         super.setAttribute(ATTRIBUTE_TITLE, title);
-    }
-
-    public void setManager(String manager) {
-        super.setAttribute(ATTRIBUTE_MANAGER, manager);
     }
 
     public void setPreferredLanguage(String preferredLanguage) {
@@ -290,24 +323,8 @@ public class ScimUser extends ComplexType {
         super.setAttribute(ATTRIBUTE_LOCALE, locale);
     }
 
-    public void setUtcOffset(Calendar utcOffset) {
+    public void setUtcOffset(Integer utcOffset) {
         super.setAttribute(ATTRIBUTE_UTC_OFFSET, utcOffset);
-    }
-
-    public void setCostCenter(String costCenter) {
-        super.setAttribute(ATTRIBUTE_COST_CENTER, costCenter);
-    }
-
-    public void setOrganization(String organization) {
-        super.setAttribute(ATTRIBUTE_ORGANIZATION, organization);
-    }
-
-    public void setDivision(String division) {
-        super.setAttribute(ATTRIBUTE_DIVISION, division);
-    }
-
-    public void setDepartment(String department) {
-        super.setAttribute(ATTRIBUTE_DEPARTMENT, department);
     }
 
     public void setName(Name name) {
@@ -335,34 +352,11 @@ public class ScimUser extends ComplexType {
     }
 
     public void setGroups(List<PluralType<String>> groups) {
-        super.setAttribute(ATTRIBUTE_GROUPS, groups);
+        super.setAttribute(ATTRIBUTE_MEMBER_OF, groups);
     }
 
     public void setAddresses(List<PluralType<Address>> address) {
         super.setAttribute(ATTRIBUTE_ADDRESSES, address);
     }
 
-    public void addPhoneNumbers(PluralType<String> phoneNumbers) {
-        super.addPluralAttribute(ATTRIBUTE_PHONE_NUMBERS, phoneNumbers);
-    }
-
-    public void addEmails(PluralType<String> emails) {
-        super.addPluralAttribute(ATTRIBUTE_EMAILS, emails);
-    }
-
-    public void addIms(PluralType<String> ims) {
-        super.addPluralAttribute(ATTRIBUTE_IMS, ims);
-    }
-
-    public void addPhotos(PluralType<String> photos) {
-        super.addPluralAttribute(ATTRIBUTE_PHOTOS, photos);
-    }
-
-    public void addGroups(PluralType<String> groups) {
-        super.addPluralAttribute(ATTRIBUTE_GROUPS, groups);
-    }
-
-    public void addAddresses(PluralType<Address> address) {
-        super.addPluralAttribute(ATTRIBUTE_ADDRESSES, address);
-    }
 }
