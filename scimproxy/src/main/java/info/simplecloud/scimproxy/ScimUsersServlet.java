@@ -1,8 +1,9 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.encoding.JsonEncoder;
+import info.simplecloud.core.coding.encode.JsonEncoder;
 import info.simplecloud.core.execeptions.EncodingFailed;
+import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.tools.ScimUserComparator;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 
@@ -63,6 +64,8 @@ public class ScimUsersServlet extends RestServlet {
         } catch (EncodingFailed e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().print("Error: failed to build user set");
+        } catch (FailedToGetValue e) {
+            HttpGenerator.serverError(resp);
         }
     }
 }

@@ -1,10 +1,10 @@
 package info.simplecloud.scimproxy.storage.dummy;
 
-import info.simplecloud.core.Address;
-import info.simplecloud.core.ComplexType;
-import info.simplecloud.core.Name;
-import info.simplecloud.core.PluralType;
 import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.types.Address;
+import info.simplecloud.core.types.ComplexType;
+import info.simplecloud.core.types.Name;
+import info.simplecloud.core.types.PluralType;
 import info.simplecloud.scimproxy.storage.IStorage;
 
 import java.math.BigInteger;

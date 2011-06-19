@@ -1,10 +1,15 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.Meta;
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.execeptions.EncodingFailed;
+import info.simplecloud.core.execeptions.FailedToGetValue;
+import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
+import info.simplecloud.core.execeptions.UnhandledAttributeType;
+import info.simplecloud.core.execeptions.UnknowExtension;
 import info.simplecloud.core.execeptions.UnknownEncoding;
+import info.simplecloud.core.execeptions.UnknownType;
+import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 import info.simplecloud.scimproxy.user.User;
 import info.simplecloud.scimproxy.util.Util;
@@ -69,7 +74,9 @@ public class ScimUserServlet extends RestServlet {
 			HttpGenerator.serverError(resp);
 		} catch (UserNotFoundException e) {
 			HttpGenerator.notFound(resp);
-		}
+		} catch (FailedToGetValue e) {
+            HttpGenerator.serverError(resp);
+        }
 
 	}
 
@@ -122,7 +129,19 @@ public class ScimUserServlet extends RestServlet {
 				HttpGenerator.badRequest(resp, "Malformed user.");
 			} catch (EncodingFailed e) {
 				HttpGenerator.badRequest(resp, "Failed to encode user.");
-			}
+			} catch (UnhandledAttributeType e) {
+	            HttpGenerator.serverError(resp);
+            } catch (FailedToSetValue e) {
+                HttpGenerator.serverError(resp);
+            } catch (UnknownType e) {
+                HttpGenerator.serverError(resp);
+            } catch (InstantiationException e) {
+                HttpGenerator.serverError(resp);
+            } catch (IllegalAccessException e) {
+                HttpGenerator.serverError(resp);
+            } catch (FailedToGetValue e) {
+                HttpGenerator.serverError(resp);
+            }
 		} else {
 			HttpGenerator.badRequest(resp);
 		}
@@ -180,7 +199,19 @@ public class ScimUserServlet extends RestServlet {
 				HttpGenerator.badRequest(resp, "Invalid user.");
 			} catch (EncodingFailed e) {
 				HttpGenerator.serverError(resp, "Failed to decode changed user.");
-			}
+			} catch (UnhandledAttributeType e) {
+	            HttpGenerator.serverError(resp);
+            } catch (FailedToSetValue e) {
+                HttpGenerator.serverError(resp);
+            } catch (UnknownType e) {
+                HttpGenerator.serverError(resp);
+            } catch (InstantiationException e) {
+                HttpGenerator.serverError(resp);
+            } catch (IllegalAccessException e) {
+                HttpGenerator.serverError(resp);
+            } catch (FailedToGetValue e) {
+                HttpGenerator.serverError(resp);
+            }
 
 		} else {
 			HttpGenerator.badRequest(resp, "Invalid user or user id.");
@@ -262,7 +293,21 @@ public class ScimUserServlet extends RestServlet {
 				HttpGenerator.serverError(resp, "Failed to encode user.");
 			} catch (InvalidUser e) {
 				HttpGenerator.badRequest(resp, "Malformed user.");
-			}
+			} catch (UnhandledAttributeType e) {
+	            HttpGenerator.serverError(resp);
+            } catch (FailedToSetValue e) {
+                HttpGenerator.serverError(resp);
+            } catch (UnknownType e) {
+                HttpGenerator.serverError(resp);
+            } catch (InstantiationException e) {
+                HttpGenerator.serverError(resp);
+            } catch (IllegalAccessException e) {
+                HttpGenerator.serverError(resp);
+            } catch (FailedToGetValue e) {
+                HttpGenerator.serverError(resp);
+            } catch (UnknowExtension e) {
+                HttpGenerator.serverError(resp);
+            }
 
 		} else {
 			HttpGenerator.badRequest(resp, "Missing user id or ETag");
