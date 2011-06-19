@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy;
 
+import java.net.URLDecoder;
+
 import info.simplecloud.core.ScimUser;
 import junit.framework.TestCase;
 
@@ -61,6 +63,38 @@ public class ScimUserServletGetTest extends TestCase {
 
 		assertEquals(404, response.getStatus());
 	}
-	
+
+	public void testUserInput1() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+
+		request.setURI("/1/User/asdasdasdasd");
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(404, response.getStatus());
+	}
+
+	public void testUserInput2() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+
+		request.setURI("/1/User/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsd");
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(404, response.getStatus());
+	}
+
+
+	public void testUserInput3() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+
+		String longUrl = "/User/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsd";
+		request.setURI(longUrl);
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(404, response.getStatus());
+	}
+
 }
 

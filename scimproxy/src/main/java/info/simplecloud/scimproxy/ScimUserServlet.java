@@ -346,12 +346,18 @@ public class ScimUserServlet extends RestServlet {
 	 * @return A scim user id.
 	 */
 	public static String getIdFromUri(String query) {
-		// TODO: validate input
-		String id = query.substring(6);
-		try {
-			id = URLDecoder.decode(id, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			id = null;
+		String id = "";
+		// TODO: add more validation of input
+		String s = "/User/";
+		if(query != null && query.length() > 0) {
+			int indexOfUserId = query.indexOf(s) + s.length();
+			
+			id = query.substring(indexOfUserId);
+			try {
+				id = URLDecoder.decode(id, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// just return empty id
+			}
 		}
 		return id;
 	}
