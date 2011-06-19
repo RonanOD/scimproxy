@@ -56,7 +56,7 @@ public class ScimUsersServlet extends RestServlet {
         // nodes in List/Query a response.
         try {
             resp.setStatus(HttpServletResponse.SC_OK);
-            resp.setContentType(CONTENT_TYPE_JSON);
+            resp.setContentType(HttpGenerator.getContentType(req));
 
             String response = new JsonEncoder().encode(users, attributesList);
             resp.getWriter().print(response);

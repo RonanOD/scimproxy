@@ -7,23 +7,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/*
-
-Base clase for OAuth 2.0 authentication. Verifies that the token is present and makes sure that the client gets a token if it's missing.
+/**
+ * A abstract REST servlet that extends HTTP with the PATCH method according to
+ * RFC 5789. Class also makes sure that user is authenticated and provides a
+ * valid OAUTH 2.0 bearer token.
  */
 
 @SuppressWarnings("serial")
-public class RestServlet extends HttpServlet {
+public abstract class RestServlet extends HttpServlet {
 
-	// TODO: How to verify that user is authenticated using OAuth 2.0? 
+	// TODO: Verify that user is authenticated using OAuth 2.0!
 
-    private static final String METHOD_PATCH= "PATCH";
+	/**
+	 * Extends HttpServlet with the PATCH method acording to RFC 5789.
+	 */
+	private static final String METHOD_PATCH = "PATCH";
 
-	String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
-	String CONTENT_TYPE_XML = "text/xml; charset=UTF-8";
-
-	protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
-	{
+	/**
+	 * Extends HttpServlet with the PATCH method acording to RFC 5789. Override
+	 * this method to implement PATCH.
+	 */
+	protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String protocol = req.getProtocol();
 		String msg = "Method PATCH not supported.";
 		if (protocol.endsWith("1.1")) {
@@ -32,15 +36,14 @@ public class RestServlet extends HttpServlet {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
 		}
 	}
-	
+
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String method = req.getMethod();
+		String method = req.getMethod();
 
 		if (method.equals(METHOD_PATCH)) {
-            doPatch(req, resp);
-		}
-		else {
+			doPatch(req, resp);
+		} else {
 			super.service(req, resp);
 		}
 
