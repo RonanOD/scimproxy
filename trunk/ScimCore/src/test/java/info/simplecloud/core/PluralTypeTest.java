@@ -1,5 +1,7 @@
 package info.simplecloud.core;
 
+import info.simplecloud.core.types.PluralType;
+
 import org.junit.Assert;
 import org.junit.Test;
 

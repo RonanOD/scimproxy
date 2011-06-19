@@ -3,7 +3,11 @@ package info.simplecloud.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.simplecloud.core.coding.handlers.StringHandler;
+import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.UnknownAttribute;
+import info.simplecloud.core.types.ComplexType;
+import info.simplecloud.core.types.PluralType;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,22 +15,20 @@ import org.junit.Test;
 public class ComplexTypeTest {
 
     private class ComplexTestType extends ComplexType {
-
-        @Override
-        public String[] getSimple() {
-            return new String[] { "simpleAttribute" };
+        @Attribute(schemaName="simpleAttribute", codingHandler=StringHandler.class)
+        public void getSimpleAttribute() {
+        
         }
-
-        @Override
-        public String[] getPlural() {
-            return new String[] { "pluralAttribute" };
+        
+        @Attribute(schemaName="complexAttribute", codingHandler=StringHandler.class)
+        public void getComplexAttribute(){
+            
         }
-
-        @Override
-        public String[] getComplex() {
-            return new String[] { "complexAttribute" };
+        
+        @Attribute(schemaName="pluralAttribute", codingHandler=StringHandler.class)
+        public void getPluralAttribute(){
+            
         }
-
     }
 
     @Test
@@ -74,32 +76,32 @@ public class ComplexTypeTest {
     }
 
     @Test
-    public void merge() {
+    public void merge() throws FailedToGetValue {
 
         ComplexType from = new ComplexTestType().setAttribute("simpleAttribute", "Test value from");
         ComplexType to = new ComplexTestType().setAttribute("to", "Test value to");
-        to.merge(from, from.getSimple(), null, null);
-        Assert.assertEquals(to.getAttribute("to"), "Test value to");
-        Assert.assertEquals(to.getAttribute("simpleAttribute"), "Test value from");
+
+        to.merge(from);
+        Assert.assertEquals("Test value to", to.getAttribute("to"));
+        Assert.assertEquals("Test value from", to.getAttribute("simpleAttribute"));
 
         from = new ComplexTestType().setAttribute("simpleAttribute", "Hello").setAttribute("complexAttribute",
                 new ComplexTestType().setAttribute("simpleAttribute", "World"));
 
-        to.merge(from, from.getSimple(), null, from.getComplex());
+        to.merge(from);
 
         Assert.assertNotNull(to.getAttribute("complexAttribute"));
         Assert.assertEquals(((ComplexType) to.getAttribute("complexAttribute")).getAttribute("simpleAttribute"), "World");
 
         List<PluralType<String>> pluralList = new ArrayList<PluralType<String>>();
         pluralList.add(new PluralType<String>("nisse@kalle.com", "home", true));
+        
+        
         from = new ComplexTestType().setAttribute("pluralAttribute", pluralList);
-
-        
-        
         List<PluralType<String>> pluralListExpected = new ArrayList<PluralType<String>>();
         pluralListExpected.add(new PluralType<String>("nisse@kalle.com", "home", true));
 
-        to.merge(from, null, from.getPlural(), null);
+        to.merge(from);
         Assert.assertEquals(to.getAttribute("pluralAttribute"), pluralListExpected);
     }
 }
