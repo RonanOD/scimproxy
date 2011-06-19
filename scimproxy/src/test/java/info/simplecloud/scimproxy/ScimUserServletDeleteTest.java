@@ -70,5 +70,17 @@ public class ScimUserServletDeleteTest extends TestCase {
 		assertEquals(404, response.getStatus());
 	}
 	
+
+	public void testDeleteNonExistingUser() throws Exception {
+    	request.setMethod("DELETE");
+    	request.setVersion("HTTP/1.0");
+
+		// get resource to see if it's there
+		request.setURI("/User/jsjsjsjsjsjs");
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(404, response.getStatus());
+	}
+	
 }
 

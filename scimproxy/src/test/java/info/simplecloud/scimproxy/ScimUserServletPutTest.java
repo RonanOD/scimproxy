@@ -52,7 +52,7 @@ public class ScimUserServletPutTest extends TestCase {
 		request.setContent(scimUser.getUser("JSON"));
 		response.parse(tester.getResponses(request.generate()));
 
-		assertEquals(201, response.getStatus());
+		assertEquals(200, response.getStatus());
 		        
         ScimUser returnedUser = new ScimUser(response.getContent(), "JSON");
         
