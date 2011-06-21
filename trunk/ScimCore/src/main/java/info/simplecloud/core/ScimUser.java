@@ -28,8 +28,8 @@ import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.PluralType;
 
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +80,7 @@ public class ScimUser extends ComplexType {
     }
 
     public ScimUser(String user, String encoding) throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException {
+            UnknownType, InstantiationException, IllegalAccessException, ParseException {
         IUserDecoder decoder = decoders.get(encoding);
         if (decoder == null) {
             throw new UnknownEncoding(encoding);
@@ -122,38 +122,38 @@ public class ScimUser extends ComplexType {
     }
 
     public void patch(String patch, String encoding) throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException, FailedToGetValue, UnknowExtension {
+            UnknownType, InstantiationException, IllegalAccessException, FailedToGetValue, UnknowExtension, ParseException {
         ScimUser userPatch = new ScimUser(patch, encoding);
 
         Meta meta = userPatch.getMeta();
-        if(meta != null) {
+        if (meta != null) {
             List<String> attributesToDelete = meta.getAttributes();
-            if(attributesToDelete != null) {
+            if (attributesToDelete != null) {
                 for (String id : attributesToDelete) {
                     super.removeAttribute(id);
                 }
             }
         }
-        
-        for(Object extension: this.extensions) {
-            if(extension == this) {
+
+        for (Object extension : this.extensions) {
+            if (extension == this) {
                 continue;
             }
-            
-            for(Method method : extension.getClass().getMethods()) {
-                if(!method.isAnnotationPresent(Attribute.class)) {
-                   continue; 
+
+            for (Method method : extension.getClass().getMethods()) {
+                if (!method.isAnnotationPresent(Attribute.class)) {
+                    continue;
                 }
-                
+
                 try {
                     Object otherObj = userPatch.getExtension(extension.getClass().newInstance());
                     Method otherMethod = otherObj.getClass().getMethod(method.getName(), method.getParameterTypes());
                     Object data = otherMethod.invoke(otherObj);
-                    
+
                     // TODO think of something smarter
                     String setter = "s" + method.getName().substring(1);
                     ReflectionHelper.getMethod(setter, extension.getClass()).invoke(extension, data);
-                    
+
                 } catch (Exception e) {
                     // TODO select a good exception to throw
                     e.printStackTrace();
@@ -162,6 +162,39 @@ public class ScimUser extends ComplexType {
         }
 
         super.merge(userPatch);
+    }
+
+    @Override
+    public boolean equals(Object otherObj) {
+        if (otherObj == this) {
+            return true;
+        }
+
+        if (!(otherObj instanceof ScimUser)) {
+            return false;
+        }
+        ScimUser otherScimUser = (ScimUser) otherObj;
+
+        for (Object exstension : this.getExtensions()) {
+            for (Method method : exstension.getClass().getMethods()) {
+                if (method.isAnnotationPresent(Attribute.class)) {
+                    try {
+                        Method otherMethod = otherScimUser.getExtension(exstension).getClass().getMethod(method.getName());
+                        Object obj = method.invoke(exstension);
+                        Object other = otherMethod.invoke(otherScimUser.getExtension(exstension));
+
+                        if ((obj != null && !obj.equals(other)) || ((other != null && !other.equals(obj)))) {
+                            return false;
+                        }
+
+                    } catch (Exception e) {
+                        throw new RuntimeException("ScimUser equals failed", e);
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     @SuppressWarnings("unchecked")
