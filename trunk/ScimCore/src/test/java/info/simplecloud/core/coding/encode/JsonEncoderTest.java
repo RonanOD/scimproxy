@@ -1,4 +1,4 @@
-package info.simplecloud.core.encoding;
+package info.simplecloud.core.coding.encode;
 
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.coding.encode.IUserEncoder;
