@@ -6,6 +6,7 @@ import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.core.execeptions.UnknownType;
 
+import java.text.ParseException;
 import java.util.Map;
 
 
@@ -15,5 +16,5 @@ public interface IUserDecoder {
     public void addMe(Map<String, IUserDecoder> decoders);
 
     void decode(String user, ScimUser data) throws InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType,
-            InstantiationException, IllegalAccessException;
+            InstantiationException, IllegalAccessException, ParseException;
 }

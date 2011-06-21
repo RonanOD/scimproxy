@@ -17,8 +17,8 @@ import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.core.execeptions.UnknownType;
 
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -46,7 +46,7 @@ public class JsonDecoder implements IUserDecoder {
 
     @Override
     public void decode(String user, ScimUser data) throws InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType,
-            InstantiationException, IllegalAccessException {
+            InstantiationException, IllegalAccessException, ParseException {
         try {
             JSONObject scimUserJson = new JSONObject(user);
 
@@ -60,8 +60,8 @@ public class JsonDecoder implements IUserDecoder {
                             String handlerName = attribute.codingHandler().getName();
                             ITypeHandler handler = typeHandlers.get(handlerName);
                             if (handler == null) {
-                                // TODO create good message
-                                throw new UnhandledAttributeType("");
+                                throw new UnhandledAttributeType("Got no handler for, type:'" + handlerName + "', method: '"
+                                        + method.getName() + "', class: '" + extension.getClass().getName() + "'");
                             }
                             // TODO think of something smarter
                             String setter = "s" + method.getName().substring(1);
@@ -82,5 +82,5 @@ public class JsonDecoder implements IUserDecoder {
             throw new InvalidUser("Failed to parse user", e);
         }
     }
-    
+
 }

@@ -12,6 +12,7 @@ import info.simplecloud.core.types.Meta;
 import info.simplecloud.core.types.Name;
 
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class ComplexTypeHandler implements ITypeHandler {
 
     @Override
     public Object decode(JSONObject scimUserJson, String attributeId) throws JSONException, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException {
+            UnknownType, InstantiationException, IllegalAccessException, ParseException {
 
         JSONObject complexObject = scimUserJson.getJSONObject(attributeId);
 
@@ -46,7 +47,7 @@ public class ComplexTypeHandler implements ITypeHandler {
     }
 
     protected Object internalDecode(JSONObject complexObject, String attributeId) throws UnknownType, InstantiationException,
-            IllegalAccessException, UnhandledAttributeType, JSONException, FailedToSetValue {
+            IllegalAccessException, UnhandledAttributeType, JSONException, FailedToSetValue, ParseException {
         Class<ComplexType> type = complexTypes.get(attributeId.toLowerCase());
         if (type == null) {
             throw new UnknownType("");
