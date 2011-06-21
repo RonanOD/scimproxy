@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -141,6 +142,8 @@ public class ScimUserServlet extends RestServlet {
                 HttpGenerator.serverError(resp);
             } catch (FailedToGetValue e) {
                 HttpGenerator.serverError(resp);
+            } catch (ParseException e) {
+                HttpGenerator.badRequest(resp, "Malformed user.");
             }
 		} else {
 			HttpGenerator.badRequest(resp);
@@ -211,6 +214,8 @@ public class ScimUserServlet extends RestServlet {
                 HttpGenerator.serverError(resp);
             } catch (FailedToGetValue e) {
                 HttpGenerator.serverError(resp);
+            } catch (ParseException e) {
+                HttpGenerator.badRequest(resp, "Malformed user.");
             }
 
 		} else {
@@ -307,6 +312,8 @@ public class ScimUserServlet extends RestServlet {
                 HttpGenerator.serverError(resp);
             } catch (UnknowExtension e) {
                 HttpGenerator.serverError(resp);
+            } catch (ParseException e) {
+                HttpGenerator.badRequest(resp, "Malformed user.");
             }
 
 		} else {
