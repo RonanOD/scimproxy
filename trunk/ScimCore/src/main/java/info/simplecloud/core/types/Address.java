@@ -75,13 +75,6 @@ public class Address extends ComplexType {
         }
         Address otherAddress = (Address) otherObj;
 
-        // TODO fix this
-        return super.equals(otherAddress, null);
-    }
-
-    @Override
-    public String toString() {
-        // TODO fix this
-        return super.toString(null);
+        return super.equals(otherAddress);
     }
 }

@@ -71,13 +71,6 @@ public class Meta extends ComplexType {
         }
         Meta otherMeta = (Meta) otherObj;
 
-        // TODO fix this
-        return super.equals(otherMeta, null);
-    }
-
-    @Override
-    public String toString() {
-        // TODO fix this
-        return super.toString(null);
+        return super.equals(otherMeta);
     }
 }

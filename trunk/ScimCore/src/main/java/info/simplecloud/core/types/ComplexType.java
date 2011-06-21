@@ -73,7 +73,7 @@ public abstract class ComplexType {
         list.add(item);
     }
 
-    public boolean equals(ComplexType otherCt, String... attributeIds) {
+    private boolean equals(ComplexType otherCt, String... attributeIds) {
 
         for (String id : attributeIds) {
             Object me = this.data.get(id);
@@ -104,7 +104,7 @@ public abstract class ComplexType {
         return this.equals(otherCt, this.data.keySet().toArray(new String[] {}));
     }
 
-    public String toString(String... attributeIds) {
+    private String toString(String... attributeIds) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String id : attributeIds) {
             Object obj = this.data.get(id);
@@ -146,17 +146,4 @@ public abstract class ComplexType {
             }
         }
     }
-
-    private void copyAttributes(ComplexType from, String[] attributes) {
-        if (attributes == null) {
-            return;
-        }
-
-        for (String attribute : attributes) {
-            if (from.getAttribute(attribute) != null) {
-                this.setAttribute(attribute, from.getAttribute(attribute));
-            }
-        }
-    }
-
 }

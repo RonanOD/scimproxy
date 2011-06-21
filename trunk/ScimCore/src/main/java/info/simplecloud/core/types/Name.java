@@ -88,13 +88,6 @@ public class Name extends ComplexType {
         }
         Name otherName = (Name) otherObj;
 
-        // TODO fix this
-        return super.equals(otherName, null);
-    }
-
-    @Override
-    public String toString() {
-        // TODO fix this
-        return super.toString(null);
+        return super.equals(otherName);
     }
 }
