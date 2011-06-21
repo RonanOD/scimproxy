@@ -1,4 +1,4 @@
-package info.simplecloud.core;
+package info.simplecloud.core.types;
 
 import info.simplecloud.core.types.PluralType;
 

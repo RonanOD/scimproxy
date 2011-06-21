@@ -1,9 +1,10 @@
-package info.simplecloud.core;
+package info.simplecloud.core.types;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import info.simplecloud.core.coding.handlers.StringHandler;
+import info.simplecloud.core.Attribute;
+import info.simplecloud.core.coding.handlers.StringHandlerTest;
 import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.UnknownAttribute;
 import info.simplecloud.core.types.ComplexType;
@@ -15,17 +16,17 @@ import org.junit.Test;
 public class ComplexTypeTest {
 
     private class ComplexTestType extends ComplexType {
-        @Attribute(schemaName="simpleAttribute", codingHandler=StringHandler.class)
+        @Attribute(schemaName="simpleAttribute", codingHandler=StringHandlerTest.class)
         public void getSimpleAttribute() {
         
         }
         
-        @Attribute(schemaName="complexAttribute", codingHandler=StringHandler.class)
+        @Attribute(schemaName="complexAttribute", codingHandler=StringHandlerTest.class)
         public void getComplexAttribute(){
             
         }
         
-        @Attribute(schemaName="pluralAttribute", codingHandler=StringHandler.class)
+        @Attribute(schemaName="pluralAttribute", codingHandler=StringHandlerTest.class)
         public void getPluralAttribute(){
             
         }
