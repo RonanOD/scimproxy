@@ -1,5 +1,6 @@
 package info.simplecloud.core.coding.handlers;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class PluralComplexListTypeHandler implements ITypeHandler {
 
     @Override
     public Object decode(JSONObject scimUserJson, String attributeId) throws JSONException, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException {
+            UnknownType, InstantiationException, IllegalAccessException, ParseException {
         List<PluralType<Object>> result = new ArrayList<PluralType<Object>>();
 
         JSONArray plural = scimUserJson.getJSONArray(attributeId);
