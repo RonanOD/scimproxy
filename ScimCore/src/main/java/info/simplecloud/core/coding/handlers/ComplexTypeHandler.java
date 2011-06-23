@@ -63,8 +63,8 @@ public class ComplexTypeHandler implements ITypeHandler {
                     String handlerName = attribute.codingHandler().getName();
                     ITypeHandler handler = typeHandlers.get(handlerName);
                     if (handler == null) {
-                        // TODO create good message
-                        throw new UnhandledAttributeType("");
+                        throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + internalAttributeId
+                                + "' and class='" + result.getClass() + "'");
                     }
                     // TODO think of something smarter
                     String setter = "s" + method.getName().substring(1);
@@ -74,8 +74,7 @@ public class ComplexTypeHandler implements ITypeHandler {
                         Method setMethod = ReflectionHelper.getMethod(setter, type);
                         setMethod.invoke(result, arg);
                     } catch (Exception e) {
-                        // TODO create message and change name of class
-                        throw new FailedToSetValue("", e);
+                        throw new FailedToSetValue("Failed to invoke method '" + setter + "' on '" + type.getName() + "'", e);
                     }
                 }
             }
@@ -102,8 +101,8 @@ public class ComplexTypeHandler implements ITypeHandler {
                     String handlerName = attribute.codingHandler().getName();
                     ITypeHandler handler = typeHandlers.get(handlerName);
                     if (handler == null) {
-                        // TODO create good message
-                        throw new UnhandledAttributeType("");
+                        throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + attributeId
+                                + "' and class='" + result.getClass() + "'");
                     }
 
                     Object object = method.invoke(type);
