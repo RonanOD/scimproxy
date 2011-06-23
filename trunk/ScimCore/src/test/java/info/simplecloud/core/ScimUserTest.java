@@ -1,9 +1,5 @@
 package info.simplecloud.core;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
 import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
@@ -15,6 +11,10 @@ import info.simplecloud.core.exstensions.EnterpriseAttributes;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.PluralType;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xmlbeans.impl.util.Base64;
 import org.junit.Assert;
@@ -33,12 +33,19 @@ public class ScimUserTest {
         List<PluralType<String>> emails = new ArrayList<PluralType<String>>();
         emails.add(new PluralType<String>("nisse@work.com", "work", true));
         emails.add(new PluralType<String>("nisse@svensson.com", "home", true));
-        // TODO add Address test
 
+        List<PluralType<Address>> plural = new ArrayList<PluralType<Address>>();
+        Address workAddress = new Address();
+        workAddress.setCountry("Sweden");
+        workAddress.setRegion("Stockholm");
+        plural.add(new PluralType<Address>(workAddress, "work", true));
+        oldUser.setAddresses(plural);
+        
         oldUser.patch(patch, "JSON");
         Assert.assertEquals("mr. Nisse Johansson", oldUser.getName().getFormatted());
         Assert.assertEquals("Johansson", oldUser.getName().getFamilyName());
         Assert.assertEquals("Nisse", oldUser.getName().getGivenName());
+        Assert.assertTrue(oldUser.getAddresses().contains(new PluralType<Address>(workAddress, "work", true)));
     }
 
     @Test
@@ -83,15 +90,15 @@ public class ScimUserTest {
         Assert.assertEquals(user1noteq4, user1);
         Assert.assertEquals(user1noteq5, user1);
 
-        EnterpriseAttributes ea1 = user1.getExtension(new EnterpriseAttributes());
+        EnterpriseAttributes ea1 = user1.getExtension(EnterpriseAttributes.class);
         ea1.setEmployeeNumber("abc123");
-        EnterpriseAttributes ea2 = user1eq1.getExtension(new EnterpriseAttributes());
+        EnterpriseAttributes ea2 = user1eq1.getExtension(EnterpriseAttributes.class);
         ea2.setEmployeeNumber("abc123");
-        EnterpriseAttributes ea3 = user1noteq3.getExtension(new EnterpriseAttributes());
+        EnterpriseAttributes ea3 = user1noteq3.getExtension(EnterpriseAttributes.class);
         ea3.setEmployeeNumber("not equal");
-        EnterpriseAttributes ea4 = user1noteq4.getExtension(new EnterpriseAttributes());
+        EnterpriseAttributes ea4 = user1noteq4.getExtension(EnterpriseAttributes.class);
         ea4.setEmployeeNumber("abc123");
-        EnterpriseAttributes ea5 = user1noteq5.getExtension(new EnterpriseAttributes());
+        EnterpriseAttributes ea5 = user1noteq5.getExtension(EnterpriseAttributes.class);
         ea5.setEmployeeNumber("abc123");
 
         Assert.assertEquals(user1eq1, user1);
@@ -116,7 +123,7 @@ public class ScimUserTest {
         List<PluralType<String>> l4 = new ArrayList<PluralType<String>>();
         l4.add(new PluralType<String>("String1", "type1", true));
         user1noteq5.setGroups(l4);
-        
+
         Assert.assertEquals(user1eq1, user1);
         Assert.assertFalse(user1.equals(user1noteq1));
         Assert.assertFalse(user1noteq1.equals(user1));
@@ -127,21 +134,20 @@ public class ScimUserTest {
         Assert.assertFalse(user1.equals(user1noteq4));
         Assert.assertFalse(user1noteq4.equals(user1));
         Assert.assertEquals(user1noteq5, user1);
-        
+
         List<PluralType<Address>> plural1 = new ArrayList<PluralType<Address>>();
         Address workAddress = new Address();
         workAddress.setCountry("Sweden");
         workAddress.setRegion("Stockholm");
         plural1.add(new PluralType<Address>(workAddress, "work", true));
         user1.setAddresses(plural1);
-        
+
         List<PluralType<Address>> plural2 = new ArrayList<PluralType<Address>>();
         Address workAddress2 = new Address();
         workAddress2.setCountry("Sweden");
         workAddress2.setRegion("Stockholm");
         plural2.add(new PluralType<Address>(workAddress2, "work", true));
         user1eq1.setAddresses(plural2);
-        
 
         List<PluralType<Address>> plural3 = new ArrayList<PluralType<Address>>();
         Address workAddress3 = new Address();
@@ -149,7 +155,7 @@ public class ScimUserTest {
         workAddress3.setRegion("not equal");
         plural3.add(new PluralType<Address>(workAddress3, "work", true));
         user1noteq1.setAddresses(plural3);
-        
+
         Assert.assertEquals(user1eq1, user1);
         Assert.assertFalse(user1.equals(user1noteq1));
         Assert.assertFalse(user1noteq1.equals(user1));
@@ -161,6 +167,6 @@ public class ScimUserTest {
         Assert.assertFalse(user1noteq4.equals(user1));
         Assert.assertFalse(user1.equals(user1noteq5));
         Assert.assertFalse(user1noteq5.equals(user1));
-        
+
     }
 }

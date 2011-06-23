@@ -41,28 +41,21 @@ public class ScimUser extends ComplexType {
     public static final String               ATTRIBUTE_DISPLAY_NAME       = "displayName";
     public static final String               ATTRIBUTE_NICK_NAME          = "nickName";
     public static final String               ATTRIBUTE_PROFILE_URL        = "profileUrl";
-    public static final String               ATTRIBUTE_EMPLOYEE_NUMBER    = "employeeNumber";
     public static final String               ATTRIBUTE_USER_TYPE          = "userType";
     public static final String               ATTRIBUTE_TITLE              = "title";
-    public static final String               ATTRIBUTE_MANAGER            = "manager";
     public static final String               ATTRIBUTE_PREFERRED_LANGUAGE = "preferredLanguage";
     public static final String               ATTRIBUTE_LOCALE             = "locale";
     public static final String               ATTRIBUTE_UTC_OFFSET         = "utcOffset";
-    public static final String               ATTRIBUTE_COST_CENTER        = "costCenter";
-    public static final String               ATTRIBUTE_ORGANIZATION       = "organization";
-    public static final String               ATTRIBUTE_DIVISION           = "division";
-    public static final String               ATTRIBUTE_DEPARTMENT         = "department";
-
     public static final String               ATTRIBUTE_NAME               = "name";
     public static final String               ATTRIBUTE_META               = "meta";
-
     public static final String               ATTRIBUTE_IMS                = "ims";
     public static final String               ATTRIBUTE_EMAILS             = "emails";
     public static final String               ATTRIBUTE_PHOTOS             = "photos";
     public static final String               ATTRIBUTE_MEMBER_OF          = "groups";
     public static final String               ATTRIBUTE_PHONE_NUMBERS      = "phoneNumbers";
-
     public static final String               ATTRIBUTE_ADDRESSES          = "addresses";
+
+    public static final String               ENCODING_JSON                = "json";
 
     private List<Object>                     extensions                   = new ArrayList<Object>();
     {
@@ -93,7 +86,7 @@ public class ScimUser extends ComplexType {
 
     }
 
-    public String getUser(String encoding) throws UnknownEncoding, EncodingFailed, FailedToGetValue {
+    public String getUser(String encoding) throws UnknownEncoding, EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         IUserEncoder encoder = encoders.get(encoding);
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
@@ -103,7 +96,7 @@ public class ScimUser extends ComplexType {
         return encoder.encode(this);
     }
 
-    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding, EncodingFailed, FailedToGetValue {
+    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding, EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         IUserEncoder encoder = encoders.get(encoding);
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
@@ -146,7 +139,7 @@ public class ScimUser extends ComplexType {
                 }
 
                 try {
-                    Object otherObj = userPatch.getExtension(extension.getClass().newInstance());
+                    Object otherObj = userPatch.getExtension(extension.getClass());
                     Method otherMethod = otherObj.getClass().getMethod(method.getName(), method.getParameterTypes());
                     Object data = otherMethod.invoke(otherObj);
 
@@ -179,9 +172,9 @@ public class ScimUser extends ComplexType {
             for (Method method : exstension.getClass().getMethods()) {
                 if (method.isAnnotationPresent(Attribute.class)) {
                     try {
-                        Method otherMethod = otherScimUser.getExtension(exstension).getClass().getMethod(method.getName());
+                        Method otherMethod = otherScimUser.getExtension(exstension.getClass()).getClass().getMethod(method.getName());
                         Object obj = method.invoke(exstension);
-                        Object other = otherMethod.invoke(otherScimUser.getExtension(exstension));
+                        Object other = otherMethod.invoke(otherScimUser.getExtension(exstension.getClass()));
 
                         if ((obj != null && !obj.equals(other)) || ((other != null && !other.equals(obj)))) {
                             return false;
@@ -198,15 +191,14 @@ public class ScimUser extends ComplexType {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getExtension(T type) throws UnknowExtension {
+    public <T> T getExtension(Class type) throws UnknowExtension {
         for (int i = 0; i < this.extensions.size(); i++) {
-            if (this.extensions.get(i).getClass().isInstance(type)) {
+            if (this.extensions.get(i).getClass() == type) {
                 return (T) this.extensions.get(i);
             }
         }
 
-        // TODO create good message
-        throw new UnknowExtension("");
+        throw new UnknowExtension("Could not find object for type '" + type.getName() + "'");
     }
 
     public List<Object> getExtensions() {

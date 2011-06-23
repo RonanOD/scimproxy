@@ -77,6 +77,8 @@ public class ScimUserServlet extends RestServlet {
 			HttpGenerator.notFound(resp);
 		} catch (FailedToGetValue e) {
             HttpGenerator.serverError(resp);
+        } catch (UnhandledAttributeType e) {
+            HttpGenerator.serverError(resp);
         }
 
 	}

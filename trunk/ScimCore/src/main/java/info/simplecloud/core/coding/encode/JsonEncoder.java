@@ -25,6 +25,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonEncoder implements IUserEncoder {
+    private static final int                 INDENT_SIZE  = Integer.parseInt(System.getProperty(JsonEncoder.class.getName()
+                                                                  + ".INDENT_SIZE", "2"));
     private static String[]                  names        = { "json", "JSON" };
     private static Map<String, ITypeHandler> typeHandlers = new HashMap<String, ITypeHandler>();
     static {
@@ -45,12 +47,12 @@ public class JsonEncoder implements IUserEncoder {
     }
 
     @Override
-    public String encode(ScimUser data) throws EncodingFailed, FailedToGetValue {
+    public String encode(ScimUser data) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         return encode(data, new ArrayList<String>());
     }
 
     @Override
-    public String encode(ScimUser data, List<String> includeAttributes) throws EncodingFailed, FailedToGetValue {
+    public String encode(ScimUser data, List<String> includeAttributes) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         try {
             return internalEncode(data, includeAttributes).toString(2);
         } catch (JSONException e) {
@@ -59,12 +61,12 @@ public class JsonEncoder implements IUserEncoder {
     }
 
     @Override
-    public String encode(List<ScimUser> scimUsers) throws EncodingFailed, FailedToGetValue {
+    public String encode(List<ScimUser> scimUsers) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         return this.encode(scimUsers, new ArrayList<String>());
     }
 
     @Override
-    public String encode(List<ScimUser> scimUsers, List<String> includeAttributes) throws EncodingFailed, FailedToGetValue {
+    public String encode(List<ScimUser> scimUsers, List<String> includeAttributes) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         try {
             JSONObject result = new JSONObject();
 
@@ -85,19 +87,17 @@ public class JsonEncoder implements IUserEncoder {
             // TODO: SPEC: REST: Return meta location. Should location be sent
             // to this method or always include it in storage for each user?
 
-            return result.toString(2);
-            // TODO change to non pretty-print or check if debug mode
+            return INDENT_SIZE == -1 ? result.toString() : result.toString(INDENT_SIZE);
         } catch (JSONException e) {
             throw new EncodingFailed("Failed to build response user set", e);
         }
     }
 
-    private JSONObject internalEncode(ScimUser data, List<String> attributesList) throws JSONException, FailedToGetValue {
+    private JSONObject internalEncode(ScimUser data, List<String> attributesList) throws JSONException, FailedToGetValue, UnhandledAttributeType {
         JSONObject result = new JSONObject();
 
         for (Object extension : data.getExtensions()) {
             for (Method method : extension.getClass().getMethods()) {
-                try {
                     if (method.isAnnotationPresent(Attribute.class)) {
                         Attribute attribute = method.getAnnotation(Attribute.class);
                         String attributeId = attribute.schemaName();
@@ -105,20 +105,21 @@ public class JsonEncoder implements IUserEncoder {
                             String handlerName = attribute.codingHandler().getName();
                             ITypeHandler handler = typeHandlers.get(handlerName);
                             if (handler == null) {
-                                // TODO create good message
-                                throw new UnhandledAttributeType("");
+                                throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + attributeId
+                                        + "' and class='" + result.getClass() + "'");
                             }
 
+                            try {
                             Object object = method.invoke(extension);
-                            if(object != null) {                                
+                            if (object != null) {
                                 handler.encode(result, attributeId, object);
                             }
+                        } catch (Exception e) {
+                            // TODO create good message
+                            throw new FailedToGetValue("", e);
+                        }
                         }
                     }
-                } catch (Exception e) {
-                    // TODO create good message
-                    throw new FailedToGetValue("", e);
-                }
             }
         }
 

@@ -1,12 +1,9 @@
 package info.simplecloud.core.coding.encode;
 
 import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.coding.encode.IUserEncoder;
-import info.simplecloud.core.coding.encode.JsonEncoder;
 import info.simplecloud.core.execeptions.EncodingFailed;
 import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.UnknowExtension;
-import info.simplecloud.core.exstensions.EnterpriseAttributes;
+import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.ComplexType;
 import info.simplecloud.core.types.Name;
@@ -22,7 +19,7 @@ import org.junit.Test;
 public class JsonEncoderTest {
 
     @Test
-    public void encode() throws EncodingFailed, FailedToGetValue {
+    public void encode() throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         ScimUser scimUser = getUser("yhgty-ujhyu-iolki", "samuel", "samuel@erdtman.se", "samuel.erdtman@nexussafe.com", "12345", "67890");
 
         String jsonUser = new JsonEncoder().encode(scimUser);
@@ -36,7 +33,7 @@ public class JsonEncoderTest {
     }
 
     @Test
-    public void encodeSet() throws EncodingFailed, FailedToGetValue {
+    public void encodeSet() throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         String[] ids = new String[] { "1abcd", "2asdkjlfhaöksdf", "3fakljsdhflas" };
         String[] name = new String[] { "olle", "nisse", "kalle" };
         String[] emails1 = new String[] { "olle@home.com", "nisse@home.com", "kalle@home.com" };
