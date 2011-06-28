@@ -15,12 +15,12 @@ public class Meta extends ComplexType {
     public static final String ATTRIBUTE_LOCATION      = "location";
     public static final String ATTRIBUTE_ATTRIBUTES    = "attributes";
 
-    @Attribute(schemaName = "version", codingHandler = CalendarHandler.class)
+    @Attribute(schemaName = "created", codingHandler = CalendarHandler.class)
     public Calendar getCreated() {
         return super.getAttributeCalendar(ATTRIBUTE_CREATED);
     }
 
-    @Attribute(schemaName = "version", codingHandler = CalendarHandler.class)
+    @Attribute(schemaName = "lastModified", codingHandler = CalendarHandler.class)
     public Calendar getLastModified() {
         return super.getAttributeCalendar(ATTRIBUTE_LAST_MODIFIED);
     }
