@@ -1,7 +1,10 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.ScimUser;
-import junit.framework.TestCase; 
+
+import java.util.ArrayList;
+
+import junit.framework.TestCase;
 
 import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.testing.HttpTester;
@@ -15,6 +18,9 @@ public class ScimUsersServletTest extends TestCase {
 
 	String aliceId = "";
 	String bobId = "";
+    ScimUser alice = new ScimUser();
+    ScimUser bob = new ScimUser();
+
 	
 	public void setUp() throws Exception {
 		tester = new ServletTester();
@@ -23,8 +29,8 @@ public class ScimUsersServletTest extends TestCase {
 	    tester.addServlet(DefaultServlet.class, "/");
 		tester.start();
 
-	    ScimUser alice = new ScimUser();
 	    alice.setUserName("Alice");
+	    alice.setNickName("A");
 
 		HttpTester aliceRequest = new HttpTester();
 		HttpTester aliceResponse = new HttpTester();
@@ -39,8 +45,8 @@ public class ScimUsersServletTest extends TestCase {
 		ScimUser addedAlice = new ScimUser(aliceResponse.getContent(), "JSON");
 		aliceId = addedAlice.getId();
 		
-	    ScimUser bob = new ScimUser();
 	    bob.setUserName("Bob");
+	    bob.setNickName("B");
 
 		HttpTester bobRequest = new HttpTester();
 		HttpTester bobResponse = new HttpTester();
@@ -57,19 +63,126 @@ public class ScimUsersServletTest extends TestCase {
 		
 	}
 
-	public void testUsers() throws Exception {
+	public void testFindBobAndAlice() throws Exception {
+
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
 		request.setURI("/Users");
 		response.parse(tester.getResponses(request.generate()));
-		
-//		assertEquals(200, response.getStatus());
 
 		String users = response.getContent();
 		
-		int i = users.indexOf("totalResults");
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean aliceFound = false;
+		boolean bobFound = false;
 		
-	//	assertTrue(i == 5);
+		for (ScimUser scimUser : userList) {
+			if(bobId.equals(scimUser.getId())) {
+				bobFound = true;
+			}
+			if(aliceId.equals(scimUser.getId())) {
+				aliceFound = true;
+			}
+		}
+		
+		assertEquals(true, bobFound);
+		assertEquals(true, aliceFound);
+	}
+
+	
+	public void testSortUserNameAsc() throws Exception {
+
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?sortBy=userName&sortOrder=ascending");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean aliceFoundFirst = false;
+		
+		for (ScimUser scimUser : userList) {
+			if(bobId.equals(scimUser.getId())) {
+				assertEquals(true, aliceFoundFirst);
+			}
+			if(aliceId.equals(scimUser.getId())) {
+				aliceFoundFirst = true;
+			}
+		}
+	}
+	
+
+	public void testSortUserNameDesc() throws Exception {
+
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?sortBy=userName&sortOrder=descending");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean bobFoundFirst = false;
+		
+		for (ScimUser scimUser : userList) {
+			if(bobId.equals(scimUser.getId())) {
+				bobFoundFirst = true;
+			}
+			if(aliceId.equals(scimUser.getId())) {
+				assertEquals(true, bobFoundFirst);
+			}
+		}
+	}
+	
+
+	public void testSortNickDesc() throws Exception {
+
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?sortBy=userName&sortOrder=descending&attributes=nickName");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean bobFoundFirst = false;
+		
+		for (ScimUser scimUser : userList) {
+			if(bobId.equals(scimUser.getId())) {
+				bobFoundFirst = true;
+			}
+			if(aliceId.equals(scimUser.getId())) {
+				assertEquals(true, bobFoundFirst);
+			}
+		}
+	}
+	
+	public void testSortNoAttribs() throws Exception {
+
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?sortBy=userName&sortOrder=descending&attributes=");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean bobFoundFirst = false;
+		
+		for (ScimUser scimUser : userList) {
+			if(bobId.equals(scimUser.getId())) {
+				bobFoundFirst = true;
+			}
+			if(aliceId.equals(scimUser.getId())) {
+				assertEquals(true, bobFoundFirst);
+			}
+		}
 	}
 
 }
