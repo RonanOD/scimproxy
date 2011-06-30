@@ -81,11 +81,28 @@ public class ScimUser extends ComplexType {
 
         decoder.decode(user, this);
     }
-
+    
     public ScimUser() {
 
     }
 
+    public static ArrayList<ScimUser> getScimUsers(String users, String encoding) throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue,
+    UnknownType, InstantiationException, IllegalAccessException, ParseException {
+
+    	IUserDecoder decoder = decoders.get(encoding);
+    	if (decoder == null) {
+    		throw new UnknownEncoding(encoding);
+    	}
+
+    	ArrayList<ScimUser> userList = new ArrayList<ScimUser>();
+
+    	decoder.decode(users, userList);
+    	return userList;
+    }
+
+    
+
+    
     public String getUser(String encoding) throws UnknownEncoding, EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         IUserEncoder encoder = encoders.get(encoding);
         if (encoder == null) {
@@ -105,6 +122,7 @@ public class ScimUser extends ComplexType {
 
         return encoder.encode(this, attributes);
     }
+    
 
     public Comparable getComparable(String attributeId) {
         Object object = super.getAttribute(attributeId);

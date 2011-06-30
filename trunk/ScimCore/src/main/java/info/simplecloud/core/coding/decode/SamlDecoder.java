@@ -6,6 +6,8 @@ import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.core.execeptions.UnknownType;
 
+import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 
 public class SamlDecoder implements IUserDecoder {
@@ -24,5 +26,13 @@ public class SamlDecoder implements IUserDecoder {
         // TODO Auto-generated method stub
         
     }
+
+
+
+	@Override
+	public void decode(String userList, List<ScimUser> users) throws InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException, IllegalAccessException, ParseException {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

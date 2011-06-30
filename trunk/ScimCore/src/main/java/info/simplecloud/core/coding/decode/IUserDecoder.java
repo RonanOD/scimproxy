@@ -7,6 +7,7 @@ import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.core.execeptions.UnknownType;
 
 import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -17,4 +18,8 @@ public interface IUserDecoder {
 
     void decode(String user, ScimUser data) throws InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType,
             InstantiationException, IllegalAccessException, ParseException;
+
+    void decode(String userList, List<ScimUser> users) throws InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType,
+    InstantiationException, IllegalAccessException, ParseException;
+
 }
