@@ -30,8 +30,10 @@ public class ScimUsersServlet extends RestServlet {
 
         String attributesString = req.getParameter("attributes") == null ? "" : req.getParameter("attributes");
         List<String> attributesList = new ArrayList<String>();
-        for(String attribute: attributesString.split(",")) {
-            attributesList.add(attribute.trim());
+        if(attributesString != null && !"".equals(attributesString)) {
+            for(String attribute: attributesString.split(",")) {
+                attributesList.add(attribute.trim());
+            }
         }
         
         // TODO use filter things
@@ -53,9 +55,6 @@ public class ScimUsersServlet extends RestServlet {
         
         Collections.sort(users, new ScimUserComparator<String>(sortBy, sortOrder.equalsIgnoreCase("ascending")));
         
-        
-        // TODO: SPEC: REST: Really missing an XML representation of two or more
-        // nodes in List/Query a response.
         try {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType(HttpGenerator.getContentType(req));
