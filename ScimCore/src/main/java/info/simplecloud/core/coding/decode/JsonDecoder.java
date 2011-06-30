@@ -19,8 +19,10 @@ import info.simplecloud.core.execeptions.UnknownType;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -82,5 +84,27 @@ public class JsonDecoder implements IUserDecoder {
             throw new InvalidUser("Failed to parse user", e);
         }
     }
+
+	@Override
+	public void decode(String userList, List<ScimUser> users) throws InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException, IllegalAccessException, ParseException {
+
+		try {
+	        JSONObject userListJson = new JSONObject(userList);
+	        if (userListJson.has("entry")) {
+	            JSONArray jsonUsers = userListJson.getJSONArray("entry");
+	            for (int i = 0; i < jsonUsers.length(); i++) {
+	                JSONObject user = jsonUsers.getJSONObject(i);
+
+	                ScimUser data = new ScimUser();
+	                decode(user.toString(), data);
+	                users.add(data);
+	            }
+	        }
+
+		} catch (JSONException e) {
+			throw new InvalidUser("Failed to parse user", e);
+		}
+
+	}
 
 }
