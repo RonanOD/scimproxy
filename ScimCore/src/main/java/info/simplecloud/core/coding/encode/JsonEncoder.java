@@ -73,15 +73,20 @@ public class JsonEncoder implements IUserEncoder {
             if (scimUsers == null) {
                 scimUsers = new ArrayList<ScimUser>();
             }
-            result.put("totalResults", scimUsers.size());
 
             // TODO: Should this be done in core? Return the JSON list of more
             // resporces when you send an List into encode method?
             JSONArray users = new JSONArray();
-
+            int counter = 0;
             for (ScimUser scimUser : scimUsers) {
-                users.put(internalEncode(scimUser, includeAttributes));
+            	JSONObject o = internalEncode(scimUser, includeAttributes);
+            	if(o != null) {
+                    users.put(o);
+                    counter++;
+            	}
             }
+            
+            result.put("totalResults", counter);
 
             result.put("entry", users);
             // TODO: SPEC: REST: Return meta location. Should location be sent
@@ -95,35 +100,52 @@ public class JsonEncoder implements IUserEncoder {
 
     private JSONObject internalEncode(ScimUser data, List<String> attributesList) throws JSONException, FailedToGetValue, UnhandledAttributeType {
         JSONObject result = new JSONObject();
+        boolean foundAttributes = false;
 
         for (Object extension : data.getExtensions()) {
             for (Method method : extension.getClass().getMethods()) {
-                    if (method.isAnnotationPresent(Attribute.class)) {
-                        Attribute attribute = method.getAnnotation(Attribute.class);
-                        String attributeId = attribute.schemaName();
-                        if (attributesList.isEmpty() || attributesList.contains(attributeId)) {
-                            String handlerName = attribute.codingHandler().getName();
-                            ITypeHandler handler = typeHandlers.get(handlerName);
-                            if (handler == null) {
-                                throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + attributeId
-                                        + "' and class='" + result.getClass() + "'");
-                            }
+                if (method.isAnnotationPresent(Attribute.class)) {
+                    Attribute attribute = method.getAnnotation(Attribute.class);
+                    String attributeId = attribute.schemaName();
+                    
+                    
+                    if (attributesList.isEmpty() || attributesList.contains(attributeId) || "id".equals(attributeId) || "meta".equals(attributeId)) {
 
-                            try {
+                        String handlerName = attribute.codingHandler().getName();
+                        ITypeHandler handler = typeHandlers.get(handlerName);
+                        if (handler == null) {
+                            throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + attributeId
+                                    + "' and class='" + result.getClass() + "'");
+                        }
+
+                        try {
                             Object object = method.invoke(extension);
                             if (object != null) {
+                                // if it's only id and meta in the attribute list and none of them is in attributeList, then don't return User at all
+                            	if(("id".equals(attributeId) && attributesList.contains("id")) || ("meta".equals(attributeId) && attributesList.contains("meta"))) {
+                            		foundAttributes = true;
+                            	}
+                            	if(!"id".equals(attributeId) && !"meta".equals(attributeId)) {
+                            		foundAttributes = true;
+                            	}
+
                                 handler.encode(result, attributeId, object);
                             }
                         } catch (Exception e) {
                             // TODO create good message
                             throw new FailedToGetValue("", e);
                         }
-                        }
                     }
+                }
             }
         }
 
-        return result;
+        if(foundAttributes) {
+            return result;
+        }
+        else {
+        	return null;
+        }
     }
 
 }
