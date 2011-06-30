@@ -111,14 +111,6 @@ public class ScimUserServlet extends RestServlet {
 
 				User.addUser(scimUser);
 
-				/*
-				 * // TODO: REST: SPEC: Why not return scim user instead? Easier
-				 * to parse. // TODO: SPEC: REST: Define what to return in
-				 * detail. String response = "" + "{\n" + "\t\"id\" : \"" +
-				 * scimUser.getId() + "\",\n" +
-				 * "\t\"errors\" : [ ],  //TODO - not in core schema\n" +
-				 * "\t\"success\" : true //TODO - not in core schema\n" + "}\n";
-				 */
 				resp.setContentType(HttpGenerator.getContentType(req));
 				resp.setHeader("Location", HttpGenerator.getLocation(scimUser, req));
 				resp.setHeader("ETag", scimUser.getMeta().getVersion());
