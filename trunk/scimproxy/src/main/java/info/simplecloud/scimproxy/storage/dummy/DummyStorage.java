@@ -112,6 +112,70 @@ public class DummyStorage implements IStorage {
 	}
 
 	@Override
+	public ArrayList<ScimUser> getList(String filterBy, String filterValue, String filterOp) {
+		ArrayList<ScimUser> list = new ArrayList<ScimUser>();
+		for (ScimUser user : users) {
+			
+			// TODO: Do a way better and nicer looking filtering function.
+			/*
+				equals:	the two values must be identical
+				equalsIgnoreCase: the two values must be identical
+				contains: the entire filterValue must be a substring of the attribute value.
+				startswith: the entire filterValue must be a substring of the attribute value, starting at the beginning of the attribute value. This criterion is satisfied if the two strings are equal.
+				present: if the attribute specified by filterBy has a non-empty value, or if it contains a non-empty node for complex attributes there is a match.
+
+			 */
+			boolean add = false;
+			
+			// read value using reflection instead of harcoded
+			String value = user.getNickName();
+			if(value == null) {
+				value = "";
+			}
+			
+			if("equals".equals(filterOp)) {
+				if(value.equals(filterValue)) {
+					add = true;
+				}
+			} 
+				
+			if("equalsIgnoreCase".equals(filterOp)) {
+				if(value.equalsIgnoreCase(filterValue)) {
+					add = true;
+				}
+			} 
+
+			if("contains".equals(filterOp)) {
+				if(value.indexOf(filterValue) > 0) {
+					add = true;
+				}
+			} 
+
+			if("startswith".equals(filterOp)) {
+				if(value.indexOf(filterValue) > 0) {
+					add = true;
+				}
+			} 
+			
+			if("present".equals(filterOp)) {
+				if(!"".equals(value)) {
+					add = true;
+				}
+			} 
+
+		
+
+			if(add) {
+				list.add(user);
+			}
+		}
+		
+		
+		
+		return list;
+	}
+
+	@Override
 	public void deleteUser(String id) throws UserNotFoundException {
 		boolean found = false;
 		if (id != null && !"".equals(id.trim())) {

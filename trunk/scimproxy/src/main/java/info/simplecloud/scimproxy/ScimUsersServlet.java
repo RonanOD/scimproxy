@@ -36,10 +36,6 @@ public class ScimUsersServlet extends RestServlet {
             }
         }
         
-        // TODO use filter things
-        String filterBy = req.getParameter("filterBy");
-        String filterValue = req.getParameter("filterValue");
-        String filterOp = req.getParameter("filterOp");
 
         // TODO: SPEC: REST: what is major
         String sortBy = req.getParameter("sortBy") == null ? "userName" : req.getParameter("sortBy");
@@ -51,7 +47,19 @@ public class ScimUsersServlet extends RestServlet {
         }
 
         DummyStorage storage = DummyStorage.getInstance();
-        List<ScimUser> users = storage.getList();
+        List<ScimUser> users = null;
+
+        String filterBy = req.getParameter("filterBy");
+        String filterValue = req.getParameter("filterValue");
+        String filterOp = req.getParameter("filterOp");
+
+        if(filterBy != null && !"".equals(filterBy)) {
+        	users =  storage.getList(filterBy, filterValue, filterOp);
+        }
+        else {
+        	users =  storage.getList();
+        }
+        
         
         Collections.sort(users, new ScimUserComparator<String>(sortBy, sortOrder.equalsIgnoreCase("ascending")));
         
