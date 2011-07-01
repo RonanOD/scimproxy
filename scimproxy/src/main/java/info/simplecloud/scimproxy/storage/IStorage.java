@@ -3,6 +3,7 @@ package info.simplecloud.scimproxy.storage;
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,5 +48,7 @@ public interface IStorage {
 	 *             Thrown when user was not found in database.
 	 */
 	public void deleteUser(String id) throws UserNotFoundException;
+
+	ArrayList<ScimUser> getList(String filterBy, String filterValue, String filterOp);
 
 }

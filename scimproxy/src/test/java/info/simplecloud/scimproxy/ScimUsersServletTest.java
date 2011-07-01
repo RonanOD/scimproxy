@@ -185,5 +185,46 @@ public class ScimUsersServletTest extends TestCase {
 		}
 	}
 
+
+	public void testFilterBy() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?filterBy=nickName&filterValue=B&filterOp=equals");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean bobFound = false;
+		boolean aliceFound = false;
+
+		for (ScimUser scimUser : userList) {
+			if(bobId.equals(scimUser.getId())) {
+				bobFound = true;
+			}
+			if(aliceId.equals(scimUser.getId())) {
+				aliceFound = true;
+			}
+
+		}
+		
+		assertEquals(true, bobFound);
+		assertEquals(false, aliceFound);
+	}
+
+	public void testFilterByNotFound() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?filterBy=nickName&filterValue=asdasdasd&filterOp=equals");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		assertEquals(0, userList.size());
+	}
+
 }
 
