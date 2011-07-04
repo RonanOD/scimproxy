@@ -54,7 +54,13 @@ public class JsonEncoder implements IUserEncoder {
     @Override
     public String encode(ScimUser data, List<String> includeAttributes) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
         try {
-            return internalEncode(data, includeAttributes).toString(2);
+        	JSONObject obj = internalEncode(data, includeAttributes);
+        	if(obj != null) {
+                return obj.toString(2);
+        	}
+        	else {
+        		return null;
+        	}
         } catch (JSONException e) {
             throw new EncodingFailed("Failed to build user", e);
         }
