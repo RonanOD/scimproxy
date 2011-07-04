@@ -63,7 +63,7 @@ public class ScimUsersServletTest extends TestCase {
 		
 	}
 
-	public void testFindBobAndAlice() throws Exception {
+	public void testGetAllAndFindAliceAndBob() throws Exception {
 
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
@@ -186,7 +186,7 @@ public class ScimUsersServletTest extends TestCase {
 	}
 
 
-	public void testFilterBy() throws Exception {
+	public void testFilterByEaualsNickName() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
 		request.setURI("/Users?filterBy=nickName&filterValue=B&filterOp=equals");
@@ -213,7 +213,7 @@ public class ScimUsersServletTest extends TestCase {
 		assertEquals(false, aliceFound);
 	}
 
-	public void testFilterByNotFound() throws Exception {
+	public void testFilterByEaualsNoMatch() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
 		request.setURI("/Users?filterBy=nickName&filterValue=asdasdasd&filterOp=equals");
@@ -225,6 +225,166 @@ public class ScimUsersServletTest extends TestCase {
 
 		assertEquals(0, userList.size());
 	}
+
+	public void testFilterByEaualsUserNameOnly() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?filterBy=userName&filterValue=Bob&filterOp=equals&attributes=userName");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean onlyBobs = true;
+		boolean noNicks = true;
+		
+		for (ScimUser scimUser : userList) {
+			if(!"Bob".equals(scimUser.getUserName())) {
+				onlyBobs = false;
+			}
+			if("B".equals(scimUser.getNickName())) {
+				noNicks = false;
+			}
+		}
+
+		assertEquals(true, onlyBobs);
+		assertEquals(true, noNicks);
+	}
+	
+	public void testFilterByNoneAttribute() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?filterBy=sjshjsdfhjkshdfjsdf&filterValue=Bob&filterOp=equals");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		assertEquals(0, userList.size());
+	}	
+
+	public void testFilterByEqualsIgnoreCase() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?filterBy=userName&filterValue=bob&filterOp=equalsIgnoreCase");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean onlyBobs = true;
+		
+		for (ScimUser scimUser : userList) {
+			if(!"Bob".equals(scimUser.getUserName())) {
+				onlyBobs = false;
+			}
+		}
+
+		assertEquals(true, onlyBobs);		
+		assertEquals(true, (userList.size() > 0));	
+	}
+	
+
+	public void testFilterByContains() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?filterBy=userName&filterValue=ob&filterOp=contains");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean onlyBobs = true;
+		
+		for (ScimUser scimUser : userList) {
+			if(!"Bob".equals(scimUser.getUserName())) {
+				onlyBobs = false;
+			}
+		}
+
+		assertEquals(true, onlyBobs);		
+		assertEquals(true, (userList.size() > 0));	
+	}	
+	
+	public void testFilterByStartsWith() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?filterBy=userName&filterValue=Bo&filterOp=startsWith");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean onlyBobs = true;
+		
+		for (ScimUser scimUser : userList) {
+			if(!"Bob".equals(scimUser.getUserName())) {
+				onlyBobs = false;
+			}
+		}
+
+		assertEquals(true, onlyBobs);		
+		assertEquals(true, (userList.size() > 0));	
+	}	
+	
+
+	public void testFilterByPresent() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?filterBy=nickName&filterOp=present");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		boolean bobFound = false;
+		boolean aliceFound = false;
+
+		for (ScimUser scimUser : userList) {
+			if(bobId.equals(scimUser.getId())) {
+				bobFound = true;
+			}
+			if(aliceId.equals(scimUser.getId())) {
+				aliceFound = true;
+			}
+
+		}
+		
+		assertEquals(true, bobFound);
+		assertEquals(true, aliceFound);
+	}	
+
+	public void testPagingIndexOutOfBound() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?startIndex=10000&count=20000");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		assertEquals(true, (userList.size() == 0));
+	}	
+
+	public void testPaging10to20() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/Users?startIndex=2&count=10");
+		response.parse(tester.getResponses(request.generate()));
+
+		String users = response.getContent();
+		// TODO: SPEC: REST: Should users that's missing attribute nickName be returned?
+		ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+
+		assertEquals(true, (userList.size() == 10));
+	}	
 
 }
 

@@ -35,8 +35,7 @@ public class ScimUsersServlet extends RestServlet {
                 attributesList.add(attribute.trim());
             }
         }
-        
-
+                
         // TODO: SPEC: REST: what is major
         String sortBy = req.getParameter("sortBy") == null ? "userName" : req.getParameter("sortBy");
         String sortOrder = req.getParameter("sortOrder") == null ? "ascending" : req.getParameter("sortOrder");
@@ -54,17 +53,41 @@ public class ScimUsersServlet extends RestServlet {
         String filterOp = req.getParameter("filterOp");
 
         if(filterBy != null && !"".equals(filterBy)) {
-        	users =  storage.getList(filterBy, filterValue, filterOp);
+        	users =  storage.getList(sortBy, sortOrder, filterBy, filterValue, filterOp);
         }
         else {
-        	users =  storage.getList();
+        	users =  storage.getList(sortBy, sortOrder);
         }
         
-        
-        Collections.sort(users, new ScimUserComparator<String>(sortBy, sortOrder.equalsIgnoreCase("ascending")));
-        
         try {
-            resp.setStatus(HttpServletResponse.SC_OK);
+        	int index = 0;
+        	int count = 0;
+        	
+            String startIndexStr = req.getParameter("startIndex"); // must be absolut and defaults to 0
+            String countStr = req.getParameter("count"); // must be absolut and defaults to 0
+            if(startIndexStr != null && !"".equals(startIndexStr)) {
+            	index = Integer.parseInt(startIndexStr);
+            }
+            if(countStr != null && !"".equals(countStr)) {
+            	count = Integer.parseInt(countStr);
+            }
+            
+            int max = index+count;
+            if(max > users.size() || max == 0) {
+            	max = users.size();
+            }
+            
+            if(index > users.size()) {
+            	index = users.size();
+            }
+            
+            try {
+                users = users.subList(index, max);
+            } catch (IndexOutOfBoundsException e) {
+            	users = new ArrayList<ScimUser>();
+            }
+
+        	resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType(HttpGenerator.getContentType(req));
 
             String response = new JsonEncoder().encode(users, attributesList);
