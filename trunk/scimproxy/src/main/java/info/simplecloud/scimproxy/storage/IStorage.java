@@ -39,6 +39,8 @@ public interface IStorage {
 	 */
 	public List<ScimUser> getList();
 
+	public List<ScimUser> getList(String sortBy, String sortOrder);
+
 	/**
 	 * Deletes a SCIM user from storage.
 	 * 
@@ -49,6 +51,8 @@ public interface IStorage {
 	 */
 	public void deleteUser(String id) throws UserNotFoundException;
 
-	ArrayList<ScimUser> getList(String filterBy, String filterValue, String filterOp);
+	
+	
+	ArrayList<ScimUser> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp);
 
 }

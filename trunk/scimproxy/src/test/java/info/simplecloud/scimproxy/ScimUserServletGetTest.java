@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 
 import info.simplecloud.core.ScimUser;
 import junit.framework.TestCase;
@@ -25,6 +26,7 @@ public class ScimUserServletGetTest extends TestCase {
 	    
 	    ScimUser scimUser = new ScimUser();
 	    scimUser.setUserName("Alice");
+	    scimUser.setNickName("A");
 
 		request.setMethod("POST");
 		request.setVersion("HTTP/1.0");
@@ -95,6 +97,49 @@ public class ScimUserServletGetTest extends TestCase {
 
 		assertEquals(404, response.getStatus());
 	}
+
+
+	public void testNoAttribs() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/User/" + id + "?attributes=");
+
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(200, response.getStatus());
+		
+        ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
+        
+        assertEquals(id, scimUser.getId());
+        assertEquals("Alice", scimUser.getUserName());
+	}	
+
+	public void testOnlyUserName() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/User/" + id + "?attributes=nickName");
+
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(200, response.getStatus());
+		
+        ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
+        
+        assertEquals(id, scimUser.getId());
+        assertEquals(null, scimUser.getUserName());
+        assertEquals("A", scimUser.getNickName());
+	}	
+	
+
+	public void testUnknownAttrib() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setURI("/User/" + id + "?attributes=asdasdasdasdasdasd");
+
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(400, response.getStatus());
+	}	
 
 }
 

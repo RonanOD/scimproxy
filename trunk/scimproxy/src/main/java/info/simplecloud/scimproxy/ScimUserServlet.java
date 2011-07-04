@@ -20,6 +20,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,15 +62,28 @@ public class ScimUserServlet extends RestServlet {
 			// then POST?
 			// TODO: SPEC: REST: Also include the location in meta data for the
 			// user?
+						
 			ScimUser scimUser = User.getUser(userId);
-			String userStr = scimUser.getUser(HttpGenerator.getEncoding(req));
+			String userStr = null;
+			
+			if(req.getParameter("attributes") != null) {
+				userStr = scimUser.getUser(HttpGenerator.getEncoding(req), getAttributeStringFromRequest(req));
+			}
+			else {
+				userStr = scimUser.getUser(HttpGenerator.getEncoding(req));
+			}
 
-			resp.setContentType(HttpGenerator.getContentType(req));
-			resp.setHeader("ETag", scimUser.getMeta().getVersion());
+			if(userStr == null) {
+	            HttpGenerator.badRequest(resp);
+			}
+			else {
+				resp.setContentType(HttpGenerator.getContentType(req));
+				resp.setHeader("ETag", scimUser.getMeta().getVersion());
 
-			HttpGenerator.ok(resp, userStr);
+				HttpGenerator.ok(resp, userStr);
+				log.info("Returning user " + scimUser.getId());
+			}
 
-			log.info("Returning user " + scimUser.getId());
 		} catch (UnknownEncoding e) {
 			HttpGenerator.serverError(resp);
 		} catch (EncodingFailed e) {
@@ -267,6 +282,9 @@ public class ScimUserServlet extends RestServlet {
 			// TODO: SPEC: REST: Should the post message be base64 encoded in
 			// spec or not?
 
+			
+			// TODO: SPEC: Add support for the /User/{id}/password function.
+			
 			try {
 				ScimUser scimUser = User.getUser(userId);
 				// check that version haven't changed since loaded from server
@@ -363,4 +381,16 @@ public class ScimUserServlet extends RestServlet {
 		return id;
 	}
 
+	
+	private List<String> getAttributeStringFromRequest(HttpServletRequest req) {
+	    String attributesString = req.getParameter("attributes") == null ? "" : req.getParameter("attributes");
+	    List<String> attributesList = new ArrayList<String>();
+	    if(attributesString != null && !"".equals(attributesString)) {
+	        for(String attribute: attributesString.split(",")) {
+	            attributesList.add(attribute.trim());
+	        }
+	    }
+	    return attributesList;
+	}
+	
 }

@@ -1,15 +1,18 @@
 package info.simplecloud.scimproxy.storage.dummy;
 
 import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.tools.ScimUserComparator;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.ComplexType;
 import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.PluralType;
 import info.simplecloud.scimproxy.storage.IStorage;
 
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -112,7 +115,18 @@ public class DummyStorage implements IStorage {
 	}
 
 	@Override
-	public ArrayList<ScimUser> getList(String filterBy, String filterValue, String filterOp) {
+	public ArrayList<ScimUser> getList(String sortBy, String sortOrder) {
+		ArrayList<ScimUser> list = new ArrayList<ScimUser>();
+		for (ScimUser user : users) {
+			list.add(user);
+		}
+        Collections.sort(list, new ScimUserComparator<String>(sortBy, sortOrder.equalsIgnoreCase("ascending")));
+        
+		return list;
+	}
+
+	@Override
+	public ArrayList<ScimUser> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp) {
 		ArrayList<ScimUser> list = new ArrayList<ScimUser>();
 		for (ScimUser user : users) {
 			
@@ -126,9 +140,16 @@ public class DummyStorage implements IStorage {
 
 			 */
 			boolean add = false;
+			String value = null;
+			// TODO: add support for complex and plural types
+			String methodName = "get" + filterBy.substring(0, 1).toUpperCase() + filterBy.substring(1);
+			try {
+				Method method = new ScimUser().getClass().getMethod(methodName);
+				value = (String)method.invoke(user);
+			} catch (Exception e) {
+				break;
+			}
 			
-			// read value using reflection instead of harcoded
-			String value = user.getNickName();
 			if(value == null) {
 				value = "";
 			}
@@ -151,8 +172,8 @@ public class DummyStorage implements IStorage {
 				}
 			} 
 
-			if("startswith".equals(filterOp)) {
-				if(value.indexOf(filterValue) > 0) {
+			if("startsWith".equals(filterOp)) {
+				if(value.indexOf(filterValue) > -1) {
 					add = true;
 				}
 			} 
@@ -163,15 +184,13 @@ public class DummyStorage implements IStorage {
 				}
 			} 
 
-		
-
 			if(add) {
 				list.add(user);
 			}
 		}
 		
-		
-		
+        Collections.sort(list, new ScimUserComparator<String>(sortBy, sortOrder.equalsIgnoreCase("ascending")));
+
 		return list;
 	}
 
