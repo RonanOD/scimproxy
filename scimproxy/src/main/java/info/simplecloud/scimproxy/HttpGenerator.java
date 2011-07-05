@@ -154,8 +154,28 @@ public class HttpGenerator {
 	 * @return XML if xml otherwise JSON.
 	 */
 	public static String getEncoding(HttpServletRequest req) {
-		// TODO: get encoding from request
-		return "JSON";
+		String encoding = "JSON"; // default to JSON
+		
+		String uri = req.getRequestURI();
+		if(uri == null) {
+			uri = "";
+		}
+		uri = uri.toLowerCase();
+		String acceptHeader = req.getHeader("Accept");
+		if(acceptHeader == null) {
+			acceptHeader = "";
+		}
+		acceptHeader = acceptHeader.toLowerCase();
+		
+		if(acceptHeader.indexOf("application/json") != -1  || uri.endsWith(".json")) {
+			encoding = "JSON";
+		}
+
+		if(acceptHeader.indexOf("application/xml") != -1 || uri.endsWith(".xml")) {
+			encoding = "XML";
+		}
+
+		return encoding;
 	}
 
 	/**

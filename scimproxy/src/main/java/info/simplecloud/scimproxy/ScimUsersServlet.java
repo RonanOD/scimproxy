@@ -2,15 +2,14 @@ package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.coding.encode.JsonEncoder;
+import info.simplecloud.core.coding.encode.XmlEncoder;
 import info.simplecloud.core.execeptions.EncodingFailed;
 import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.tools.ScimUserComparator;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -90,7 +89,14 @@ public class ScimUsersServlet extends RestServlet {
         	resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType(HttpGenerator.getContentType(req));
 
-            String response = new JsonEncoder().encode(users, attributesList);
+            String response = "";
+            if("JSON".equals(HttpGenerator.getEncoding(req))) {
+            	response = new JsonEncoder().encode(users, attributesList);
+            }
+            if("XML".equals(HttpGenerator.getEncoding(req))) {
+            	response = new XmlEncoder().encode(users, attributesList);
+            }
+            
             resp.getWriter().print(response);
         } catch (EncodingFailed e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
