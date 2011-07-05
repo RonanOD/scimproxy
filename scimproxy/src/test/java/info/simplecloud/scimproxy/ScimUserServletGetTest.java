@@ -33,6 +33,7 @@ public class ScimUserServletGetTest extends TestCase {
 		request.setURI("/User");
 		request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
 		request.setContent(scimUser.getUser("JSON"));
 		response.parse(tester.getResponses(request.generate()));
 
@@ -44,6 +45,7 @@ public class ScimUserServletGetTest extends TestCase {
 	public void testGetUser() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
 
 		request.setURI("/User/" + id);
 		response.parse(tester.getResponses(request.generate()));
@@ -59,6 +61,7 @@ public class ScimUserServletGetTest extends TestCase {
 	public void testMissingUser() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
 
 		request.setURI("/User/asdasdasdasd");
 		response.parse(tester.getResponses(request.generate()));
@@ -69,6 +72,7 @@ public class ScimUserServletGetTest extends TestCase {
 	public void testUserInput1() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
 
 		request.setURI("/1/User/asdasdasdasd");
 		response.parse(tester.getResponses(request.generate()));
@@ -79,6 +83,7 @@ public class ScimUserServletGetTest extends TestCase {
 	public void testUserInput2() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
 
 		request.setURI("/1/User/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsd");
 		response.parse(tester.getResponses(request.generate()));
@@ -90,6 +95,7 @@ public class ScimUserServletGetTest extends TestCase {
 	public void testUserInput3() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
 
 		String longUrl = "/User/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsd";
 		request.setURI(longUrl);
@@ -102,6 +108,8 @@ public class ScimUserServletGetTest extends TestCase {
 	public void testNoAttribs() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/User/" + id + "?attributes=");
 
 		response.parse(tester.getResponses(request.generate()));
@@ -117,6 +125,8 @@ public class ScimUserServletGetTest extends TestCase {
 	public void testOnlyUserName() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/User/" + id + "?attributes=nickName");
 
 		response.parse(tester.getResponses(request.generate()));
@@ -134,11 +144,64 @@ public class ScimUserServletGetTest extends TestCase {
 	public void testUnknownAttrib() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/User/" + id + "?attributes=asdasdasdasdasdasd");
 
 		response.parse(tester.getResponses(request.generate()));
 
 		assertEquals(400, response.getStatus());
+	}	
+	
+
+	public void testNotAuthenticated() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.removeHeader("Authorization");
+
+		request.setURI("/User/" + id);
+
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(401, response.getStatus());
+	}	
+
+	public void testMalformedAuth1() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.removeHeader("Authorization");
+		request.setHeader("Authorizationsasdasd", "Basic dXNyOnB3");
+
+		request.setURI("/User/" + id);
+
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(401, response.getStatus());
+	}	
+	
+
+	public void testMalformedAuth2() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "dXNyOnB3");
+
+		request.setURI("/User/" + id);
+
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(401, response.getStatus());
+	}	
+
+	public void testMalformedAuth3() throws Exception {
+		request.setMethod("GET");
+		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic asdXNyOnB3");
+
+		request.setURI("/User/" + id);
+
+		response.parse(tester.getResponses(request.generate()));
+
+		assertEquals(401, response.getStatus());
 	}	
 
 }

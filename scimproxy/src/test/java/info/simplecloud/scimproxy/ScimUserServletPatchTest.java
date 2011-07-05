@@ -26,6 +26,8 @@ public class ScimUserServletPatchTest extends TestCase {
 
 		request.setMethod("POST");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/User");
 		request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -58,6 +60,8 @@ public class ScimUserServletPatchTest extends TestCase {
     	HttpTester response2 = new HttpTester();
     	request2.setMethod("PATCH");
 		request2.setVersion("HTTP/1.0");
+		request2.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request2.setURI("/User/" + id);
 		request2.setContent(scimUser.getUser("JSON"));
 		request2.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
@@ -72,6 +76,7 @@ public class ScimUserServletPatchTest extends TestCase {
     	HttpTester response3 = new HttpTester();
 		request3.setMethod("GET");
 		request3.setVersion("HTTP/1.0");
+		request3.setHeader("Authorization", "Basic dXNyOnB3");
 		request3.setURI("/User/" + id);
 		response3.parse(tester.getResponses(request3.generate()));
         
@@ -121,6 +126,8 @@ public class ScimUserServletPatchTest extends TestCase {
     	HttpTester response2 = new HttpTester();
     	request2.setMethod("PATCH");
 		request2.setVersion("HTTP/1.0");
+		request2.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request2.setURI("/User/" + id);
 		request2.setContent(scimUser.getUser("JSON"));
 		request2.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));

@@ -27,6 +27,8 @@ public class ScimUserServletPostTest extends TestCase {
 	    
 		request.setMethod("POST");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/User");
 		request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
