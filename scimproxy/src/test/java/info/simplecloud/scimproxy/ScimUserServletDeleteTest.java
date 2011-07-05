@@ -58,6 +58,7 @@ public class ScimUserServletDeleteTest extends TestCase {
 
     	request.setMethod("DELETE");
     	request.setVersion("HTTP/1.0");
+		request.setHeader("ETag", scimUser.getMeta().getVersion());
 
 		response.parse(tester.getResponses(request.generate()));
 

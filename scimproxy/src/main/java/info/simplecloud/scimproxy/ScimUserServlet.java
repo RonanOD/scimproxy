@@ -246,11 +246,21 @@ public class ScimUserServlet extends RestServlet {
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String userId = getIdFromUri(req.getRequestURI());
 		log.trace("Trying to deleting user " + userId + ".");
+		
+
 		if (userId != null) {
 			try {
-				User.deletetUser(userId);
-				HttpGenerator.ok(resp);
-				log.info("Deleating user " + userId + ".");
+				ScimUser scimUser = User.getUser(userId);
+				String etag = req.getHeader("ETag");
+				String version = scimUser.getMeta().getVersion();
+				if (etag != null && !"".equals(etag) && etag.equals(version)) {
+					User.deletetUser(userId);
+					HttpGenerator.ok(resp);
+					log.info("Deleating user " + userId + ".");
+				} else {
+					HttpGenerator.preconditionFailed(resp, scimUser);
+				}
+				
 			} catch (UserNotFoundException e) {
 				HttpGenerator.notFound(resp);
 				log.trace("User " + userId + " is not found.");
