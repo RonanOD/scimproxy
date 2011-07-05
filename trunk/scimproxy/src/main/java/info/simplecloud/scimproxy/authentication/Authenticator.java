@@ -21,6 +21,9 @@ public class Authenticator {
 				authStatus = new Basic().authenticate(basicAuth);
 			}
 		}
+		if(Config.getInstance().isNoneAuth()) {
+			authStatus = true; // this means public to all and everything!
+		}
 
 		return authStatus;
 	}
