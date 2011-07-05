@@ -34,6 +34,7 @@ public class Config {
 
 	
 	private boolean basicAuth = false;
+	private boolean noneAuth = false; // Public to all internet users in the world!
 	private String basicAuthUsername = "";
 	private String basicAuthPassword = "";
 	
@@ -44,6 +45,9 @@ public class Config {
 
 		    if("basic".equals(config.getString("auth"))) {
 		    	setBasicAuth(true);
+		    }
+		    if("none".equals(config.getString("auth"))) {
+		    	setNoneAuth(true);
 		    }
 		    setBasicAuthUsername(config.getString("basic-auth.username"));
 		    setBasicAuthPassword(config.getString("basic-auth.password"));
@@ -99,6 +103,18 @@ public class Config {
 
 	public boolean isBasicAuth() {
 		return basicAuth;
+	}
+
+
+
+	public void setNoneAuth(boolean noneAuth) {
+		this.noneAuth = noneAuth;
+	}
+
+
+
+	public boolean isNoneAuth() {
+		return noneAuth;
 	}
 
 	

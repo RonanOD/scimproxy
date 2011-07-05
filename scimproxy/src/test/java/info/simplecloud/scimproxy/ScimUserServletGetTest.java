@@ -1,8 +1,5 @@
 package info.simplecloud.scimproxy;
 
-import java.net.URLDecoder;
-import java.util.ArrayList;
-
 import info.simplecloud.core.ScimUser;
 import junit.framework.TestCase;
 
@@ -153,56 +150,6 @@ public class ScimUserServletGetTest extends TestCase {
 		assertEquals(400, response.getStatus());
 	}	
 	
-
-	public void testNotAuthenticated() throws Exception {
-		request.setMethod("GET");
-		request.setVersion("HTTP/1.0");
-		request.removeHeader("Authorization");
-
-		request.setURI("/User/" + id);
-
-		response.parse(tester.getResponses(request.generate()));
-
-		assertEquals(401, response.getStatus());
-	}	
-
-	public void testMalformedAuth1() throws Exception {
-		request.setMethod("GET");
-		request.setVersion("HTTP/1.0");
-		request.removeHeader("Authorization");
-		request.setHeader("Authorizationsasdasd", "Basic dXNyOnB3");
-
-		request.setURI("/User/" + id);
-
-		response.parse(tester.getResponses(request.generate()));
-
-		assertEquals(401, response.getStatus());
-	}	
-	
-
-	public void testMalformedAuth2() throws Exception {
-		request.setMethod("GET");
-		request.setVersion("HTTP/1.0");
-		request.setHeader("Authorization", "dXNyOnB3");
-
-		request.setURI("/User/" + id);
-
-		response.parse(tester.getResponses(request.generate()));
-
-		assertEquals(401, response.getStatus());
-	}	
-
-	public void testMalformedAuth3() throws Exception {
-		request.setMethod("GET");
-		request.setVersion("HTTP/1.0");
-		request.setHeader("Authorization", "Basic asdXNyOnB3");
-
-		request.setURI("/User/" + id);
-
-		response.parse(tester.getResponses(request.generate()));
-
-		assertEquals(401, response.getStatus());
-	}	
 
 }
 
