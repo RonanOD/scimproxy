@@ -36,6 +36,8 @@ public class ScimUsersServletTest extends TestCase {
 		HttpTester aliceResponse = new HttpTester();
 		aliceRequest.setMethod("POST");
 		aliceRequest.setVersion("HTTP/1.0");
+		aliceRequest.setHeader("Authorization", "Basic dXNyOnB3");
+
 		aliceRequest.setURI("/User");
 		aliceRequest.setHeader("Content-Length", Integer.toString(alice.getUser("JSON").length()));
 		aliceRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -52,6 +54,7 @@ public class ScimUsersServletTest extends TestCase {
 		HttpTester bobResponse = new HttpTester();
 		bobRequest.setMethod("POST");
 		bobRequest.setVersion("HTTP/1.0");
+		bobRequest.setHeader("Authorization", "Basic dXNyOnB3");
 		bobRequest.setURI("/User");
 		bobRequest.setHeader("Content-Length", Integer.toString(bob.getUser("JSON").length()));
 		bobRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -67,6 +70,8 @@ public class ScimUsersServletTest extends TestCase {
 
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -95,6 +100,8 @@ public class ScimUsersServletTest extends TestCase {
 
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?sortBy=userName&sortOrder=ascending");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -119,6 +126,8 @@ public class ScimUsersServletTest extends TestCase {
 
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?sortBy=userName&sortOrder=descending");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -143,6 +152,8 @@ public class ScimUsersServletTest extends TestCase {
 
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?sortBy=userName&sortOrder=descending&attributes=nickName");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -166,6 +177,8 @@ public class ScimUsersServletTest extends TestCase {
 
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?sortBy=userName&sortOrder=descending&attributes=");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -189,6 +202,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testFilterByEaualsNickName() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?filterBy=nickName&filterValue=B&filterOp=equals");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -216,6 +231,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testFilterByEaualsNoMatch() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?filterBy=nickName&filterValue=asdasdasd&filterOp=equals");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -229,6 +246,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testFilterByEaualsUserNameOnly() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?filterBy=userName&filterValue=Bob&filterOp=equals&attributes=userName");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -255,6 +274,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testFilterByNoneAttribute() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?filterBy=sjshjsdfhjkshdfjsdf&filterValue=Bob&filterOp=equals");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -268,6 +289,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testFilterByEqualsIgnoreCase() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?filterBy=userName&filterValue=bob&filterOp=equalsIgnoreCase");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -291,6 +314,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testFilterByContains() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?filterBy=userName&filterValue=ob&filterOp=contains");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -313,6 +338,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testFilterByStartsWith() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?filterBy=userName&filterValue=Bo&filterOp=startsWith");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -336,6 +363,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testFilterByPresent() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?filterBy=nickName&filterOp=present");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -363,6 +392,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testPagingIndexOutOfBound() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?startIndex=10000&count=20000");
 		response.parse(tester.getResponses(request.generate()));
 
@@ -376,6 +407,8 @@ public class ScimUsersServletTest extends TestCase {
 	public void testPaging10to20() throws Exception {
 		request.setMethod("GET");
 		request.setVersion("HTTP/1.0");
+		request.setHeader("Authorization", "Basic dXNyOnB3");
+
 		request.setURI("/Users?startIndex=2&count=10");
 		response.parse(tester.getResponses(request.generate()));
 
