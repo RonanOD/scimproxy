@@ -16,8 +16,7 @@ import org.json.JSONObject;
 public class PluralSimpleListTypeHandler implements ITypeHandler {
 
     @Override
-    public Object decode(JSONObject scimUserJson, String attributeId) throws JSONException, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException {
+    public Object decode(JSONObject scimUserJson, String attributeId) throws JSONException {
         List<PluralType<String>> result = new ArrayList<PluralType<String>>();
 
         JSONArray plural = scimUserJson.getJSONArray(attributeId);
@@ -44,21 +43,26 @@ public class PluralSimpleListTypeHandler implements ITypeHandler {
     }
 
     @Override
-    public void encode(JSONObject scimUserJson, String attributeId, Object object) throws JSONException, UnhandledAttributeType,
-            FailedToSetValue, UnknownType, InstantiationException, IllegalAccessException, FailedToGetValue {
-        JSONArray plural = new JSONArray();
-        List<PluralType<String>> data = (List<PluralType<String>>) object;
-
-        for (PluralType<String> singular : data) {
-            JSONObject jsonSingular = new JSONObject();
-            jsonSingular.put("value", singular.getValue());
-            jsonSingular.put("type", singular.getType());
-            jsonSingular.put("primary", singular.getPrimary());
-
-            plural.put(jsonSingular);
+    public void encode(JSONObject scimUserJson, String attributeId, Object object) {
+        if (attributeId == null) {
+            throw new IllegalArgumentException("The attribute key may not be null");
         }
 
-        scimUserJson.put(attributeId, plural);
-        
+        try {
+            JSONArray plural = new JSONArray();
+            List<PluralType<String>> data = (List<PluralType<String>>) object;
+            for (PluralType<String> singular : data) {
+                JSONObject jsonSingular = new JSONObject();
+                jsonSingular.put("value", singular.getValue());
+                jsonSingular.put("type", singular.getType());
+                jsonSingular.put("primary", singular.getPrimary());
+
+                plural.put(jsonSingular);
+            }
+            scimUserJson.put(attributeId, plural);
+        } catch (JSONException e) {
+            // Should not happen since we did the null check earlier
+        }
+
     }
 }

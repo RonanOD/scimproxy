@@ -1,15 +1,10 @@
 package info.simplecloud.core.coding.handlers;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownType;
 import info.simplecloud.core.types.ComplexType;
 import info.simplecloud.core.types.PluralType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,8 +15,7 @@ public class PluralComplexListTypeHandler implements ITypeHandler {
     private static ComplexTypeHandler complexTypeHandler = new ComplexTypeHandler();
 
     @Override
-    public Object decode(JSONObject scimUserJson, String attributeId) throws JSONException, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException, ParseException {
+    public Object decode(JSONObject scimUserJson, String attributeId) throws JSONException {
         List<PluralType<Object>> result = new ArrayList<PluralType<Object>>();
 
         JSONArray plural = scimUserJson.getJSONArray(attributeId);
@@ -50,19 +44,25 @@ public class PluralComplexListTypeHandler implements ITypeHandler {
     }
 
     @Override
-    public void encode(JSONObject scimUserJson, String attributeId, Object object) throws JSONException, UnhandledAttributeType,
-            FailedToSetValue, UnknownType, InstantiationException, IllegalAccessException, FailedToGetValue {
-        List<PluralType<ComplexType>> plural = (List<PluralType<ComplexType>>) object;
-        JSONArray jsonPlural = new JSONArray();
-        for (PluralType<ComplexType> singular : plural) {
-            JSONObject jsonSingular = complexTypeHandler.internalEncode(singular.getValue());
-            jsonSingular.put("type", singular.getType());
-            jsonSingular.put("primary", singular.getPrimary());
-
-            jsonPlural.put(jsonSingular);
+    public void encode(JSONObject scimUserJson, String attributeId, Object object) {
+        if (attributeId == null) {
+            throw new IllegalArgumentException("The attribute key may not be null");
         }
 
-        scimUserJson.put(attributeId, jsonPlural);
+        try {
+            List<PluralType<ComplexType>> plural = (List<PluralType<ComplexType>>) object;
+            JSONArray jsonPlural = new JSONArray();
+            for (PluralType<ComplexType> singular : plural) {
+                JSONObject jsonSingular = complexTypeHandler.internalEncode(singular.getValue());
+                jsonSingular.put("type", singular.getType());
+                jsonSingular.put("primary", singular.getPrimary());
+
+                jsonPlural.put(jsonSingular);
+            }
+            scimUserJson.put(attributeId, jsonPlural);
+        } catch (JSONException e) {
+            // Should not happen since we did the null check earlier
+        }
 
     }
 

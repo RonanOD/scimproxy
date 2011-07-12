@@ -2,6 +2,8 @@ package info.simplecloud.core.coding.handlers;
 
 import info.simplecloud.core.Attribute;
 import info.simplecloud.core.coding.ReflectionHelper;
+import info.simplecloud.core.execeptions.DecodeFailed;
+import info.simplecloud.core.execeptions.EncodingFailed;
 import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
@@ -38,81 +40,92 @@ public class ComplexTypeHandler implements ITypeHandler {
     }
 
     @Override
-    public Object decode(JSONObject scimUserJson, String attributeId) throws JSONException, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException, ParseException {
+    public Object decode(JSONObject scimUserJson, String attributeId) throws JSONException {
 
         JSONObject complexObject = scimUserJson.getJSONObject(attributeId);
 
         return internalDecode(complexObject, attributeId);
     }
 
-    protected Object internalDecode(JSONObject complexObject, String attributeId) throws UnknownType, InstantiationException,
-            IllegalAccessException, UnhandledAttributeType, JSONException, FailedToSetValue, ParseException {
+    protected Object internalDecode(JSONObject complexObject, String attributeId) throws JSONException {
         Class<ComplexType> type = complexTypes.get(attributeId.toLowerCase());
         if (type == null) {
-            throw new UnknownType("");
+            throw new UnknownType("could not find a type matching '" + attributeId + "'");
         }
-        Object result = type.newInstance();
-        for (Method method : result.getClass().getMethods()) {
-            if (method.isAnnotationPresent(Attribute.class)) {
-                Attribute attribute = method.getAnnotation(Attribute.class);
-                String internalAttributeId = attribute.schemaName();
+        Object result;
+        try {
+            result = type.newInstance();
+            for (Method method : result.getClass().getMethods()) {
+                if (method.isAnnotationPresent(Attribute.class)) {
+                    Attribute attribute = method.getAnnotation(Attribute.class);
+                    String internalAttributeId = attribute.schemaName();
 
-                if (complexObject.has(internalAttributeId)) {
+                    if (complexObject.has(internalAttributeId)) {
 
-                    String handlerName = attribute.codingHandler().getName();
-                    ITypeHandler handler = typeHandlers.get(handlerName);
-                    if (handler == null) {
-                        throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + internalAttributeId
-                                + "' and class='" + result.getClass() + "'");
-                    }
-                    // TODO think of something smarter
-                    String setter = "s" + method.getName().substring(1);
-                    Object arg = handler.decode(complexObject, internalAttributeId);
+                        String handlerName = attribute.codingHandler().getName();
+                        ITypeHandler handler = typeHandlers.get(handlerName);
+                        if (handler == null) {
+                            throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + internalAttributeId
+                                    + "' and class='" + result.getClass() + "'");
+                        }
+                        // TODO think of something smarter
+                        String setter = "s" + method.getName().substring(1);
+                        Object arg = handler.decode(complexObject, internalAttributeId);
 
-                    try {
-                        Method setMethod = ReflectionHelper.getMethod(setter, type);
-                        setMethod.invoke(result, arg);
-                    } catch (Exception e) {
-                        throw new FailedToSetValue("Failed to invoke method '" + setter + "' on '" + type.getName() + "'", e);
+                        try {
+                            Method setMethod = ReflectionHelper.getMethod(setter, type);
+                            setMethod.invoke(result, arg);
+                        } catch (Exception e) {
+                            throw new DecodeFailed("Failed to invoke method '" + setter + "' on '" + type.getName() + "'", e);
+                        }
                     }
                 }
             }
+            return result;
+        } catch (InstantiationException e1) {
+            throw new DecodeFailed("Dailed to decode", e1);
+        } catch (IllegalAccessException e1) {
+            throw new DecodeFailed("Failed to decode", e1);
         }
-        return result;
     }
 
     @Override
-    public void encode(JSONObject scimUserJson, String attributeId, Object object) throws JSONException, UnhandledAttributeType,
-            FailedToSetValue, UnknownType, InstantiationException, IllegalAccessException, FailedToGetValue {
-        ComplexType value = (ComplexType) object;
-        JSONObject jsonValue = internalEncode(value);
-        scimUserJson.put(attributeId, jsonValue);
+    public void encode(JSONObject scimUserJson, String attributeId, Object object) {
+        if (attributeId == null) {
+            throw new IllegalArgumentException("The attribute key may not be null");
+        }
+
+        try {
+            ComplexType value = (ComplexType) object;
+            JSONObject jsonValue = internalEncode(value);
+            scimUserJson.put(attributeId, jsonValue);
+        } catch (JSONException e) {
+            // Should not happen since we did the null check earlier
+        }
     }
 
-    protected JSONObject internalEncode(ComplexType type) throws JSONException, FailedToGetValue {
+    protected JSONObject internalEncode(ComplexType type) throws JSONException {
         JSONObject result = new JSONObject();
 
         for (Method method : type.getClass().getMethods()) {
-            try {
-                if (method.isAnnotationPresent(Attribute.class)) {
-                    Attribute attribute = method.getAnnotation(Attribute.class);
-                    String attributeId = attribute.schemaName();
-                    String handlerName = attribute.codingHandler().getName();
-                    ITypeHandler handler = typeHandlers.get(handlerName);
-                    if (handler == null) {
-                        throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + attributeId
-                                + "' and class='" + result.getClass() + "'");
-                    }
-
-                    Object object = method.invoke(type);
-                    if (object != null) {
-                        handler.encode(result, attributeId, object);
-                    }
+            if (method.isAnnotationPresent(Attribute.class)) {
+                Attribute attribute = method.getAnnotation(Attribute.class);
+                String attributeId = attribute.schemaName();
+                String handlerName = attribute.codingHandler().getName();
+                ITypeHandler handler = typeHandlers.get(handlerName);
+                if (handler == null) {
+                    throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + attributeId
+                            + "' and class='" + result.getClass() + "'");
                 }
-            } catch (Exception e) {
-                // TODO create good message
-                throw new FailedToGetValue("", e);
+                Object object = null;
+                try {
+                    object = method.invoke(type);
+                } catch (Exception e) {
+                    throw new EncodingFailed("failed to get attribute '" + attributeId + "' on type '" + type.getClass().getName() + "'", e);
+                }
+                if (object != null) {
+                    handler.encode(result, attributeId, object);
+                }
             }
         }
 

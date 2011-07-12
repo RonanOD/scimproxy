@@ -11,6 +11,7 @@ import info.simplecloud.core.coding.handlers.PluralComplexListTypeHandler;
 import info.simplecloud.core.coding.handlers.PluralSimpleListTypeHandler;
 import info.simplecloud.core.coding.handlers.StringHandler;
 import info.simplecloud.core.coding.handlers.StringListHandler;
+import info.simplecloud.core.execeptions.DecodeFailed;
 import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
@@ -47,8 +48,7 @@ public class JsonDecoder implements IUserDecoder {
     }
 
     @Override
-    public void decode(String user, ScimUser data) throws InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType,
-            InstantiationException, IllegalAccessException, ParseException {
+    public void decode(String user, ScimUser data) throws InvalidUser {
         try {
             JSONObject scimUserJson = new JSONObject(user);
 
@@ -73,8 +73,7 @@ public class JsonDecoder implements IUserDecoder {
                                 Method setMethod = ReflectionHelper.getMethod(setter, extension.getClass());
                                 setMethod.invoke(extension, arg);
                             } catch (Exception e) {
-                                // TODO create message and change name of class
-                                throw new FailedToSetValue("setter: " + setter + "arg: " + arg, e);
+                                throw new DecodeFailed("Failed to invoke setter: " + setter + " with arg: " + arg, e);
                             }
                         }
                     }
@@ -86,7 +85,7 @@ public class JsonDecoder implements IUserDecoder {
     }
 
 	@Override
-	public void decode(String userList, List<ScimUser> users) throws InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException, IllegalAccessException, ParseException {
+	public void decode(String userList, List<ScimUser> users) throws InvalidUser {
 
 		try {
 	        JSONObject userListJson = new JSONObject(userList);

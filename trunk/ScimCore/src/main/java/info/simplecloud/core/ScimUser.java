@@ -14,13 +14,10 @@ import info.simplecloud.core.coding.handlers.PluralSimpleListTypeHandler;
 import info.simplecloud.core.coding.handlers.StringHandler;
 import info.simplecloud.core.execeptions.EncodingFailed;
 import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknowExtension;
 import info.simplecloud.core.execeptions.UnknownEncoding;
-import info.simplecloud.core.execeptions.UnknownType;
-import info.simplecloud.core.exstensions.EnterpriseAttributes;
+import info.simplecloud.core.execeptions.UnknownExtension;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.ComplexType;
 import info.simplecloud.core.types.Meta;
@@ -28,7 +25,6 @@ import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.PluralType;
 
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,10 +53,34 @@ public class ScimUser extends ComplexType {
 
     public static final String               ENCODING_JSON                = "json";
 
+    private static List<Class<?>>            extensionTypes               = new ArrayList<Class<?>>();
+    static {
+        String extensionsString = System.getProperty("info.simplecloud.core.ScimUser.extensions");
+        if (extensionsString != null) {
+            String[] extensionNames = extensionsString.split(";");
+            for (String extensionName : extensionNames) {
+                try {
+                    extensionTypes.add(Class.forName(extensionName));
+                } catch (ClassNotFoundException e) {
+                    // Nothing we can do
+                }
+            }
+        }
+    }
+
     private List<Object>                     extensions                   = new ArrayList<Object>();
     {
+        for (Class<?> clazz : extensionTypes) {
+            try {
+                extensions.add(clazz.newInstance());
+            } catch (InstantiationException e) {
+                // Nothing we can do
+            } catch (IllegalAccessException e) {
+                // Nothing we can do
+            }
+        }
+
         extensions.add(this);
-        extensions.add(new EnterpriseAttributes());
     };
 
     private static Map<String, IUserEncoder> encoders                     = new HashMap<String, IUserEncoder>();
@@ -72,8 +92,7 @@ public class ScimUser extends ComplexType {
         new XmlDecoder().addMe(decoders);
     }
 
-    public ScimUser(String user, String encoding) throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException, ParseException {
+    public ScimUser(String user, String encoding) throws UnknownEncoding, InvalidUser {
         IUserDecoder decoder = decoders.get(encoding);
         if (decoder == null) {
             throw new UnknownEncoding(encoding);
@@ -81,29 +100,31 @@ public class ScimUser extends ComplexType {
 
         decoder.decode(user, this);
     }
-    
+
     public ScimUser() {
 
     }
 
-    public static ArrayList<ScimUser> getScimUsers(String users, String encoding) throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue,
-    UnknownType, InstantiationException, IllegalAccessException, ParseException {
-
-    	IUserDecoder decoder = decoders.get(encoding);
-    	if (decoder == null) {
-    		throw new UnknownEncoding(encoding);
-    	}
-
-    	ArrayList<ScimUser> userList = new ArrayList<ScimUser>();
-
-    	decoder.decode(users, userList);
-    	return userList;
+    public static void registerExtension(Class<?> clazz) {
+        if (!extensionTypes.contains(clazz)) {
+            extensionTypes.add(clazz);
+        }
     }
 
-    
+    public static ArrayList<ScimUser> getScimUsers(String users, String encoding) throws UnknownEncoding, InvalidUser {
 
-    
-    public String getUser(String encoding) throws UnknownEncoding, EncodingFailed, FailedToGetValue, UnhandledAttributeType {
+        IUserDecoder decoder = decoders.get(encoding);
+        if (decoder == null) {
+            throw new UnknownEncoding(encoding);
+        }
+
+        ArrayList<ScimUser> userList = new ArrayList<ScimUser>();
+
+        decoder.decode(users, userList);
+        return userList;
+    }
+
+    public String getUser(String encoding) throws UnknownEncoding {
         IUserEncoder encoder = encoders.get(encoding);
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
@@ -113,7 +134,8 @@ public class ScimUser extends ComplexType {
         return encoder.encode(this);
     }
 
-    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding, EncodingFailed, FailedToGetValue, UnhandledAttributeType {
+    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding, EncodingFailed, FailedToGetValue,
+            UnhandledAttributeType {
         IUserEncoder encoder = encoders.get(encoding);
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
@@ -122,7 +144,6 @@ public class ScimUser extends ComplexType {
 
         return encoder.encode(this, attributes);
     }
-    
 
     public Comparable getComparable(String attributeId) {
         Object object = super.getAttribute(attributeId);
@@ -132,8 +153,7 @@ public class ScimUser extends ComplexType {
         return null;
     }
 
-    public void patch(String patch, String encoding) throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue,
-            UnknownType, InstantiationException, IllegalAccessException, FailedToGetValue, UnknowExtension, ParseException {
+    public void patch(String patch, String encoding) throws UnknownEncoding, InvalidUser {
         ScimUser userPatch = new ScimUser(patch, encoding);
 
         Meta meta = userPatch.getMeta();
@@ -209,14 +229,14 @@ public class ScimUser extends ComplexType {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getExtension(Class type) throws UnknowExtension {
+    public <T> T getExtension(Class<?> type) throws UnknownExtension {
         for (int i = 0; i < this.extensions.size(); i++) {
             if (this.extensions.get(i).getClass() == type) {
                 return (T) this.extensions.get(i);
             }
         }
 
-        throw new UnknowExtension("Could not find object for type '" + type.getName() + "'");
+        throw new UnknownExtension("Could not find object for type '" + type.getName() + "'");
     }
 
     public List<Object> getExtensions() {
