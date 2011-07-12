@@ -1,9 +1,9 @@
 package info.simplecloud.core.execeptions;
 
 @SuppressWarnings("serial")
-public class UnknowExtension extends Exception {
+public class UnknownExtension extends Exception {
 
-    public UnknowExtension(String msg) {
+    public UnknownExtension(String msg) {
         super(msg);
     }
 

@@ -1,10 +1,9 @@
-package info.simplecloud.core.exstensions;
+package info.simplecloud.core.extensions;
 
 import info.simplecloud.core.Attribute;
-import info.simplecloud.core.IExtension;
 import info.simplecloud.core.coding.handlers.StringHandler;
 
-public class EnterpriseAttributes implements IExtension {
+public class EnterpriseAttributes {
 
     private String employeeNumber;
     private String costCenter;

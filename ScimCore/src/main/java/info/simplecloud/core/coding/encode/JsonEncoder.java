@@ -11,7 +11,6 @@ import info.simplecloud.core.coding.handlers.PluralSimpleListTypeHandler;
 import info.simplecloud.core.coding.handlers.StringHandler;
 import info.simplecloud.core.coding.handlers.StringListHandler;
 import info.simplecloud.core.execeptions.EncodingFailed;
-import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
 
 import java.lang.reflect.Method;
@@ -47,32 +46,31 @@ public class JsonEncoder implements IUserEncoder {
     }
 
     @Override
-    public String encode(ScimUser data) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
+    public String encode(ScimUser data) throws EncodingFailed {
         return encode(data, new ArrayList<String>());
     }
 
     @Override
-    public String encode(ScimUser data, List<String> includeAttributes) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
+    public String encode(ScimUser data, List<String> includeAttributes) throws EncodingFailed {
         try {
-        	JSONObject obj = internalEncode(data, includeAttributes);
-        	if(obj != null) {
+            JSONObject obj = internalEncode(data, includeAttributes);
+            if (obj != null) {
                 return obj.toString(2);
-        	}
-        	else {
-        		return null;
-        	}
+            } else {
+                return null;
+            }
         } catch (JSONException e) {
             throw new EncodingFailed("Failed to build user", e);
         }
     }
 
     @Override
-    public String encode(List<ScimUser> scimUsers) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
+    public String encode(List<ScimUser> scimUsers) throws EncodingFailed {
         return this.encode(scimUsers, new ArrayList<String>());
     }
 
     @Override
-    public String encode(List<ScimUser> scimUsers, List<String> includeAttributes) throws EncodingFailed, FailedToGetValue, UnhandledAttributeType {
+    public String encode(List<ScimUser> scimUsers, List<String> includeAttributes) throws EncodingFailed {
         try {
             JSONObject result = new JSONObject();
 
@@ -85,13 +83,13 @@ public class JsonEncoder implements IUserEncoder {
             JSONArray users = new JSONArray();
             int counter = 0;
             for (ScimUser scimUser : scimUsers) {
-            	JSONObject o = internalEncode(scimUser, includeAttributes);
-            	if(o != null) {
+                JSONObject o = internalEncode(scimUser, includeAttributes);
+                if (o != null) {
                     users.put(o);
                     counter++;
-            	}
+                }
             }
-            
+
             result.put("totalResults", counter);
 
             result.put("entry", users);
@@ -104,7 +102,7 @@ public class JsonEncoder implements IUserEncoder {
         }
     }
 
-    private JSONObject internalEncode(ScimUser data, List<String> attributesList) throws JSONException, FailedToGetValue, UnhandledAttributeType {
+    private JSONObject internalEncode(ScimUser data, List<String> attributesList) throws JSONException, UnhandledAttributeType, EncodingFailed {
         JSONObject result = new JSONObject();
         boolean foundAttributes = false;
 
@@ -113,44 +111,45 @@ public class JsonEncoder implements IUserEncoder {
                 if (method.isAnnotationPresent(Attribute.class)) {
                     Attribute attribute = method.getAnnotation(Attribute.class);
                     String attributeId = attribute.schemaName();
-                    
-                    
-                    if (attributesList.isEmpty() || attributesList.contains(attributeId) || "id".equals(attributeId) || "meta".equals(attributeId)) {
+
+                    if (attributesList.isEmpty() || attributesList.contains(attributeId) || "id".equals(attributeId)
+                            || "meta".equals(attributeId)) {
 
                         String handlerName = attribute.codingHandler().getName();
                         ITypeHandler handler = typeHandlers.get(handlerName);
                         if (handler == null) {
-                            throw new UnhandledAttributeType("Han no handler for '" + handlerName + "', attribute='" + attributeId
+                            throw new UnhandledAttributeType("Has no handler for '" + handlerName + "', attribute='" + attributeId
                                     + "' and class='" + result.getClass() + "'");
                         }
 
                         try {
                             Object object = method.invoke(extension);
                             if (object != null) {
-                                // if it's only id and meta in the attribute list and none of them is in attributeList, then don't return User at all
-                            	if(("id".equals(attributeId) && attributesList.contains("id")) || ("meta".equals(attributeId) && attributesList.contains("meta"))) {
-                            		foundAttributes = true;
-                            	}
-                            	if(!"id".equals(attributeId) && !"meta".equals(attributeId)) {
-                            		foundAttributes = true;
-                            	}
+                                // if it's only id and meta in the attribute
+                                // list and none of them is in attributeList,
+                                // then don't return User at all
+                                if (("id".equals(attributeId) && attributesList.contains("id"))
+                                        || ("meta".equals(attributeId) && attributesList.contains("meta"))) {
+                                    foundAttributes = true;
+                                }
+                                if (!"id".equals(attributeId) && !"meta".equals(attributeId)) {
+                                    foundAttributes = true;
+                                }
 
                                 handler.encode(result, attributeId, object);
                             }
                         } catch (Exception e) {
-                            // TODO create good message
-                            throw new FailedToGetValue("", e);
+                            throw new EncodingFailed("failed to read data from object", e);
                         }
                     }
                 }
             }
         }
 
-        if(foundAttributes) {
+        if (foundAttributes) {
             return result;
-        }
-        else {
-        	return null;
+        } else {
+            return null;
         }
     }
 

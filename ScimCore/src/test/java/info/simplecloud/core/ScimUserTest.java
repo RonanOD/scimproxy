@@ -4,10 +4,10 @@ import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknowExtension;
+import info.simplecloud.core.execeptions.UnknownExtension;
 import info.simplecloud.core.execeptions.UnknownEncoding;
 import info.simplecloud.core.execeptions.UnknownType;
-import info.simplecloud.core.exstensions.EnterpriseAttributes;
+import info.simplecloud.core.extensions.EnterpriseAttributes;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.PluralType;
@@ -18,13 +18,14 @@ import java.util.List;
 
 import org.apache.xmlbeans.impl.util.Base64;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ScimUserTest {
 
     @Test
     public void patch() throws UnknownEncoding, InvalidUser, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, FailedToGetValue, UnknowExtension, ParseException {
+            IllegalAccessException, FailedToGetValue, UnknownExtension, ParseException {
         String patch = "ewogICJlbXBsb3llZU51bWJlciI6ICJhYmMiLAogICJuYW1lIjogewogICAgImZvcm1hdHRlZCI6ICJtci4gTmlzc2UgSm9oYW5zc29uIiwKICAgICJmYW1pbHlOYW1lIjogIkpvaGFuc3NvbiIKICB9LAogICJlbWFpbHMiOiBbCiAgICB7CiAgICAgICJ0eXBlIjogIndvcmsiLAogICAgICAicHJpbWFyeSI6IHRydWUsCiAgICAgICJ2YWx1ZSI6ICJuaXNzZUB3b3JrLmNvbSIKICAgIH0sCiAgICB7CiAgICAgICJ0eXBlIjogImhvbWUiLAogICAgICAicHJpbWFyeSI6IHRydWUsCiAgICAgICJ2YWx1ZSI6ICJuaXNzZUBqb2hhbnNzb24uY29tIgogICAgfQogIF0sCiAgIm1ldGEiOiB7CiAgICAiYXR0cmlidXRlcyI6IFsKICAgICAgImVtYWlscyIsCiAgICAgICJkZXBhcnRtZW50IgogICAgXQogIH0KfQ==";
         patch = new String(Base64.decode(patch.getBytes()));
         ScimUser oldUser = new ScimUser();
@@ -47,9 +48,13 @@ public class ScimUserTest {
         Assert.assertEquals("Nisse", oldUser.getName().getGivenName());
         Assert.assertTrue(oldUser.getAddresses().contains(new PluralType<Address>(workAddress, "work", true)));
     }
+    @Before
+    public void init() {
+        ScimUser.registerExtension(EnterpriseAttributes.class);
+    }
 
     @Test
-    public void equals() throws UnknowExtension {
+    public void equals() throws UnknownExtension {
         ScimUser user1 = new ScimUser();
         ScimUser user1eq1 = new ScimUser();
         ScimUser user1noteq1 = new ScimUser();

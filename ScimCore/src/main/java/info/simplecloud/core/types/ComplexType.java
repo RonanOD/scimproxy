@@ -1,16 +1,13 @@
 package info.simplecloud.core.types;
 
 import info.simplecloud.core.Attribute;
-import info.simplecloud.core.execeptions.FailedToGetValue;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class ComplexType {
     private static final String ID_SEPARATOR = ".";
@@ -128,7 +125,7 @@ public abstract class ComplexType {
         this.data.remove(id);
     }
 
-    public void merge(ComplexType from) throws FailedToGetValue {
+    public void merge(ComplexType from) {
 
         for (Method method : from.getClass().getMethods()) {
             if (method.isAnnotationPresent(Attribute.class)) {
@@ -137,7 +134,7 @@ public abstract class ComplexType {
                 if (this.getAttribute(attributeId) != null && this.getAttribute(attributeId) instanceof ComplexType) {
                     ComplexType fromTmp = (ComplexType) from.getAttribute(attributeId);
                     ComplexType toTmp = (ComplexType) this.getAttribute(attributeId);
-                    if(fromTmp != null) {                        
+                    if (fromTmp != null) {
                         toTmp.merge(fromTmp);
                     }
                 } else if (from.getAttribute(attributeId) != null) {
