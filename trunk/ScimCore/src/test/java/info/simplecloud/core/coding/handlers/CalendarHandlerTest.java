@@ -1,11 +1,5 @@
 package info.simplecloud.core.coding.handlers;
 
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownType;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,8 +14,7 @@ public class CalendarHandlerTest {
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     @Test
-    public void encode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, FailedToGetValue {
+    public void encode() throws JSONException {
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -35,8 +28,7 @@ public class CalendarHandlerTest {
     }
 
     @Test
-    public void decode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, ParseException {
+    public void decode() throws JSONException {
 
         Date date = new Date();
         String dateString = simpleDateFormat.format(date);
@@ -46,7 +38,7 @@ public class CalendarHandlerTest {
 
         Calendar cal = (Calendar) ch.decode(scimUserJson, "testkey");
 
-        Assert.assertEquals(date.getTime()/1000, cal.getTime().getTime()/1000);
+        Assert.assertEquals(date.getTime() / 1000, cal.getTime().getTime() / 1000);
     }
 
 }

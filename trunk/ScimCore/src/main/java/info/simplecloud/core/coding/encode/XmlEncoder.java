@@ -4,17 +4,8 @@ import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.execeptions.EncodingFailed;
 
 import java.util.List;
-import java.util.Map;
 
 public class XmlEncoder implements IUserEncoder {
-    private static String[] names = { "xml", "XML" };
-
-    @Override
-    public void addMe(Map<String, IUserEncoder> encoders) {
-        for (String name : names) {
-            encoders.put(name, this);
-        }
-    }
 
     @Override
     public String encode(ScimUser scimUser) {

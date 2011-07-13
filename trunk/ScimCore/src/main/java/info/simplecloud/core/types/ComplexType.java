@@ -3,10 +3,8 @@ package info.simplecloud.core.types;
 import info.simplecloud.core.Attribute;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class ComplexType {
@@ -61,66 +59,6 @@ public abstract class ComplexType {
         return this;
     }
 
-    public void addPluralAttribute(String id, PluralType item) {
-        List<PluralType> list = (List<PluralType>) this.getAttribute(id);
-        if (list != null) {
-            list = new ArrayList<PluralType>();
-            this.setAttribute(id, list);
-        }
-        list.add(item);
-    }
-
-    private boolean equals(ComplexType otherCt, String... attributeIds) {
-
-        for (String id : attributeIds) {
-            Object me = this.data.get(id);
-            Object other = otherCt.data.get(id);
-            if (me != null && !me.equals(other)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean equals(Object otherObj) {
-        if (otherObj == this) {
-            return true;
-        }
-
-        if (!(otherObj instanceof ComplexType)) {
-            return false;
-        }
-        ComplexType otherCt = (ComplexType) otherObj;
-
-        if (this.data.size() != otherCt.data.size()) {
-            return false;
-        }
-
-        return this.equals(otherCt, this.data.keySet().toArray(new String[] {}));
-    }
-
-    private String toString(String... attributeIds) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String id : attributeIds) {
-            Object obj = this.data.get(id);
-            if (obj != null) {
-                stringBuilder.append(id);
-                stringBuilder.append(": ");
-                stringBuilder.append(obj.toString());
-                stringBuilder.append(", ");
-            }
-        }
-
-        return stringBuilder.substring(0, stringBuilder.length() - 2);
-    }
-
-    @Override
-    public String toString() {
-        return this.toString(this.data.keySet().toArray(new String[] {}));
-    }
-
     public void removeAttribute(String id) {
         this.data.remove(id);
     }
@@ -143,4 +81,47 @@ public abstract class ComplexType {
             }
         }
     }
+
+    @Override
+    public boolean equals(Object otherObj) {
+        if (otherObj == this) {
+            return true;
+        }
+
+        if (!(otherObj instanceof ComplexType)) {
+            return false;
+        }
+        ComplexType otherCt = (ComplexType) otherObj;
+
+        if (this.data.size() != otherCt.data.size()) {
+            return false;
+        }
+
+        for (String id : this.data.keySet()) {
+            Object me = this.data.get(id);
+            Object other = otherCt.data.get(id);
+            if (me != null && !me.equals(other)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String id : this.data.keySet()) {
+            Object obj = this.data.get(id);
+            if (obj != null) {
+                stringBuilder.append(id);
+                stringBuilder.append(": ");
+                stringBuilder.append(obj.toString());
+                stringBuilder.append(", ");
+            }
+        }
+
+        return stringBuilder.substring(0, stringBuilder.length() - 2);
+    }
+
 }

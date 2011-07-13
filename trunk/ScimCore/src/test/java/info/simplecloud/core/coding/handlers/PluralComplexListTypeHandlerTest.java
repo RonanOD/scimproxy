@@ -1,13 +1,8 @@
 package info.simplecloud.core.coding.handlers;
 
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownType;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.PluralType;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +17,7 @@ public class PluralComplexListTypeHandlerTest {
     private static PluralComplexListTypeHandler pclth = new PluralComplexListTypeHandler();
 
     @Test
-    public void encode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, FailedToGetValue {
+    public void encode() throws JSONException {
         List<PluralType<Address>> plural = new ArrayList<PluralType<Address>>();
         Address workAddress = new Address();
         workAddress.setCountry("Sweden");
@@ -57,8 +51,7 @@ public class PluralComplexListTypeHandlerTest {
     }
 
     @Test
-    public void decode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, ParseException {
+    public void decode() throws JSONException {
         JSONObject scimUserJson = new JSONObject();
         JSONArray jsonPlural = new JSONArray();
 
@@ -84,11 +77,11 @@ public class PluralComplexListTypeHandlerTest {
         workAddress.setCountry("Sweden");
         workAddress.setRegion("Stockholm");
         Assert.assertTrue(plural.contains(new PluralType<Address>(workAddress, "work", true)));
-        
+
         Address homeAddress = new Address();
         homeAddress.setCountry("England");
         homeAddress.setRegion("London");
         Assert.assertTrue(plural.contains(new PluralType<Address>(homeAddress, "home", false)));
-        
+
     }
 }

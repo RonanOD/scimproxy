@@ -2,10 +2,8 @@ package info.simplecloud.core.coding.handlers;
 
 import info.simplecloud.core.Attribute;
 import info.simplecloud.core.coding.ReflectionHelper;
-import info.simplecloud.core.execeptions.DecodeFailed;
+import info.simplecloud.core.execeptions.DecodingFailed;
 import info.simplecloud.core.execeptions.EncodingFailed;
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.core.execeptions.UnknownType;
 import info.simplecloud.core.types.Address;
@@ -14,7 +12,6 @@ import info.simplecloud.core.types.Meta;
 import info.simplecloud.core.types.Name;
 
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +25,7 @@ public class ComplexTypeHandler implements ITypeHandler {
     static {
         typeHandlers.put(StringHandler.class.getName(), new StringHandler());
         typeHandlers.put(IntegerHandler.class.getName(), new IntegerHandler());
+        typeHandlers.put(BooleanHandler.class.getName(), new BooleanHandler());
         typeHandlers.put(CalendarHandler.class.getName(), new CalendarHandler());
         typeHandlers.put(ComplexTypeHandler.class.getName(), new ComplexTypeHandler());
         typeHandlers.put(PluralSimpleListTypeHandler.class.getName(), new PluralSimpleListTypeHandler());
@@ -76,16 +74,16 @@ public class ComplexTypeHandler implements ITypeHandler {
                             Method setMethod = ReflectionHelper.getMethod(setter, type);
                             setMethod.invoke(result, arg);
                         } catch (Exception e) {
-                            throw new DecodeFailed("Failed to invoke method '" + setter + "' on '" + type.getName() + "'", e);
+                            throw new DecodingFailed("Failed to invoke method '" + setter + "' on '" + type.getName() + "'", e);
                         }
                     }
                 }
             }
             return result;
         } catch (InstantiationException e1) {
-            throw new DecodeFailed("Dailed to decode", e1);
+            throw new DecodingFailed("Dailed to decode", e1);
         } catch (IllegalAccessException e1) {
-            throw new DecodeFailed("Failed to decode", e1);
+            throw new DecodingFailed("Failed to decode", e1);
         }
     }
 

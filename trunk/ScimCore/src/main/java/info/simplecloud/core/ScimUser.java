@@ -12,10 +12,8 @@ import info.simplecloud.core.coding.handlers.IntegerHandler;
 import info.simplecloud.core.coding.handlers.PluralComplexListTypeHandler;
 import info.simplecloud.core.coding.handlers.PluralSimpleListTypeHandler;
 import info.simplecloud.core.coding.handlers.StringHandler;
-import info.simplecloud.core.execeptions.EncodingFailed;
-import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
+import info.simplecloud.core.execeptions.PatchingFailed;
 import info.simplecloud.core.execeptions.UnknownEncoding;
 import info.simplecloud.core.execeptions.UnknownExtension;
 import info.simplecloud.core.types.Address;
@@ -52,6 +50,7 @@ public class ScimUser extends ComplexType {
     public static final String               ATTRIBUTE_ADDRESSES          = "addresses";
 
     public static final String               ENCODING_JSON                = "json";
+    public static final String               ENCODING_XML                 = "xml";
 
     private static List<Class<?>>            extensionTypes               = new ArrayList<Class<?>>();
     static {
@@ -86,14 +85,14 @@ public class ScimUser extends ComplexType {
     private static Map<String, IUserEncoder> encoders                     = new HashMap<String, IUserEncoder>();
     private static Map<String, IUserDecoder> decoders                     = new HashMap<String, IUserDecoder>();
     static {
-        new JsonEncoder().addMe(encoders);
-        new XmlEncoder().addMe(encoders);
-        new JsonDecoder().addMe(decoders);
-        new XmlDecoder().addMe(decoders);
+        encoders.put(ENCODING_XML, new XmlEncoder());
+        encoders.put(ENCODING_JSON, new JsonEncoder());
+        decoders.put(ENCODING_XML, new XmlDecoder());
+        decoders.put(ENCODING_JSON, new JsonDecoder());
     }
 
     public ScimUser(String user, String encoding) throws UnknownEncoding, InvalidUser {
-        IUserDecoder decoder = decoders.get(encoding);
+        IUserDecoder decoder = decoders.get(encoding.toLowerCase());
         if (decoder == null) {
             throw new UnknownEncoding(encoding);
         }
@@ -113,7 +112,7 @@ public class ScimUser extends ComplexType {
 
     public static ArrayList<ScimUser> getScimUsers(String users, String encoding) throws UnknownEncoding, InvalidUser {
 
-        IUserDecoder decoder = decoders.get(encoding);
+        IUserDecoder decoder = decoders.get(encoding.toLowerCase());
         if (decoder == null) {
             throw new UnknownEncoding(encoding);
         }
@@ -125,7 +124,7 @@ public class ScimUser extends ComplexType {
     }
 
     public String getUser(String encoding) throws UnknownEncoding {
-        IUserEncoder encoder = encoders.get(encoding);
+        IUserEncoder encoder = encoders.get(encoding.toLowerCase());
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
         }
@@ -134,9 +133,8 @@ public class ScimUser extends ComplexType {
         return encoder.encode(this);
     }
 
-    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding, EncodingFailed, FailedToGetValue,
-            UnhandledAttributeType {
-        IUserEncoder encoder = encoders.get(encoding);
+    public String getUser(String encoding, List<String> attributes) throws UnknownEncoding {
+        IUserEncoder encoder = encoders.get(encoding.toLowerCase());
         if (encoder == null) {
             throw new UnknownEncoding(encoding);
         }
@@ -177,17 +175,17 @@ public class ScimUser extends ComplexType {
                 }
 
                 try {
-                    Object otherObj = userPatch.getExtension(extension.getClass());
-                    Method otherMethod = otherObj.getClass().getMethod(method.getName(), method.getParameterTypes());
-                    Object data = otherMethod.invoke(otherObj);
+                    Object patchObj = userPatch.getExtension(extension.getClass());
+                    Method patchMethod = patchObj.getClass().getMethod(method.getName(), method.getParameterTypes());
+                    Object patchData = patchMethod.invoke(patchObj);
 
                     // TODO think of something smarter
                     String setter = "s" + method.getName().substring(1);
-                    ReflectionHelper.getMethod(setter, extension.getClass()).invoke(extension, data);
+                    ReflectionHelper.getMethod(setter, extension.getClass()).invoke(extension, patchData);
 
                 } catch (Exception e) {
-                    // TODO select a good exception to throw
-                    e.printStackTrace();
+                    throw new PatchingFailed("Failed to patch user, retriving and setting value, method:" + method.getName() + " , class:"
+                            + extension.getClass().getName(), e);
                 }
             }
         }

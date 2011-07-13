@@ -1,10 +1,5 @@
 package info.simplecloud.core.coding.handlers;
 
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +13,7 @@ public class StringListHandlerTest {
     private static StringListHandler sh = new StringListHandler();
 
     @Test
-    public void encode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, FailedToGetValue {
+    public void encode() throws JSONException {
         List<String> stringList = new ArrayList<String>();
         stringList.add("String 1");
         stringList.add("String 2");
@@ -37,8 +31,7 @@ public class StringListHandlerTest {
     }
 
     @Test
-    public void decode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException {
+    public void decode() throws JSONException {
 
         JSONObject scimUserJson = new JSONObject();
         JSONArray jsonArray = new JSONArray();

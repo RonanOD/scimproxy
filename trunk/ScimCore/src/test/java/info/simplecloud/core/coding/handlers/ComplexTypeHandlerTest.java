@@ -1,11 +1,5 @@
 package info.simplecloud.core.coding.handlers;
 
-import java.text.ParseException;
-
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownType;
 import info.simplecloud.core.types.Name;
 
 import org.json.JSONException;
@@ -18,8 +12,7 @@ public class ComplexTypeHandlerTest {
     private static ComplexTypeHandler cth = new ComplexTypeHandler();
 
     @Test
-    public void encode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, FailedToGetValue {
+    public void encode() throws JSONException {
 
         Name name = new Name("Kalle Fransson", "Fransson", "Kalle", null, null, null);
         JSONObject scimUserJson = new JSONObject();
@@ -33,8 +26,7 @@ public class ComplexTypeHandlerTest {
     }
 
     @Test
-    public void decode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, ParseException {
+    public void decode() throws JSONException {
         JSONObject scimUserJson = new JSONObject();
         JSONObject jsonName = new JSONObject();
         scimUserJson.put("name", jsonName);

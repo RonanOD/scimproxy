@@ -1,9 +1,5 @@
 package info.simplecloud.core.coding.handlers;
 
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownType;
 import info.simplecloud.core.types.PluralType;
 
 import java.util.ArrayList;
@@ -19,8 +15,7 @@ public class PluralSimpleListTypeHandlerTest {
     private static PluralSimpleListTypeHandler pslth = new PluralSimpleListTypeHandler();
 
     @Test
-    public void encode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException, FailedToGetValue {
+    public void encode() throws JSONException {
         List<PluralType<String>> plural = new ArrayList<PluralType<String>>();
         plural.add(new PluralType<String>("String 1", "type 1", true));
         plural.add(new PluralType<String>("String 2", "type 2", false));
@@ -42,8 +37,7 @@ public class PluralSimpleListTypeHandlerTest {
     }
 
     @Test
-    public void decode() throws JSONException, UnhandledAttributeType, FailedToSetValue, UnknownType, InstantiationException,
-            IllegalAccessException {
+    public void decode() throws JSONException  {
         JSONObject scimUserJson = new JSONObject();
         JSONArray array = new JSONArray();
         JSONObject plural1 = new JSONObject();

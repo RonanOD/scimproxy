@@ -3,11 +3,6 @@ package info.simplecloud.core.coding.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownType;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
