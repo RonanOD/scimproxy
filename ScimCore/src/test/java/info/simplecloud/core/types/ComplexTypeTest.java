@@ -1,14 +1,10 @@
 package info.simplecloud.core.types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import info.simplecloud.core.Attribute;
 import info.simplecloud.core.coding.handlers.StringHandlerTest;
-import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.UnknownAttribute;
-import info.simplecloud.core.types.ComplexType;
-import info.simplecloud.core.types.PluralType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,16 +12,19 @@ import org.junit.Test;
 public class ComplexTypeTest {
 
     private class ComplexTestType extends ComplexType {
+        @SuppressWarnings("unused")
         @Attribute(schemaName="simpleAttribute", codingHandler=StringHandlerTest.class)
         public void getSimpleAttribute() {
         
         }
         
+        @SuppressWarnings("unused")
         @Attribute(schemaName="complexAttribute", codingHandler=StringHandlerTest.class)
         public void getComplexAttribute(){
             
         }
         
+        @SuppressWarnings("unused")
         @Attribute(schemaName="pluralAttribute", codingHandler=StringHandlerTest.class)
         public void getPluralAttribute(){
             
@@ -33,7 +32,7 @@ public class ComplexTypeTest {
     }
 
     @Test
-    public void getAttribute() throws UnknownAttribute {
+    public void getAttribute() {
         Object test = new Object();
         ComplexType ct = new ComplexTestType();
         ct.setAttribute("test1", "Hello")
@@ -77,7 +76,7 @@ public class ComplexTypeTest {
     }
 
     @Test
-    public void merge() throws FailedToGetValue {
+    public void merge() {
 
         ComplexType from = new ComplexTestType().setAttribute("simpleAttribute", "Test value from");
         ComplexType to = new ComplexTestType().setAttribute("to", "Test value to");

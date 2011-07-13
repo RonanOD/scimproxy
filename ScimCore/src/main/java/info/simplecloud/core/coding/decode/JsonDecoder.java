@@ -11,14 +11,11 @@ import info.simplecloud.core.coding.handlers.PluralComplexListTypeHandler;
 import info.simplecloud.core.coding.handlers.PluralSimpleListTypeHandler;
 import info.simplecloud.core.coding.handlers.StringHandler;
 import info.simplecloud.core.coding.handlers.StringListHandler;
-import info.simplecloud.core.execeptions.DecodeFailed;
-import info.simplecloud.core.execeptions.FailedToSetValue;
+import info.simplecloud.core.execeptions.DecodingFailed;
 import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownType;
 
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonDecoder implements IUserDecoder {
-    private static String[]                  names        = { "json", "JSON" };
     private static Map<String, ITypeHandler> typeHandlers = new HashMap<String, ITypeHandler>();
     static {
         typeHandlers.put(StringHandler.class.getName(), new StringHandler());
@@ -38,13 +34,6 @@ public class JsonDecoder implements IUserDecoder {
         typeHandlers.put(PluralSimpleListTypeHandler.class.getName(), new PluralSimpleListTypeHandler());
         typeHandlers.put(PluralComplexListTypeHandler.class.getName(), new PluralComplexListTypeHandler());
         typeHandlers.put(StringListHandler.class.getName(), new StringListHandler());
-    }
-
-    @Override
-    public void addMe(Map<String, IUserDecoder> decoders) {
-        for (String name : names) {
-            decoders.put(name, this);
-        }
     }
 
     @Override
@@ -73,7 +62,7 @@ public class JsonDecoder implements IUserDecoder {
                                 Method setMethod = ReflectionHelper.getMethod(setter, extension.getClass());
                                 setMethod.invoke(extension, arg);
                             } catch (Exception e) {
-                                throw new DecodeFailed("Failed to invoke setter: " + setter + " with arg: " + arg, e);
+                                throw new DecodingFailed("Failed to invoke setter: " + setter + " with arg: " + arg, e);
                             }
                         }
                     }
@@ -84,26 +73,26 @@ public class JsonDecoder implements IUserDecoder {
         }
     }
 
-	@Override
-	public void decode(String userList, List<ScimUser> users) throws InvalidUser {
+    @Override
+    public void decode(String userList, List<ScimUser> users) throws InvalidUser {
 
-		try {
-	        JSONObject userListJson = new JSONObject(userList);
-	        if (userListJson.has("entry")) {
-	            JSONArray jsonUsers = userListJson.getJSONArray("entry");
-	            for (int i = 0; i < jsonUsers.length(); i++) {
-	                JSONObject user = jsonUsers.getJSONObject(i);
+        try {
+            JSONObject userListJson = new JSONObject(userList);
+            if (userListJson.has("entry")) {
+                JSONArray jsonUsers = userListJson.getJSONArray("entry");
+                for (int i = 0; i < jsonUsers.length(); i++) {
+                    JSONObject user = jsonUsers.getJSONObject(i);
 
-	                ScimUser data = new ScimUser();
-	                decode(user.toString(), data);
-	                users.add(data);
-	            }
-	        }
+                    ScimUser data = new ScimUser();
+                    decode(user.toString(), data);
+                    users.add(data);
+                }
+            }
 
-		} catch (JSONException e) {
-			throw new InvalidUser("Failed to parse user", e);
-		}
+        } catch (JSONException e) {
+            throw new InvalidUser("Failed to parse user", e);
+        }
 
-	}
+    }
 
 }

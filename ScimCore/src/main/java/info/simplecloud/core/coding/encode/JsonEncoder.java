@@ -2,6 +2,7 @@ package info.simplecloud.core.coding.encode;
 
 import info.simplecloud.core.Attribute;
 import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.coding.handlers.BooleanHandler;
 import info.simplecloud.core.coding.handlers.CalendarHandler;
 import info.simplecloud.core.coding.handlers.ComplexTypeHandler;
 import info.simplecloud.core.coding.handlers.ITypeHandler;
@@ -26,23 +27,16 @@ import org.json.JSONObject;
 public class JsonEncoder implements IUserEncoder {
     private static final int                 INDENT_SIZE  = Integer.parseInt(System.getProperty(JsonEncoder.class.getName()
                                                                   + ".INDENT_SIZE", "2"));
-    private static String[]                  names        = { "json", "JSON" };
     private static Map<String, ITypeHandler> typeHandlers = new HashMap<String, ITypeHandler>();
     static {
         typeHandlers.put(StringHandler.class.getName(), new StringHandler());
         typeHandlers.put(IntegerHandler.class.getName(), new IntegerHandler());
+        typeHandlers.put(BooleanHandler.class.getName(), new BooleanHandler());
         typeHandlers.put(CalendarHandler.class.getName(), new CalendarHandler());
         typeHandlers.put(ComplexTypeHandler.class.getName(), new ComplexTypeHandler());
         typeHandlers.put(PluralSimpleListTypeHandler.class.getName(), new PluralSimpleListTypeHandler());
         typeHandlers.put(PluralComplexListTypeHandler.class.getName(), new PluralComplexListTypeHandler());
         typeHandlers.put(StringListHandler.class.getName(), new StringListHandler());
-    }
-
-    @Override
-    public void addMe(Map<String, IUserEncoder> encoders) {
-        for (String name : names) {
-            encoders.put(name, this);
-        }
     }
 
     @Override
@@ -102,7 +96,7 @@ public class JsonEncoder implements IUserEncoder {
         }
     }
 
-    private JSONObject internalEncode(ScimUser data, List<String> attributesList) throws JSONException, UnhandledAttributeType, EncodingFailed {
+    private JSONObject internalEncode(ScimUser data, List<String> attributesList) throws JSONException {
         JSONObject result = new JSONObject();
         boolean foundAttributes = false;
 
