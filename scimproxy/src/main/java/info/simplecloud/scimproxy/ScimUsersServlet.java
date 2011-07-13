@@ -3,8 +3,6 @@ package info.simplecloud.scimproxy;
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.coding.encode.JsonEncoder;
 import info.simplecloud.core.coding.encode.XmlEncoder;
-import info.simplecloud.core.execeptions.EncodingFailed;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 
 import java.io.IOException;
@@ -28,12 +26,12 @@ public class ScimUsersServlet extends RestServlet {
 
         String attributesString = req.getParameter("attributes") == null ? "" : req.getParameter("attributes");
         List<String> attributesList = new ArrayList<String>();
-        if(attributesString != null && !"".equals(attributesString)) {
-            for(String attribute: attributesString.split(",")) {
+        if (attributesString != null && !"".equals(attributesString)) {
+            for (String attribute : attributesString.split(",")) {
                 attributesList.add(attribute.trim());
             }
         }
-                
+
         // TODO: SPEC: REST: what is major
         String sortBy = req.getParameter("sortBy") == null ? "userName" : req.getParameter("sortBy");
         String sortOrder = req.getParameter("sortOrder") == null ? "ascending" : req.getParameter("sortOrder");
@@ -50,58 +48,54 @@ public class ScimUsersServlet extends RestServlet {
         String filterValue = req.getParameter("filterValue");
         String filterOp = req.getParameter("filterOp");
 
-        if(filterBy != null && !"".equals(filterBy)) {
-        	users =  storage.getList(sortBy, sortOrder, filterBy, filterValue, filterOp);
+        if (filterBy != null && !"".equals(filterBy)) {
+            users = storage.getList(sortBy, sortOrder, filterBy, filterValue, filterOp);
+        } else {
+            users = storage.getList(sortBy, sortOrder);
         }
-        else {
-        	users =  storage.getList(sortBy, sortOrder);
+
+        int index = 0;
+        int count = 0;
+
+        String startIndexStr = req.getParameter("startIndex"); // must be
+                                                               // absolut and
+                                                               // defaults to 0
+        String countStr = req.getParameter("count"); // must be absolut and
+                                                     // defaults to 0
+        if (startIndexStr != null && !"".equals(startIndexStr)) {
+            index = Integer.parseInt(startIndexStr);
         }
-        
+        if (countStr != null && !"".equals(countStr)) {
+            count = Integer.parseInt(countStr);
+        }
+
+        int max = index + count;
+        if (max > users.size() || max == 0) {
+            max = users.size();
+        }
+
+        if (index > users.size()) {
+            index = users.size();
+        }
+
         try {
-        	int index = 0;
-        	int count = 0;
-        	
-            String startIndexStr = req.getParameter("startIndex"); // must be absolut and defaults to 0
-            String countStr = req.getParameter("count"); // must be absolut and defaults to 0
-            if(startIndexStr != null && !"".equals(startIndexStr)) {
-            	index = Integer.parseInt(startIndexStr);
-            }
-            if(countStr != null && !"".equals(countStr)) {
-            	count = Integer.parseInt(countStr);
-            }
-            
-            int max = index+count;
-            if(max > users.size() || max == 0) {
-            	max = users.size();
-            }
-            
-            if(index > users.size()) {
-            	index = users.size();
-            }
-            
-            try {
-                users = users.subList(index, max);
-            } catch (IndexOutOfBoundsException e) {
-            	users = new ArrayList<ScimUser>();
-            }
-
-        	resp.setStatus(HttpServletResponse.SC_OK);
-            resp.setContentType(HttpGenerator.getContentType(req));
-
-            String response = "";
-            if("JSON".equals(HttpGenerator.getEncoding(req))) {
-            	response = new JsonEncoder().encode(users, attributesList);
-            }
-            if("XML".equals(HttpGenerator.getEncoding(req))) {
-            	response = new XmlEncoder().encode(users, attributesList);
-            }
-            
-            resp.getWriter().print(response);
-        } catch (EncodingFailed e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().print("Error: failed to build user set");
-        } catch (UnhandledAttributeType e) {
-            HttpGenerator.serverError(resp);
+            users = users.subList(index, max);
+        } catch (IndexOutOfBoundsException e) {
+            users = new ArrayList<ScimUser>();
         }
+
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.setContentType(HttpGenerator.getContentType(req));
+
+        String response = "";
+        if (ScimUser.ENCODING_JSON.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
+            response = new JsonEncoder().encode(users, attributesList);
+        }
+        if (ScimUser.ENCODING_XML.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
+            response = new XmlEncoder().encode(users, attributesList);
+        }
+
+        resp.getWriter().print(response);
+
     }
 }
