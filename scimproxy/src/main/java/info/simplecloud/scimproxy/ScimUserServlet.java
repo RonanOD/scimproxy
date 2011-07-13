@@ -2,9 +2,7 @@ package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.execeptions.EncodingFailed;
-import info.simplecloud.core.execeptions.FailedToGetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.core.execeptions.UnknownEncoding;
 import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
@@ -81,14 +79,8 @@ public class ScimUserServlet extends RestServlet {
 
         } catch (UnknownEncoding e) {
             HttpGenerator.serverError(resp);
-        } catch (EncodingFailed e) {
-            HttpGenerator.serverError(resp);
         } catch (UserNotFoundException e) {
             HttpGenerator.notFound(resp);
-        } catch (FailedToGetValue e) {
-            HttpGenerator.serverError(resp);
-        } catch (UnhandledAttributeType e) {
-            HttpGenerator.serverError(resp);
         }
 
     }
@@ -136,8 +128,6 @@ public class ScimUserServlet extends RestServlet {
                 HttpGenerator.serverError(resp, "Unknown encoding.");
             } catch (InvalidUser e) {
                 HttpGenerator.badRequest(resp, "Malformed user.");
-            } catch (EncodingFailed e) {
-                HttpGenerator.badRequest(resp, "Failed to encode user.");
             }
         } else {
             HttpGenerator.badRequest(resp);
@@ -194,8 +184,6 @@ public class ScimUserServlet extends RestServlet {
                 HttpGenerator.badRequest(resp, "Unknown encoding.");
             } catch (InvalidUser e) {
                 HttpGenerator.badRequest(resp, "Invalid user.");
-            } catch (EncodingFailed e) {
-                HttpGenerator.serverError(resp, "Failed to decode changed user.");
             }
 
         } else {
@@ -285,8 +273,6 @@ public class ScimUserServlet extends RestServlet {
                 HttpGenerator.notFound(resp);
             } catch (UnknownEncoding e) {
                 HttpGenerator.badRequest(resp, "Unknown encoding.");
-            } catch (EncodingFailed e) {
-                HttpGenerator.serverError(resp, "Failed to encode user.");
             } catch (InvalidUser e) {
                 HttpGenerator.badRequest(resp, "Malformed user.");
             }
