@@ -2,6 +2,10 @@ package info.simplecloud.scimproxy.config;
 
 import info.simplecloud.scimproxy.ScimUserServlet;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
@@ -21,7 +25,19 @@ public class Config {
 		<username>usr</username>
 		<password>pw</password>
 	</basic-auth>
+	<down-stream>
+		<csp>
+			<url>https://downstream/1/</url>
+			<preferedEncoding>JSON</preferedEncoding>
+			<auth>basic</auth>
+			<basic-auth>
+				<username>usr</username>
+				<password>pw</password>
+			</basic-auth>
+		</csp>
+	</down-stream>
 </config>
+
 
 
  */
@@ -38,6 +54,8 @@ public class Config {
 	private String basicAuthUsername = "";
 	private String basicAuthPassword = "";
 	
+	private List<CSP> downStreamCSP = new ArrayList<CSP>();
+	
 	private Config() {
 		try
 		{
@@ -51,6 +69,24 @@ public class Config {
 		    }
 		    setBasicAuthUsername(config.getString("basic-auth.username"));
 		    setBasicAuthPassword(config.getString("basic-auth.password"));
+
+		    List<String>prop = config.getList("down-stream.csp.url");
+		    if(prop != null)
+		    {
+		    	for(int i=0; i<prop.size(); i++) {
+		    		CSP csp = new CSP();
+		    		csp.setUrl(config.getString("down-stream.csp(" + i + ").url"));
+		    		csp.setPreferedEncoding(config.getString("down-stream.csp(" + i + ").preferedEncoding"));
+
+		    		if(CSP.AUTH_BASIC.equals(config.getString("down-stream.csp(" + i + ").auth"))) {
+		    			csp.setAuthentication(CSP.AUTH_BASIC);
+		    			csp.setBasicUsername(config.getString("down-stream.csp(" + i + ").basic-auth.username"));
+		    			csp.setBasicPassword(config.getString("down-stream.csp(" + i + ").basic-auth.password"));
+		    		}
+		    		downStreamCSP.add(csp);
+		    	}
+		    }
+		    
 		}
 		catch(ConfigurationException cex)
 		{
@@ -117,5 +153,19 @@ public class Config {
 		return noneAuth;
 	}
 
+
+
+	public void setDownStreamCSP(List<CSP> downStreamCSP) {
+		this.downStreamCSP = downStreamCSP;
+	}
+
+
+
+	public List<CSP> getDownStreamCSP() {
+		return downStreamCSP;
+	}
+
 	
 }
+
+

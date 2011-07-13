@@ -3,14 +3,12 @@ package info.simplecloud.scimproxy;
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.execeptions.EncodingFailed;
 import info.simplecloud.core.execeptions.FailedToGetValue;
-import info.simplecloud.core.execeptions.FailedToSetValue;
 import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnhandledAttributeType;
-import info.simplecloud.core.execeptions.UnknownExtension;
 import info.simplecloud.core.execeptions.UnknownEncoding;
-import info.simplecloud.core.execeptions.UnknownType;
 import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
+import info.simplecloud.scimproxy.trigger.Trigger;
 import info.simplecloud.scimproxy.user.User;
 import info.simplecloud.scimproxy.util.Util;
 
@@ -19,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,6 +126,10 @@ public class ScimUserServlet extends RestServlet {
                 resp.setHeader("ETag", scimUser.getMeta().getVersion());
 
                 log.info("Creating user " + scimUser.getId());
+                
+                // creating user in downstream CSP
+				new Trigger().create(scimUser);
+				
 
                 HttpGenerator.created(resp, scimUser.getUser(HttpGenerator.getEncoding(req)));
             } catch (UnknownEncoding e) {
