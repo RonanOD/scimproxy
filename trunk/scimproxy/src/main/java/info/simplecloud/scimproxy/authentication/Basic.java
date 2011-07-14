@@ -1,8 +1,9 @@
 package info.simplecloud.scimproxy.authentication;
 
+import org.apache.commons.codec.binary.Base64;
+
 import info.simplecloud.scimproxy.config.Config;
 
-import org.apache.xmlbeans.impl.util.Base64;
 
 public class Basic implements IAuth {
 
@@ -13,7 +14,7 @@ public class Basic implements IAuth {
 		try {
 			String basicIdentifier = "Basic ";
 			String encoded = token.substring(basicIdentifier.length());
-	        String decoded = new String(Base64.decode(encoded.getBytes()));
+	        String decoded = new String(Base64.decodeBase64(encoded));
 	        
 	        String correctPassword = Config.getInstance().getBasicAuthPassword();
 	        String correctUser = Config.getInstance().getBasicAuthUsername();
