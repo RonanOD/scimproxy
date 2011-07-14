@@ -3,7 +3,6 @@ package info.simplecloud.scimproxy.config;
 import info.simplecloud.scimproxy.ScimUserServlet;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -11,38 +10,32 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class Config {
-
-/*
-
-	An example config file. Create it under /opt/scimproxy/config.xml and save it as UTF-8.
-	
-	
-<?xml version="1.0" encoding="UTF-8" ?>
-<config>
-	<auth>basic</auth>
-	<basic-auth>
-		<username>usr</username>
-		<password>pw</password>
-	</basic-auth>
-	<down-stream>
-		<csp>
-			<url>https://downstream/1/</url>
-			<preferedEncoding>JSON</preferedEncoding>
-			<auth>basic</auth>
-			<basic-auth>
-				<username>usr</username>
-				<password>pw</password>
-			</basic-auth>
-		</csp>
-	</down-stream>
-</config>
-
-
-
+/**
+ * An example config file. Create it under /opt/scimproxy/config.xml and save it as UTF-8.
+ * 
+ * <?xml version="1.0" encoding="UTF-8" ?>
+ * <pre>
+ * <config>
+ *  <auth>basic</auth>
+ *  <basic-auth>
+ *   <username>usr</username>
+ *   <password>pw</password>
+ *  </basic-auth>
+ *  <down-stream>
+ *   <csp>
+ *    <url>https://downstream/1/</url>
+ *    <preferedEncoding>JSON</preferedEncoding>
+ *    <auth>basic</auth>
+ *    <basic-auth>
+ *     <username>usr</username>
+ *     <password>pw</password>
+ *    </basic-auth>
+ *    </csp>
+ *   </down-stream>
+ * </config>
+ * </pre>
  */
-	
-	
+public class Config {	
 	// lets keep it a singleton at the moment, config is loaded on startup.
 	private static final Config INSTANCE = new Config();
 
