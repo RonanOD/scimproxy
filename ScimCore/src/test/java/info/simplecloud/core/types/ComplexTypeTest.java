@@ -1,6 +1,7 @@
 package info.simplecloud.core.types;
 
 import info.simplecloud.core.Attribute;
+import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.coding.handlers.StringHandlerTest;
 
 import java.util.ArrayList;
@@ -103,5 +104,12 @@ public class ComplexTypeTest {
 
         to.merge(from);
         Assert.assertEquals(to.getAttribute("pluralAttribute"), pluralListExpected);
+    }
+    
+    
+    @Test
+    public void toStringTest() {
+        ScimUser empty = new ScimUser();
+        Assert.assertEquals("", empty.toString());
     }
 }

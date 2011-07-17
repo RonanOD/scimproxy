@@ -145,8 +145,22 @@ public class ScimUser extends ComplexType {
 
     public Comparable getComparable(String attributeId) {
         Object object = super.getAttribute(attributeId);
-        if (object != null && object instanceof Comparable) {
-            return (Comparable) object;
+        if (object != null) {
+            if (object instanceof Comparable) {
+                return (Comparable) object;
+            } else if (object instanceof List<?>) {
+                List<PluralType> tmpList = (List<PluralType>) object;
+                if (tmpList.isEmpty()) {
+                    return null;
+                }
+
+                for (PluralType plural : tmpList) {
+                    if (plural.isPrimary()) {
+                        return plural;
+                    }
+                }
+                return ((List<PluralType>) object).get(0);
+            }
         }
         return null;
     }

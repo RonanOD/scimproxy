@@ -55,7 +55,7 @@ public class PluralComplexListTypeHandler implements ITypeHandler {
             for (PluralType<ComplexType> singular : plural) {
                 JSONObject jsonSingular = complexTypeHandler.internalEncode(singular.getValue());
                 jsonSingular.put("type", singular.getType());
-                jsonSingular.put("primary", singular.getPrimary());
+                jsonSingular.put("primary", singular.isPrimary());
 
                 jsonPlural.put(jsonSingular);
             }

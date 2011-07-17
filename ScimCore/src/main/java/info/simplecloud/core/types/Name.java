@@ -3,7 +3,7 @@ package info.simplecloud.core.types;
 import info.simplecloud.core.Attribute;
 import info.simplecloud.core.coding.handlers.StringHandler;
 
-public class Name extends ComplexType {
+public class Name extends ComplexType implements Comparable<Name> {
     public static final String ATTRIBUTE_FORMATTED        = "formatted";
     public static final String ATTRIBUTE_FAMILY_NAME      = "familyName";
     public static final String ATTRIBUTE_GIVEN_NAME       = "givenName";
@@ -89,5 +89,44 @@ public class Name extends ComplexType {
         Name otherName = (Name) otherObj;
 
         return super.equals(otherName);
+    }
+
+    @Override
+    public int compareTo(Name other) {
+        // TODO SPEC what is name major attribute
+        String familyName = this.getFamilyName();
+        String otherFamilyName = other.getFamilyName();
+        String givenName = this.getGivenName();
+        String otherGivenName = other.getGivenName();
+        
+        if(familyName == otherFamilyName) {
+            if( givenName == otherGivenName) {
+                return 0;
+            } else if(givenName == null) {
+                return 1;
+            } else if(otherGivenName == null) {
+                return -1;                
+            } else {   
+                return givenName.compareTo(otherGivenName);
+            }
+        } else if(familyName == null) {
+            return 1;
+        } else if(otherFamilyName == null) {
+            return -1;
+        } else {
+            int result = familyName.compareTo(otherFamilyName);
+            if(result == 0 ) {
+                if( givenName == otherGivenName) {
+                    result = 0;
+                } else if(givenName == null) {
+                    result = 1;
+                } else if(otherGivenName == null) {
+                    result = -1;                
+                } else {   
+                    result = givenName.compareTo(other.getGivenName());
+                }
+            }
+            return result;
+        }
     }
 }
