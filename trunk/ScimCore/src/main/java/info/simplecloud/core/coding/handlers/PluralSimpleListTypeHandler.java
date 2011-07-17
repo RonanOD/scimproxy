@@ -51,7 +51,7 @@ public class PluralSimpleListTypeHandler implements ITypeHandler {
                 JSONObject jsonSingular = new JSONObject();
                 jsonSingular.put("value", singular.getValue());
                 jsonSingular.put("type", singular.getType());
-                jsonSingular.put("primary", singular.getPrimary());
+                jsonSingular.put("primary", singular.isPrimary());
 
                 plural.put(jsonSingular);
             }

@@ -110,6 +110,10 @@ public abstract class ComplexType {
 
     @Override
     public String toString() {
+        if(this.data.isEmpty()) {
+            return "";
+        }
+        
         StringBuilder stringBuilder = new StringBuilder();
         for (String id : this.data.keySet()) {
             Object obj = this.data.get(id);

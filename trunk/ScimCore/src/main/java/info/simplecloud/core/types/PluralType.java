@@ -1,6 +1,6 @@
 package info.simplecloud.core.types;
 
-public class PluralType<T> {
+public class PluralType<T> implements Comparable<PluralType<?>> {
     private T       value;
     private String  type;
     private boolean primary;
@@ -22,7 +22,7 @@ public class PluralType<T> {
         return this.type;
     }
 
-    public boolean getPrimary() {
+    public boolean isPrimary() {
         return this.primary;
     }
 
@@ -46,6 +46,16 @@ public class PluralType<T> {
 
     @Override
     public String toString() {
-        return "Value: '" + this.value.toString() + "', type: '" + this.type + "', primary";
+        return "Value: '" + this.value.toString() + "', type: '" + this.type + "', primary: " + this.primary;
+    }
+
+    @Override
+    public int compareTo(PluralType<?> other) {
+        if (this.getValue() instanceof Comparable) {
+            Comparable value = (Comparable) this.getValue();
+            return value.compareTo(other.getValue());
+        }
+
+        return 0;
     }
 }
