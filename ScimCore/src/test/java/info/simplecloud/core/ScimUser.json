@@ -1,0 +1,25 @@
+{
+  "employeeNumber": "abc",
+  "name": {
+    "formatted": "mr. Nisse Johansson",
+    "familyName": "Johansson"
+  },
+  "emails": [
+    {
+      "type": "work",
+      "primary": true,
+      "value": "nisse@work.com"
+    },
+    {
+      "type": "home",
+      "primary": true,
+      "value": "nisse@johansson.com"
+    }
+  ],
+  "meta": {
+    "attributes": [
+      "emails",
+      "department"
+    ]
+  }
+}
