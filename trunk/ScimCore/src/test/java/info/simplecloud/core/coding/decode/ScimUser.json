@@ -1,0 +1,102 @@
+{
+	    "schemas": ["urn:scim:schemas:core:1.0"],
+	    "id": "005D0000001Az1u",
+	    "externalId": "701984",
+	    "userName": "bjensen@example.com",
+	    "name": {
+	    	"formatted": "Ms. Barbara J Jensen III",
+	        "familyName": "Jensen",
+	        "givenName": "Barbara",
+	        "middleName": "Jane",
+	        "honorificPrefix": "Ms.",
+	        "honorificSuffix": "III"
+	    },
+	    "displayName": "Babs Jensen",
+	    "nickName": "Babs",
+	    "profileUrl": "https://login.example.com/bjensen",
+	    "emails": [
+	        {
+	          "value": "bjensen@example.com",
+	          "type": "work",
+	          "primary": true
+	        },
+	        {
+	          "value": "babs@jensen.org",
+	          "type": "home"
+	        }
+	    ],
+	    "addresses": [
+	        {
+	          "type": "work",
+	          "streetAddress": "100 Universal City Plaza",
+	          "locality": "Hollywood",
+	          "region": "CA",
+	          "postalCode": "91608",
+	          "country": "USA",
+	          "formatted": "100 Universal City Plaza\nHollywood, CA 91608 USA",
+	          "primary": true
+	        },
+	        {
+	          "type": "home",
+	          "streetAddress": "456 Hollywood Blvd",
+	          "locality": "Hollywood",
+	          "region": "CA",
+	          "postalCode": "91608",
+	          "country": "USA",
+	          "formatted": "456 Hollywood Blvd\nHollywood, CA 91608 USA"
+	        }
+	    ],
+	    "phoneNumbers": [
+	        {
+	          "value": "800-864-8377",
+	          "type": "work"
+	        },
+	        {
+	          "value": "818-123-4567",
+	          "type": "mobile"
+	        }
+	    ],
+	    "ims": [
+	        {
+	          "value": "someaimhandle",
+	          "type": "aim"
+	        }
+	    ],
+	    "photos": [
+	        {
+	          "value": "https://photos.example.com/profilephoto/72930000000Ccne/F",
+	          "type": "photo"
+	        },
+	        {
+	          "value": "https://photos.example.com/profilephoto/72930000000Ccne/T",
+	          "type": "thumbnail"
+	        }
+	    ],
+	    "employeeNumber": "701984",
+	    "userType": "Employee",
+	    "title": "Tour Guide",
+	    "manager": "Mandy Pepperidge",
+	    "preferredLanguage": "en_US",
+	    "locale": "en_US",
+	    "utcOffset": -8,
+	    "costCenter": "4130",
+	    "organization": "Universal Studios",
+	    "division": "Theme Park",
+	    "department": "Tour Operations",
+	    "groups": [
+	        {
+	          "value": "Tour Guides",
+	          "primary": true
+	        },
+	        {
+	          "value": "Employees",
+	        },
+	        {
+	          "value": "US Employees",
+	        }
+	    ],
+	    "meta": {
+	        "created": "2010-01-23T04:56:22Z",
+	        "lastModified": "2011-05-13T04:42:34Z"
+	    }
+	}

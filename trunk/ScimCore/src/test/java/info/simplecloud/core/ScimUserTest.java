@@ -4,14 +4,15 @@ import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnknownEncoding;
 import info.simplecloud.core.execeptions.UnknownExtension;
 import info.simplecloud.core.extensions.EnterpriseAttributes;
+import info.simplecloud.core.testtools.ResourceReader;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.PluralType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.xmlbeans.impl.util.Base64;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,9 +20,8 @@ import org.junit.Test;
 public class ScimUserTest {
 
     @Test
-    public void patch() throws UnknownEncoding, InvalidUser  {
-        String patch = "ewogICJlbXBsb3llZU51bWJlciI6ICJhYmMiLAogICJuYW1lIjogewogICAgImZvcm1hdHRlZCI6ICJtci4gTmlzc2UgSm9oYW5zc29uIiwKICAgICJmYW1pbHlOYW1lIjogIkpvaGFuc3NvbiIKICB9LAogICJlbWFpbHMiOiBbCiAgICB7CiAgICAgICJ0eXBlIjogIndvcmsiLAogICAgICAicHJpbWFyeSI6IHRydWUsCiAgICAgICJ2YWx1ZSI6ICJuaXNzZUB3b3JrLmNvbSIKICAgIH0sCiAgICB7CiAgICAgICJ0eXBlIjogImhvbWUiLAogICAgICAicHJpbWFyeSI6IHRydWUsCiAgICAgICJ2YWx1ZSI6ICJuaXNzZUBqb2hhbnNzb24uY29tIgogICAgfQogIF0sCiAgIm1ldGEiOiB7CiAgICAiYXR0cmlidXRlcyI6IFsKICAgICAgImVtYWlscyIsCiAgICAgICJkZXBhcnRtZW50IgogICAgXQogIH0KfQ==";
-        patch = new String(Base64.decode(patch.getBytes()));
+    public void patch() throws UnknownEncoding, InvalidUser, IOException  {
+        String patch = ResourceReader.readTextFile("ScimUser.json", getClass());
         ScimUser oldUser = new ScimUser();
         oldUser.setId("123-123-123");
         oldUser.setName(new Name("mr. Nisse Svensson", "Svensson", "Nisse", null, "mr.", null));
