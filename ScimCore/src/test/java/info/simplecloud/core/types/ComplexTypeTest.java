@@ -94,16 +94,28 @@ public class ComplexTypeTest {
         Assert.assertNotNull(to.getAttribute("complexAttribute"));
         Assert.assertEquals(((ComplexType) to.getAttribute("complexAttribute")).getAttribute("simpleAttribute"), "World");
 
-        List<PluralType<String>> pluralList = new ArrayList<PluralType<String>>();
-        pluralList.add(new PluralType<String>("nisse@kalle.com", "home", true));
+
         
+        List<PluralType<String>> pluralList = new ArrayList<PluralType<String>>();
+        pluralList.add(new PluralType<String>("nisse@kalle.com", "work", true));
         
         from = new ComplexTestType().setAttribute("pluralAttribute", pluralList);
         List<PluralType<String>> pluralListExpected = new ArrayList<PluralType<String>>();
-        pluralListExpected.add(new PluralType<String>("nisse@kalle.com", "home", true));
+        pluralListExpected.add(new PluralType<String>("nisse@kalle.com", "work", true));
 
         to.merge(from);
         Assert.assertEquals(to.getAttribute("pluralAttribute"), pluralListExpected);
+
+        
+        
+        List<PluralType<String>> pluralList2 = new ArrayList<PluralType<String>>();
+        pluralList2.add(new PluralType<String>("arne@kalle.com", "home", true));
+        from = new ComplexTestType().setAttribute("pluralAttribute", pluralList2);
+
+        pluralListExpected.add(new PluralType<String>("arne@kalle.com", "home", true));
+
+        to.merge(from);        
+        Assert.assertEquals(pluralListExpected, to.getAttribute("pluralAttribute"));
     }
     
     
