@@ -5,6 +5,7 @@ import info.simplecloud.core.Attribute;
 import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ComplexType {
@@ -74,6 +75,15 @@ public abstract class ComplexType {
                     ComplexType toTmp = (ComplexType) this.getAttribute(attributeId);
                     if (fromTmp != null) {
                         toTmp.merge(fromTmp);
+                    }
+                } else if(this.getAttribute(attributeId) != null && this.getAttribute(attributeId) instanceof List<?> &&
+                        from.getAttribute(attributeId) != null && from.getAttribute(attributeId) instanceof List<?>) {
+                    List<PluralType> toList = (List<PluralType>)this.getAttribute(attributeId);
+                    List<PluralType> fromList = (List<PluralType>)from.getAttribute(attributeId);
+                    for(PluralType fromItem :fromList ) {
+                        if(!toList.contains(fromItem)) {
+                            toList.add(fromItem);
+                        }
                     }
                 } else if (from.getAttribute(attributeId) != null) {
                     this.setAttribute(attributeId, from.getAttribute(attributeId));
