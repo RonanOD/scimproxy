@@ -9,6 +9,7 @@ public class CSP {
 	private String basicUsername = "";
 	private String basicPassword = "";
 	private String preferedEncoding = "JSON";
+	private String version = "";
 	
 	public CSP() {
 		
@@ -57,6 +58,14 @@ public class CSP {
 
 	public String getPreferedEncoding() {
 		return preferedEncoding;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getVersion() {
+		return version;
 	}
 	
 	
