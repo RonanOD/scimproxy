@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<auth type="basic">
+		<username>usr</username>
+		<password>pw</password>
+	</auth>
+</config>
