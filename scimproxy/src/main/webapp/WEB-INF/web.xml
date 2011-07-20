@@ -56,6 +56,24 @@
 		<url-pattern>/Schemas</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>List</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.List</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>List</servlet-name>
+		<url-pattern>/Viewer/List</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Add</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.Add</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Add</servlet-name>
+		<url-pattern>/Viewer/Add</url-pattern>
+	</servlet-mapping>
+
 	<filter>
 		<filter-name>MethodOverrideFilter</filter-name>
 		<filter-class>info.simplecloud.scimproxy.filter.MethodOverrideFilter</filter-class>
