@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.scimproxy.authentication.Authenticator;
+import info.simplecloud.scimproxy.config.Config;
 
 import java.io.IOException;
 
@@ -42,9 +43,16 @@ public abstract class RestServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String method = req.getMethod();
-		
+		String configStr = (String) req.getAttribute("info.simplecloud.scimproxy.config");
+		Config config = null;
+		if(configStr != null && !"".equalsIgnoreCase(configStr)) {
+			config = Config.getInstance(configStr);
+		}
+		else {
+			config = Config.getInstance();
+		}
 		// authenticate
-		Authenticator auth = new Authenticator();
+		Authenticator auth = new Authenticator(config);
 		if(!auth.authenticate(req, resp)) {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No matching authentication schema could be found.");
 		}
