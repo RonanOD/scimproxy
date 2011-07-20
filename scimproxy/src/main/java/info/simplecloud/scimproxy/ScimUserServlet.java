@@ -37,6 +37,8 @@ public class ScimUserServlet extends RestServlet {
 
     private Log               log              = LogFactory.getLog(ScimUserServlet.class);
 
+    private Trigger trigger = new Trigger();
+    
     /**
      * Returns a scim user.
      * 
@@ -51,11 +53,7 @@ public class ScimUserServlet extends RestServlet {
         String userId = getIdFromUri(req.getRequestURI());
 
         try {
-
-            // TODO: SPEC: REST: Should the Location header be included in more
-            // then POST?
-            // TODO: SPEC: REST: Also include the location in meta data for the
-            // user?
+        	// TODO: should CSP trigger GET call be made before trying locally?
 
             ScimUser scimUser = User.getUser(userId);
             String userStr = null;
@@ -118,9 +116,8 @@ public class ScimUserServlet extends RestServlet {
 
                 log.info("Creating user " + scimUser.getId());
                 
-                // creating user in downstream CSP
-				new Trigger().create(scimUser);
-				
+                // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+                trigger.create(scimUser);				
 
                 HttpGenerator.created(resp, scimUser.getUser(HttpGenerator.getEncoding(req)));
             } catch (UnknownEncoding e) {
@@ -212,6 +209,10 @@ public class ScimUserServlet extends RestServlet {
                 String version = scimUser.getMeta().getVersion();
                 if (etag != null && !"".equals(etag) && etag.equals(version)) {
                     User.deletetUser(userId);
+                    
+                    // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+                    trigger.delete(scimUser);				
+                    
                     HttpGenerator.ok(resp);
                     log.info("Deleating user " + userId + ".");
                 } else {
@@ -260,6 +261,9 @@ public class ScimUserServlet extends RestServlet {
                     scimUser.patch(query, HttpGenerator.getEncoding(req));
                     // generate new version number
                     User.updateVersionNumber(scimUser);
+
+                    // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+                    trigger.patch(query, userId, etag);				
 
                     resp.getWriter().print(scimUser.getUser(HttpGenerator.getEncoding(req)));
                     resp.setStatus(HttpServletResponse.SC_OK); // 200
