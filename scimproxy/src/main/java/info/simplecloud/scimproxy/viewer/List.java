@@ -1,0 +1,130 @@
+package info.simplecloud.scimproxy.viewer;
+
+import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.execeptions.InvalidUser;
+import info.simplecloud.core.execeptions.UnknownEncoding;
+import info.simplecloud.scimproxy.trigger.Trigger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+@SuppressWarnings("serial")
+public class List extends HttpServlet {
+
+    private Log log = LogFactory.getLog(Trigger.class);
+
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		
+			String delete = req.getParameter("delete");
+			String etag = req.getParameter("etag");
+			
+			if(delete != null && !"".equals(delete)) {
+				// Create an instance of HttpClient.
+				HttpClient client = new HttpClient();
+
+				// set auth if it's authenticated
+				client.getParams().setAuthenticationPreemptive(true);
+				Credentials defaultcreds = new UsernamePasswordCredentials("usr", "pw");
+				client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+				
+				// Create a method instance.
+				DeleteMethod method = new DeleteMethod("http://localhost:8080/User/" + delete);
+				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+				method.setRequestHeader("Content-Type", "text/html; charset=UTF-8");
+				method.setRequestHeader("ETag", etag);
+				client.executeMethod(method);
+			}
+		
+			// Create an instance of HttpClient.
+			HttpClient client = new HttpClient();
+
+			// set auth if it's authenticated
+			client.getParams().setAuthenticationPreemptive(true);
+			Credentials defaultcreds = new UsernamePasswordCredentials("usr", "pw");
+			client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+			
+			
+			// Create a method instance.
+			GetMethod method = new GetMethod("http://localhost:8080/Users");
+			method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+			method.setRequestHeader("Content-Type", "text/html; charset=UTF-8");
+
+			try {
+				// Execute the method.
+				int statusCode = client.executeMethod(method);
+
+				// Read the response body.
+				byte[] responseBody = method.getResponseBody();
+
+				log.debug("Response code: " + Integer.toString(statusCode));
+				log.debug("Status line: " + method.getStatusLine());
+				log.debug("Response: \n" + new String(responseBody));
+				ArrayList<ScimUser> users = ScimUser.getScimUsers(new String(responseBody), "JSON");
+
+		        resp.getWriter().print("<html>");
+		        resp.getWriter().print("<a href=\"List\">List</a>&nbsp;");
+		        resp.getWriter().print("<a href=\"Add\">Add user</a>");
+		        resp.getWriter().print("<br/>");
+
+                resp.getWriter().print("<table border=\"1\">");
+
+				for (ScimUser scimUser : users) {
+	                resp.getWriter().print("<tr>");
+	                resp.getWriter().print("<td>");
+	                if(scimUser.getMeta() != null) {
+		                resp.getWriter().print("<a href=\"?delete=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">delete</a>");
+	                }
+	                else {
+	                	resp.getWriter().print("No meta");
+	                }
+	                resp.getWriter().print("</td>");
+	                resp.getWriter().print("<td>");
+	                resp.getWriter().print(scimUser.toString() + "<br/>");
+	                resp.getWriter().print("</tr>");
+	                resp.getWriter().print("</td>");
+				}
+				if(users.size() == 0) {
+	                resp.getWriter().print("<tr><td>No users in storage.</td></tr>");
+				}
+                resp.getWriter().print("</table>");
+                resp.getWriter().print("</html>");
+				
+			} catch (HttpException e) {
+				log.error("Fatal protocol violation: " + e.getMessage());
+				e.printStackTrace();
+			} catch (IOException e) {
+				log.error("Fatal transport violation: " + e.getMessage());
+				e.printStackTrace();
+			} catch (UnknownEncoding e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidUser e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				// Release the connection.
+				method.releaseConnection();
+			}
+		
+		
+		resp.setStatus(HttpServletResponse.SC_OK);
+	}
+
+}
+
