@@ -7,21 +7,23 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Authenticator {
 
-	public Authenticator() {
-		
+	private Config config = null;
+	
+	public Authenticator(Config config) {
+		this.config = config;
 	}
 
 	public boolean authenticate(HttpServletRequest req, HttpServletResponse resp) {
 		boolean authStatus = false;
 
 		// check if BASIC authentication is configured
-		if(Config.getInstance().isBasicAuth()) {
+		if(config.isBasicAuth()) {
 			String basicAuth = req.getHeader("Authorization");
 			if(basicAuth != null && basicAuth.indexOf("Basic ") == 0) {
 				authStatus = new Basic().authenticate(basicAuth);
 			}
 		}
-		if(Config.getInstance().isNoneAuth()) {
+		if(config.isNoneAuth()) {
 			authStatus = true; // this means public to all and everything!
 		}
 
