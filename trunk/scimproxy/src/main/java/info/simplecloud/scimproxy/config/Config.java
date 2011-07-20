@@ -2,6 +2,7 @@ package info.simplecloud.scimproxy.config;
 
 import info.simplecloud.scimproxy.ScimUserServlet;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,74 +10,165 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xml.sax.SAXException;
 
-/**
- * An example config file. Create it under /opt/scimproxy/config.xml and save it as UTF-8.
- * 
- * <?xml version="1.0" encoding="UTF-8" ?>
- * <pre>
- * <config>
- *  <auth>basic</auth>
- *  <basic-auth>
- *   <username>usr</username>
- *   <password>pw</password>
- *  </basic-auth>
- *  <down-stream>
- *   <csp>
- *    <url>https://downstream/1/</url>
- *    <preferedEncoding>JSON</preferedEncoding>
- *    <auth>basic</auth>
- *    <basic-auth>
- *     <username>usr</username>
- *     <password>pw</password>
- *    </basic-auth>
- *    </csp>
- *   </down-stream>
- * </config>
- * </pre>
+public class Config {
+
+/*
+
+	An example config file. Create it under /opt/scimproxy/config.xml and save it as UTF-8.
+	
+	
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<auth type="basic">
+		<username>usr</username>
+		<password>pw</password>
+	</auth>
+	<up-stream>
+		<csp>
+			<url>http://192.168.41.137:8080</url>
+			<preferedEncoding>JSON</preferedEncoding>
+			<version>1.0</version>
+			<auth type="basic">
+				<username>usr</username>
+				<password>pw</password>
+			</auth>
+		</csp>
+	</up-stream>
+	<down-stream>
+		<csp>
+			<url>http://192.168.41.137:8080</url>
+			<preferedEncoding>JSON</preferedEncoding>
+			<version>1.0</version>
+			<auth type="basic">
+				<username>usr</username>
+				<password>pw</password>
+			</auth>
+		</csp>
+	</down-stream>
+</config>
+
+
+
  */
-public class Config {	
-	// lets keep it a singleton at the moment, config is loaded on startup.
-	private static final Config INSTANCE = new Config();
+	
+	// TODO: read config file location from somewhere in system (property?)
+	private static String CONFIG_FILE = "/opt/scimproxy/config.xml";
+	
+	// lets keep it a singleton at the moment
+	private static Config INSTANCE = null;
 
 	private Log log = LogFactory.getLog(ScimUserServlet.class);
 
 	
 	private boolean basicAuth = false;
-	private boolean noneAuth = false; // Public to all internet users in the world!
+	private boolean noneAuth = false; // Public to all Internet users in the world!
 	private String basicAuthUsername = "";
 	private String basicAuthPassword = "";
 	
 	private List<CSP> downStreamCSP = new ArrayList<CSP>();
-	
+	private List<CSP> upStreamCSP = new ArrayList<CSP>();
+
+	/**
+	 * Private constructor that creates the singleton instance.
+	 */
 	private Config() {
+		readConfig("");
+	}
+
+	/**
+	 * Private constructor that creates the singleton instance.
+	 */
+	private Config(String config) {
+		readConfig(config);
+	}
+
+	/**
+	 * Returns singleton value for the config.
+	 * 
+	 * @return
+	 */
+	public static Config getInstance() {
+		if(INSTANCE == null) {
+			INSTANCE = new Config();
+		}
+		return INSTANCE;
+	}
+
+	
+	public static Config getInstance(String config) {
+		if(INSTANCE == null) {
+			INSTANCE = new Config(config);
+		}
+		return INSTANCE;
+	}
+
+
+
+	private void readConfig(String confStr) {
 		try
 		{
-		    XMLConfiguration config = new XMLConfiguration("/opt/scimproxy/config.xml");
+			XMLConfiguration config = null;
+			if("".equals(confStr)) {
+				config = new XMLConfiguration(CONFIG_FILE);
+			}
+			else {
+				
+				config = new XMLConfiguration();
+				try {
+					config.getDocumentBuilder().parse(confStr);
+				} catch (SAXException e) {
+					// implementation error
+					e.printStackTrace();
+				} catch (IOException e) {
+					// implementation error
+					e.printStackTrace();
+				}
+			}
 
-		    if("basic".equals(config.getString("auth"))) {
+
+		    if("basic".equals(config.getString("auth[@type]"))) {
 		    	setBasicAuth(true);
+			    setBasicAuthUsername(config.getString("auth.username"));
+			    setBasicAuthPassword(config.getString("auth.password"));
 		    }
-		    if("none".equals(config.getString("auth"))) {
+		    if("none".equals(config.getString("auth[@type]"))) {
 		    	setNoneAuth(true);
 		    }
-		    setBasicAuthUsername(config.getString("basic-auth.username"));
-		    setBasicAuthPassword(config.getString("basic-auth.password"));
 
-		    List<String>prop = config.getList("down-stream.csp.url");
-		    if(prop != null)
+		    List<String> downProp = config.getList("down-stream.csp.url");
+		    if(downProp != null)
 		    {
-		    	for(int i=0; i<prop.size(); i++) {
+		    	for(int i=0; i<downProp.size(); i++) {
 		    		CSP csp = new CSP();
 		    		csp.setUrl(config.getString("down-stream.csp(" + i + ").url"));
 		    		csp.setPreferedEncoding(config.getString("down-stream.csp(" + i + ").preferedEncoding"));
+		    		csp.setVersion(config.getString("down-stream.csp(" + i + ").version"));
 
-		    		if(CSP.AUTH_BASIC.equals(config.getString("down-stream.csp(" + i + ").auth"))) {
+		    		if(CSP.AUTH_BASIC.equals(config.getString("down-stream.csp(" + i + ").auth[@type]"))) {
 		    			csp.setAuthentication(CSP.AUTH_BASIC);
-		    			csp.setBasicUsername(config.getString("down-stream.csp(" + i + ").basic-auth.username"));
-		    			csp.setBasicPassword(config.getString("down-stream.csp(" + i + ").basic-auth.password"));
+		    			csp.setBasicUsername(config.getString("down-stream.csp(" + i + ").auth.username"));
+		    			csp.setBasicPassword(config.getString("down-stream.csp(" + i + ").auth.password"));
 		    		}
 		    		downStreamCSP.add(csp);
+		    	}
+		    }
+
+		    List<String> upProp = config.getList("up-stream.csp.url");
+		    if(upProp != null)
+		    {
+		    	for(int i=0; i<upProp.size(); i++) {
+		    		CSP csp = new CSP();
+		    		csp.setUrl(config.getString("up-stream.csp(" + i + ").url"));
+		    		csp.setPreferedEncoding(config.getString("up-stream.csp(" + i + ").preferedEncoding"));
+
+		    		if(CSP.AUTH_BASIC.equals(config.getString("up-stream.csp(" + i + ").auth[@type]"))) {
+		    			csp.setAuthentication(CSP.AUTH_BASIC);
+		    			csp.setBasicUsername(config.getString("up-stream.csp(" + i + ").auth.username"));
+		    			csp.setBasicPassword(config.getString("up-stream.csp(" + i + ").auth.password"));
+		    		}
+		    		upStreamCSP.add(csp);
 		    	}
 		    }
 		    
@@ -89,16 +181,6 @@ public class Config {
 	
 	
 	
-	/**
-	 * Returns singleton value for the config.
-	 * 
-	 * @return
-	 */
-	public static Config getInstance() {
-		return INSTANCE;
-	}
-
-
 
 	public void setBasicAuthUsername(String basicAuthUsername) {
 		this.basicAuthUsername = basicAuthUsername;
@@ -156,6 +238,18 @@ public class Config {
 
 	public List<CSP> getDownStreamCSP() {
 		return downStreamCSP;
+	}
+
+
+
+	public void setUpStreamCSP(List<CSP> upStreamCSP) {
+		this.upStreamCSP = upStreamCSP;
+	}
+
+
+
+	public List<CSP> getUpStreamCSP() {
+		return upStreamCSP;
 	}
 
 	
