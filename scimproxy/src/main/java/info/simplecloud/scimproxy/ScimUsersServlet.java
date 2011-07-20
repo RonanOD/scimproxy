@@ -4,6 +4,7 @@ import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.coding.encode.JsonEncoder;
 import info.simplecloud.core.coding.encode.XmlEncoder;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
+import info.simplecloud.scimproxy.trigger.Trigger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +13,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /*
 
  GET:
@@ -19,8 +23,13 @@ import javax.servlet.http.HttpServletResponse;
 
  */
 
-@SuppressWarnings("serial")
 public class ScimUsersServlet extends RestServlet {
+
+	private static final long serialVersionUID = 3404477020945307825L;
+
+	private Log               log              = LogFactory.getLog(ScimUserServlet.class);
+
+    private Trigger trigger = new Trigger();
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -47,7 +56,7 @@ public class ScimUsersServlet extends RestServlet {
         String filterBy = req.getParameter("filterBy");
         String filterValue = req.getParameter("filterValue");
         String filterOp = req.getParameter("filterOp");
-
+        
         if (filterBy != null && !"".equals(filterBy)) {
             users = storage.getList(sortBy, sortOrder, filterBy, filterValue, filterOp);
         } else {
@@ -78,6 +87,13 @@ public class ScimUsersServlet extends RestServlet {
             index = users.size();
         }
 
+    	// if we did not find any users in storage, try upstream servers
+    	if(users == null || users.size() == 0) {
+        	// try finding users in upstream CSP, any communication errors is handled in triggered and ignored here
+    		users = trigger.query(sortBy, sortOrder, filterBy, filterValue, filterOp);
+        	storage.addList(users);
+    	}
+        
         try {
             users = users.subList(index, max);
         } catch (IndexOutOfBoundsException e) {
