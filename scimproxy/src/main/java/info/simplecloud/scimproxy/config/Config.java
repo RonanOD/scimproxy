@@ -54,7 +54,7 @@ public class Config {
  */
 	
 	// TODO: read config file location from somewhere in system (property?)
-	private static String CONFIG_FILE = "/opt/scimproxy/config.xml";
+	private static String CONFIG_FILE = System.getProperty("info.simplecloud.scimproxy.config.Config.CONFIG_FILE", "src/main/resources/config.xml");
 	
 	// lets keep it a singleton at the moment
 	private static Config INSTANCE = null;
