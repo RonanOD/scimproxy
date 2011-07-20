@@ -1,0 +1,57 @@
+#summary How the config file works.
+
+= Introduction =
+
+Config file can configure authentication, upstreams and downstream SCIM servers.
+
+= Location =
+
+Config file must be the checkin file at the moment but it can also read config files from /opt/scimproxy/config
+
+= Encoding =
+File must be saved as UTF-8.
+
+= Examples =
+
+== Minimum ==
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<auth type="basic">
+		<username>usr</username>
+		<password>pw</password>
+	</auth>
+</config>
+
+
+== With up and down stream servers ==
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<auth type="basic">
+		<username>usr</username>
+		<password>pw</password>
+	</auth>
+	<up-stream>
+		<csp>
+			<url>http://192.168.10.146:8080</url>
+			<preferedEncoding>JSON</preferedEncoding>
+			<version>1</version>
+			<auth type="basic">
+				<username>usr</username>
+				<password>pw</password>
+			</auth>
+		</csp>
+	</up-stream>
+	<down-stream>
+		<csp>
+			<url>http://192.168.10.141:8080</url>
+			<preferedEncoding>JSON</preferedEncoding>
+			<version>1</version>
+			<auth type="basic">
+				<username>usr</username>
+				<password>pw</password>
+			</auth>
+		</csp>
+	</down-stream>
+</config>
