@@ -11,12 +11,12 @@ import org.mortbay.jetty.testing.ServletTester;
 
 public class ScimUserServletPostTest {
 
-    HttpTester    request  = new HttpTester();
-    HttpTester    response = new HttpTester();
-    ServletTester tester   = null;
+    private static HttpTester    request  = new HttpTester();
+    private static HttpTester    response = new HttpTester();
+    private static ServletTester tester   = null;
 
     @BeforeClass
-    public void setUp() throws Exception {
+    public static void setUp() throws Exception {
         tester = new ServletTester();
         tester.addServlet(ScimUserServlet.class, "/User/*");
         tester.addServlet(DefaultServlet.class, "/");
