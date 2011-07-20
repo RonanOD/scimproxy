@@ -177,16 +177,16 @@ public class Trigger {
 				int statusCode = client.executeMethod(method);
 
 				// Read the response body.
-				byte[] responseBody = method.getResponseBody();
+				String responseBody = method.getResponseBodyAsString();
 
 				if (statusCode != 200) {
 					log.error("Failed to delete user downstreams at " + csp.getUrl());
 				}
 				log.debug("Response code: " + Integer.toString(statusCode));
 				log.debug("Status line: " + method.getStatusLine());
-				log.debug("Response: \n" + new String(responseBody));
+				log.debug("Response: \n" + responseBody);
 
-				users.addAll(ScimUser.getScimUsers(new String(responseBody), "JSON"));
+				users.addAll(ScimUser.getScimUsers(responseBody, "JSON"));
 
 			} catch (HttpException e) {
 				log.error("Fatal protocol violation: " + e.getMessage());
