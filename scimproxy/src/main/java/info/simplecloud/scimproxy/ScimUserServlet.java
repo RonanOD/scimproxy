@@ -105,7 +105,9 @@ public class ScimUserServlet extends RestServlet {
                 if (meta == null) {
                     meta = new Meta();
                 }
-                meta.setVersion(Util.generateVersionString());
+                if(meta.getVersion() == null || "".equals(meta.getVersion())) {
+                    meta.setVersion(Util.generateVersionString());
+                }
                 scimUser.setMeta(meta);
 
                 User.addUser(scimUser);
