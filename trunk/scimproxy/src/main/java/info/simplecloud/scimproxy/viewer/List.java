@@ -3,6 +3,8 @@ package info.simplecloud.scimproxy.viewer;
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.execeptions.InvalidUser;
 import info.simplecloud.core.execeptions.UnknownEncoding;
+import info.simplecloud.scimproxy.authentication.Authenticator;
+import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.trigger.Trigger;
 
 import java.io.IOException;
@@ -30,7 +32,17 @@ public class List extends HttpServlet {
     private Log log = LogFactory.getLog(Trigger.class);
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		
+		Config config = null;
+		config = Config.getInstance();
+		// authenticate
+		Authenticator auth = new Authenticator(config);
+		if(!auth.authenticate(req, resp)) {
+		     resp.setHeader("WWW-authenticate", "basic  realm='mytest'");
+			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No matching authentication schema could be found.");
+		}
+		else {
+			
+
 			String delete = req.getParameter("delete");
 			String etag = req.getParameter("etag");
 			
@@ -123,7 +135,8 @@ public class List extends HttpServlet {
 			}
 		
 		
-		resp.setStatus(HttpServletResponse.SC_OK);
+			resp.setStatus(HttpServletResponse.SC_OK);
+		}
 	}
 
 }
