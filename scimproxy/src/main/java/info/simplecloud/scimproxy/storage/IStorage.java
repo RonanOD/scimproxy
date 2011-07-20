@@ -55,4 +55,6 @@ public interface IStorage {
 	
 	ArrayList<ScimUser> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp);
 
+	void addList(List<ScimUser> upstreamUsers);
+
 }

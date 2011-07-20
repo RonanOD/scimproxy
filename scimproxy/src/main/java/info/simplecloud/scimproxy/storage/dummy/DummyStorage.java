@@ -4,9 +4,11 @@ import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.tools.ScimUserComparator;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.ComplexType;
+import info.simplecloud.core.types.Meta;
 import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.PluralType;
 import info.simplecloud.scimproxy.storage.IStorage;
+import info.simplecloud.scimproxy.util.Util;
 
 import java.lang.reflect.Method;
 import java.math.BigInteger;
@@ -31,7 +33,7 @@ public class DummyStorage implements IStorage {
 	 * Constructor. Adds two users to storage.
 	 */
 	private DummyStorage() {
-		ScimUser carol = new ScimUser();
+	/*	ScimUser carol = new ScimUser();
 		ScimUser dave = new ScimUser();
 
 		// create carol
@@ -49,7 +51,11 @@ public class DummyStorage implements IStorage {
 		carolAddress.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "USA").setAttribute(Address.ATTRIBUTE_POSTAL_CODE, "67-890"), "work", false));
 
 		carol.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, carolAddress);
+        Meta carolMeta = new Meta();
+        carolMeta.setVersion(Util.generateVersionString());
+        carol.setMeta(carolMeta);
 
+		
 		// create dave
 		dave.setUserName("Dave");
 		dave.setAttribute(ScimUser.ATTRIBUTE_ID, generateId());
@@ -65,9 +71,13 @@ public class DummyStorage implements IStorage {
 		dave.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, daveAddress);
 
 		dave.setDisplayName("Dave");
+        Meta daveMeta = new Meta();
+        daveMeta.setVersion(Util.generateVersionString());
+        dave.setMeta(daveMeta);
 
 		users.add(carol);
 		users.add(dave);
+*/		
 	}
 
 	/**
@@ -104,6 +114,12 @@ public class DummyStorage implements IStorage {
 		}
 		users.add(user);
 	}
+	
+	@Override
+	public void addList(List<ScimUser> upstreamUsers) {
+		users.addAll(upstreamUsers);		
+	}
+
 
 	@Override
 	public ArrayList<ScimUser> getList() {
@@ -216,5 +232,6 @@ public class DummyStorage implements IStorage {
 	private String generateId() {
 		return new BigInteger(130, random).toString(32);
 	}
+
 
 }
