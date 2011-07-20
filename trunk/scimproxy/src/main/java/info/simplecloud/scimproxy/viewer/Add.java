@@ -25,6 +25,10 @@ public class Add extends HttpServlet {
 
     private Log log = LogFactory.getLog(Trigger.class);
 
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		doGet(req, resp);
+	}
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 	
 		Config config = null;
@@ -66,7 +70,7 @@ public class Add extends HttpServlet {
 				}
 			}
 	
-	        resp.getWriter().print("<br/><br/><form>");
+	        resp.getWriter().print("<br/><br/><form method='POST'>");
 	        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" value=\"JSON\" checked=\"true\" /> JSON<br/>");
 	        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" disabled=\"true\" value=\"XML\" /> XML<br/>");
 	        resp.getWriter().print("<textarea cols=\"50\" rows=\"15\" name=\"user\"></textarea><br/>");
