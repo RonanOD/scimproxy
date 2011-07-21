@@ -74,6 +74,15 @@
 		<url-pattern>/Viewer/Add</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>Edit</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.Edit</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Edit</servlet-name>
+		<url-pattern>/Viewer/Edit</url-pattern>
+	</servlet-mapping>
+
 	<filter>
 		<filter-name>MethodOverrideFilter</filter-name>
 		<filter-class>info.simplecloud.scimproxy.filter.MethodOverrideFilter</filter-class>
