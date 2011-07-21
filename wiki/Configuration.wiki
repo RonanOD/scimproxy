@@ -21,6 +21,11 @@ File must be saved as UTF-8.
 		<username>usr</username>
 		<password>pw</password>
 	</auth>
+	<storages>
+		<storage>
+			<type>dummy</type>
+		</storage>
+	</storages>
 </config>
 
 
