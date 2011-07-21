@@ -25,6 +25,11 @@ public class Config {
 		<username>usr</username>
 		<password>pw</password>
 	</auth>
+	<storages>
+		<storage>
+			<type>dummy</type>
+		</storage>
+	</storages>
 	<up-stream>
 		<csp>
 			<url>http://192.168.41.137:8080</url>
