@@ -2,8 +2,6 @@ package info.simplecloud.scimproxy.trigger;
 
 import info.simplecloud.core.ScimUser;
 import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.execeptions.EncodingFailed;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
 import info.simplecloud.core.execeptions.UnknownEncoding;
 import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.config.Config;

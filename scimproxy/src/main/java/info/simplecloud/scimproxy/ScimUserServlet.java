@@ -169,6 +169,12 @@ public class ScimUserServlet extends RestServlet {
 
                 // add new user
                 User.getInstance().addUser(scimUser);
+                
+                String etag = req.getHeader("ETag");
+
+                // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+                trigger.put(query, userId, etag);				
+
 
                 resp.setHeader("Location", HttpGenerator.getLocation(scimUser, req));
                 resp.setContentType(HttpGenerator.getContentType(req));

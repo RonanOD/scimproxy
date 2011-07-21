@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings("serial")
 public class Add extends HttpServlet {
 
-    private Log log = LogFactory.getLog(Trigger.class);
+    private Log log = LogFactory.getLog(Add.class);
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		doGet(req, resp);
@@ -36,8 +36,8 @@ public class Add extends HttpServlet {
 		// authenticate
 		Authenticator auth = new Authenticator(config);
 		if(!auth.authenticate(req, resp)) {
-		     resp.setHeader("WWW-authenticate", "basic  realm='mytest'");
-			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No matching authentication schema could be found.");
+		     resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
+			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
 		}
 		else {
 			
