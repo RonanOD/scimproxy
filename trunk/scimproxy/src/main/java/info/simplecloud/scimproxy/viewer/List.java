@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings("serial")
 public class List extends HttpServlet {
 
-    private Log log = LogFactory.getLog(Trigger.class);
+    private Log log = LogFactory.getLog(List.class);
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		Config config = null;
@@ -37,12 +37,11 @@ public class List extends HttpServlet {
 		// authenticate
 		Authenticator auth = new Authenticator(config);
 		if(!auth.authenticate(req, resp)) {
-		     resp.setHeader("WWW-authenticate", "basic  realm='mytest'");
-			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No matching authentication schema could be found.");
+			resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
+			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
 		}
 		else {
 			
-
 			String delete = req.getParameter("delete");
 			String etag = req.getParameter("etag");
 			
@@ -100,7 +99,8 @@ public class List extends HttpServlet {
 	                resp.getWriter().print("<tr>");
 	                resp.getWriter().print("<td>");
 	                if(scimUser.getMeta() != null) {
-		                resp.getWriter().print("<a href=\"?delete=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">delete</a>");
+		                resp.getWriter().print("<a href=\"?delete=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">delete</a><br/>");
+		                resp.getWriter().print("<a href=\"Edit?id=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">edit</a>");
 	                }
 	                else {
 	                	resp.getWriter().print("No meta");
