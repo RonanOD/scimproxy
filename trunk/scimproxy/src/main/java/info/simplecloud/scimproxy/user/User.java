@@ -1,6 +1,12 @@
 package info.simplecloud.scimproxy.user;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import info.simplecloud.core.ScimUser;
+import info.simplecloud.scimproxy.ScimUserServlet;
+import info.simplecloud.scimproxy.config.Config;
+import info.simplecloud.scimproxy.storage.IStorage;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 import info.simplecloud.scimproxy.util.Util;
@@ -13,11 +19,36 @@ import info.simplecloud.scimproxy.util.Util;
  */
 public class User {
 
-	/**
-	 * Holds just a static dummy user at the moment.
-	 */
-	private static DummyStorage storage = DummyStorage.getInstance();
+	private static User INSTANCE = null;
 
+	private static IStorage storage = null;
+	
+    private Log log = LogFactory.getLog(ScimUserServlet.class);
+
+	private User() {
+		// read storage type from config
+		if("dummy".equalsIgnoreCase(Config.getInstance().getStorageType())) {
+			storage = DummyStorage.getInstance();
+			log.info("Dummy storage configured.");
+		}
+		else {
+			log.fatal("No storage configured.");
+		}
+	}
+	
+	/**
+	 * Returns singleton value for the config.
+	 * 
+	 * @return
+	 */
+	public static User getInstance() {
+		if(INSTANCE == null) {
+			INSTANCE = new User();
+		}
+		return INSTANCE;
+	}
+
+	
 	/**
 	 * Deletes a user from the configured user storage.
 	 * 
@@ -26,7 +57,7 @@ public class User {
 	 * @throws UserNotFoundException
 	 *             Thrown when user was not found in storage.
 	 */
-	public static void deletetUser(ScimUser user) throws UserNotFoundException {
+	public void deletetUser(ScimUser user) throws UserNotFoundException {
 		deletetUser(user.getId());
 	}
 
@@ -39,7 +70,7 @@ public class User {
 	 * @throws UserNotFoundException
 	 *             Thrown when user was not found in storage.
 	 */
-	public static void deletetUser(String userid) throws UserNotFoundException {
+	public void deletetUser(String userid) throws UserNotFoundException {
 		storage.deleteUser(userid);
 	}
 
@@ -53,7 +84,7 @@ public class User {
 	 * @throws UserNotFoundException
 	 *             Thrown when user was not found in storage.
 	 */
-	public static ScimUser getUser(String userId) throws UserNotFoundException {
+	public ScimUser getUser(String userId) throws UserNotFoundException {
 		return storage.getUserForId(userId);
 	}
 
@@ -63,7 +94,7 @@ public class User {
 	 * @param user
 	 *            User to be added.
 	 */
-	public static void addUser(ScimUser user) {
+	public void addUser(ScimUser user) {
 		storage.addUser(user);
 	}
 
@@ -73,7 +104,7 @@ public class User {
 	 * @param user
 	 *            User to update version number on.
 	 */
-	public static void updateVersionNumber(ScimUser user) {
+	public void updateVersionNumber(ScimUser user) {
 		user.getMeta().setVersion(Util.generateVersionString());
 	}
 

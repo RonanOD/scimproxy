@@ -55,7 +55,7 @@ public class ScimUserServlet extends RestServlet {
         try {
         	// TODO: should CSP trigger GET call be made before trying locally?
 
-            ScimUser scimUser = User.getUser(userId);
+            ScimUser scimUser = User.getInstance().getUser(userId);
             String userStr = null;
 
             if (req.getParameter("attributes") != null) {
@@ -110,7 +110,7 @@ public class ScimUserServlet extends RestServlet {
                 }
                 scimUser.setMeta(meta);
 
-                User.addUser(scimUser);
+                User.getInstance().addUser(scimUser);
 
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", HttpGenerator.getLocation(scimUser, req));
@@ -165,10 +165,10 @@ public class ScimUserServlet extends RestServlet {
                 scimUser.setMeta(meta);
 
                 // delete old user
-                User.deletetUser(userId);
+                User.getInstance().deletetUser(userId);
 
                 // add new user
-                User.addUser(scimUser);
+                User.getInstance().addUser(scimUser);
 
                 resp.setHeader("Location", HttpGenerator.getLocation(scimUser, req));
                 resp.setContentType(HttpGenerator.getContentType(req));
@@ -206,11 +206,11 @@ public class ScimUserServlet extends RestServlet {
 
         if (userId != null) {
             try {
-                ScimUser scimUser = User.getUser(userId);
+                ScimUser scimUser = User.getInstance().getUser(userId);
                 String etag = req.getHeader("ETag");
                 String version = scimUser.getMeta().getVersion();
                 if (etag != null && !"".equals(etag) && etag.equals(version)) {
-                    User.deletetUser(userId);
+                    User.getInstance().deletetUser(userId);
                     
                     // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
                     trigger.delete(scimUser);				
@@ -255,14 +255,14 @@ public class ScimUserServlet extends RestServlet {
             // TODO: SPEC: Add support for the /User/{id}/password function.
 
             try {
-                ScimUser scimUser = User.getUser(userId);
+                ScimUser scimUser = User.getInstance().getUser(userId);
                 // check that version haven't changed since loaded from server
                 String version = scimUser.getMeta().getVersion();
                 if (etag.equals(version)) {
                     // patch user
                     scimUser.patch(query, HttpGenerator.getEncoding(req));
                     // generate new version number
-                    User.updateVersionNumber(scimUser);
+                    User.getInstance().updateVersionNumber(scimUser);
 
                     // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
                     trigger.patch(query, userId, etag);				
