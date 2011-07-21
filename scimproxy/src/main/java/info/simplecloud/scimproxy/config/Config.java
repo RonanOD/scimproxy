@@ -70,6 +70,9 @@ public class Config {
 	private List<CSP> downStreamCSP = new ArrayList<CSP>();
 	private List<CSP> upStreamCSP = new ArrayList<CSP>();
 
+	// only have support for dummy storage at the moment so it's just a string at the moment
+	private String storageType = "";
+
 	/**
 	 * Private constructor that creates the singleton instance.
 	 */
@@ -136,6 +139,16 @@ public class Config {
 		    if("none".equals(config.getString("auth[@type]"))) {
 		    	setNoneAuth(true);
 		    }
+		    
+		    List<String> storagesList = config.getList("storages.storage.type");
+		    if(storagesList != null)
+		    {
+		    	for(int i=0; i<storagesList.size(); i++) {
+		    		// only have dummy support at the moment
+		    		setStorageType(config.getString("storages.storage(" + i + ").type"));
+		    	}
+		    }
+
 
 		    List<String> downProp = config.getList("down-stream.csp.url");
 		    if(downProp != null)
@@ -250,6 +263,14 @@ public class Config {
 
 	public List<CSP> getUpStreamCSP() {
 		return upStreamCSP;
+	}
+
+	public void setStorageType(String storageType) {
+		this.storageType = storageType;
+	}
+
+	public String getStorageType() {
+		return storageType;
 	}
 
 	
