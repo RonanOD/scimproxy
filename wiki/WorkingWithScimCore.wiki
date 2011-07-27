@@ -78,6 +78,24 @@ System.out.println(partialJsonUsers);
 
 === Extensions ===
 {{{
+package info.simplecloud.core;
+
+import info.simplecloud.core.coding.handlers.StringHandler;
+
+public class NewExtension {
+    private String extensionAttribute;
+
+    @Attribute(codingHandler = StringHandler.class, schemaName = "extensionAttribute")
+    public String getExtensionAttribute() {
+        return this.extensionAttribute;
+    }
+
+    public void setExtensionAttribute(String extensionAttribute) {
+        this.extensionAttribute = extensionAttribute;
+    }
+}
+
+
 // This is done before any users are created (could be done by configuration too)
 System.out.println("=== Setting up extensions ===");
 ScimUser.registerExtension(EnterpriseAttributes.class);
