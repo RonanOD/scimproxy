@@ -11,6 +11,17 @@ Config file must be the checkin file at the moment but it can also read config f
 = Encoding =
 File must be saved as UTF-8.
 
+= Details =
+The auth node defines what type of authentication that the API requires. Only BASIC auth is currently supported. Attributes are username and password.
+
+The storages nodes contains all storages used. Right now only dummy storage is supported. It stores users in memory. Other storages will later on be added.
+
+The up-streams node defines up stream SCIM servers. When user is not found in the local storage the up-stream servers will be searched. If user is found the user is added to local storage.
+
+The down-stream node defines down stream SCIM servers. All changes made to the local SCIM server will also be sent down to the configured server.
+
+Both the down and up-stream server nodes defines what type of authentication that is uses. You can also define primary encoding (JSON or XML) then the version that the server uses. The version is added to the url of the server.
+
 = Examples =
 
 == Minimum ==
