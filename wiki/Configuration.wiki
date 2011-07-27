@@ -14,7 +14,7 @@ File must be saved as UTF-8.
 = Examples =
 
 == Minimum ==
-
+{{{
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
 	<auth type="basic">
@@ -27,16 +27,22 @@ File must be saved as UTF-8.
 		</storage>
 	</storages>
 </config>
-
+}}}
 
 == With up and down stream servers ==
 
+{{{
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
 	<auth type="basic">
 		<username>usr</username>
 		<password>pw</password>
 	</auth>
+	<storages>
+		<storage>
+			<type>dummy</type>
+		</storage>
+	</storages>
 	<up-stream>
 		<csp>
 			<url>http://192.168.10.146:8080</url>
@@ -60,3 +66,4 @@ File must be saved as UTF-8.
 		</csp>
 	</down-stream>
 </config>
+}}}
