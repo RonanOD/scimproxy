@@ -73,8 +73,10 @@ public class ScimUser extends ComplexType {
             try {
                 extensions.add(clazz.newInstance());
             } catch (InstantiationException e) {
+                e.printStackTrace();
                 // Nothing we can do
             } catch (IllegalAccessException e) {
+                e.printStackTrace();
                 // Nothing we can do
             }
         }
