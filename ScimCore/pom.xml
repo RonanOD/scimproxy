@@ -10,6 +10,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<repositories>
+        <repository>
+            <id>XSOM</id>
+            <name>XSOM Repository</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/java.net-m2</url>
+        </repository>
+    </repositories>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -33,6 +40,11 @@
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>1.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xsom</groupId>
+			<artifactId>xsom</artifactId>
+			<version>20081112</version>
 		</dependency>
 	</dependencies>
 	<build>
