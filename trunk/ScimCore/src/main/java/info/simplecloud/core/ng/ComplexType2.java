@@ -92,7 +92,7 @@ public class ComplexType2 {
             if (storedAttribute.value instanceof ComplexType2) {
                 ComplexType2 storedComplexAttribute = (ComplexType2) storedAttribute.value;
                 if (storedComplexAttribute.isTouched()) {
-                    return storedComplexAttribute.getAttribute(nextName, type);
+                    return (T)storedComplexAttribute.getAttribute(nextName, type);
                 }
             } else {
                 throw new Exception("Type missmatch'" + nextName + "' is not complex type");
