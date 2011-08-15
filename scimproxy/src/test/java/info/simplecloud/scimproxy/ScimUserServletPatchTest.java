@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -24,7 +24,7 @@ public class ScimUserServletPatchTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        ScimUser scimUser = new ScimUser();
+        User scimUser = new User("ABC123-patch");
         scimUser.setUserName("Alice");
 
         request.setMethod("POST");
@@ -37,7 +37,7 @@ public class ScimUserServletPatchTest {
         request.setContent(scimUser.getUser("JSON"));
         response.parse(tester.getResponses(request.generate()));
 
-        ScimUser tmp = new ScimUser(response.getContent(), "JSON");
+        User tmp = new User(response.getContent(), "JSON");
         id = tmp.getId();
     }
 
@@ -55,7 +55,7 @@ public class ScimUserServletPatchTest {
         response.parse(tester.getResponses(request.generate()));
         Assert.assertEquals(200, response.getStatus());
 
-        ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), "JSON");
         Assert.assertEquals(null, scimUser.getDisplayName());
 
         // edit user by adding display name
@@ -86,7 +86,7 @@ public class ScimUserServletPatchTest {
         response3.parse(tester.getResponses(request3.generate()));
 
         String r = response3.getContent();
-        Assert.assertEquals("Bob", new ScimUser(r, "JSON").getDisplayName());
+        Assert.assertEquals("Bob", new User(r, "JSON").getDisplayName());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ScimUserServletPatchTest {
         response.parse(tester.getResponses(request.generate()));
         Assert.assertEquals(200, response.getStatus());
 
-        ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), "JSON");
 
         // edit user by adding display name
         scimUser.setDisplayName("Bob");

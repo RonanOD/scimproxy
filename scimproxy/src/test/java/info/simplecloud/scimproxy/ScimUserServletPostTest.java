@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -26,7 +26,7 @@ public class ScimUserServletPostTest {
     @Test
     public void createUser() throws Exception {
 
-        ScimUser scimUser = new ScimUser();
+        User scimUser = new User("ABC123-post");
         scimUser.setUserName("Alice");
 
         request.setMethod("POST");

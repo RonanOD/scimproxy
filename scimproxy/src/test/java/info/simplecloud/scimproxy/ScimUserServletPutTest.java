@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -24,7 +24,7 @@ public class ScimUserServletPutTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        ScimUser scimUser = new ScimUser();
+        User scimUser = new User("ABC123-put");
         scimUser.setUserName("Alice");
 
         request.setMethod("POST");
@@ -37,13 +37,13 @@ public class ScimUserServletPutTest {
         request.setContent(scimUser.getUser("JSON"));
         response.parse(tester.getResponses(request.generate()));
 
-        ScimUser tmp = new ScimUser(response.getContent(), "JSON");
+        User tmp = new User(response.getContent(), "JSON");
         id = tmp.getId();
     }
 
     @Test
     public void putUser() throws Exception {
-        ScimUser scimUser = new ScimUser();
+        User scimUser = new User("ABC123-put");
         scimUser.setId(id);
         scimUser.setUserName("Bob");
 
@@ -59,7 +59,7 @@ public class ScimUserServletPutTest {
 
         Assert.assertEquals(200, response.getStatus());
 
-        ScimUser returnedUser = new ScimUser(response.getContent(), "JSON");
+        User returnedUser = new User(response.getContent(), "JSON");
 
         Assert.assertEquals(id, returnedUser.getId());
         Assert.assertEquals("Bob", returnedUser.getUserName());

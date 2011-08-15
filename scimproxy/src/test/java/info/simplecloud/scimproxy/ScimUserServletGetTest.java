@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -24,7 +24,7 @@ public class ScimUserServletGetTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        ScimUser scimUser = new ScimUser();
+        User scimUser = new User("ABC123-get");
         scimUser.setUserName("Alice");
         scimUser.setNickName("A");
 
@@ -37,7 +37,7 @@ public class ScimUserServletGetTest {
         request.setContent(scimUser.getUser("JSON"));
         response.parse(tester.getResponses(request.generate()));
 
-        ScimUser tmp = new ScimUser(response.getContent(), "JSON");
+        User tmp = new User(response.getContent(), "JSON");
         id = tmp.getId();
     }
 
@@ -52,7 +52,7 @@ public class ScimUserServletGetTest {
 
         Assert.assertEquals(200, response.getStatus());
 
-        ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), "JSON");
 
         Assert.assertEquals(id, scimUser.getId());
         Assert.assertEquals("Alice", scimUser.getUserName());
@@ -119,10 +119,9 @@ public class ScimUserServletGetTest {
 
         Assert.assertEquals(200, response.getStatus());
 
-        ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
-
+        User scimUser = new User(response.getContent(), "JSON");
         Assert.assertEquals(id, scimUser.getId());
-        Assert.assertEquals("Alice", scimUser.getUserName());
+        Assert.assertNull(scimUser.getUserName());
     }
 
     @Test
@@ -137,24 +136,10 @@ public class ScimUserServletGetTest {
 
         Assert.assertEquals(200, response.getStatus());
 
-        ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), "JSON");
 
         Assert.assertEquals(id, scimUser.getId());
         Assert.assertEquals(null, scimUser.getUserName());
         Assert.assertEquals("A", scimUser.getNickName());
     }
-
-    @Test
-    public void testUnknownAttrib() throws Exception {
-        request.setMethod("GET");
-        request.setVersion("HTTP/1.0");
-        request.setHeader("Authorization", "Basic dXNyOnB3");
-
-        request.setURI("/User/" + id + "?attributes=asdasdasdasdasdasd");
-
-        response.parse(tester.getResponses(request.generate()));
-
-        Assert.assertEquals(400, response.getStatus());
-    }
-
 }
