@@ -3,7 +3,6 @@ package info.simplecloud.scimproxy.user;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import info.simplecloud.core.ScimUser;
 import info.simplecloud.scimproxy.ScimUserServlet;
 import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.storage.IStorage;
@@ -57,7 +56,7 @@ public class User {
 	 * @throws UserNotFoundException
 	 *             Thrown when user was not found in storage.
 	 */
-	public void deletetUser(ScimUser user) throws UserNotFoundException {
+	public void deletetUser(info.simplecloud.core.User user) throws UserNotFoundException {
 		deletetUser(user.getId());
 	}
 
@@ -84,7 +83,7 @@ public class User {
 	 * @throws UserNotFoundException
 	 *             Thrown when user was not found in storage.
 	 */
-	public ScimUser getUser(String userId) throws UserNotFoundException {
+	public info.simplecloud.core.User getUser(String userId) throws UserNotFoundException {
 		return storage.getUserForId(userId);
 	}
 
@@ -94,7 +93,7 @@ public class User {
 	 * @param user
 	 *            User to be added.
 	 */
-	public void addUser(ScimUser user) {
+	public void addUser(info.simplecloud.core.User user) {
 		storage.addUser(user);
 	}
 
@@ -104,7 +103,7 @@ public class User {
 	 * @param user
 	 *            User to update version number on.
 	 */
-	public void updateVersionNumber(ScimUser user) {
+	public void updateVersionNumber(info.simplecloud.core.User user) {
 		user.getMeta().setVersion(Util.generateVersionString());
 	}
 

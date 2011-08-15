@@ -1,8 +1,8 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.execeptions.UnknownEncoding;
+import info.simplecloud.core.exceptions.InvalidUser;
+import info.simplecloud.core.exceptions.UnknownAttribute;
+import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 import info.simplecloud.scimproxy.trigger.Trigger;
@@ -55,7 +55,7 @@ public class ScimUserServlet extends RestServlet {
         try {
         	// TODO: should CSP trigger GET call be made before trying locally?
 
-            ScimUser scimUser = User.getInstance().getUser(userId);
+            info.simplecloud.core.User scimUser = User.getInstance().getUser(userId);
             String userStr = null;
 
             if (req.getParameter("attributes") != null) {
@@ -100,7 +100,7 @@ public class ScimUserServlet extends RestServlet {
 
         if (query != null && !"".equals(query)) {
             try {
-                ScimUser scimUser = new ScimUser(query, HttpGenerator.getEncoding(req));
+                info.simplecloud.core.User scimUser = new info.simplecloud.core.User(query, HttpGenerator.getEncoding(req));
                 Meta meta = scimUser.getMeta();
                 if (meta == null) {
                     meta = new Meta();
@@ -156,7 +156,7 @@ public class ScimUserServlet extends RestServlet {
                 // in spec or not?
                 // TODO: SPEC: REST: Should ETag be verified in PUT?
                 // TODO: SPEC: REST: Should we keep created time?
-                ScimUser scimUser = new ScimUser(query, HttpGenerator.getEncoding(req));
+                info.simplecloud.core.User scimUser = new info.simplecloud.core.User(query, HttpGenerator.getEncoding(req));
                 Meta meta = scimUser.getMeta();
                 if (meta == null) {
                     meta = new Meta();
@@ -212,7 +212,7 @@ public class ScimUserServlet extends RestServlet {
 
         if (userId != null) {
             try {
-                ScimUser scimUser = User.getInstance().getUser(userId);
+                info.simplecloud.core.User scimUser = User.getInstance().getUser(userId);
                 String etag = req.getHeader("ETag");
                 String version = scimUser.getMeta().getVersion();
                 if (etag != null && !"".equals(etag) && etag.equals(version)) {
@@ -261,7 +261,7 @@ public class ScimUserServlet extends RestServlet {
             // TODO: SPEC: Add support for the /User/{id}/password function.
 
             try {
-                ScimUser scimUser = User.getInstance().getUser(userId);
+                info.simplecloud.core.User scimUser = User.getInstance().getUser(userId);
                 // check that version haven't changed since loaded from server
                 String version = scimUser.getMeta().getVersion();
                 if (etag.equals(version)) {
@@ -285,6 +285,8 @@ public class ScimUserServlet extends RestServlet {
             } catch (UnknownEncoding e) {
                 HttpGenerator.badRequest(resp, "Unknown encoding.");
             } catch (InvalidUser e) {
+                HttpGenerator.badRequest(resp, "Malformed user.");
+            } catch (UnknownAttribute e) {
                 HttpGenerator.badRequest(resp, "Malformed user.");
             }
 

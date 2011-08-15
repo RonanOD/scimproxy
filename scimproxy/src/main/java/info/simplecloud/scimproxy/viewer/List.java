@@ -1,14 +1,12 @@
 package info.simplecloud.scimproxy.viewer;
 
-import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.execeptions.UnknownEncoding;
+import info.simplecloud.core.User;
+import info.simplecloud.core.exceptions.InvalidUser;
+import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.authentication.Authenticator;
 import info.simplecloud.scimproxy.config.Config;
-import info.simplecloud.scimproxy.trigger.Trigger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -86,7 +84,7 @@ public class List extends HttpServlet {
 				log.debug("Response code: " + Integer.toString(statusCode));
 				log.debug("Status line: " + method.getStatusLine());
 				log.debug("Response: \n" + new String(responseBody));
-				ArrayList<ScimUser> users = ScimUser.getScimUsers(new String(responseBody), "JSON");
+				java.util.List<User> users = User.getUsers(new String(responseBody), "JSON");
 
 		        resp.getWriter().print("<html>");
 		        resp.getWriter().print("<a href=\"List\">List</a>&nbsp;");
@@ -95,7 +93,7 @@ public class List extends HttpServlet {
 
                 resp.getWriter().print("<table border=\"1\">");
 
-				for (ScimUser scimUser : users) {
+				for (User scimUser : users) {
 	                resp.getWriter().print("<tr>");
 	                resp.getWriter().print("<td>");
 	                if(scimUser.getMeta() != null) {

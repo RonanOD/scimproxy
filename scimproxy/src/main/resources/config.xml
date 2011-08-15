@@ -4,4 +4,9 @@
 		<username>usr</username>
 		<password>pw</password>
 	</auth>
+	<storages>
+		<storage>
+			<type>dummy</type>
+		</storage>
+	</storages>
 </config>
