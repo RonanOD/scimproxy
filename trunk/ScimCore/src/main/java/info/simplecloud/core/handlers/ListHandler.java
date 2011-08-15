@@ -1,6 +1,9 @@
-package info.simplecloud.core.ng.handlers;
+package info.simplecloud.core.handlers;
 
-import info.simplecloud.core.ng.MetaData;
+import info.simplecloud.core.MetaData;
+import info.simplecloud.core.coding.decode.IDecodeHandler;
+import info.simplecloud.core.coding.encode.IEncodeHandler;
+import info.simplecloud.core.merging.IMerger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +11,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-public class ListHandler implements IHandler {
-
-    public static final ListHandler INSTANCE = new ListHandler();
-
-    private ListHandler() {
-        // Do nothing
-    }
+public class ListHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object decode(Object jsonData, Object me, MetaData internalMetaData) {
@@ -33,7 +30,7 @@ public class ListHandler implements IHandler {
     }
 
     @Override
-    public Object encode(Object me, MetaData internalMetaData, List<String> includeAttributes) {
+    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
         @SuppressWarnings("unchecked")
         List<String> list = (List<String>) me;
         JSONArray result = new JSONArray();
@@ -47,15 +44,7 @@ public class ListHandler implements IHandler {
 
     @Override
     public Object merge(Object from, Object to) {
-        // We do not need this at the moment, since only used in meta data which
-        // is not merged.
-
+        // TODO Auto-generated method stub
         return null;
     }
-
-    @Override
-    public String toString() {
-        return "ListHandler";
-    }
-
 }
