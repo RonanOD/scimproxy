@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 import info.simplecloud.core.coding.encode.JsonEncoder;
 import info.simplecloud.core.coding.encode.XmlEncoder;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
@@ -51,7 +51,7 @@ public class ScimUsersServlet extends RestServlet {
         }
 
         DummyStorage storage = DummyStorage.getInstance();
-        List<ScimUser> users = null;
+        List<User> users = null;
 
         String filterBy = req.getParameter("filterBy");
         String filterValue = req.getParameter("filterValue");
@@ -97,17 +97,17 @@ public class ScimUsersServlet extends RestServlet {
         try {
             users = users.subList(index, max);
         } catch (IndexOutOfBoundsException e) {
-            users = new ArrayList<ScimUser>();
+            users = new ArrayList<User>();
         }
 
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.setContentType(HttpGenerator.getContentType(req));
 
         String response = "";
-        if (ScimUser.ENCODING_JSON.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
+        if (User.ENCODING_JSON.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
             response = new JsonEncoder().encode(users, attributesList);
         }
-        if (ScimUser.ENCODING_XML.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
+        if (User.ENCODING_XML.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
             response = new XmlEncoder().encode(users, attributesList);
         }
 
