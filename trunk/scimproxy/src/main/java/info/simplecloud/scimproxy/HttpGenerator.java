@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 
 import java.io.IOException;
 
@@ -48,7 +48,7 @@ public class HttpGenerator {
 	 * @param scimUser
 	 *            User that was changed since loaded from client.
 	 */
-	public static void preconditionFailed(HttpServletResponse resp, ScimUser scimUser) {
+	public static void preconditionFailed(HttpServletResponse resp, User scimUser) {
 		resp.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED); // 412
 		try {
 			resp.getWriter().print("Failed to update as resource " + scimUser.getId() + " changed on the server since you last retrieved it.");
@@ -199,7 +199,7 @@ public class HttpGenerator {
 	 *            A servlet request for retrieving paths and server names.
 	 * @return A URI to a scim user to be used as a Location HTTP header.
 	 */
-	public static String getLocation(ScimUser user, HttpServletRequest req) {
+	public static String getLocation(User user, HttpServletRequest req) {
 		// generate the Location url
 		String scheme = req.getScheme(); // http
 		String serverName = req.getServerName(); // acme.com
