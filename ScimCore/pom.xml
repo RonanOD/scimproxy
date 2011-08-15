@@ -46,6 +46,12 @@
 			<artifactId>xsom</artifactId>
 			<version>20081112</version>
 		</dependency>
+				<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.4.0</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>scimcore</finalName>
