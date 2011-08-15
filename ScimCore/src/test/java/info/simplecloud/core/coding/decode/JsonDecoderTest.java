@@ -1,13 +1,10 @@
 package info.simplecloud.core.coding.decode;
 
-import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.testtools.ResourceReader;
-import info.simplecloud.core.types.PluralType;
+import info.simplecloud.core.User;
+import info.simplecloud.core.exceptions.InvalidUser;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class JsonDecoderTest {
@@ -15,7 +12,7 @@ public class JsonDecoderTest {
     @Test(expected = InvalidUser.class)
     public void decodeInvalidUser() throws InvalidUser {
         String user = "";
-        ScimUser scimUser = new ScimUser();
+        User scimUser = new User("123");
         JsonDecoder decoder = new JsonDecoder();
 
         decoder.decode(user, scimUser);

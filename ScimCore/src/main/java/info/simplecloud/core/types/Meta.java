@@ -1,64 +1,64 @@
 package info.simplecloud.core.types;
 
-import info.simplecloud.core.Attribute;
-import info.simplecloud.core.coding.handlers.CalendarHandler;
-import info.simplecloud.core.coding.handlers.StringHandler;
-import info.simplecloud.core.coding.handlers.StringListHandler;
+import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.handlers.DateHandler;
+import info.simplecloud.core.handlers.ListHandler;
+import info.simplecloud.core.handlers.StringHandler;
 
 import java.util.Calendar;
 import java.util.List;
 
 public class Meta extends ComplexType {
-    public static final String ATTRIBUTE_CREATED       = "created";
-    public static final String ATTRIBUTE_LAST_MODIFIED = "lastModified";
-    public static final String ATTRIBUTE_VERSION       = "version";
-    public static final String ATTRIBUTE_LOCATION      = "location";
-    public static final String ATTRIBUTE_ATTRIBUTES    = "attributes";
 
-    @Attribute(schemaName = "created", codingHandler = CalendarHandler.class)
+    private Calendar     created;
+    private Calendar     lastModified;
+    private String       version;
+    private String       location;
+    private List<String> attributes;
+
+    @Attribute(name = "created", handler = DateHandler.class)
     public Calendar getCreated() {
-        return super.getAttributeCalendar(ATTRIBUTE_CREATED);
+        return this.created;
     }
 
-    @Attribute(schemaName = "lastModified", codingHandler = CalendarHandler.class)
+    @Attribute(name = "lastModified", handler = DateHandler.class)
     public Calendar getLastModified() {
-        return super.getAttributeCalendar(ATTRIBUTE_LAST_MODIFIED);
+        return this.lastModified;
     }
 
-    @Attribute(schemaName = "version", codingHandler = StringHandler.class)
+    @Attribute(name = "version", handler = StringHandler.class)
     public String getVersion() {
-        return super.getAttributeString(ATTRIBUTE_VERSION);
+        return this.version;
     }
 
-    @Attribute(schemaName = "location", codingHandler = StringHandler.class)
+    @Attribute(name = "location", handler = StringHandler.class)
     public String getLocation() {
-        return super.getAttributeString(ATTRIBUTE_LOCATION);
+        return this.location;
     }
 
-    @Attribute(schemaName = "attributes", codingHandler = StringListHandler.class)
+    @Attribute(name = "attributes", handler = ListHandler.class)
     public List<String> getAttributes() {
-        Object attributeList = super.getAttribute(ATTRIBUTE_ATTRIBUTES);
-        return attributeList == null ? null : (List<String>) attributeList;
+        return this.attributes;
     }
 
     public void setCreated(Calendar created) {
-        super.setAttribute(ATTRIBUTE_CREATED, created);
+        this.created = created;
     }
 
     public void setLastModified(Calendar lastModified) {
-        super.setAttribute(ATTRIBUTE_LAST_MODIFIED, lastModified);
+        this.lastModified = lastModified;
     }
 
     public void setVersion(String version) {
-        super.setAttribute(ATTRIBUTE_VERSION, version);
+        this.version = version;
     }
 
     public void setLocation(String location) {
-        super.setAttribute(ATTRIBUTE_LOCATION, location);
+        this.location = location;
     }
 
     public void setAttributes(List<String> attributes) {
-        super.setAttribute(ATTRIBUTE_ATTRIBUTES, attributes);
+        this.attributes = attributes;
     }
 
     @Override
@@ -66,6 +66,7 @@ public class Meta extends ComplexType {
         if (this == otherObj) {
             return true;
         }
+        
         if (!(otherObj instanceof Meta)) {
             return false;
         }
