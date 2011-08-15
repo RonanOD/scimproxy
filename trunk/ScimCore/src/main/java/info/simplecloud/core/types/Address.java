@@ -1,15 +1,16 @@
 package info.simplecloud.core.types;
 
-import info.simplecloud.core.Attribute;
-import info.simplecloud.core.coding.handlers.StringHandler;
+import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.handlers.StringHandler;
 
-public class Address extends ComplexType implements Comparable<Address> {
-    public static final String ATTRIBUTE_FORMATTED      = "formatted";
-    public static final String ATTRIBUTE_STREET_ADDRESS = "streetAddress";
-    public static final String ATTRIBUTE_LOCALITY       = "locality";
-    public static final String ATTRIBUTE_REGION         = "region";
-    public static final String ATTRIBUTE_POSTAL_CODE    = "postalCode";
-    public static final String ATTRIBUTE_CONTRY         = "country";
+public class Address extends ComplexType {
+
+    private String formatted;
+    private String streetAddress;
+    private String locality;
+    private String region;
+    private String postalCode;
+    private String country;
 
     public Address(String formatted, String streetAddress, String locality, String region, String postalCode, String country) {
         this.setFormatted(formatted);
@@ -19,63 +20,63 @@ public class Address extends ComplexType implements Comparable<Address> {
         this.setPostalCode(postalCode);
         this.setCountry(country);
     }
-    
+
     public Address() {
-        
+
     }
 
-    @Attribute(schemaName = "formatted", codingHandler = StringHandler.class)
+    @Attribute(name = "formatted", handler = StringHandler.class)
     public String getFormatted() {
-        return super.getAttributeString(ATTRIBUTE_FORMATTED);
+        return this.formatted;
     }
 
-    @Attribute(schemaName = "streetAddress", codingHandler = StringHandler.class)
+    @Attribute(name = "streetAddress", handler = StringHandler.class)
     public String getStreetAddress() {
-        return super.getAttributeString(ATTRIBUTE_STREET_ADDRESS);
+        return this.streetAddress;
     }
 
-    @Attribute(schemaName = "locality", codingHandler = StringHandler.class)
+    @Attribute(name = "locality", handler = StringHandler.class)
     public String getLocality() {
-        return super.getAttributeString(ATTRIBUTE_LOCALITY);
+        return this.locality;
     }
 
-    @Attribute(schemaName = "region", codingHandler = StringHandler.class)
+    @Attribute(name = "region", handler = StringHandler.class)
     public String getRegion() {
-        return super.getAttributeString(ATTRIBUTE_REGION);
+        return this.region;
     }
 
-    @Attribute(schemaName = "postalCode", codingHandler = StringHandler.class)
+    @Attribute(name = "postalCode", handler = StringHandler.class)
     public String getPostalCode() {
-        return super.getAttributeString(ATTRIBUTE_POSTAL_CODE);
+        return this.postalCode;
     }
 
-    @Attribute(schemaName = "country", codingHandler = StringHandler.class)
+    @Attribute(name = "country", handler = StringHandler.class)
     public String getCountry() {
-        return super.getAttributeString(ATTRIBUTE_CONTRY);
+        return this.country;
     }
 
     public void setFormatted(String formatted) {
-        super.setAttribute(ATTRIBUTE_FORMATTED, formatted);
+        this.formatted = formatted;
     }
 
     public void setStreetAddress(String streetAddress) {
-        super.setAttribute(ATTRIBUTE_STREET_ADDRESS, streetAddress);
+        this.streetAddress = streetAddress;
     }
 
     public void setLocality(String locality) {
-        super.setAttribute(ATTRIBUTE_LOCALITY, locality);
+        this.locality = locality;
     }
 
     public void setRegion(String region) {
-        super.setAttribute(ATTRIBUTE_REGION, region);
+        this.region = region;
     }
 
     public void setPostalCode(String postalCode) {
-        super.setAttribute(ATTRIBUTE_POSTAL_CODE, postalCode);
+        this.postalCode = postalCode;
     }
 
     public void setCountry(String country) {
-        super.setAttribute(ATTRIBUTE_CONTRY, country);
+        this.country = country;
     }
 
     @Override
@@ -83,25 +84,12 @@ public class Address extends ComplexType implements Comparable<Address> {
         if (this == otherObj) {
             return true;
         }
+
         if (!(otherObj instanceof Address)) {
             return false;
         }
         Address otherAddress = (Address) otherObj;
 
         return super.equals(otherAddress);
-    }
-
-    @Override
-    public int compareTo(Address other) {
-        String streetAddress = this.getStreetAddress();
-        String streetAddressOther = other.getStreetAddress();
-
-        if (streetAddress == null) {
-            return -1;
-        } else if (streetAddressOther == null) {
-            return 1;
-        } else {
-            return streetAddress.compareTo(streetAddressOther);
-        }
     }
 }

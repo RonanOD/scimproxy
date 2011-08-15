@@ -1,95 +1,77 @@
 package info.simplecloud.core.types;
 
-import info.simplecloud.core.Attribute;
+import info.simplecloud.core.MetaData;
+import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.coding.ReflectionHelper;
+import info.simplecloud.core.exceptions.UnknownAttribute;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public abstract class ComplexType {
-    private static final String ID_SEPARATOR = ".";
-    private Map<String, Object> data         = new HashMap<String, Object>();
 
-    public Object getAttribute(String id) {
-        String[] ids = id.split("\\.");
+    public <T> T getAttribute(String name) throws UnknownAttribute {
+        if (name.contains(".")) {
+            String localName = name.substring(0, name.indexOf("."));
+            String nextName = name.substring(name.indexOf(".") + 1, name.length());
 
-        Object result = this;
-        for (String localId : ids) {
-            ComplexType current = null;
-
-            if (result instanceof ComplexType) {
-                current = (ComplexType) result;
-            }
-
-            result = current.data.get(localId);
-            if (result == null) {
+            Method method = findAttributeMethod(localName);
+            ComplexType next = (ComplexType) invokeMethod(method, localName);
+            if (next == null) {
                 return null;
             }
+            return next.getAttribute(nextName);
+        } else {
+            Method method = findAttributeMethod(name);
+            return (T) invokeMethod(method, name);
+        }
+    }
 
-            if (id.endsWith(localId)) {
-                return result;
+    public ComplexType setAttribute(String name, Object attribute) throws UnknownAttribute {
+        if (name.contains(".")) {
+            String localName = name.substring(0, name.indexOf("."));
+            String nextName = name.substring(name.indexOf(".") + 1, name.length());
+
+            Method method = findAttributeMethod(localName);
+            ComplexType next = (ComplexType) invokeMethod(method, localName);
+            if (next == null) {
+                next = this.getMetaData(localName).newInstance();
+                this.setAttribute(localName, next);
+            }
+            next.setAttribute(nextName, attribute);
+        } else {
+            Method method = findAttributeMethod(name);
+            if (method == null) {
+                throw new UnknownAttribute("Has no method for attribute '" + name + "'");
+            }
+            // TODO think of something smarter
+            String setter = "s" + method.getName().substring(1);
+            Method setMethod = null;
+            try {
+                setMethod = ReflectionHelper.getMethod(setter, this.getClass());
+                setMethod.invoke(this, attribute);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
+                        + "' to set attribute '" + name + "'", e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
+                        + "' to set attribute '" + name + "'", e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
+                        + "' to set attribute '" + name + "'", e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
+                        + "' to set attribute '" + name + "'", e);
             }
         }
 
-        return null;
-    }
-
-    public String getAttributeString(String id) {
-        Object string = this.getAttribute(id);
-        return (string == null ? null : (String) string);
-    }
-
-    public Calendar getAttributeCalendar(String id) {
-        Object calendar = this.getAttribute(id);
-        return (calendar == null ? null : (Calendar) calendar);
-    }
-
-    public Integer getAttributeInteger(String id) {
-        Object integer = this.getAttribute(id);
-        return (integer == null ? null : (Integer) integer);
-    }
-
-    public ComplexType setAttribute(String id, Object attribute) {
-        if (id == null || id.contains(ID_SEPARATOR)) {
-            throw new IllegalArgumentException("id may not be null or contain '.', id: " + id);
-        }
-
-        this.data.put(id, attribute);
         return this;
     }
 
-    public void removeAttribute(String id) {
-        this.data.remove(id);
-    }
-
-    public void merge(ComplexType from) {
-
-        for (Method method : from.getClass().getMethods()) {
-            if (method.isAnnotationPresent(Attribute.class)) {
-                Attribute attribute = method.getAnnotation(Attribute.class);
-                String attributeId = attribute.schemaName();
-                if (this.getAttribute(attributeId) != null && this.getAttribute(attributeId) instanceof ComplexType) {
-                    ComplexType fromTmp = (ComplexType) from.getAttribute(attributeId);
-                    ComplexType toTmp = (ComplexType) this.getAttribute(attributeId);
-                    if (fromTmp != null) {
-                        toTmp.merge(fromTmp);
-                    }
-                } else if(this.getAttribute(attributeId) != null && this.getAttribute(attributeId) instanceof List<?> &&
-                        from.getAttribute(attributeId) != null && from.getAttribute(attributeId) instanceof List<?>) {
-                    List<PluralType> toList = (List<PluralType>)this.getAttribute(attributeId);
-                    List<PluralType> fromList = (List<PluralType>)from.getAttribute(attributeId);
-                    for(PluralType fromItem :fromList ) {
-                        if(!toList.contains(fromItem)) {
-                            toList.add(fromItem);
-                        }
-                    }
-                } else if (from.getAttribute(attributeId) != null) {
-                    this.setAttribute(attributeId, from.getAttribute(attributeId));
-                }
-            }
-        }
+    public void removeAttribute(String id) throws UnknownAttribute {
+        this.setAttribute(id, null);
     }
 
     @Override
@@ -101,17 +83,34 @@ public abstract class ComplexType {
         if (!(otherObj instanceof ComplexType)) {
             return false;
         }
-        ComplexType otherCt = (ComplexType) otherObj;
+        ComplexType otherComplex = (ComplexType) otherObj;
 
-        if (this.data.size() != otherCt.data.size()) {
-            return false;
-        }
+        for (Method method : this.getClass().getMethods()) {
+            if (!method.isAnnotationPresent(Attribute.class)) {
+                continue;
+            }
 
-        for (String id : this.data.keySet()) {
-            Object me = this.data.get(id);
-            Object other = otherCt.data.get(id);
-            if (me != null && !me.equals(other)) {
-                return false;
+            Attribute attribute = method.getAnnotation(Attribute.class);
+            try {
+                Object otherInternal = otherComplex.getAttribute(attribute.name());
+                Object meInternal = method.invoke(this, new Object[] {});
+
+                if (otherInternal == meInternal) {
+                    continue;
+                }
+                if ((meInternal != null && !meInternal.equals(otherInternal))
+                        || (otherInternal != null && !otherInternal.equals(meInternal))) {
+                    return false;
+                }
+
+            } catch (UnknownAttribute e) {
+                throw new RuntimeException("Internal error", e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Internal error", e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Internal error", e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException("Internal error", e);
             }
         }
 
@@ -120,22 +119,107 @@ public abstract class ComplexType {
 
     @Override
     public String toString() {
-        if(this.data.isEmpty()) {
-            return "";
-        }
-        
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String id : this.data.keySet()) {
-            Object obj = this.data.get(id);
-            if (obj != null) {
-                stringBuilder.append(id);
-                stringBuilder.append(": ");
-                stringBuilder.append(obj.toString());
-                stringBuilder.append(", ");
+        StringBuilder sb = new StringBuilder("(");
+
+        for (Method method : this.getClass().getMethods()) {
+            if (!method.isAnnotationPresent(Attribute.class)) {
+                continue;
+            }
+
+            try {
+                Object attribute = method.invoke(this, new Object[] {});
+                if(attribute == null) {
+                    // we do not need to print null
+                    continue;
+                }
+                Attribute metadata = method.getAnnotation(Attribute.class);
+                sb.append(metadata.name()).append(": ");
+                sb.append(attribute.toString()).append(", ");
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("toString internal error", e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("toString internal error", e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException("toString internal error", e);
             }
         }
 
-        return stringBuilder.substring(0, stringBuilder.length() - 2);
+        sb.append(")");
+        return sb.toString();
     }
 
+    private Object invokeMethod(Method method, String name) throws UnknownAttribute {
+        try {
+            if (method == null) {
+                throw new UnknownAttribute("Could not find attribute '" + name + "'");
+            }
+            return method.invoke(this, new Object[] {});
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Failed to read value for attribute '" + name + "'", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Failed to read value for attribute '" + name + "'", e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Failed to read value for attribute '" + name + "'", e);
+        }
+    }
+
+    private Method findAttributeMethod(String name) {
+        Class<?> currentClass = this.getClass();
+        for (Method method : currentClass.getMethods()) {
+            if (!method.isAnnotationPresent(Attribute.class)) {
+                // Not an attribute method, continue with next
+                continue;
+            }
+
+            Attribute annotation = method.getAnnotation(Attribute.class);
+            if (!name.equals(annotation.name())) {
+                // Not correct method, continue with next
+                continue;
+            }
+
+            return method;
+        }
+
+        return null;
+    }
+
+    public List<String> getNames() {
+        List<String> result = new ArrayList<String>();
+
+        for (Method method : this.getClass().getMethods()) {
+            if (!method.isAnnotationPresent(Attribute.class)) {
+                continue;
+            }
+            Attribute metaData = method.getAnnotation(Attribute.class);
+            result.add(metaData.name());
+        }
+
+        return result;
+    }
+
+    public MetaData getMetaData(String name) throws UnknownAttribute {
+        for (Method method : this.getClass().getMethods()) {
+            if (!method.isAnnotationPresent(Attribute.class)) {
+                // Not an attribute method, continue with next
+                continue;
+            }
+
+            Attribute metaData = method.getAnnotation(Attribute.class);
+
+            if (name.equals(metaData.name())) {
+                return new MetaData(metaData);
+            }
+        }
+
+        throw new UnknownAttribute("Could not find metadata for attribute '" + name + "'");
+    }
+
+    public boolean hasAttribute(String name) {
+        try {
+            this.getMetaData(name);
+            return true;
+        } catch (UnknownAttribute e) {
+            return false;
+        }
+    }
 }

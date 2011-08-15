@@ -1,6 +1,7 @@
 package info.simplecloud.core.coding.encode;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
+import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.ComplexType;
 import info.simplecloud.core.types.Name;
@@ -16,8 +17,8 @@ import org.junit.Test;
 public class JsonEncoderTest {
 
     @Test
-    public void encode() {
-        ScimUser scimUser = getUser("yhgty-ujhyu-iolki", "samuel", "samuel@erdtman.se", "samuel.erdtman@nexussafe.com", "12345", "67890");
+    public void encode() throws UnknownAttribute {
+        User scimUser = getUser("yhgty-ujhyu-iolki", "samuel", "samuel@erdtman.se", "samuel.erdtman@nexussafe.com", "12345", "67890");
 
         String jsonUser = new JsonEncoder().encode(scimUser);
         Assert.assertTrue(jsonUser.contains("yhgty-ujhyu-iolki"));
@@ -30,7 +31,7 @@ public class JsonEncoderTest {
     }
 
     @Test
-    public void encodeSet() {
+    public void encodeSet() throws UnknownAttribute {
         String[] ids = new String[] { "1abcd", "2asdkjlfhaöksdf", "3fakljsdhflas" };
         String[] name = new String[] { "olle", "nisse", "kalle" };
         String[] emails1 = new String[] { "olle@home.com", "nisse@home.com", "kalle@home.com" };
@@ -38,7 +39,7 @@ public class JsonEncoderTest {
         String[] postcodes1 = new String[] { "11111", "22222", "33333" };
         String[] postcodes2 = new String[] { "44444", "55555", "66666" };
 
-        List<ScimUser> users = new ArrayList<ScimUser>();
+        List<User> users = new ArrayList<User>();
 
         for (int i = 0; i < ids.length; i++) {
             users.add(getUser(ids[i], name[i], emails1[i], emails2[i], postcodes1[i], postcodes2[i]));
@@ -55,10 +56,10 @@ public class JsonEncoderTest {
         }
 
         List<String> includeAttributes = new ArrayList<String>();
-        includeAttributes.add(ScimUser.ATTRIBUTE_ADDRESSES);
-        includeAttributes.add(ScimUser.ATTRIBUTE_NAME);
-        includeAttributes.add(ScimUser.ATTRIBUTE_EMAILS);
-        includeAttributes.add(ScimUser.ATTRIBUTE_ID);
+        includeAttributes.add("addresses");
+        includeAttributes.add("name");
+        includeAttributes.add("emails");
+        includeAttributes.add("id");
         jsonUsers = new JsonEncoder().encode(users, includeAttributes);
         Assert.assertTrue(jsonUsers.contains("\"totalResults\": " + users.size()));
 
@@ -71,9 +72,9 @@ public class JsonEncoderTest {
         }
 
         includeAttributes = new ArrayList<String>();
-        includeAttributes.add(ScimUser.ATTRIBUTE_ADDRESSES);
-        includeAttributes.add(ScimUser.ATTRIBUTE_NAME);
-        includeAttributes.add(ScimUser.ATTRIBUTE_ID);
+        includeAttributes.add("addresses");
+        includeAttributes.add("name");
+        includeAttributes.add("id");
         jsonUsers = new JsonEncoder().encode(users, includeAttributes);
         Assert.assertTrue(jsonUsers.contains("\"totalResults\": " + users.size()));
 
@@ -86,9 +87,9 @@ public class JsonEncoderTest {
         }
 
         includeAttributes = new ArrayList<String>();
-        includeAttributes.add(ScimUser.ATTRIBUTE_ADDRESSES);
-        includeAttributes.add(ScimUser.ATTRIBUTE_EMAILS);
-        includeAttributes.add(ScimUser.ATTRIBUTE_ID);
+        includeAttributes.add("addresses");
+        includeAttributes.add("emails");
+        includeAttributes.add("id");
         jsonUsers = new JsonEncoder().encode(users, includeAttributes);
         Assert.assertTrue(jsonUsers.contains("\"totalResults\": " + users.size()));
 
@@ -101,9 +102,9 @@ public class JsonEncoderTest {
         }
 
         includeAttributes = new ArrayList<String>();
-        includeAttributes.add(ScimUser.ATTRIBUTE_NAME);
-        includeAttributes.add(ScimUser.ATTRIBUTE_EMAILS);
-        includeAttributes.add(ScimUser.ATTRIBUTE_ID);
+        includeAttributes.add("name");
+        includeAttributes.add("emails");
+        includeAttributes.add("id");
         jsonUsers = new JsonEncoder().encode(users, includeAttributes);
         Assert.assertTrue(jsonUsers.contains("\"totalResults\": " + users.size()));
 
@@ -116,25 +117,25 @@ public class JsonEncoderTest {
         }
     }
 
-    private ScimUser getUser(String id, String name, String email1, String email2, String postcode1, String postcode2) {
-        ScimUser scimUser = new ScimUser();
+    private User getUser(String id, String name, String email1, String email2, String postcode1, String postcode2) throws UnknownAttribute {
+        User scimUser = new User("123");
 
-        scimUser.setAttribute(ScimUser.ATTRIBUTE_ID, id);
-        scimUser.setAttribute(ScimUser.ATTRIBUTE_NAME,
-                new Name().setAttribute(Name.ATTRIBUTE_GIVEN_NAME, name).setAttribute(Name.ATTRIBUTE_HONORIFIC_PREFIX, "mr."));
+        scimUser.setAttribute("id", id);
+        scimUser.setAttribute("name",
+                new Name().setAttribute("givenName", name).setAttribute("honorificSuffix", "mr."));
 
         List<PluralType<String>> emails = new LinkedList<PluralType<String>>();
-        emails.add(new PluralType<String>(email1, "private", true));
-        emails.add(new PluralType<String>(email2, "work", false));
-        scimUser.setAttribute(ScimUser.ATTRIBUTE_EMAILS, emails);
+        emails.add(new PluralType<String>(email1, "private", true, false));
+        emails.add(new PluralType<String>(email2, "work", false, false));
+        scimUser.setAttribute("emails", emails);
 
         List<PluralType<ComplexType>> addresses = new LinkedList<PluralType<ComplexType>>();
-        addresses.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "Sweeden").setAttribute(
-                Address.ATTRIBUTE_POSTAL_CODE, postcode1), "home", true));
-        addresses.add(new PluralType<ComplexType>(new Address().setAttribute(Address.ATTRIBUTE_CONTRY, "England").setAttribute(
-                Address.ATTRIBUTE_POSTAL_CODE, postcode2), "work", false));
+        addresses.add(new PluralType<ComplexType>(new Address().setAttribute("country", "Sweeden").setAttribute(
+                "postalCode", postcode1), "home", true, false));
+        addresses.add(new PluralType<ComplexType>(new Address().setAttribute("country", "England").setAttribute(
+                "postalCode", postcode2), "work", false, false));
 
-        scimUser.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, addresses);
+        scimUser.setAttribute("addresses", addresses);
 
         return scimUser;
     }
