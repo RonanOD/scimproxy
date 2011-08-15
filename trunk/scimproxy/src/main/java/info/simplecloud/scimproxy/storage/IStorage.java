@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy.storage;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public interface IStorage {
 	 *         is returned.
 	 * @throws UserNotFoundException
 	 */
-	public ScimUser getUserForId(String id) throws UserNotFoundException;
+	public User getUserForId(String id) throws UserNotFoundException;
 
 	/**
 	 * Adds a user in the user storage.
@@ -30,16 +30,16 @@ public interface IStorage {
 	 * @param user
 	 *            A fully populated SCIM user.
 	 */
-	public void addUser(ScimUser user);
+	public void addUser(User user);
 
 	/**
 	 * Returns all SCIM users in the storage.
 	 * 
 	 * @return All users. ArrayList with size 0 if empty.
 	 */
-	public List<ScimUser> getList();
+	public List<User> getList();
 
-	public List<ScimUser> getList(String sortBy, String sortOrder);
+	public List<User> getList(String sortBy, String sortOrder);
 
 	/**
 	 * Deletes a SCIM user from storage.
@@ -53,8 +53,8 @@ public interface IStorage {
 
 	
 	
-	ArrayList<ScimUser> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp);
+	ArrayList<User> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp);
 
-	void addList(List<ScimUser> upstreamUsers);
+	void addList(List<User> upstreamUsers);
 
 }
