@@ -1,51 +1,31 @@
 package info.simplecloud.core.coding.encode;
 
-import info.simplecloud.core.Attribute;
-import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.coding.handlers.BooleanHandler;
-import info.simplecloud.core.coding.handlers.CalendarHandler;
-import info.simplecloud.core.coding.handlers.ComplexTypeHandler;
-import info.simplecloud.core.coding.handlers.ITypeHandler;
-import info.simplecloud.core.coding.handlers.IntegerHandler;
-import info.simplecloud.core.coding.handlers.PluralComplexListTypeHandler;
-import info.simplecloud.core.coding.handlers.PluralSimpleListTypeHandler;
-import info.simplecloud.core.coding.handlers.StringHandler;
-import info.simplecloud.core.coding.handlers.StringListHandler;
-import info.simplecloud.core.execeptions.EncodingFailed;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
+import info.simplecloud.core.MetaData;
+import info.simplecloud.core.Resource;
+import info.simplecloud.core.User;
+import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.annotations.Extension;
+import info.simplecloud.core.exceptions.EncodingFailed;
+import info.simplecloud.core.handlers.ComplexHandler;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonEncoder implements IUserEncoder {
-    private static final int                 INDENT_SIZE  = Integer.parseInt(System.getProperty(JsonEncoder.class.getName()
-                                                                  + ".INDENT_SIZE", "2"));
-    private static Map<String, ITypeHandler> typeHandlers = new HashMap<String, ITypeHandler>();
-    static {
-        typeHandlers.put(StringHandler.class.getName(), new StringHandler());
-        typeHandlers.put(IntegerHandler.class.getName(), new IntegerHandler());
-        typeHandlers.put(BooleanHandler.class.getName(), new BooleanHandler());
-        typeHandlers.put(CalendarHandler.class.getName(), new CalendarHandler());
-        typeHandlers.put(ComplexTypeHandler.class.getName(), new ComplexTypeHandler());
-        typeHandlers.put(PluralSimpleListTypeHandler.class.getName(), new PluralSimpleListTypeHandler());
-        typeHandlers.put(PluralComplexListTypeHandler.class.getName(), new PluralComplexListTypeHandler());
-        typeHandlers.put(StringListHandler.class.getName(), new StringListHandler());
+    private static final int INDENT_SIZE = Integer.parseInt(System.getProperty(JsonEncoder.class.getName() + ".INDENT_SIZE", "2"));
+
+    @Override
+    public String encode(Resource data) throws EncodingFailed {
+        return encode(data, null);
     }
 
     @Override
-    public String encode(ScimUser data) throws EncodingFailed {
-        return encode(data, new ArrayList<String>());
-    }
-
-    @Override
-    public String encode(ScimUser data, List<String> includeAttributes) throws EncodingFailed {
+    public String encode(Resource data, List<String> includeAttributes) throws EncodingFailed {
         try {
             JSONObject obj = internalEncode(data, includeAttributes);
             if (obj != null) {
@@ -59,24 +39,24 @@ public class JsonEncoder implements IUserEncoder {
     }
 
     @Override
-    public String encode(List<ScimUser> scimUsers) throws EncodingFailed {
-        return this.encode(scimUsers, new ArrayList<String>());
+    public String encode(List<User> scimUsers) throws EncodingFailed {
+        return this.encode(scimUsers, null);
     }
 
     @Override
-    public String encode(List<ScimUser> scimUsers, List<String> includeAttributes) throws EncodingFailed {
+    public String encode(List<User> scimUsers, List<String> includeAttributes) throws EncodingFailed {
         try {
             JSONObject result = new JSONObject();
 
             if (scimUsers == null) {
-                scimUsers = new ArrayList<ScimUser>();
+                scimUsers = new ArrayList<User>();
             }
 
             // TODO: Should this be done in core? Return the JSON list of more
             // resporces when you send an List into encode method?
             JSONArray users = new JSONArray();
             int counter = 0;
-            for (ScimUser scimUser : scimUsers) {
+            for (User scimUser : scimUsers) {
                 JSONObject o = internalEncode(scimUser, includeAttributes);
                 if (o != null) {
                     users.put(o);
@@ -96,55 +76,49 @@ public class JsonEncoder implements IUserEncoder {
         }
     }
 
-    private JSONObject internalEncode(ScimUser data, List<String> attributesList) throws JSONException {
-        JSONObject result = new JSONObject();
-        boolean foundAttributes = false;
+    private JSONObject internalEncode(Resource data, List<String> attributesList) throws JSONException {
+        JSONObject result = (JSONObject) new ComplexHandler().encode(data, attributesList, null);
 
         for (Object extension : data.getExtensions()) {
-            for (Method method : extension.getClass().getMethods()) {
-                if (method.isAnnotationPresent(Attribute.class)) {
-                    Attribute attribute = method.getAnnotation(Attribute.class);
-                    String attributeId = attribute.schemaName();
 
-                    if (attributesList.isEmpty() || attributesList.contains(attributeId) || "id".equals(attributeId)
-                            || "meta".equals(attributeId)) {
-
-                        String handlerName = attribute.codingHandler().getName();
-                        ITypeHandler handler = typeHandlers.get(handlerName);
-                        if (handler == null) {
-                            throw new UnhandledAttributeType("Has no handler for '" + handlerName + "', attribute='" + attributeId
-                                    + "' and class='" + result.getClass() + "'");
-                        }
-
-                        try {
-                            Object object = method.invoke(extension);
-                            if (object != null) {
-                                // if it's only id and meta in the attribute
-                                // list and none of them is in attributeList,
-                                // then don't return User at all
-                                if (("id".equals(attributeId) && attributesList.contains("id"))
-                                        || ("meta".equals(attributeId) && attributesList.contains("meta"))) {
-                                    foundAttributes = true;
-                                }
-                                if (!"id".equals(attributeId) && !"meta".equals(attributeId)) {
-                                    foundAttributes = true;
-                                }
-
-                                handler.encode(result, attributeId, object);
-                            }
-                        } catch (Exception e) {
-                            throw new EncodingFailed("failed to read data from object", e);
-                        }
-                    }
-                }
+            if (!extension.getClass().isAnnotationPresent(Extension.class)) {
+                throw new RuntimeException("The extension '" + extension.getClass().getName()
+                        + "' has no namespace, try to add Extension annotation to class");
             }
+
+            Extension extensionMetaData = extension.getClass().getAnnotation(Extension.class);
+
+            JSONObject extensionJson = new JSONObject();
+
+            for (Method method : extension.getClass().getMethods()) {
+                if (!method.isAnnotationPresent(Attribute.class)) {
+                    continue;
+                }
+
+                MetaData metaData = new MetaData(method.getAnnotation(Attribute.class));
+
+                if (attributesList != null && !attributesList.contains(metaData.getName())) {
+                    continue;
+                }
+
+                IEncodeHandler encoder = metaData.getEncoder();
+
+                try {
+                    Object object = method.invoke(extension);
+                    if (object != null) {
+                        Object encodedValue = encoder.encode(extensionJson, attributesList, metaData.getInternalMetaData());
+                        extensionJson.put(metaData.getName(), encodedValue);
+                    }
+                } catch (Exception e) {
+                    throw new EncodingFailed("failed to read data from object", e);
+                }
+
+            }
+            
+            result.put(extensionMetaData.schema(), extensionMetaData);
         }
 
-        if (foundAttributes) {
-            return result;
-        } else {
-            return null;
-        }
+        return result;
     }
 
 }

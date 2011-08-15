@@ -1,80 +1,101 @@
 package info.simplecloud.core.coding.decode;
 
-import info.simplecloud.core.Attribute;
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.MetaData;
+import info.simplecloud.core.Resource;
+import info.simplecloud.core.User;
+import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.coding.ReflectionHelper;
-import info.simplecloud.core.coding.handlers.CalendarHandler;
-import info.simplecloud.core.coding.handlers.ComplexTypeHandler;
-import info.simplecloud.core.coding.handlers.ITypeHandler;
-import info.simplecloud.core.coding.handlers.IntegerHandler;
-import info.simplecloud.core.coding.handlers.PluralComplexListTypeHandler;
-import info.simplecloud.core.coding.handlers.PluralSimpleListTypeHandler;
-import info.simplecloud.core.coding.handlers.StringHandler;
-import info.simplecloud.core.coding.handlers.StringListHandler;
-import info.simplecloud.core.execeptions.DecodingFailed;
-import info.simplecloud.core.execeptions.InvalidUser;
-import info.simplecloud.core.execeptions.UnhandledAttributeType;
+import info.simplecloud.core.exceptions.DecodingFailed;
+import info.simplecloud.core.exceptions.InvalidUser;
+import info.simplecloud.core.exceptions.UnknownAttribute;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JsonDecoder implements IUserDecoder {
-    private static Map<String, ITypeHandler> typeHandlers = new HashMap<String, ITypeHandler>();
-    static {
-        typeHandlers.put(StringHandler.class.getName(), new StringHandler());
-        typeHandlers.put(IntegerHandler.class.getName(), new IntegerHandler());
-        typeHandlers.put(CalendarHandler.class.getName(), new CalendarHandler());
-        typeHandlers.put(ComplexTypeHandler.class.getName(), new ComplexTypeHandler());
-        typeHandlers.put(PluralSimpleListTypeHandler.class.getName(), new PluralSimpleListTypeHandler());
-        typeHandlers.put(PluralComplexListTypeHandler.class.getName(), new PluralComplexListTypeHandler());
-        typeHandlers.put(StringListHandler.class.getName(), new StringListHandler());
-    }
+public class JsonDecoder implements IResourceDecoder {
 
     @Override
-    public void decode(String user, ScimUser data) throws InvalidUser {
+    public void decode(String user, Resource resource) throws InvalidUser {
         try {
-            JSONObject scimUserJson = new JSONObject(user);
+            JSONObject userJson = new JSONObject(user);
 
-            for (Object extension : data.getExtensions()) {
-                for (Method method : extension.getClass().getMethods()) {
-                    if (method.isAnnotationPresent(Attribute.class)) {
-                        Attribute attribute = method.getAnnotation(Attribute.class);
-                        String attributeId = attribute.schemaName();
-
-                        if (scimUserJson.has(attributeId)) {
-                            String handlerName = attribute.codingHandler().getName();
-                            ITypeHandler handler = typeHandlers.get(handlerName);
-                            if (handler == null) {
-                                throw new UnhandledAttributeType("Got no handler for, type:'" + handlerName + "', method: '"
-                                        + method.getName() + "', class: '" + extension.getClass().getName() + "'");
-                            }
-                            // TODO think of something smarter
-                            String setter = "s" + method.getName().substring(1);
-                            Object arg = handler.decode(scimUserJson, attributeId);
-
-                            try {
-                                Method setMethod = ReflectionHelper.getMethod(setter, extension.getClass());
-                                setMethod.invoke(extension, arg);
-                            } catch (Exception e) {
-                                throw new DecodingFailed("Failed to invoke setter: " + setter + " with arg: " + arg, e);
-                            }
-                        }
+            // Decode core attributes
+            for (String name : resource.getNames()) {
+                try {
+                    if (!userJson.has(name)) {
+                        continue;
                     }
+                    Object value = userJson.get(name);
+                    MetaData metaData;
+                    metaData = resource.getMetaData(name);
+                    IDecodeHandler decoder = metaData.getDecoder();
+                    Object decodedValue = decoder.decode(value, metaData.newInstance(), metaData.getInternalMetaData());
+
+                    resource.setAttribute(name, decodedValue);
+                } catch (UnknownAttribute e) {
+                    new RuntimeException("Internal error", e);
                 }
             }
+
+            // Decode extension attributes
+            for (Object extension : resource.getExtensions()) {
+
+                if (!extension.getClass().isAnnotationPresent(Extension.class)) {
+                    throw new InvalidUser("The extension '" + extension.getClass().getName()
+                            + "' has no namespace, try to add Extension annotation to class");
+                }
+
+                Extension ExtensionMetaData = extension.getClass().getAnnotation(Extension.class);
+
+                if (!userJson.has(ExtensionMetaData.schema())) {
+                    continue;
+                }
+                try {
+                    JSONObject extensionJson = userJson.getJSONObject(ExtensionMetaData.schema());
+                    for (Method method : extension.getClass().getMethods()) {
+                        if (!method.isAnnotationPresent(Attribute.class)) {
+                            continue;
+                        }
+                        MetaData metaData = new MetaData(method.getAnnotation(Attribute.class));
+
+                        if (!extensionJson.has(metaData.getName())) {
+                            continue;
+                        }
+
+                        Object value = userJson.get(metaData.getName());
+                        IDecodeHandler decoder = metaData.getDecoder();
+                        Object type = metaData.newInstance();
+
+                        Object decodedValue = decoder.decode(value, type, metaData.getInternalMetaData());
+
+                        // TODO think of something smarter
+                        String setter = "s" + method.getName().substring(1);
+
+                        try {
+                            Method setMethod = ReflectionHelper.getMethod(setter, extension.getClass());
+                            setMethod.invoke(extension, decodedValue);
+                        } catch (Exception e) {
+                            throw new DecodingFailed("Failed to invoke setter: " + setter + " with arg: " + decodedValue, e);
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    // No attribute by this name, no big deal take text
+                }
+            }
+
         } catch (JSONException e) {
             throw new InvalidUser("Failed to parse user", e);
         }
     }
 
     @Override
-    public void decode(String userList, List<ScimUser> users) throws InvalidUser {
+    public void decode(String userList, List<Resource> resources) throws InvalidUser {
 
         try {
             JSONObject userListJson = new JSONObject(userList);
@@ -83,9 +104,10 @@ public class JsonDecoder implements IUserDecoder {
                 for (int i = 0; i < jsonUsers.length(); i++) {
                     JSONObject user = jsonUsers.getJSONObject(i);
 
-                    ScimUser data = new ScimUser();
+                    // TODO this is wrong
+                    User data = new User("tmp");
                     decode(user.toString(), data);
-                    users.add(data);
+                    resources.add(data);
                 }
             }
 
