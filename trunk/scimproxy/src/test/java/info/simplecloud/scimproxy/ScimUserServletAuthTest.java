@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -24,7 +24,7 @@ public class ScimUserServletAuthTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        ScimUser scimUser = new ScimUser();
+        User scimUser = new User("ABC123-auth");
         scimUser.setUserName("Alice");
         scimUser.setNickName("A");
 
@@ -37,7 +37,7 @@ public class ScimUserServletAuthTest {
         request.setContent(scimUser.getUser("JSON"));
         response.parse(tester.getResponses(request.generate()));
 
-        ScimUser tmp = new ScimUser(response.getContent(), "JSON");
+        User tmp = new User(response.getContent(), "JSON");
         id = tmp.getId();
     }
 

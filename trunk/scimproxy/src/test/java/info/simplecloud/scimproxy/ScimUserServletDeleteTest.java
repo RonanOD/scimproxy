@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -24,7 +24,7 @@ public class ScimUserServletDeleteTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        ScimUser scimUser = new ScimUser();
+        User scimUser = new User("ABC123-delete");
         scimUser.setUserName("Alice");
 
         request.setMethod("POST");
@@ -37,7 +37,7 @@ public class ScimUserServletDeleteTest {
         request.setContent(scimUser.getUser("JSON"));
         response.parse(tester.getResponses(request.generate()));
 
-        ScimUser tmp = new ScimUser(response.getContent(), "JSON");
+        User tmp = new User(response.getContent(), "JSON");
         id = tmp.getId();
     }
 
@@ -53,8 +53,7 @@ public class ScimUserServletDeleteTest {
 
         Assert.assertEquals(200, response.getStatus());
 
-        ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
-
+        User scimUser = new User(response.getContent(), "JSON");
         Assert.assertEquals(id, scimUser.getId());
 
         // delete resource
@@ -62,16 +61,17 @@ public class ScimUserServletDeleteTest {
         request.setMethod("DELETE");
         request.setVersion("HTTP/1.0");
         request.setHeader("ETag", scimUser.getMeta().getVersion());
-
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertTrue(response.getMethod() == null);
         Assert.assertEquals(200, response.getStatus());
 
         // next request should be 404
-        request.setURI("/User/" + id);
-        response.parse(tester.getResponses(request.generate()));
 
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.removeHeader("ETag");
+        response.parse(tester.getResponses(request.generate()));
         Assert.assertTrue(response.getMethod() == null);
         Assert.assertEquals(404, response.getStatus());
     }

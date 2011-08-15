@@ -1,8 +1,9 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.ScimUser;
+import info.simplecloud.core.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -19,8 +20,8 @@ public class ScimUsersServletTest {
 
     private static String        aliceId  = "";
     private static String        bobId    = "";
-    private static ScimUser      alice    = new ScimUser();
-    private static ScimUser      bob      = new ScimUser();
+    private static User      alice    = new User("ABC123-alice");
+    private static User      bob      = new User("ABC123-bob");
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -45,7 +46,7 @@ public class ScimUsersServletTest {
         aliceRequest.setContent(alice.getUser("JSON"));
         aliceResponse.parse(tester.getResponses(aliceRequest.generate()));
 
-        ScimUser addedAlice = new ScimUser(aliceResponse.getContent(), "JSON");
+        User addedAlice = new User(aliceResponse.getContent(), "JSON");
         aliceId = addedAlice.getId();
 
         bob.setUserName("Bob");
@@ -62,7 +63,7 @@ public class ScimUsersServletTest {
         bobRequest.setContent(bob.getUser("JSON"));
         bobResponse.parse(tester.getResponses(bobRequest.generate()));
 
-        ScimUser addedBob = new ScimUser(bobResponse.getContent(), "JSON");
+        User addedBob = new User(bobResponse.getContent(), "JSON");
         bobId = addedBob.getId();
 
     }
@@ -79,12 +80,12 @@ public class ScimUsersServletTest {
 
         String users = response.getContent();
 
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean aliceFound = false;
         boolean bobFound = false;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (bobId.equals(scimUser.getId())) {
                 bobFound = true;
             }
@@ -93,8 +94,8 @@ public class ScimUsersServletTest {
             }
         }
 
-        Assert.assertEquals(true, bobFound);
-        Assert.assertEquals(true, aliceFound);
+        Assert.assertTrue(bobFound);
+        Assert.assertTrue(aliceFound);
     }
 
     @Test
@@ -109,11 +110,11 @@ public class ScimUsersServletTest {
 
         String users = response.getContent();
 
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean aliceFoundFirst = false;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (bobId.equals(scimUser.getId())) {
                 Assert.assertEquals(true, aliceFoundFirst);
             }
@@ -135,11 +136,11 @@ public class ScimUsersServletTest {
 
         String users = response.getContent();
 
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean bobFoundFirst = false;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (bobId.equals(scimUser.getId())) {
                 bobFoundFirst = true;
             }
@@ -162,11 +163,11 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean bobFoundFirst = false;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (bobId.equals(scimUser.getId())) {
                 bobFoundFirst = true;
             }
@@ -189,11 +190,11 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean bobFoundFirst = false;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (bobId.equals(scimUser.getId())) {
                 bobFoundFirst = true;
             }
@@ -215,12 +216,12 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean bobFound = false;
         boolean aliceFound = false;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (bobId.equals(scimUser.getId())) {
                 bobFound = true;
             }
@@ -246,7 +247,7 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         Assert.assertEquals(0, userList.size());
     }
@@ -263,12 +264,12 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean onlyBobs = true;
         boolean noNicks = true;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (!"Bob".equals(scimUser.getUserName())) {
                 onlyBobs = false;
             }
@@ -293,7 +294,7 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         Assert.assertEquals(0, userList.size());
     }
@@ -310,11 +311,11 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean onlyBobs = true;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (!"Bob".equals(scimUser.getUserName())) {
                 onlyBobs = false;
             }
@@ -336,11 +337,11 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean onlyBobs = true;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (!"Bob".equals(scimUser.getUserName())) {
                 onlyBobs = false;
             }
@@ -362,11 +363,11 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean onlyBobs = true;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (!"Bob".equals(scimUser.getUserName())) {
                 onlyBobs = false;
             }
@@ -388,12 +389,12 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         boolean bobFound = false;
         boolean aliceFound = false;
 
-        for (ScimUser scimUser : userList) {
+        for (User scimUser : userList) {
             if (bobId.equals(scimUser.getId())) {
                 bobFound = true;
             }
@@ -419,7 +420,7 @@ public class ScimUsersServletTest {
         String users = response.getContent();
         // TODO: SPEC: REST: Should users that's missing attribute nickName be
         // returned?
-        ArrayList<ScimUser> userList = ScimUser.getScimUsers(users, "JSON");
+        List<User> userList = User.getUsers(users, "JSON");
 
         Assert.assertEquals(true, (userList.size() == 0));
     }
