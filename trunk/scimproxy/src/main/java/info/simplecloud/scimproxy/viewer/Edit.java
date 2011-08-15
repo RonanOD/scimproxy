@@ -1,7 +1,6 @@
 package info.simplecloud.scimproxy.viewer;
 
-import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.execeptions.UnknownEncoding;
+import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.authentication.Authenticator;
 import info.simplecloud.scimproxy.config.Config;
@@ -58,7 +57,7 @@ public class Edit extends HttpServlet {
 	        if("true".equals(save)) {
 
 				try {
-					ScimUser user = User.getInstance().getUser(id);
+					info.simplecloud.core.User user = User.getInstance().getUser(id);
 					
 					user.setId(id);
 					user.setUserName(userName);
@@ -120,7 +119,7 @@ public class Edit extends HttpServlet {
 
 		        if(id != null && !"".equals(id)) {
 					try {
-						ScimUser user = User.getInstance().getUser(id);
+						info.simplecloud.core.User user = User.getInstance().getUser(id);
 						resp.getWriter().print("<form method=\"POST\">");
 		        	
 						resp.getWriter().print("<input type=\"text\" name=\"id\" value=\"" + user.getId() +"\"/><br/>");
