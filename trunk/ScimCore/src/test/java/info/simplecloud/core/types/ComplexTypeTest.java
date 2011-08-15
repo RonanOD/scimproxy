@@ -1,8 +1,10 @@
 package info.simplecloud.core.types;
 
-import info.simplecloud.core.Attribute;
-import info.simplecloud.core.ScimUser;
-import info.simplecloud.core.coding.handlers.StringHandlerTest;
+import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.exceptions.UnknownAttribute;
+import info.simplecloud.core.handlers.ComplexHandler;
+import info.simplecloud.core.handlers.PluralHandler;
+import info.simplecloud.core.handlers.StringHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,115 +15,129 @@ import org.junit.Test;
 public class ComplexTypeTest {
 
     private class ComplexTestType extends ComplexType {
+        private List<PluralType<String>> pluralAttribute;
+        private ComplexTestType          complexAttribute;
+        private String                   simpleAttribute;
+        private String                   simpleAttribute2;
+
         @SuppressWarnings("unused")
-        @Attribute(schemaName="simpleAttribute", codingHandler=StringHandlerTest.class)
-        public void getSimpleAttribute() {
-        
+        public void setPluralAttribute(List<PluralType<String>> pluralAttribute) {
+            this.pluralAttribute = pluralAttribute;
         }
-        
+
         @SuppressWarnings("unused")
-        @Attribute(schemaName="complexAttribute", codingHandler=StringHandlerTest.class)
-        public void getComplexAttribute(){
-            
+        public void setComplexAttribute(ComplexTestType complexAttribute) {
+            this.complexAttribute = complexAttribute;
         }
-        
+
         @SuppressWarnings("unused")
-        @Attribute(schemaName="pluralAttribute", codingHandler=StringHandlerTest.class)
-        public void getPluralAttribute(){
-            
+        public void setSimpleAttribute(String simpleAttribute) {
+            this.simpleAttribute = simpleAttribute;
+        }
+
+        @SuppressWarnings("unused")
+        public void setSimpleAttribute2(String simpleAttribute2) {
+            this.simpleAttribute2 = simpleAttribute2;
+        }
+
+        @SuppressWarnings("unused")
+        @Attribute(name = "simpleAttribute2", handler = StringHandler.class)
+        public String getSimpleAttribute2() {
+            return this.simpleAttribute2;
+        }
+
+        @SuppressWarnings("unused")
+        @Attribute(name = "simpleAttribute", handler = StringHandler.class)
+        public String getSimpleAttribute() {
+            return this.simpleAttribute;
+        }
+
+        @SuppressWarnings("unused")
+        @Attribute(name = "complexAttribute", handler = ComplexHandler.class, type = ComplexTestType.class)
+        public ComplexTestType getComplexAttribute() {
+            return this.complexAttribute;
+        }
+
+        @SuppressWarnings("unused")
+        @Attribute(name = "pluralAttribute", handler = PluralHandler.class, internalHandler = ComplexHandler.class)
+        public List<PluralType<String>> getPluralAttribute() {
+            return this.pluralAttribute;
         }
     }
 
     @Test
-    public void getAttribute() {
-        Object test = new Object();
-        ComplexType ct = new ComplexTestType();
-        ct.setAttribute("test1", "Hello")
-                .setAttribute("test2", test)
-                .setAttribute("test3", test)
-                .setAttribute(
-                        "parent",
-                        new ComplexTestType().setAttribute("child", new ComplexTestType().setAttribute("grandchild1", "World")
-                                .setAttribute("grandchild2", "G2")));
+    public void getSetAttribute() throws UnknownAttribute {
+        ComplexTestType ct = new ComplexTestType();
+        ct.setAttribute("simpleAttribute", "simple data");
 
-        Assert.assertNotNull(ct.getAttribute("parent"));
-        Assert.assertNotNull(ct.getAttribute("parent.child"));
-        Assert.assertEquals("World", ct.getAttribute("parent.child.grandchild1"));
-        Assert.assertEquals("G2", ct.getAttribute("parent.child.grandchild2"));
-        Assert.assertEquals("Hello", ct.getAttribute("test1"));
-        Assert.assertNull(ct.getAttribute("unknown"));
-        Assert.assertNull(ct.getAttribute("parent.child.unknown"));
+        ComplexTestType ct2 = new ComplexTestType();
+        ct2.setAttribute("simpleAttribute", "simple data2");
+        ct2.setAttribute("complexAttribute", ct);
+
+        ct2.setAttribute("complexAttribute.simpleAttribute", "Hello");
+
+        Assert.assertEquals("simple data2", ct2.getAttribute("simpleAttribute"));
+        Assert.assertEquals("Hello", ct2.getAttribute("complexAttribute.simpleAttribute"));
     }
 
     @Test
-    public void equals() {
-        ComplexType ct = new ComplexTestType().setAttribute("testid1", "Test value 1");
-        ComplexType ctEquals1 = new ComplexTestType().setAttribute("testid1", "Test value 1");
+    public void equals() throws UnknownAttribute {
+        ComplexType ct = new ComplexTestType().setAttribute("simpleAttribute", "Test value 1");
+        ComplexType ctEquals1 = new ComplexTestType().setAttribute("simpleAttribute", "Test value 1");
         ComplexType ctEquals2 = ct;
-        ComplexType ctNotEquals1 = new ComplexTestType().setAttribute("testid1", "Test value not equals");
-        ComplexType ctNotEquals2 = new ComplexTestType().setAttribute("notFound", "Test value 1");
-        ComplexType ctNotEquals3 = new ComplexTestType().setAttribute("testid1", "Test value 1").setAttribute("testid2", "Test value 2");
-        ComplexType ctNotEquals4 = new ComplexTestType().setAttribute("testid1", new Object());
+        ComplexType ctNotEquals1 = new ComplexTestType().setAttribute("simpleAttribute", "Test value not equals");
+        ComplexType ctNotEquals3 = new ComplexTestType().setAttribute("simpleAttribute", "Test value 1").setAttribute("simpleAttribute2",
+                "Test value 2");
 
         Assert.assertTrue(ct.equals(ctEquals1));
         Assert.assertTrue(ct.equals(ctEquals2));
-        Assert.assertTrue(ct.equals(ctEquals1));
-        Assert.assertTrue(ct.equals(ctEquals1));
-        Assert.assertTrue(ct.equals(ctEquals1));
+        Assert.assertTrue(ctEquals1.equals(ct));
+        Assert.assertTrue(ctEquals2.equals(ct));
 
         Assert.assertFalse(ct.equals(new Object()));
         Assert.assertFalse(ct.equals(ctNotEquals1));
-        Assert.assertFalse(ct.equals(ctNotEquals2));
         Assert.assertFalse(ct.equals(ctNotEquals3));
-        Assert.assertFalse(ct.equals(ctNotEquals4));
+        Assert.assertFalse(ctNotEquals3.equals(ct));
+        Assert.assertFalse(ctNotEquals3.equals(ct));
     }
 
     @Test
-    public void merge() {
+    public void merge() throws UnknownAttribute {
 
         ComplexType from = new ComplexTestType().setAttribute("simpleAttribute", "Test value from");
-        ComplexType to = new ComplexTestType().setAttribute("to", "Test value to");
+        ComplexType to = new ComplexTestType().setAttribute("simpleAttribute2", "Test value to");
 
-        to.merge(from);
-        Assert.assertEquals("Test value to", to.getAttribute("to"));
+        to = (ComplexType) new ComplexHandler().merge(from, to);
+        Assert.assertEquals("Test value to", to.getAttribute("simpleAttribute2"));
         Assert.assertEquals("Test value from", to.getAttribute("simpleAttribute"));
 
         from = new ComplexTestType().setAttribute("simpleAttribute", "Hello").setAttribute("complexAttribute",
                 new ComplexTestType().setAttribute("simpleAttribute", "World"));
 
-        to.merge(from);
+        to = (ComplexType) new ComplexHandler().merge(from, to);
 
         Assert.assertNotNull(to.getAttribute("complexAttribute"));
-        Assert.assertEquals(((ComplexType) to.getAttribute("complexAttribute")).getAttribute("simpleAttribute"), "World");
+        Assert.assertEquals(
+                ((ComplexType) to.getAttribute("complexAttribute")).getAttribute("simpleAttribute"), "World");
 
-
-        
         List<PluralType<String>> pluralList = new ArrayList<PluralType<String>>();
-        pluralList.add(new PluralType<String>("nisse@kalle.com", "work", true));
-        
+        pluralList.add(new PluralType<String>("nisse@kalle.com", "work", true, false));
+
         from = new ComplexTestType().setAttribute("pluralAttribute", pluralList);
         List<PluralType<String>> pluralListExpected = new ArrayList<PluralType<String>>();
-        pluralListExpected.add(new PluralType<String>("nisse@kalle.com", "work", true));
+        pluralListExpected.add(new PluralType<String>("nisse@kalle.com", "work", true, false));
 
-        to.merge(from);
+        to = (ComplexType) new ComplexHandler().merge(from, to);
         Assert.assertEquals(to.getAttribute("pluralAttribute"), pluralListExpected);
 
-        
-        
         List<PluralType<String>> pluralList2 = new ArrayList<PluralType<String>>();
-        pluralList2.add(new PluralType<String>("arne@kalle.com", "home", true));
+        pluralList2.add(new PluralType<String>("arne@kalle.com", "home", true, false));
         from = new ComplexTestType().setAttribute("pluralAttribute", pluralList2);
 
-        pluralListExpected.add(new PluralType<String>("arne@kalle.com", "home", true));
+        pluralListExpected.add(new PluralType<String>("arne@kalle.com", "home", true, false));
 
-        to.merge(from);        
+        to = (ComplexType) new ComplexHandler().merge(from, to);
         Assert.assertEquals(pluralListExpected, to.getAttribute("pluralAttribute"));
     }
-    
-    
-    @Test
-    public void toStringTest() {
-        ScimUser empty = new ScimUser();
-        Assert.assertEquals("", empty.toString());
-    }
+
 }
