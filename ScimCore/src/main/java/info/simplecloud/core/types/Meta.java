@@ -66,7 +66,7 @@ public class Meta extends ComplexType {
         if (this == otherObj) {
             return true;
         }
-        
+
         if (!(otherObj instanceof Meta)) {
             return false;
         }
