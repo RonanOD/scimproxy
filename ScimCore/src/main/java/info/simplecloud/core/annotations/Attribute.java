@@ -19,5 +19,6 @@ public @interface Attribute {
     Class<?> internalHandler() default DummyType.class;
 
     Class<?> internalType() default DummyType.class;
-
+    
+    String internalName() default "dummy";
 }

@@ -1,6 +1,7 @@
 package info.simplecloud.core;
 
 import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
@@ -8,25 +9,25 @@ import info.simplecloud.core.handlers.ComplexHandler;
 import info.simplecloud.core.handlers.PluralHandler;
 import info.simplecloud.core.handlers.StringHandler;
 import info.simplecloud.core.types.Address;
-import info.simplecloud.core.types.Meta;
 import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.PluralType;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Complex(xmlType = x0.scimSchemasCore1.User.class)
 public class User extends Resource {
 
     private static List<Class<?>> extensionTypes = new ArrayList<Class<?>>();
     static {
-        String extensionsString = System.getProperty("info.simplecloud.core.ScimUser.extensions");
+        String extensionsString = System.getProperty("info.simplecloud.core.user.extensions");
         if (extensionsString != null) {
             String[] extensionNames = extensionsString.split(";");
             for (String extensionName : extensionNames) {
                 try {
                     extensionTypes.add(Class.forName(extensionName));
                 } catch (ClassNotFoundException e) {
-                    // Nothing we can do
+                    throw new RuntimeException("Failed reading user extensions", e);
                 }
             }
         }
@@ -160,32 +161,32 @@ public class User extends Resource {
         return this.name;
     }
 
-    @Attribute(name = "phoneNumbers", handler = PluralHandler.class, internalHandler = StringHandler.class)
+    @Attribute(name = "phoneNumbers", handler = PluralHandler.class, internalName = "phoneNumber", internalHandler = StringHandler.class)
     public List<PluralType<String>> getPhoneNumbers() {
         return this.phoneNumbers;
     }
 
-    @Attribute(name = "emails", handler = PluralHandler.class, internalHandler = StringHandler.class)
+    @Attribute(name = "emails", handler = PluralHandler.class, internalName = "email", internalHandler = StringHandler.class)
     public List<PluralType<String>> getEmails() {
         return this.emails;
     }
 
-    @Attribute(name = "ims", handler = PluralHandler.class, internalHandler = StringHandler.class)
+    @Attribute(name = "ims", handler = PluralHandler.class, internalName = "im", internalHandler = StringHandler.class)
     public List<PluralType<String>> getIms() {
         return this.ims;
     }
 
-    @Attribute(name = "photos", handler = PluralHandler.class, internalHandler = StringHandler.class)
+    @Attribute(name = "photos", handler = PluralHandler.class, internalName = "photo", internalHandler = StringHandler.class)
     public List<PluralType<String>> getPhotos() {
         return this.photos;
     }
 
-    @Attribute(name = "memberOf", handler = PluralHandler.class, internalHandler = StringHandler.class)
+    @Attribute(name = "memberOf", handler = PluralHandler.class, internalName = "memberOf", internalHandler = StringHandler.class)
     public List<PluralType<String>> getMemberOf() {
         return this.memberOf;
     }
 
-    @Attribute(name = "addresses", handler = PluralHandler.class, internalHandler = ComplexHandler.class, internalType = Address.class)
+    @Attribute(name = "addresses", handler = PluralHandler.class, internalName = "address", internalHandler = ComplexHandler.class, internalType = Address.class)
     public List<PluralType<Address>> getAddresses() {
         return this.addresses;
     }

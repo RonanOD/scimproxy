@@ -12,14 +12,16 @@ public class MetaData {
     private Attribute attribute;
     private Class<?>  handler;
     private Class<?>  type;
+    private String    name;
 
     public MetaData(Attribute attribute) {
         this.attribute = attribute;
     }
 
-    public MetaData(Class<?> handler, Class<?> type) {
+    public MetaData(Class<?> handler, Class<?> type, String name) {
         this.handler = handler;
         this.type = type;
+        this.name = name;
     }
 
     private Class<?> internalGetDecoder() {
@@ -84,11 +86,13 @@ public class MetaData {
     }
 
     public MetaData getInternalMetaData() {
-        return new MetaData(this.attribute.internalHandler(), this.attribute.internalType());
+        if (this.attribute == null) {
+            return null;
+        }
+        return new MetaData(this.attribute.internalHandler(), this.attribute.internalType(), this.attribute.internalName());
     }
 
     public String getName() {
-        return this.attribute.name();
+        return (attribute == null ? this.name : attribute.name());
     }
-
 }

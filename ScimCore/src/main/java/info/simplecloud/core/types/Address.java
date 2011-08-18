@@ -1,8 +1,10 @@
 package info.simplecloud.core.types;
 
 import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.handlers.StringHandler;
 
+@Complex(xmlType = x0.scimSchemasCore1.Address.class)
 public class Address extends ComplexType {
 
     private String formatted;
