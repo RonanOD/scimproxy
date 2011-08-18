@@ -1,5 +1,6 @@
 package info.simplecloud.core;
 
+import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
@@ -7,17 +8,18 @@ import info.simplecloud.core.exceptions.UnknownEncoding;
 import java.util.ArrayList;
 import java.util.List;
 
+@Complex(xmlType = x0.scimSchemasCore1.Group.class)
 public class Group extends Resource {
     private static List<Class<?>> extensionTypes = new ArrayList<Class<?>>();
     static {
-        String extensionsString = System.getProperty("info.simplecloud.core.ScimUser.extensions");
+        String extensionsString = System.getProperty("info.simplecloud.core.group.extensions");
         if (extensionsString != null) {
             String[] extensionNames = extensionsString.split(";");
             for (String extensionName : extensionNames) {
                 try {
                     extensionTypes.add(Class.forName(extensionName));
                 } catch (ClassNotFoundException e) {
-                    // Nothing we can do
+                    throw new RuntimeException("Failed reading group extensions", e);
                 }
             }
         }

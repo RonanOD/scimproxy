@@ -1,6 +1,7 @@
 package info.simplecloud.core.types;
 
 import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.handlers.DateHandler;
 import info.simplecloud.core.handlers.ListHandler;
 import info.simplecloud.core.handlers.StringHandler;
@@ -8,6 +9,7 @@ import info.simplecloud.core.handlers.StringHandler;
 import java.util.Calendar;
 import java.util.List;
 
+@Complex(xmlType = x0.scimSchemasCore1.Meta.class)
 public class Meta extends ComplexType {
 
     private Calendar     created;
