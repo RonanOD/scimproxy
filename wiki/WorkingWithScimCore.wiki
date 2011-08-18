@@ -1,7 +1,7 @@
 #summary Examle code for what can be done with the core lib
 
 = Using the core lib =
-The core lib provides a simple way to create a SCIM user object form input data or saved date. When the user object has been created it can be manipulated and outputted in desired format (json or xml). further the scim core lib can handle patching and sorting of users.
+The core lib provides a simple way to create a SCIM user object from input data or saved data. When the user object has been created it can be manipulated and outputted in desired format (json or xml). further the scim core lib can handle patching and sorting of users.
 
 == Operations ==
 A Scim user can be created in two different ways ether a clean user with nothing set or by parsing a user object in xml or son format.
