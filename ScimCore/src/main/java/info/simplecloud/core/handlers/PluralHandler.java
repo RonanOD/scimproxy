@@ -7,6 +7,8 @@ import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.merging.IMerger;
 import info.simplecloud.core.types.PluralType;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +55,54 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
+    public Object decodeXml(Object value, Object me, MetaData internalMetaData) throws InvalidUser {
+        List<PluralType> result = new ArrayList<PluralType>();
+
+        String name = internalMetaData.getName();
+        String getterName = "get";
+        getterName += name.substring(0, 1).toUpperCase();
+        getterName += name.substring(1);
+        getterName += "Array";
+
+        try {
+            Method getter = value.getClass().getMethod(getterName, new Class<?>[] {});
+            Object[] array = (Object[]) getter.invoke(getterName, new Object[] {});
+            for (Object obj : array) {
+                Object internalValue = null;
+                try {
+                    // Look and see if this is a simple or complex plural
+                    Method getValueMethod = value.getClass().getMethod("getValue", new Class[] {});
+                    internalValue = getValueMethod.invoke(value, new Object[] {});
+                } catch (NoSuchMethodException e) {
+                    // This is okay, we have a plural complex
+                    IDecodeHandler decoder = internalMetaData.getDecoder();
+                    internalValue = decoder.decodeXml(obj, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
+                }
+
+                String type = (String) this.readXml(obj, "getType");
+                Boolean primary = (Boolean) this.readXml(obj, "getPrimary");
+                primary = (primary == null ? false : primary);
+                Boolean delete = (Boolean) this.readXml(obj, "getDelete");
+                delete = (delete == null ? false : delete);
+
+                result.add(new PluralType(internalValue, type, primary, delete));
+            }
+        } catch (SecurityException e) {
+            throw new RuntimeException("Internal error, decoding plural", e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Internal error, decoding plural", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Internal error, decoding plural", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Internal error, decoding plural", e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Internal error, decoding plural", e);
+        }
+
+        return result;
+    }
+
+    @Override
     public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
         List<PluralType> plural = (List<PluralType>) me;
         JSONArray result = new JSONArray();
@@ -79,6 +129,18 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
         }
 
         return result;
+    }
+
+    @Override
+    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+        List<PluralType> plural = (List<PluralType>) me;
+        
+        for (PluralType singular : plural) {
+            Object value = singular.getValue();
+            
+        }
+
+        return null;
     }
 
     @Override
@@ -117,6 +179,12 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
         } catch (JSONException e) {
             return null;
         }
+    }
+
+    private Object readXml(Object obj, String method) throws SecurityException, NoSuchMethodException, IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException {
+        Method getValueMethod = obj.getClass().getMethod(method, new Class[] {});
+        return getValueMethod.invoke(obj, new Object[] {});
     }
 
 }

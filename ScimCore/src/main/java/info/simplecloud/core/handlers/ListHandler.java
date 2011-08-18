@@ -30,6 +30,12 @@ public class ListHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
+    public Object decodeXml(Object value, Object newInstance, MetaData internalMetaData) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
         @SuppressWarnings("unchecked")
         List<String> list = (List<String>) me;
@@ -43,8 +49,15 @@ public class ListHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
+    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public Object merge(Object from, Object to) {
         // TODO Auto-generated method stub
         return null;
     }
+
 }

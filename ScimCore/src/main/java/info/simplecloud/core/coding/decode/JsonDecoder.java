@@ -10,6 +10,7 @@ import info.simplecloud.core.exceptions.DecodingFailed;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -20,30 +21,29 @@ import org.json.JSONObject;
 public class JsonDecoder implements IResourceDecoder {
 
     @Override
-    public void decode(String user, Resource resource) throws InvalidUser {
+    public void decode(String user, Resource data) throws InvalidUser {
         try {
             JSONObject userJson = new JSONObject(user);
 
             // Decode core attributes
-            for (String name : resource.getNames()) {
+            for (String name : data.getNames()) {
                 try {
                     if (!userJson.has(name)) {
                         continue;
                     }
                     Object value = userJson.get(name);
-                    MetaData metaData;
-                    metaData = resource.getMetaData(name);
+                    MetaData metaData = data.getMetaData(name);
                     IDecodeHandler decoder = metaData.getDecoder();
                     Object decodedValue = decoder.decode(value, metaData.newInstance(), metaData.getInternalMetaData());
 
-                    resource.setAttribute(name, decodedValue);
+                    data.setAttribute(name, decodedValue);
                 } catch (UnknownAttribute e) {
                     new RuntimeException("Internal error", e);
                 }
             }
 
             // Decode extension attributes
-            for (Object extension : resource.getExtensions()) {
+            for (Object extension : data.getExtensions()) {
 
                 if (!extension.getClass().isAnnotationPresent(Extension.class)) {
                     throw new InvalidUser("The extension '" + extension.getClass().getName()
@@ -79,8 +79,14 @@ public class JsonDecoder implements IResourceDecoder {
                         try {
                             Method setMethod = ReflectionHelper.getMethod(setter, extension.getClass());
                             setMethod.invoke(extension, decodedValue);
-                        } catch (Exception e) {
-                            throw new DecodingFailed("Failed to invoke setter: " + setter + " with arg: " + decodedValue, e);
+                        } catch (NoSuchMethodException e) {
+                            throw new RuntimeException("Internal error, failed to invoke: " + setter + " with arg: " + decodedValue, e);
+                        } catch (IllegalArgumentException e) {
+                            throw new RuntimeException("Internal error, failed to invoke: " + setter + " with arg: " + decodedValue, e);
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException("Internal error, failed to invoke: " + setter + " with arg: " + decodedValue, e);
+                        } catch (InvocationTargetException e) {
+                            throw new RuntimeException("Internal error, failed to invoke: " + setter + " with arg: " + decodedValue, e);
                         }
 
                     }

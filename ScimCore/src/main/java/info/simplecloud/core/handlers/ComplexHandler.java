@@ -8,6 +8,8 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.merging.IMerger;
 import info.simplecloud.core.types.ComplexType;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +20,7 @@ import org.json.JSONObject;
 public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
-    public Object decode(Object jsonData, Object me, MetaData internalMetaData) throws InvalidUser {
+    public Object decode(Object jsonData, Object me, MetaData internalMetaData) throws InvalidUser{
         ComplexType complexObject = (ComplexType) me;
         JSONObject jsonObject = (JSONObject) jsonData;
 
@@ -52,6 +54,40 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
+    public Object decodeXml(Object xmlObject, Object me, MetaData internalMetaData) throws InvalidUser {
+        ComplexType complexObject = (ComplexType) me;
+
+        try {
+            for (String name : complexObject.getNames()) {
+                String methodName = "get";
+                methodName += name.substring(0, 1).toUpperCase();
+                methodName += name.substring(1);
+                System.out.println(methodName);
+
+                Method getter = xmlObject.getClass().getMethod(methodName, new Class<?>[] {});
+                Object value = getter.invoke(complexObject, new Object[] {});
+                MetaData metaData = complexObject.getMetaData(name);
+                IDecodeHandler decoder = metaData.getDecoder();
+                Object decodedValue = decoder.decodeXml(value, metaData.newInstance(), metaData.getInternalMetaData());
+                complexObject.setAttribute(name, decodedValue);
+            }
+            return me;
+        } catch (UnknownAttribute e) {
+            throw new RuntimeException("Internal error, complex xml decode", e);
+        } catch (SecurityException e) {
+            throw new RuntimeException("Internal error, complex xml decode", e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Internal error, complex xml decode", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Internal error, complex xml decode", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Internal error, complex xml decode", e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Internal error, complex xml decode", e);
+        }
+    }
+
+    @Override
     public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
         ComplexType complexObject = (ComplexType) me;
         JSONObject result = new JSONObject();
@@ -79,6 +115,17 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
         }
 
         return result;
+    }
+
+    @Override
+    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+        ComplexType complex = (ComplexType)me;
+        // Create new instance
+        for(String name : complex.getNames()){
+            
+        }
+        
+        return null;
     }
 
     @Override
@@ -126,4 +173,5 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
         return (result.isEmpty() ? null : result);
     }
+
 }

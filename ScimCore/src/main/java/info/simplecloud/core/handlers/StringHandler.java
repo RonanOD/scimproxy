@@ -10,12 +10,21 @@ import info.simplecloud.core.merging.IMerger;
 public class StringHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
-    public Object decode(Object jsonData, Object me, MetaData internalMetaData) {
-        return jsonData;
+    public Object decode(Object value, Object instance, MetaData internalMetaData) {
+        return value;
+    }
+
+    @Override
+    public Object decodeXml(Object value, Object newInstance, MetaData internalMetaData) {
+        return value;
     }
 
     @Override
     public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+        return me;
+    }
+    @Override
+    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData) {
         return me;
     }
 
