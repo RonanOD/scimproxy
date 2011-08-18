@@ -2,7 +2,6 @@ package info.simplecloud.core.coding.encode;
 
 import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
-import info.simplecloud.core.User;
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.exceptions.EncodingFailed;
@@ -39,24 +38,24 @@ public class JsonEncoder implements IUserEncoder {
     }
 
     @Override
-    public String encode(List<User> scimUsers) throws EncodingFailed {
+    public String encode(List<Resource> scimUsers) throws EncodingFailed {
         return this.encode(scimUsers, null);
     }
 
     @Override
-    public String encode(List<User> scimUsers, List<String> includeAttributes) throws EncodingFailed {
+    public String encode(List<Resource> scimUsers, List<String> includeAttributes) throws EncodingFailed {
         try {
             JSONObject result = new JSONObject();
 
             if (scimUsers == null) {
-                scimUsers = new ArrayList<User>();
+                scimUsers = new ArrayList<Resource>();
             }
 
             // TODO: Should this be done in core? Return the JSON list of more
             // resporces when you send an List into encode method?
             JSONArray users = new JSONArray();
             int counter = 0;
-            for (User scimUser : scimUsers) {
+            for (Resource scimUser : scimUsers) {
                 JSONObject o = internalEncode(scimUser, includeAttributes);
                 if (o != null) {
                     users.put(o);
@@ -120,5 +119,4 @@ public class JsonEncoder implements IUserEncoder {
 
         return result;
     }
-
 }

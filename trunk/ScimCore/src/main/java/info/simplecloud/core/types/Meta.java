@@ -2,7 +2,7 @@ package info.simplecloud.core.types;
 
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Complex;
-import info.simplecloud.core.handlers.DateHandler;
+import info.simplecloud.core.handlers.CalendarHandler;
 import info.simplecloud.core.handlers.ListHandler;
 import info.simplecloud.core.handlers.StringHandler;
 
@@ -18,12 +18,12 @@ public class Meta extends ComplexType {
     private String       location;
     private List<String> attributes;
 
-    @Attribute(name = "created", handler = DateHandler.class)
+    @Attribute(name = "created", handler = CalendarHandler.class)
     public Calendar getCreated() {
         return this.created;
     }
 
-    @Attribute(name = "lastModified", handler = DateHandler.class)
+    @Attribute(name = "lastModified", handler = CalendarHandler.class)
     public Calendar getLastModified() {
         return this.lastModified;
     }
