@@ -1,7 +1,7 @@
 package info.simplecloud.core;
 
-
 import info.simplecloud.core.types.Name;
+import info.simplecloud.core.types.PluralType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +47,12 @@ public class UserTest {
         user.setAttribute("preferredLanguage", "swedish");
         user.setAttribute("locale", "sv");
         user.setAttribute("password", "kan123!");
-        
-        /*
-        List<PluralType2> emails = new ArrayList<PluralType2>();
-        emails.add(new PluralType2("karl@andersson.se", "home", false));
-        emails.add(new PluralType2("karl.andersson@work.com", "work", true));
+
+        List<PluralType<String>> emails = new ArrayList<PluralType<String>>();
+        emails.add(new PluralType<String>("karl@andersson.se", "home", false, false));
+        emails.add(new PluralType<String>("karl.andersson@work.com", "work", true, false));
         user.setAttribute("emails", emails);
-        */
-        
+
         user.getUser("json");
     }
 
@@ -75,18 +73,17 @@ public class UserTest {
         user.setAttribute("preferredLanguage", "swedish");
         user.setAttribute("locale", "sv");
         user.setAttribute("password", "kan123!");
-        /*
-        List<PluralType2> emails = new ArrayList<PluralType2>();
-        emails.add(new PluralType2("karl@andersson.se", "home", false));
-        emails.add(new PluralType2("karl.andersson@work.com", "work", true));
+
+        List<PluralType<String>> emails = new ArrayList<PluralType<String>>();
+        emails.add(new PluralType<String>("karl@andersson.se", "home", false, false));
+        emails.add(new PluralType<String>("karl.andersson@work.com", "work", true, false));
         user.setAttribute("emails", emails);
-        */
-        
+
         List<String> includeAttributes = new ArrayList<String>();
         includeAttributes.add("userName");
         includeAttributes.add("title");
-        
-        user.getUser("json",includeAttributes);
+
+        user.getUser("json", includeAttributes);
     }
 
     @Test
@@ -107,13 +104,11 @@ public class UserTest {
         user.setAttribute("locale", "sv");
         user.setAttribute("password", "kan123!");
 
-        /*
-        List<PluralType2> emails = new ArrayList<PluralType2>();
-        emails.add(new PluralType2("karl@andersson.se", "home", false));
-        emails.add(new PluralType2("karl.andersson@work.com", "work", true));
+        List<PluralType<String>> emails = new ArrayList<PluralType<String>>();
+        emails.add(new PluralType<String>("karl@andersson.se", "home", false, false));
+        emails.add(new PluralType<String>("karl.andersson@work.com", "work", true, false));
         user.setAttribute("emails", emails);
-        */
-        
+
         List<String> includeAttributes = new ArrayList<String>();
         includeAttributes.add("userName");
         includeAttributes.add("title");
@@ -124,7 +119,7 @@ public class UserTest {
 
     @Test
     public void patch() {
-        
+
     }
 
     @Test
