@@ -110,7 +110,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
             JSONObject jsonObject = new JSONObject();
 
             IEncodeHandler encoder = internalMetaData.getEncoder();
-            Object value = encoder.encode(singular.getValue(), null, null);
+            Object value = encoder.encode(singular.getValue(), includeAttributes, null);
 
             try {
                 jsonObject.put("value", value);
@@ -132,15 +132,34 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
-    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
         List<PluralType> plural = (List<PluralType>) me;
-        
-        for (PluralType singular : plural) {
-            Object value = singular.getValue();
-            
-        }
 
-        return null;
+        try {
+            for (PluralType singular : plural) {
+                Object value = singular.getValue();
+                IEncodeHandler encoder = internalMetaData.getEncoder();
+                Object internalXmlObject;
+                internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, internalMetaData.getName());
+
+                Object encodedValue = encoder.encodeXml(value, includeAttributes, internalMetaData, internalXmlObject);
+
+                this.writeXml(internalXmlObject, singular.getType(), "setType");
+                this.writeXml(internalXmlObject, singular.isPrimary(), "setPrimary");
+                this.writeXml(internalXmlObject, singular.isDelete(), "setDelete");
+            }
+            return xmlObject;
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Internal error, encoding plural xml", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Internal error, encoding plural xml", e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Internal error, encoding plural xml", e);
+        } catch (SecurityException e) {
+            throw new RuntimeException("Internal error, encoding plural xml", e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Internal error, encoding plural xml", e);
+        }
     }
 
     @Override
@@ -154,11 +173,11 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
             } else if (singular.isPrimary()) {
                 toList.remove(singular);
                 clearPrimary(toList);
-                // TODO merge
+                // TODO merge?
                 toList.add(singular);
             } else if (toList.contains(singular)) {
                 toList.remove(singular);
-                // TODO merge
+                // TODO merge?
                 toList.add(singular);
             } else {
                 toList.add(singular);
@@ -185,6 +204,12 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
             IllegalAccessException, InvocationTargetException {
         Method getValueMethod = obj.getClass().getMethod(method, new Class[] {});
         return getValueMethod.invoke(obj, new Object[] {});
+    }
+
+    private void writeXml(Object internalXmlObject, Object obj, String methodName) throws SecurityException, NoSuchMethodException,
+            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        Method getType = internalXmlObject.getClass().getMethod(methodName, obj.getClass());
+        getType.invoke(internalXmlObject, obj);
     }
 
 }

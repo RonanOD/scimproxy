@@ -1,5 +1,6 @@
 package info.simplecloud.core.coding.encode;
 
+import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.types.Address;
@@ -39,7 +40,7 @@ public class JsonEncoderTest {
         String[] postcodes1 = new String[] { "11111", "22222", "33333" };
         String[] postcodes2 = new String[] { "44444", "55555", "66666" };
 
-        List<User> users = new ArrayList<User>();
+        List<Resource> users = new ArrayList<Resource>();
 
         for (int i = 0; i < ids.length; i++) {
             users.add(getUser(ids[i], name[i], emails1[i], emails2[i], postcodes1[i], postcodes2[i]));

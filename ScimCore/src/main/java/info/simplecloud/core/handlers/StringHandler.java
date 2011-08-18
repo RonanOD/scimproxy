@@ -23,8 +23,9 @@ public class StringHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
         return me;
     }
+
     @Override
-    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
         return me;
     }
 

@@ -8,6 +8,6 @@ public interface IEncodeHandler {
 
     Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData);
 
-    Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData);
+    Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object internalXmlObject);
 
 }

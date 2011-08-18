@@ -1,6 +1,7 @@
 package info.simplecloud.core.handlers;
 
 import info.simplecloud.core.MetaData;
+import info.simplecloud.core.coding.ReflectionHelper;
 import info.simplecloud.core.coding.decode.IDecodeHandler;
 import info.simplecloud.core.coding.encode.IEncodeHandler;
 import info.simplecloud.core.exceptions.InvalidUser;
@@ -17,10 +18,12 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import x0.scimSchemasCore1.User;
+
 public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
-    public Object decode(Object jsonData, Object me, MetaData internalMetaData) throws InvalidUser{
+    public Object decode(Object jsonData, Object me, MetaData internalMetaData) throws InvalidUser {
         ComplexType complexObject = (ComplexType) me;
         JSONObject jsonObject = (JSONObject) jsonData;
 
@@ -118,14 +121,48 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
-    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData) {
-        ComplexType complex = (ComplexType)me;
-        // Create new instance
-        for(String name : complex.getNames()){
-            
+    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
+        ComplexType complex = (ComplexType) me;
+
+        try {
+            for (String name : complex.getNames()) {
+                if (includeAttributes != null && !includeAttributes.isEmpty() && !includeAttributes.contains(name)) {
+                    // We have a list of attributes and this one is not in it.
+                    continue;
+                }
+                Object value = complex.getAttribute(name);
+                if(value == null) { 
+                    continue;
+                }
+                
+                MetaData metaData = complex.getMetaData(name);
+                IEncodeHandler encoder = metaData.getEncoder();
+
+                Object internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, name);
+
+                Object encodedValue = encoder.encodeXml(value, includeAttributes, metaData.getInternalMetaData(), internalXmlObject);
+                String setterName = "set";
+                setterName += name.substring(0, 1).toUpperCase();
+                setterName += name.substring(1);
+
+                Method setter = ReflectionHelper.getMethod(setterName, xmlObject.getClass());
+                setter.invoke(xmlObject, encodedValue);
+            }
+
+            return xmlObject;
+        } catch (SecurityException e) {
+            throw new RuntimeException("Internal error, encoding complex xml", e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Internal error, encoding complex xml", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Internal error, encoding complex xml", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Internal error, encoding complex xml", e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Internal error, encoding complex xml", e);
+        } catch (UnknownAttribute e) {
+            throw new RuntimeException("Internal error, encoding complex xml", e);
         }
-        
-        return null;
     }
 
     @Override

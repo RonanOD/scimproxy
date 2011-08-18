@@ -6,12 +6,18 @@ import info.simplecloud.core.coding.encode.IEncodeHandler;
 import info.simplecloud.core.merging.IMerger;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import x0.scimSchemasCore1.Meta;
+import x0.scimSchemasCore1.User;
+
 public class ListHandler implements IDecodeHandler, IEncodeHandler, IMerger {
+
+    private Calendar tmp;
 
     @Override
     public Object decode(Object jsonData, Object me, MetaData internalMetaData) {
@@ -30,9 +36,12 @@ public class ListHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
-    public Object decodeXml(Object value, Object newInstance, MetaData internalMetaData) {
-        // TODO Auto-generated method stub
-        return null;
+    public Object decodeXml(Object xmlObject, Object me, MetaData internalMetaData) {
+        List<String> result = new ArrayList<String>();
+        
+        // TODO read xml
+        
+        return result;
     }
 
     @Override
@@ -49,7 +58,9 @@ public class ListHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
-    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
+        List<String> list = (List<String>)me;
+        
         // TODO Auto-generated method stub
         return null;
     }
