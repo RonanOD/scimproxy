@@ -19,7 +19,7 @@ Users do SAML, OpenID or similar login towards idp coupled to the local director
 This scenario is for all of you that have a local directory with applications using and updating it, but no means/interest to change these applications. But you wishes to use a cloud service that needs these local users.
 In this case you setup the scimproxy towards your local directory, you configure which attributes that needs to be pushed to the cloud service and finally you configure how often the users needs to be pushed. Further if the cloud service can change the users and you want the changes down to your local directory you could also configure the scimproxy to do a request towards the cloud service for changes when time trigger hits.
 
-[Time-trigger.jpg]
+[http://code.google.com/p/scimproxy/wiki/Time-trigger.jpg]
 
 If the cloud service provider does not suply a SCIM Rest interface you could always ask him to setup the scimproxy.
 == Synchronizing users with on-demand trigger ==
