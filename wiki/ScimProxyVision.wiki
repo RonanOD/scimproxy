@@ -2,7 +2,7 @@
 
 = Introduction =
 
-This page contains examples of how we see the usage of the scimproxy projecy. Some of the examples is implemented already and some will be, and some my change as time goes. However this page is created to give you an idea of where and how to use the scimproxy project, both the scimproxy and the ScimCore, can be used to solve you specific use-cases.
+This page contains examples of how we see the usage of the scimproxy projecy. Some of the examples is implemented already and some will be, and some my change as time goes. However this page is created to give you an idea of where and how to use the scimproxy project, both the scimproxy and the scimcore, can be used to solve you specific use-cases.
 
 = scimcore =
 This is a library that is meant to give an abstraction over the SCIM core specification you will have simple getters and setters, You will work with one object and then encode it as json or xml depending on the situation. Further it contains help for sorting and other common SCIM operations, for more details see WorkingWithScimCore
@@ -30,7 +30,7 @@ Similarly if you do not want to wait for the time trigger to hit for users updat
 
 [http://scimproxy.googlecode.com/svn/wiki/OnDemandTrigger.jpg]
 
-== Working with the ScimCore ==
+== Working with the scimcore ==
 If you are creating a new application and you wish to be independent of the storage type. Then you could chose to use the ScimCore user object internally and put the scimproxy between you and any storage. 
 In normal cases there exists be a plug-in for your specific storage, if not you could always create a new one, that works towards the storage you have. If you are missing attributes on the ScimCore objects you look for implemented extensions that might fulfill your needs, if non exists you create a new extension with desired attributes.
 By accessing the user storage through the scimproxy users can be synchronized with cloud service on-demand, changes propagate directly and no extra work has to be done.
