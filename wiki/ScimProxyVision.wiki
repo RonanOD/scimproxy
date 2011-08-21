@@ -1,0 +1,44 @@
+#summary The usage vision for the ScimProxy project
+
+= Introduction =
+
+This page contains a examples of how we see the usage of the ScimProxy projecy. Some of the examples c is implemented already and some will be and some my change as time goes. How ever this page is created to give you an ide of where and how to use the ScimProxy project, both the scimproxy and the ScimCore.
+
+= ScimCore =
+This is a library that is meant to give an abstraction over the SCIM core specification you will have simple getters and setters. Yo will work wit on object and the encodit as jason or xml depending on the situation. Furter it contains help for sorting and other common SCIM operations.
+
+= scimproxy =
+This project is a servlet that can be deployed in any servlet container it uses the ScimCore to implement the SCIM Rest Api. The scimproxy creates one interface towards different backend user storages (ldap, database, etc.) with the simple SCIM Rest Api. Further it can keep users in different locations synchronized by pushing changes.
+
+= Scenarios =
+
+== assumptions ==
+Users do SAML, OpenID or similar login towards idp coupled to the local directory and then gets directed to the service.
+
+== Synchronizing users with time trigger ==
+This scenario is for all of you that have a local directory with applications using and updating it, but no means/interest to change these applications. But you wishes to use a cloud service that needs these local users.
+In this case you setup the scimproxy towards your local directory, you configure which attributes that needs to be pushed to the cloud service and finally you configure how often the users needs to be pushed. Further if the cloud service can change the users and you want the changes down to your local directory you could also configure the scimproxy to do a request towards the cloud service for changes when time trigger hits.
+
+<insert image>
+
+If the cloud service provider does not suply a SCIM Rest interface you could always ask him to setup the scimproxy.
+== Synchronizing users with on-demand trigger ==
+If you have a bit more control over the applications changing the local directory you might not want to wait for the time trigger to hit before the changes propagate towards to the cloud service. In this case you could after changin a user do a post to the trigger servlet at the scimproxy and it would read the user from local directory and update it at the colud service provider.
+Similarly if you do not want to wait for the time trigger to hit for users to be downloaded from the cloud service you could setup an account for the Cloud service provider on your scimproxy and he would be able to directly push changes down to you.
+
+<insert image>
+
+== Working with the ScimCore ==
+If you are creating a new application and you wish to be independent of the storage to use then you could chose to use the ScimCore user object and put the scimproxy between you and any storage. In normal cases there should be a plugin for your specific storage if not you could always create a new plugin that works towards the storage you have. Further if you are missing attributes on the ScimCore objects you look for implemented extensions that might fullfill your needs, if non exists you create a new extension with desired attributes.
+By accessing the user storage through the scimproxy users can be synchronized with cloud service on demad changes propagate directly and no extra work has to be done.
+
+<insert image>
+
+== On-demand provisioning through REST ==
+You are using a cloud service that does not always need the user data and therefor does not want to store it but in some stations it needs an address or similar.
+In this case you exposes your directory through the scimproxy by setting up an account for the Cloud service provider to use to fetch the needed userdata, of cource you limit the data returned to the cloud service provider on a need to know basis.
+
+== On-demand provisioning through SAML ==
+In this case you use the ScimCore for internal user representation and you federate identeties towards a Cloud Service Provider. The cloud service provider requests userdata ondemand through SAML requests. in the SAML requests the CSP adds scim assertion requests. On your side you ask the ScimCore user object to augument the responce with requested data by passing the ScimCore user the saml request and unsigned responce the ScimCore user aguments the responce and it can be signed and sent to the CSP with desired information.
+
+
