@@ -26,7 +26,7 @@ If the cloud service provider does not suply a SCIM Rest interface you could alw
 If you have a bit more control over the applications changing the local directory you might not want to wait for the time trigger to hit before the changes propagate towards to the cloud service. In this case you could after changin a user do a post to the trigger servlet at the scimproxy and it would read the user from local directory and update it at the colud service provider.
 Similarly if you do not want to wait for the time trigger to hit for users to be downloaded from the cloud service you could setup an account for the Cloud service provider on your scimproxy and he would be able to directly push changes down to you.
 
-<insert image>
+[http://www.nattvilan.se/images/prastkragar.jpg]
 
 == Working with the ScimCore ==
 If you are creating a new application and you wish to be independent of the storage to use then you could chose to use the ScimCore user object and put the scimproxy between you and any storage. In normal cases there should be a plugin for your specific storage if not you could always create a new plugin that works towards the storage you have. Further if you are missing attributes on the ScimCore objects you look for implemented extensions that might fullfill your needs, if non exists you create a new extension with desired attributes.
