@@ -58,7 +58,7 @@ Both the down and up-stream server nodes defines what type of authentication tha
 		<csp>
 			<url>http://192.168.10.146:8080</url>
 			<preferedEncoding>JSON</preferedEncoding>
-			<version>1</version>
+			<version>v1</version>
 			<auth type="basic">
 				<username>usr</username>
 				<password>pw</password>
@@ -69,7 +69,7 @@ Both the down and up-stream server nodes defines what type of authentication tha
 		<csp>
 			<url>http://192.168.10.141:8080</url>
 			<preferedEncoding>JSON</preferedEncoding>
-			<version>1</version>
+			<version>v1</version>
 			<auth type="basic">
 				<username>usr</username>
 				<password>pw</password>
