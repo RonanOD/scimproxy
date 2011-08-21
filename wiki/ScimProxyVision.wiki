@@ -26,17 +26,21 @@ If the cloud service provider does not suply a SCIM Rest interface you could alw
 If you have a bit more control over the applications changing the local directory you might not want to wait for the time trigger to hit before the changes propagate towards to the cloud service. In this case you could after changin a user do a post to the trigger servlet at the scimproxy and it would read the user from local directory and update it at the colud service provider.
 Similarly if you do not want to wait for the time trigger to hit for users to be downloaded from the cloud service you could setup an account for the Cloud service provider on your scimproxy and he would be able to directly push changes down to you.
 
-[http://www.nattvilan.se/images/prastkragar.jpg]
+[http://scimproxy.googlecode.com/svn/wiki/OnDemandTrigger.jpg]
 
 == Working with the ScimCore ==
 If you are creating a new application and you wish to be independent of the storage to use then you could chose to use the ScimCore user object and put the scimproxy between you and any storage. In normal cases there should be a plugin for your specific storage if not you could always create a new plugin that works towards the storage you have. Further if you are missing attributes on the ScimCore objects you look for implemented extensions that might fullfill your needs, if non exists you create a new extension with desired attributes.
 By accessing the user storage through the scimproxy users can be synchronized with cloud service on demad changes propagate directly and no extra work has to be done.
 
-<insert image>
+[http://scimproxy.googlecode.com/svn/wiki/UserStorage.jpg]
 
 == On-demand provisioning through REST ==
 You are using a cloud service that does not always need the user data and therefor does not want to store it but in some stations it needs an address or similar.
 In this case you exposes your directory through the scimproxy by setting up an account for the Cloud service provider to use to fetch the needed userdata, of cource you limit the data returned to the cloud service provider on a need to know basis.
 
+[http://scimproxy.googlecode.com/svn/wiki/OnDemandRest.jpg]
+
 == On-demand provisioning through SAML ==
 In this case you use the ScimCore for internal user representation and you federate identeties towards a Cloud Service Provider. The cloud service provider requests userdata ondemand through SAML requests. in the SAML requests the CSP adds scim assertion requests. On your side you ask the ScimCore user object to augument the responce with requested data by passing the ScimCore user the saml request and unsigned responce the ScimCore user aguments the responce and it can be signed and sent to the CSP with desired information.
+
+[http://scimproxy.googlecode.com/svn/wiki/OnDemandSAML.jpg]
