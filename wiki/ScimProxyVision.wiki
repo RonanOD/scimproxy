@@ -31,8 +31,8 @@ Similarly if you do not want to wait for the time trigger to hit for users updat
 [http://scimproxy.googlecode.com/svn/wiki/OnDemandTrigger.jpg]
 
 == Working with the scimcore ==
-If you are creating a new application and you wish to be independent of the storage type. Then you could chose to use the ScimCore user object internally and put the scimproxy between you and any storage. 
-In normal cases there exists be a plug-in for your specific storage, if not you could always create a new one, that works towards the storage you have. If you are missing attributes on the ScimCore objects you look for implemented extensions that might fulfill your needs, if non exists you create a new extension with desired attributes.
+If you are creating a new application and you wish to be independent of the storage type. Then you could chose to use the scimcore user object internally and put the scimproxy between you and any storage. 
+In normal cases there exists be a plug-in for your specific storage, if not you could always create a new one, that works towards the storage you have. If you are missing attributes on the scimcore objects you look for implemented extensions that might fulfill your needs, if non exists you create a new extension with desired attributes.
 By accessing the user storage through the scimproxy users can be synchronized with cloud service on-demand, changes propagate directly and no extra work has to be done.
 
 [http://scimproxy.googlecode.com/svn/wiki/UserStorage.jpg]
