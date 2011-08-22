@@ -14,6 +14,7 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.core.exceptions.UnknownExtension;
 import info.simplecloud.core.handlers.ComplexHandler;
+import info.simplecloud.core.handlers.ListHandler;
 import info.simplecloud.core.handlers.StringHandler;
 import info.simplecloud.core.types.ComplexType;
 import info.simplecloud.core.types.Meta;
@@ -167,7 +168,7 @@ public abstract class Resource extends ComplexType {
         return this.id;
     }
 
-    @Attribute(name = "schemas", handler = StringHandler.class)
+    @Attribute(name = "schemas", handler = ListHandler.class)
     public List<String> getSchemas() {
         return this.schemas;
     }

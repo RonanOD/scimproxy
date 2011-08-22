@@ -26,6 +26,10 @@ public class UserTest {
         user.setAttribute("preferredLanguage", "swedish");
         user.setAttribute("locale", "sv");
         user.setAttribute("password", "kan123!");
+        
+        List<String> schemas = new ArrayList<String>();
+        schemas.add("urn:scim:schemas:core:1.0");
+        user.setAttribute("schemas", schemas);
 
         user.toString();
     }
