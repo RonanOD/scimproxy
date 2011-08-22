@@ -37,17 +37,15 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
             try {
 
-                MetaData metadata;
-                metadata = complexObject.getMetaData(name);
-
-                IDecodeHandler decoder = metadata.getDecoder();
-
-                Object result = decoder.decode(jsonObject.get(name), metadata.newInstance(), metadata.getInternalMetaData());
-
-                complexObject.setAttribute(name, result);
-
-            } catch (UnknownAttribute e) {
-                throw new RuntimeException("Internal error decoding complex type", e);
+                try {
+                    MetaData metadata = complexObject.getMetaData(name);
+                    IDecodeHandler decoder = metadata.getDecoder();
+                    Object result = decoder.decode(jsonObject.get(name), metadata.newInstance(), metadata.getInternalMetaData());
+                    complexObject.setAttribute(name, result);
+                } catch (UnknownAttribute e) {
+                    // ignore and it will go away, json contains unknown node
+                    continue;
+                }
             } catch (JSONException e) {
                 throw new RuntimeException("Internal error decoding complex type", e);
             }
@@ -131,10 +129,10 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                     continue;
                 }
                 Object value = complex.getAttribute(name);
-                if(value == null) { 
+                if (value == null) {
                     continue;
                 }
-                
+
                 MetaData metaData = complex.getMetaData(name);
                 IEncodeHandler encoder = metaData.getEncoder();
 

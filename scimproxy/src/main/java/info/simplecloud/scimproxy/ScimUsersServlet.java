@@ -1,5 +1,6 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.core.coding.encode.JsonEncoder;
 import info.simplecloud.core.coding.encode.XmlEncoder;
@@ -51,7 +52,7 @@ public class ScimUsersServlet extends RestServlet {
         }
 
         DummyStorage storage = DummyStorage.getInstance();
-        List<User> users = null;
+        List users = null;
 
         String filterBy = req.getParameter("filterBy");
         String filterValue = req.getParameter("filterValue");
