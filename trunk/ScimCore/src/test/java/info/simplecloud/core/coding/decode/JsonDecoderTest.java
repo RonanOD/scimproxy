@@ -19,20 +19,34 @@ public class JsonDecoderTest {
     }
 
     @Test
-    public void decode() throws InvalidUser, IOException {
-   /*     String user = ResourceReader.readTextFile("ScimUser.json", getClass());
-        ScimUser scimUser = new ScimUser();
+    public void decodeMinimal() throws InvalidUser {
+        String jsonUser = "{\"schemas\": [\"urn:scim:schemas:core:1.0\"],\"id\": \"005D0000001Az1u\","
+                + "\"userName\": \"bjensen@example.com\"}";
+        User user = new User("123");
         JsonDecoder decoder = new JsonDecoder();
 
-        decoder.decode(user, scimUser);
+        decoder.decode(jsonUser, user);
+        
+    }
 
-        Assert.assertEquals("005D0000001Az1u", scimUser.getId());
-        Assert.assertEquals("bjensen@example.com", scimUser.getUserName());
-        Assert.assertNotNull(scimUser.getName());
-        Assert.assertEquals("Ms. Barbara J Jensen III", scimUser.getName().getFormatted());
-        Assert.assertEquals("Barbara", scimUser.getName().getGivenName());
-        Assert.assertNotNull(scimUser.getEmails());
-        Assert.assertEquals(2, scimUser.getEmails().size());
-        Assert.assertTrue(scimUser.getEmails().contains(new PluralType<String>("bjensen@example.com", "work", true)));
-*/    }
+    @Test
+    public void decode() throws InvalidUser, IOException {
+        /*
+         * String user = ResourceReader.readTextFile("ScimUser.json",
+         * getClass()); ScimUser scimUser = new ScimUser(); JsonDecoder decoder
+         * = new JsonDecoder();
+         * 
+         * decoder.decode(user, scimUser);
+         * 
+         * Assert.assertEquals("005D0000001Az1u", scimUser.getId());
+         * Assert.assertEquals("bjensen@example.com", scimUser.getUserName());
+         * Assert.assertNotNull(scimUser.getName());
+         * Assert.assertEquals("Ms. Barbara J Jensen III",
+         * scimUser.getName().getFormatted()); Assert.assertEquals("Barbara",
+         * scimUser.getName().getGivenName());
+         * Assert.assertNotNull(scimUser.getEmails()); Assert.assertEquals(2,
+         * scimUser.getEmails().size());
+         * Assert.assertTrue(scimUser.getEmails().contains(new
+         * PluralType<String>("bjensen@example.com", "work", true)));
+         */}
 }

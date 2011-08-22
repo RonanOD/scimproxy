@@ -11,6 +11,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import x0.scimSchemasCore1.ResourceDocument;
+import x0.scimSchemasCore1.Response.Resources;
+
 public class XmlDecoder implements IResourceDecoder {
 
     @Override
@@ -45,7 +48,6 @@ public class XmlDecoder implements IResourceDecoder {
     @Override
     public void decode(String resourcesList, List<Resource> resources) throws InvalidUser {
         // TODO Auto-generated method stub
-
     }
 
 }
