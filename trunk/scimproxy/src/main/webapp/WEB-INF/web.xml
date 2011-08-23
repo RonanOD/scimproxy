@@ -11,7 +11,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>User</servlet-name>
-	<url-pattern>/User/*</url-pattern>
+	<url-pattern>/v1/User/*</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -20,7 +20,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Users</servlet-name>
-	<url-pattern>/Users</url-pattern>
+	<url-pattern>/v1/Users</url-pattern>
   </servlet-mapping>
 
 	<servlet>
@@ -29,7 +29,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Group</servlet-name>
-		<url-pattern>/Group</url-pattern>
+		<url-pattern>/v1/Group</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Groups</servlet-name>
@@ -37,7 +37,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Groups</servlet-name>
-		<url-pattern>/Groups</url-pattern>
+		<url-pattern>/v1/Groups</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Schema</servlet-name>
@@ -45,7 +45,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Schema</servlet-name>
-		<url-pattern>/Schema</url-pattern>
+		<url-pattern>/v1/Schema</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Schemas</servlet-name>
@@ -53,8 +53,18 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Schemas</servlet-name>
-		<url-pattern>/Schemas</url-pattern>
+		<url-pattern>/v1/Schemas</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Batch</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.ScimBatchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Batch</servlet-name>
+		<url-pattern>/v1/Batch</url-pattern>
+	</servlet-mapping>
+
 
 	<servlet>
 		<servlet-name>List</servlet-name>
@@ -81,6 +91,15 @@
 	<servlet-mapping>
 		<servlet-name>Edit</servlet-name>
 		<url-pattern>/Viewer/Edit</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ViewerBatch</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.Batch</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ViewerBatch</servlet-name>
+		<url-pattern>/Viewer/Batch</url-pattern>
 	</servlet-mapping>
 
 	<filter>
