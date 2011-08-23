@@ -52,6 +52,7 @@ public class Edit extends HttpServlet {
 	        resp.getWriter().print("<html>");
 	        resp.getWriter().print("<a href=\"List\">List</a>&nbsp;");
 	        resp.getWriter().print("<a href=\"Add\">Add user</a>");
+	        resp.getWriter().print("<a href=\"Batch\">Batch</a>");
 	        resp.getWriter().print("<br/>");
 
 	        if("true".equals(save)) {
@@ -78,7 +79,7 @@ public class Edit extends HttpServlet {
 					
 					if("put".equalsIgnoreCase(scimMethod)) {
 						// Create a method instance.
-						PutMethod method = new PutMethod("http://localhost:8080/User/" + user.getId());
+						PutMethod method = new PutMethod("http://localhost:8080/v1/User/" + user.getId());
 						method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 				        method.setRequestHeader("etag", etag);
 				        method.setRequestBody(user.getUser("JSON"));
@@ -93,7 +94,7 @@ public class Edit extends HttpServlet {
 					}
 					else {
 						// Create a method instance.
-						PostMethod method = new PostMethod("http://localhost:8080/User/" + user.getId());
+						PostMethod method = new PostMethod("http://localhost:8080/v1/User/" + user.getId());
 						method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 				        method.setRequestHeader("X-HTTP-Method-Override", "PATCH");
 				        method.setRequestHeader("etag", etag);

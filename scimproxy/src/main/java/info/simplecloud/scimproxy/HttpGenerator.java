@@ -48,10 +48,10 @@ public class HttpGenerator {
 	 * @param scimUser
 	 *            User that was changed since loaded from client.
 	 */
-	public static void preconditionFailed(HttpServletResponse resp, User scimUser) {
+	public static void preconditionFailed(HttpServletResponse resp, String userId) {
 		resp.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED); // 412
 		try {
-			resp.getWriter().print("Failed to update as resource " + scimUser.getId() + " changed on the server since you last retrieved it.");
+			resp.getWriter().print("Failed to update as resource " + userId + " changed on the server since you last retrieved it.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -154,7 +154,7 @@ public class HttpGenerator {
 	 * @return XML if xml otherwise JSON.
 	 */
 	public static String getEncoding(HttpServletRequest req) {
-		String encoding = "JSON"; // default to JSON
+		String encoding = "json"; // default to JSON
 		
 		String uri = req.getRequestURI();
 		if(uri == null) {
@@ -168,11 +168,11 @@ public class HttpGenerator {
 		acceptHeader = acceptHeader.toLowerCase();
 		
 		if(acceptHeader.indexOf("application/json") != -1  || uri.endsWith(".json")) {
-			encoding = "JSON";
+			encoding = "json";
 		}
 
 		if(acceptHeader.indexOf("application/xml") != -1 || uri.endsWith(".xml")) {
-			encoding = "XML";
+			encoding = "xml";
 		}
 
 		return encoding;
@@ -200,17 +200,25 @@ public class HttpGenerator {
 	 * @return A URI to a scim user to be used as a Location HTTP header.
 	 */
 	public static String getLocation(User user, HttpServletRequest req) {
+		return getInternalLocation("/v1/User/" + user.getId(), req);
+	}
+
+	public static String getBatchLocation(String batch, HttpServletRequest req) {
+		return getInternalLocation("/v1/Batch/" + batch, req);
+	}
+
+	private static String getInternalLocation(String path, HttpServletRequest req) {
 		// generate the Location url
 		String scheme = req.getScheme(); // http
 		String serverName = req.getServerName(); // acme.com
 		int serverPort = req.getServerPort(); // 80
 		String serverPortStr = "";
 		if (("http".equals(scheme) && serverPort != 80) || ("https".equals(scheme) && serverPort != 443)) {
-			serverPortStr = Integer.toString(serverPort);
+			serverPortStr = ":" + Integer.toString(serverPort);
 		}
 		String contextPath = req.getContextPath();
-		String location = scheme + "://" + serverName + ":" + serverPortStr + contextPath + "/User/" + user.getId();
+		String location = scheme + "://" + serverName + serverPortStr + contextPath + path;
 
 		return location;
-	}
+	}	
 }

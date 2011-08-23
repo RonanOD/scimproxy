@@ -53,7 +53,7 @@ public class List extends HttpServlet {
 				client.getState().setCredentials(AuthScope.ANY, defaultcreds);
 				
 				// Create a method instance.
-				DeleteMethod method = new DeleteMethod("http://localhost:8080/User/" + delete);
+				DeleteMethod method = new DeleteMethod("http://localhost:8080/v1/User/" + delete);
 				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 				method.setRequestHeader("Content-Type", "text/html; charset=UTF-8");
 				method.setRequestHeader("ETag", etag);
@@ -70,7 +70,7 @@ public class List extends HttpServlet {
 			
 			
 			// Create a method instance.
-			GetMethod method = new GetMethod("http://localhost:8080/Users");
+			GetMethod method = new GetMethod("http://localhost:8080/v1/Users");
 			method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 			method.setRequestHeader("Content-Type", "text/html; charset=UTF-8");
 
@@ -84,11 +84,12 @@ public class List extends HttpServlet {
 				log.debug("Response code: " + Integer.toString(statusCode));
 				log.debug("Status line: " + method.getStatusLine());
 				log.debug("Response: \n" + new String(responseBody));
-				java.util.List<User> users = User.getUsers(new String(responseBody), "JSON");
+				java.util.List<User> users = User.getUsers(new String(responseBody), User.ENCODING_JSON);
 
 		        resp.getWriter().print("<html>");
 		        resp.getWriter().print("<a href=\"List\">List</a>&nbsp;");
 		        resp.getWriter().print("<a href=\"Add\">Add user</a>");
+		        resp.getWriter().print("<a href=\"Batch\">Batch</a>");
 		        resp.getWriter().print("<br/>");
 
                 resp.getWriter().print("<table border=\"1\">");
