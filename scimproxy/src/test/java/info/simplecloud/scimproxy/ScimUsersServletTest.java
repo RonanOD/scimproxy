@@ -26,8 +26,8 @@ public class ScimUsersServletTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/User/*");
-        tester.addServlet(ScimUsersServlet.class, "/Users");
+        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimUsersServlet.class, "/v1/Users");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -40,7 +40,7 @@ public class ScimUsersServletTest {
         aliceRequest.setVersion("HTTP/1.0");
         aliceRequest.setHeader("Authorization", "Basic dXNyOnB3");
 
-        aliceRequest.setURI("/User");
+        aliceRequest.setURI("/v1/User");
         aliceRequest.setHeader("Content-Length", Integer.toString(alice.getUser("JSON").length()));
         aliceRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
         aliceRequest.setContent(alice.getUser("JSON"));
@@ -57,7 +57,7 @@ public class ScimUsersServletTest {
         bobRequest.setMethod("POST");
         bobRequest.setVersion("HTTP/1.0");
         bobRequest.setHeader("Authorization", "Basic dXNyOnB3");
-        bobRequest.setURI("/User");
+        bobRequest.setURI("/v1/User");
         bobRequest.setHeader("Content-Length", Integer.toString(bob.getUser("JSON").length()));
         bobRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
         bobRequest.setContent(bob.getUser("JSON"));
@@ -75,7 +75,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users");
+        request.setURI("/v1/Users");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -105,7 +105,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?sortBy=userName&sortOrder=ascending");
+        request.setURI("/v1/Users?sortBy=userName&sortOrder=ascending");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -131,7 +131,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?sortBy=userName&sortOrder=descending");
+        request.setURI("/v1/Users?sortBy=userName&sortOrder=descending");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -157,7 +157,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?sortBy=userName&sortOrder=descending&attributes=nickName");
+        request.setURI("/v1/Users?sortBy=userName&sortOrder=descending&attributes=nickName");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -184,7 +184,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?sortBy=userName&sortOrder=descending&attributes=");
+        request.setURI("/v1/Users?sortBy=userName&sortOrder=descending&attributes=");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -210,7 +210,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?filterBy=nickName&filterValue=B&filterOp=equals");
+        request.setURI("/v1/Users?filterBy=nickName&filterValue=B&filterOp=equals");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -241,7 +241,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?filterBy=nickName&filterValue=asdasdasd&filterOp=equals");
+        request.setURI("/v1/Users?filterBy=nickName&filterValue=asdasdasd&filterOp=equals");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -258,7 +258,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?filterBy=userName&filterValue=Bob&filterOp=equals&attributes=userName");
+        request.setURI("/v1/Users?filterBy=userName&filterValue=Bob&filterOp=equals&attributes=userName");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -288,7 +288,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?filterBy=sjshjsdfhjkshdfjsdf&filterValue=Bob&filterOp=equals");
+        request.setURI("/v1/Users?filterBy=sjshjsdfhjkshdfjsdf&filterValue=Bob&filterOp=equals");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -305,7 +305,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?filterBy=userName&filterValue=bob&filterOp=equalsIgnoreCase");
+        request.setURI("/v1/Users?filterBy=userName&filterValue=bob&filterOp=equalsIgnoreCase");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -331,7 +331,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?filterBy=userName&filterValue=ob&filterOp=contains");
+        request.setURI("/v1/Users?filterBy=userName&filterValue=ob&filterOp=contains");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -357,7 +357,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?filterBy=userName&filterValue=Bo&filterOp=startsWith");
+        request.setURI("/v1/Users?filterBy=userName&filterValue=Bo&filterOp=startsWith");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -383,7 +383,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?filterBy=nickName&filterOp=present");
+        request.setURI("/v1/Users?filterBy=nickName&filterOp=present");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();
@@ -414,7 +414,7 @@ public class ScimUsersServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/Users?startIndex=10000&count=20000");
+        request.setURI("/v1/Users?startIndex=10000&count=20000");
         response.parse(tester.getResponses(request.generate()));
 
         String users = response.getContent();

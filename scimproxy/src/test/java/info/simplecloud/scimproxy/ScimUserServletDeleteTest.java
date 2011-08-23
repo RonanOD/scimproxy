@@ -20,7 +20,7 @@ public class ScimUserServletDeleteTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/User/*");
+        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -31,7 +31,7 @@ public class ScimUserServletDeleteTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/User");
+        request.setURI("/v1/User");
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimUser.getUser("JSON"));
@@ -48,7 +48,7 @@ public class ScimUserServletDeleteTest {
         request.setVersion("HTTP/1.0");
 
         // get resource to see if it's there
-        request.setURI("/User/" + id);
+        request.setURI("/v1/User/" + id);
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
@@ -82,7 +82,7 @@ public class ScimUserServletDeleteTest {
         request.setVersion("HTTP/1.0");
 
         // get resource to see if it's there
-        request.setURI("/User/jsjsjsjsjsjs");
+        request.setURI("/v1/User/jsjsjsjsjsjs");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(404, response.getStatus());
