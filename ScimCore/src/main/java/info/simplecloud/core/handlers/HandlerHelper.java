@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class HandlerHelper {
-    public static Object createInternalXmlObject(Object xmlObject, String name) throws IllegalArgumentException, IllegalAccessException,
+    protected static Object createInternalXmlObject(Object xmlObject, String name) throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException {
         try {
             String methodName = "addNew";
@@ -15,5 +15,14 @@ public class HandlerHelper {
         } catch (NoSuchMethodException e) {
             return null;
         }
+    }
+    
+    protected static Object typeCheck(Object value , Class<?> clazz) {
+        if (value.getClass() == clazz) {
+            return value;
+        }
+
+        throw new RuntimeException("Type missmatch expected '" + clazz.getName() + "' but Received '"
+                + value.getClass().getName() + "'");
     }
 }
