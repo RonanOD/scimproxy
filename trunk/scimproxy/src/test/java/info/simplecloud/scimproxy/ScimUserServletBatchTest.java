@@ -49,11 +49,11 @@ public class ScimUserServletBatchTest {
 	    "{" + 
 	      "\"method\":\"PUT\"," + 
 	      "\"type\":\"User\"," + 
-	      "\"location\":\"http://localhost/v1/User/uid=bob,dc=example,dc=com\"," +
+	      "\"location\":\"http://localhost/v1/User/PLACEHOLDER\"," +
 	      "\"etag\":\"b431af54f0671a1\"," +
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," +
-	        "\"id\":\"uid=bob,dc=example,dc=com\"," + 
+	        "\"id\":\"PLACEHOLDER\"," + 
 	        "\"userName\":\"Bob\"," + 
 	        "\"name\":{" + 
 	          "\"formatted\":\"Bob Doe\"," + 
@@ -61,16 +61,29 @@ public class ScimUserServletBatchTest {
 	          "\"givenName\":\"Bob\"" + 
 	        "}," +
 	        "\"meta\":{" + 
-	            "\"location\":\"https://example.com/v1/User/uid=bob,dc=example,dc=com\"," + 
+	            "\"location\":\"https://example.com/v1/User/PLACEHOLDER\"," + 
 	            "\"version\":\"b431af54f0671a1\"," + 
-	            "\"created\":\"2010-05-01T21:32:44.882Z\"," + 
-	            "\"lastModified\":\"2010-05-01T21:32:44.882Z\"" + 
+	            "\"created\":\"2010-05-01T21:32:44.882Z\"," +
+	            "\"lastModified\":\"2010-05-01T21:32:44.882Z\"" +
 	          "}" +
 	      "}" + 
 	    "}" + 
 	  "]" + 
 	"}";
-
+	
+	
+	String deleteJson = "{" + 
+	  "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
+	  "\"Entries\":[" + 
+	    "{" + 
+	      "\"method\":\"DELETE\"," + 
+	      "\"type\":\"User\"," + 
+	      "\"location\":\"http://localhost/v1/User/IDPLACEHOLDER\"," +
+	      "\"etag\":\"ETAGPLACEHOLDER\"" +
+	    "}" + 
+	  "]" + 
+	"}";
+	
 	
     @Test
     public void postUser() throws Exception {
@@ -91,7 +104,7 @@ public class ScimUserServletBatchTest {
     
     @Test
     public void putUser() throws Exception {
-
+    	
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
@@ -103,8 +116,22 @@ public class ScimUserServletBatchTest {
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
-        postTester(response.getContent(), "qwerty", "alice");
+        String content = response.getContent();
+        
+        postTester(content, "qwerty", "alice");
 
+        String aliceId = "";
+		JSONObject jsonObj = new JSONObject(content);
+		JSONArray entities = jsonObj.getJSONArray("Entries");
+		for (int i = 0; i < entities.length(); ++i) {
+		    JSONObject entity = entities.getJSONObject(i);
+		    
+		    JSONObject data = entity.getJSONObject("data");
+		    aliceId = data.getString("id");
+		}
+        
+		putJson = putJson.replaceAll("PLACEHOLDER", aliceId);
+		
         request.setURI("/v1/Batch");
         request.setHeader("Content-Length", Integer.toString(putJson.length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -112,6 +139,54 @@ public class ScimUserServletBatchTest {
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
+
+        putTester(response.getContent(), aliceId, "Bob");
+    }
+
+    @Test
+    public void deleteUser() throws Exception {
+    	
+        request.setMethod("POST");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Batch");
+        request.setHeader("Content-Length", Integer.toString(putJson.length()));
+        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.setContent(postJson);
+        response.parse(tester.getResponses(request.generate()));
+
+        Assert.assertEquals(200, response.getStatus());
+        String content = response.getContent();
+        
+        postTester(content, "qwerty", "alice");
+
+        String aliceId = "";
+        String aliceEtag = "";
+		JSONObject jsonObj = new JSONObject(content);
+		JSONArray entities = jsonObj.getJSONArray("Entries");
+		for (int i = 0; i < entities.length(); ++i) {
+		    JSONObject entity = entities.getJSONObject(i);
+		    
+		    JSONObject data = entity.getJSONObject("data");
+		    aliceId = data.getString("id");
+
+		    aliceEtag = entity.getString("etag");
+
+		}
+        
+		deleteJson = deleteJson.replaceAll("IDPLACEHOLDER", aliceId);
+		deleteJson = deleteJson.replaceAll("ETAGPLACEHOLDER", aliceEtag);
+		
+        request.setURI("/v1/Batch");
+        request.setHeader("Content-Length", Integer.toString(deleteJson.length()));
+        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.setContent(deleteJson);
+        response.parse(tester.getResponses(request.generate()));
+
+        deleteTester(response.getContent());
+        Assert.assertEquals(200, response.getStatus());
+
     }
 
     
@@ -132,6 +207,39 @@ public class ScimUserServletBatchTest {
 		    JSONObject meta = data.getJSONObject("meta");
 		    Assert.assertEquals(meta.getString("location"), entity.getString("location"));
 		    Assert.assertEquals(meta.getString("version"), entity.getString("etag"));
+		}
+    }
+
+    private void putTester(String content, String batchId, String userName) throws Exception {
+		JSONObject jsonObj = new JSONObject(content);
+		JSONArray entities = jsonObj.getJSONArray("Entries");
+		for (int i = 0; i < entities.length(); ++i) {
+		    JSONObject entity = entities.getJSONObject(i);
+
+		    Assert.assertEquals("PUT", entity.getString("method"));
+		    JSONObject status = entity.getJSONObject("status");
+		    Assert.assertEquals("200", status.getString("code"));
+		    Assert.assertEquals("Updated", status.getString("reason"));
+		    
+		    JSONObject data = entity.getJSONObject("data");
+		    Assert.assertEquals(userName, data.getString("userName"));
+		    JSONObject meta = data.getJSONObject("meta");
+		    Assert.assertEquals(meta.getString("location"), entity.getString("location"));
+		    Assert.assertEquals(meta.getString("version"), entity.getString("etag"));
+		}
+    }
+    
+
+    private void deleteTester(String content) throws Exception {
+		JSONObject jsonObj = new JSONObject(content);
+		JSONArray entities = jsonObj.getJSONArray("Entries");
+		for (int i = 0; i < entities.length(); ++i) {
+		    JSONObject entity = entities.getJSONObject(i);
+
+		    Assert.assertEquals("DELETE", entity.getString("method"));
+		    JSONObject status = entity.getJSONObject("status");
+		    Assert.assertEquals("200", status.getString("code"));
+		    Assert.assertEquals("Deleted", status.getString("reason"));
 		}
     }
 
