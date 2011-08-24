@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.scimproxy.exception.PreconditionException;
+import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;
@@ -32,8 +34,6 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
         
         if (query != null && !"".equals(query)) {
         	
-            log.error(query);
-
         	try {
 				JSONObject jsonObj = new JSONObject(query);
 				JSONArray entities = jsonObj.getJSONArray("Entries");
@@ -46,19 +46,22 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 				    }
 				    String location = "";
 				    if(!entity.isNull("location")) {
-				    	batchId = entity.getString("location");
+				    	location = entity.getString("location");
 				    }
 				    String etag = "";
 				    if(!entity.isNull("etag")) {
-				    	batchId = entity.getString("etag");
+				    	etag = entity.getString("etag");
 				    }
 				    String type = "";
 				    if(!entity.isNull("type")) {
 				    	type = entity.getString("type");
 				    }
 
-				    JSONObject data = entity.getJSONObject("data");
-		            
+				    JSONObject data = null;
+				    if(!entity.isNull("data")) {
+				    	data = entity.getJSONObject("data");
+				    }
+				    
 		            if("post".equalsIgnoreCase(method)) {
 	                	response += "{" +
 		        	      "\"method\":\"POST\"," +
@@ -100,10 +103,10 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		        	      "\"method\":\"PUT\"," +
 		        	      "\"status\":{";
 
+	                	String id = getIdFromUri(location);
 		                try {
-		                	
 		                	if("user".equalsIgnoreCase(type)) {
-		                		info.simplecloud.core.User scimUser = internalPut(getIdFromUri(location), etag, data.toString(), req);
+		                		info.simplecloud.core.User scimUser = internalPut(id, etag, data.toString(), req);
 		                		// TODO: move this into storage? 
 		                		scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 
@@ -121,6 +124,16 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		                	else {
 		                		// todo: implement groups
 		                	}
+		                } catch (PreconditionException e) {
+		                	response += "\"code\":\"412\"," + 
+		                				"\"reason\":\"SC_PRECONDITION_FAILED\"," + 
+		                				"\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"" +
+		                				"}";
+		                } catch (UserNotFoundException e) {
+		                	response += "\"code\":\"404\"," + 
+	            						"\"reason\":\"NOT FOUND\"," + 
+	            						"\"error\":\"Specified resource; e.g., User, does not exist.\"" +
+	            						"}";
 		                } catch (Exception e) {
 		                	response += "\"code\":\"400\"," + 
 		                				"\"reason\":\"BAD REQUEST\"," + 
@@ -129,6 +142,46 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		                }
 		                response += "}";
 		            }
+		            
+		            if("delete".equalsIgnoreCase(method)) {
+	                	response += "{" +
+		        	      "\"method\":\"DELETE\"," +
+		        	      "\"status\":{";
+
+	                	String id = getIdFromUri(location);
+		                try {
+		                	if("user".equalsIgnoreCase(type)) {
+		                		internalDelete(id, etag, req);
+
+		                		response += "\"code\":\"200\"," +
+			        	        		"\"reason\":\"Deleted\"" + 
+		                				"},";
+			        	        
+		                	}
+		                	else {
+		                		// todo: implement groups
+		                	}
+		                	
+		                } catch (PreconditionException e) {
+		                	response += "\"code\":\"412\"," + 
+		                				"\"reason\":\"SC_PRECONDITION_FAILED\"," + 
+		                				"\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"" +
+		                				"}";
+		                } catch (UserNotFoundException e) {
+		                	response += "\"code\":\"404\"," + 
+	            						"\"reason\":\"NOT FOUND\"," + 
+	            						"\"error\":\"Specified resource; e.g., User, does not exist.\"" +
+	            						"}";
+		                } catch (Exception e) {
+		                	response += "\"code\":\"400\"," + 
+		                				"\"reason\":\"BAD REQUEST\"," + 
+		                				"\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"" +
+		                				"}";
+		                }
+                		response += "\"location\":\"" + location + "\"";
+
+		                response += "}";
+		            }		            
 				}
 				
 				response += "]" +

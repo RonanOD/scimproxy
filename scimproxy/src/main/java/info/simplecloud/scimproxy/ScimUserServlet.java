@@ -170,7 +170,26 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
      *             Servlet I/O exception.
      */
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    	delete(req, resp);
+        String userId = getIdFromUri(req.getRequestURI());
+        log.trace("Trying to deleting user " + userId + ".");
+
+        if (userId != null) {
+            try {
+					internalDelete(userId, req.getHeader("ETag"), req);
+                    HttpGenerator.ok(resp);
+                    log.info("Deleating user " + userId + ".");
+
+            } catch (UserNotFoundException e) {
+                HttpGenerator.notFound(resp);
+                log.trace("User " + userId + " is not found.");
+            }
+            catch (PreconditionException e) {
+            	HttpGenerator.preconditionFailed(resp, userId);
+            }
+        } else {
+            log.trace("Trying to delete a user that can't be found in storage with user id " + userId + ".");
+            HttpGenerator.badRequest(resp, "Missing or malformed user id.");
+        }
     }
 
     /**
