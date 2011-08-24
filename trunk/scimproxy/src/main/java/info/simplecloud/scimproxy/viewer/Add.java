@@ -44,7 +44,7 @@ public class Add extends HttpServlet {
 			String user = req.getParameter("user");
 	        resp.getWriter().print("<html>");
 	        resp.getWriter().print("<a href=\"List\">List</a>&nbsp;");
-	        resp.getWriter().print("<a href=\"Add\">Add user</a>");
+	        resp.getWriter().print("<a href=\"Add\">Add user</a>&nbsp;");
 	        resp.getWriter().print("<a href=\"Batch\">Batch</a>");
 	        resp.getWriter().print("<br/>");
 	
