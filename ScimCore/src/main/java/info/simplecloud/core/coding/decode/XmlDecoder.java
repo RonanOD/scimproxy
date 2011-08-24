@@ -1,6 +1,7 @@
 package info.simplecloud.core.coding.decode;
 
 import info.simplecloud.core.Resource;
+import info.simplecloud.core.User;
 import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.coding.ReflectionHelper;
 import info.simplecloud.core.exceptions.FactoryNotFoundException;
@@ -11,7 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import x0.scimSchemasCore1.ResourceDocument;
+import org.apache.xmlbeans.XmlException;
+
+import x0.scimSchemasCore1.Response;
 import x0.scimSchemasCore1.Response.Resources;
 
 public class XmlDecoder implements IResourceDecoder {
@@ -27,7 +30,7 @@ public class XmlDecoder implements IResourceDecoder {
             Method parse = factory.getMethod("parse", String.class);
             Object xmlResource = parse.invoke(null, user);
             
-            data = (Resource) new ComplexHandler().decodeXml(xmlResource, data, null);
+            this.internalDecode(xmlResource, data);
 
             // TODO read extensions
         } catch (SecurityException e) {
@@ -47,7 +50,26 @@ public class XmlDecoder implements IResourceDecoder {
 
     @Override
     public void decode(String resourcesList, List<Resource> resources) throws InvalidUser {
-        // TODO Auto-generated method stub
+        try {
+            Response resp  = Response.Factory.parse(resourcesList);
+            Resources xmlResources = resp.getResources();
+            
+            x0.scimSchemasCore1.Resource[] xmlResourceArray = xmlResources.getResourceArray();
+            
+            for(x0.scimSchemasCore1.Resource res: xmlResourceArray){
+                // TODO this is wrong
+                User data = new User("tmp");
+                Resource resource = internalDecode(res, data);
+                resources.add(resource);
+            }
+            
+        } catch (XmlException e) {
+            throw new RuntimeException("Internal error, decoding xml", e);
+        }
+    }
+    
+    private Resource internalDecode(Object resources, Resource data) throws InvalidUser {
+        return (Resource) new ComplexHandler().decodeXml(resources, data, null);
     }
 
 }

@@ -6,14 +6,14 @@ import info.simplecloud.core.coding.ReflectionHelper;
 import info.simplecloud.core.exceptions.FactoryNotFoundException;
 import info.simplecloud.core.handlers.ComplexHandler;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
 import x0.scimSchemasCore1.ResourceDocument;
+import x0.scimSchemasCore1.Response;
 import x0.scimSchemasCore1.Response.Resources;
+import x0.scimSchemasCore1.ResponseDocument;
 
 public class XmlEncoder implements IUserEncoder {
 
@@ -23,34 +23,32 @@ public class XmlEncoder implements IUserEncoder {
     }
 
     @Override
-    public String encode(List<Resource> resources) {
-        Resources xmlResources =  Resources.Factory.newInstance();
-        x0.scimSchemasCore1.Resource[] resourceArray = new x0.scimSchemasCore1.Resource[resources.size()];
-        for (int i=0; i<resources.size(); i++) {
-            resourceArray[i] = this.internalEncode(resources.get(i), null);
-        }
-        xmlResources.setResourceArray(resourceArray);
-        
-        return ResourceDocument.Factory.newInstance().set(xmlResources).xmlText();
-    }
-
-    @Override
     public String encode(Resource resource, List<String> attributesList) {
-        try {
-            x0.scimSchemasCore1.Resource xmlResource = this.internalEncode(resource, attributesList);
-
-            StringWriter writer = new StringWriter();
-            xmlResource.save(writer);
-            return writer.toString();
-        } catch (IOException e) {
-            throw new RuntimeException("Internal error, encoding xml", e);
-        } 
+        x0.scimSchemasCore1.Resource xmlResource = this.internalEncode(resource, attributesList);
+        ResourceDocument doc = ResourceDocument.Factory.newInstance();
+        doc.set(xmlResource);
+        
+        return doc.xmlText();
     }
 
     @Override
-    public String encode(List<Resource> scimUsers, List<String> includeAttributes) {
-        // TODO Auto-generated method stub
-        return null;
+    public String encode(List<Resource> resources) {
+        return this.encode(resources, null);
+    }
+
+    @Override
+    public String encode(List<Resource> resources, List<String> includeAttributes) {
+        Response resp = Response.Factory.newInstance();
+        Resources xmlResources = resp.addNewResources();
+        resp.setTotalResults(resources.size());
+        x0.scimSchemasCore1.Resource[] xmlResourceArray = new x0.scimSchemasCore1.Resource[resources.size()];
+
+        for (int i = 0; i < resources.size(); i++) {
+            xmlResourceArray[i] = this.internalEncode(resources.get(i), includeAttributes);
+        }
+        xmlResources.setResourceArray(xmlResourceArray);
+
+        return ResponseDocument.Factory.newInstance().set(resp).xmlText();
     }
 
     private Object createXmlObject(Resource resource) {
@@ -74,7 +72,7 @@ public class XmlEncoder implements IUserEncoder {
             throw new RuntimeException("Internal error, encoding xml", e);
         }
     }
-    
+
     private x0.scimSchemasCore1.Resource internalEncode(Resource resource, List<String> attributesList) {
         try {
             Object xmlObject = createXmlObject(resource);
@@ -83,7 +81,7 @@ public class XmlEncoder implements IUserEncoder {
                     xmlObject);
 
             // TODO encode extensions
-            
+
             return xmlResource;
         } catch (SecurityException e) {
             throw new RuntimeException("Internal error, encoding xml", e);
