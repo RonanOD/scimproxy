@@ -41,4 +41,14 @@ public class ListHandlerTest {
             Assert.assertTrue(list.contains(item));
         }
     }
+
+    @Test
+    public void decodeXml() throws JSONException {
+        // TODO implment test
+    }
+
+    @Test
+    public void encodeXml() throws JSONException {
+        // TODO implement test
+    }
 }

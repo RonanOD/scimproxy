@@ -142,6 +142,17 @@ public class ComplexHandlerTest {
     }
 
     @Test
+    public void encodeXml() {
+        // TODO implement test
+    }
+
+    @Test
+    public void decodeXml() {
+        // TODO implement test
+    }
+
+    @Test
     public void merge() {
+        // TODO implement test
     }
 }

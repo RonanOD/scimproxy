@@ -9,12 +9,14 @@ public class StringHandlerTest {
 
     @Test
     public void decode() {
-        Assert.assertEquals("indata", sh.decode("indata", null, null));
+        Assert.assertEquals("indata1", sh.decode("indata1", null, null));
+        Assert.assertEquals("indata2", sh.decodeXml("indata2", null, null));
     }
 
     @Test
     public void encode() {
-        Assert.assertEquals("indata", sh.encode("indata", null, null));
+        Assert.assertEquals("indata3", sh.encode("indata3", null, null));
+        Assert.assertEquals("indata4", sh.encodeXml("indata4", null, null, null));
     }
 
     @Test

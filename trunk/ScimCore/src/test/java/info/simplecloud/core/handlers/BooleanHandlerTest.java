@@ -12,12 +12,16 @@ public class BooleanHandlerTest {
     public void decode() throws InvalidUser {
         Assert.assertEquals(true, bh.decode(true, null, null));
         Assert.assertEquals(false, bh.decode(false, null, null));
+        Assert.assertEquals(true, bh.decodeXml(true, null, null));
+        Assert.assertEquals(false, bh.decodeXml(false, null, null));
     }
 
     @Test
     public void encode() {
         Assert.assertEquals(true, bh.encode(true, null, null));
         Assert.assertEquals(false, bh.encode(false, null, null));
+        Assert.assertEquals(true, bh.encodeXml(true, null, null, null));
+        Assert.assertEquals(false, bh.encodeXml(false, null, null, null));
     }
 
     @Test
