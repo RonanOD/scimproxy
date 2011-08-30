@@ -1,6 +1,7 @@
 package info.simplecloud.core;
 
 import info.simplecloud.core.annotations.Complex;
+import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
@@ -8,6 +9,7 @@ import info.simplecloud.core.exceptions.UnknownEncoding;
 import java.util.ArrayList;
 import java.util.List;
 
+@Extension(schema="urn:scim:schemas:core:1.0")
 @Complex(xmlType = x0.scimSchemasCore1.Group.class)
 public class Group extends Resource {
     private static List<Class<?>> extensionTypes = new ArrayList<Class<?>>();

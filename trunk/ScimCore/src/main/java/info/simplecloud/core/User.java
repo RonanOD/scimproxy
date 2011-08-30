@@ -2,6 +2,7 @@ package info.simplecloud.core;
 
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Complex;
+import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
@@ -15,6 +16,8 @@ import info.simplecloud.core.types.PluralType;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Extension(schema="urn:scim:schemas:core:1.0")
 @Complex(xmlType = x0.scimSchemasCore1.User.class)
 public class User extends Resource {
 
@@ -53,7 +56,7 @@ public class User extends Resource {
     private List<PluralType<String>>  phoneNumbers;
     private List<PluralType<String>>  emails;
     private List<PluralType<String>>  ims;
-    private List<PluralType<String>>  photos;
+    private List<PluralType<String>>  photoUrls;
     private List<PluralType<String>>  memberOf;
     private List<PluralType<Address>> addresses;
 
@@ -176,9 +179,9 @@ public class User extends Resource {
         return this.ims;
     }
 
-    @Attribute(name = "photos", handler = PluralHandler.class, internalName = "photo", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getPhotos() {
-        return this.photos;
+    @Attribute(name = "photoUrls", handler = PluralHandler.class, internalName = "photoUrl", internalHandler = StringHandler.class)
+    public List<PluralType<String>> getPhotoUrls() {
+        return this.photoUrls;
     }
 
     @Attribute(name = "memberOf", handler = PluralHandler.class, internalName = "memberOf", internalHandler = StringHandler.class)
@@ -247,8 +250,8 @@ public class User extends Resource {
         this.ims = ims;
     }
 
-    public void setPhotos(List<PluralType<String>> photos) {
-        this.photos = photos;
+    public void setPhotoUrls(List<PluralType<String>> photoUrls) {
+        this.photoUrls = photoUrls;
     }
 
     public void setMemberOf(List<PluralType<String>> memberOf) {
