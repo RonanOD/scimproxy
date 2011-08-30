@@ -26,7 +26,7 @@ public class XmlEncoder implements IUserEncoder {
     public String encode(Resource resource, List<String> attributesList) {
         x0.scimSchemasCore1.Resource xmlResource = this.internalEncode(resource, attributesList);
         ResourceDocument doc = ResourceDocument.Factory.newInstance();
-        doc.set(xmlResource);
+        doc.setResource(xmlResource);
         
         return doc.xmlText();
     }
@@ -48,7 +48,10 @@ public class XmlEncoder implements IUserEncoder {
         }
         xmlResources.setResourceArray(xmlResourceArray);
 
-        return ResponseDocument.Factory.newInstance().set(resp).xmlText();
+        
+        ResponseDocument doc = ResponseDocument.Factory.newInstance();
+        doc.setResponse(resp);
+        return resp.xmlText();
     }
 
     private Object createXmlObject(Resource resource) {

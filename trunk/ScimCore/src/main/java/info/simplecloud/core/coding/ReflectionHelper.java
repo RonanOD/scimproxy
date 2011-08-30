@@ -11,7 +11,7 @@ public class ReflectionHelper {
                 return method;
             }
         }
-        throw new NoSuchMethodException("could not find: " + name + " on " + clazz.getName());
+        throw new NoSuchMethodException("Could not find: " + name + " on " + clazz.getName());
     }
 
     public static Class<?> getFactory(Class<?> obj) throws FactoryNotFoundException {
@@ -20,6 +20,6 @@ public class ReflectionHelper {
                 return clazz;
             }
         }
-        throw new FactoryNotFoundException("faild to find factory for '" + obj.getClass().getName() + "'");
+        throw new FactoryNotFoundException("Faild to find factory for '" + obj.getClass().getName() + "'");
     }
 }

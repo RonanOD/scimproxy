@@ -26,7 +26,7 @@ public class XmlDecoder implements IResourceDecoder {
                 throw new RuntimeException("Missing annotation complex on, '" + data.getClass().getName() + "'");
             }
             Complex complex = data.getClass().getAnnotation(Complex.class);
-            Class<?> factory = ReflectionHelper.getFactory(complex.getClass());
+            Class<?> factory = ReflectionHelper.getFactory(complex.xmlType());
             Method parse = factory.getMethod("parse", String.class);
             Object xmlResource = parse.invoke(null, user);
             
