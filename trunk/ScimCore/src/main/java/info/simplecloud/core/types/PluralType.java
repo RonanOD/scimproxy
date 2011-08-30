@@ -60,4 +60,8 @@ public class PluralType<T> implements Comparable<PluralType<?>> {
     public void setPrimary(boolean primary) {
         this.primary = primary;
     }
+
+    public void setDelete(boolean delete) {
+        this.delete = delete;
+    }
 }
