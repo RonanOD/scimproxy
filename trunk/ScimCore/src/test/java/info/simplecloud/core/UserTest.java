@@ -26,7 +26,7 @@ public class UserTest {
         user.setAttribute("preferredLanguage", "swedish");
         user.setAttribute("locale", "sv");
         user.setAttribute("password", "kan123!");
-        
+
         List<String> schemas = new ArrayList<String>();
         schemas.add("urn:scim:schemas:core:1.0");
         user.setAttribute("schemas", schemas);
@@ -57,7 +57,8 @@ public class UserTest {
         emails.add(new PluralType<String>("karl.andersson@work.com", "work", true, false));
         user.setAttribute("emails", emails);
 
-        user.getUser("json");
+        user.getUser(Resource.ENCODING_JSON);
+        user.getUser(Resource.ENCODING_XML);
     }
 
     @Test
@@ -87,7 +88,8 @@ public class UserTest {
         includeAttributes.add("userName");
         includeAttributes.add("title");
 
-        user.getUser("json", includeAttributes);
+        user.getUser(Resource.ENCODING_JSON, includeAttributes);
+        user.getUser(Resource.ENCODING_XML, includeAttributes);
     }
 
     @Test
@@ -116,9 +118,16 @@ public class UserTest {
         List<String> includeAttributes = new ArrayList<String>();
         includeAttributes.add("userName");
         includeAttributes.add("title");
-        user.getUser("json");
-        User user2 = new User(user.getUser("json"), "json");
-        user2.getUser("json");
+        String stringUser = user.getUser(Resource.ENCODING_JSON); 
+        //System.out.println(stringUser);
+        User user2 = new User(stringUser, Resource.ENCODING_JSON);
+        stringUser = user2.getUser(Resource.ENCODING_XML);
+        //System.out.println(stringUser);        
+        User user3 = new User(stringUser, Resource.ENCODING_XML);
+        stringUser = user3.getUser(Resource.ENCODING_XML);
+        //System.out.println(stringUser);
+        //System.out.println(user3.getUser(Resource.ENCODING_JSON));
+        
     }
 
     @Test

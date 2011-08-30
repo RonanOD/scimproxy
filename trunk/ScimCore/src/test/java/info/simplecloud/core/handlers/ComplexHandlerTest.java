@@ -5,12 +5,16 @@ import java.util.List;
 
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.exceptions.InvalidUser;
+import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.types.ComplexType;
 import junit.framework.Assert;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+
+import x0.scimSchemasCore1.Name;
+import x0.scimSchemasCore1.User;
 
 public class ComplexHandlerTest {
     public class ComplexTestType extends ComplexType {
@@ -142,13 +146,37 @@ public class ComplexHandlerTest {
     }
 
     @Test
-    public void encodeXml() {
-        // TODO implement test
+    public void encodeXml() throws InvalidUser, UnknownAttribute {
+        info.simplecloud.core.User user = new info.simplecloud.core.User("");
+        user.setId("ABC123");
+        user.setUserName("kalle");
+        user.setAttribute("name.givenName", "Karl");
+        user.setAttribute("name.familyName", "Svensson");
+
+        User xmlUser = (User) ch.encodeXml(user, null, null, User.Factory.newInstance());
+
+        Assert.assertEquals("ABC123", xmlUser.getId());
+        Assert.assertEquals("kalle", xmlUser.getUserName());
+        Assert.assertEquals("Karl", xmlUser.getName().getGivenName());
+        Assert.assertEquals("Svensson", xmlUser.getName().getFamilyName());
+
     }
 
     @Test
-    public void decodeXml() {
-        // TODO implement test
+    public void decodeXml() throws InvalidUser, UnknownAttribute {
+        User user = User.Factory.newInstance();
+        user.setId("ABC123");
+        user.setUserName("kalle");
+        Name name = user.addNewName();
+        name.setGivenName("Karl");
+        name.setFamilyName("Svensson");
+
+        info.simplecloud.core.User scimUser = (info.simplecloud.core.User) ch.decodeXml(user, new info.simplecloud.core.User(""), null);
+
+        Assert.assertEquals("ABC123", scimUser.getAttribute("id"));
+        Assert.assertEquals("kalle", scimUser.getAttribute("userName"));
+        Assert.assertEquals("Karl", scimUser.getAttribute("name.givenName"));
+        Assert.assertEquals("Svensson", scimUser.getAttribute("name.familyName"));
     }
 
     @Test
