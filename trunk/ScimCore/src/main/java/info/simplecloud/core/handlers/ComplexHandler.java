@@ -60,13 +60,18 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
         try {
             for (String name : complexObject.getNames()) {
+                if ("schemas".equals(name)) {
+                    continue;
+                }
                 String methodName = "get";
                 methodName += name.substring(0, 1).toUpperCase();
                 methodName += name.substring(1);
-                System.out.println(methodName);
 
-                Method getter = xmlObject.getClass().getMethod(methodName, new Class<?>[] {});
-                Object value = getter.invoke(complexObject, new Object[] {});
+                Method getter = xmlObject.getClass().getMethod(methodName);
+                Object value = getter.invoke(xmlObject);
+                if(value == null) {
+                    continue;
+                }
                 MetaData metaData = complexObject.getMetaData(name);
                 IDecodeHandler decoder = metaData.getDecoder();
                 Object decodedValue = decoder.decodeXml(value, metaData.newInstance(), metaData.getInternalMetaData());
@@ -124,7 +129,8 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
         try {
             for (String name : complex.getNames()) {
-                if (includeAttributes != null && !includeAttributes.isEmpty() && !includeAttributes.contains(name)) {
+                if ("schemas".equals(name) || includeAttributes != null && !includeAttributes.isEmpty()
+                        && !includeAttributes.contains(name)) {
                     // We have a list of attributes and this one is not in it.
                     continue;
                 }
