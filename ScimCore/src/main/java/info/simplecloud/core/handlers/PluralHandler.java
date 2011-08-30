@@ -1,6 +1,7 @@
 package info.simplecloud.core.handlers;
 
 import info.simplecloud.core.MetaData;
+import info.simplecloud.core.coding.ReflectionHelper;
 import info.simplecloud.core.coding.decode.IDecodeHandler;
 import info.simplecloud.core.coding.encode.IEncodeHandler;
 import info.simplecloud.core.exceptions.InvalidUser;
@@ -15,6 +16,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import x0.scimSchemasCore1.PluralAttribute;
 
 public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
@@ -66,15 +69,16 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
         try {
             Method getter = value.getClass().getMethod(getterName, new Class<?>[] {});
-            Object[] array = (Object[]) getter.invoke(getterName, new Object[] {});
+            Object[] array = (Object[]) getter.invoke(value, new Object[] {});
             for (Object obj : array) {
                 Object internalValue = null;
                 try {
                     // Look and see if this is a simple or complex plural
-                    Method getValueMethod = value.getClass().getMethod("getValue", new Class[] {});
-                    internalValue = getValueMethod.invoke(value, new Object[] {});
+                    Method getValueMethod = obj.getClass().getMethod("getValue", new Class[] {});
+                    internalValue = getValueMethod.invoke(obj, new Object[] {});
                 } catch (NoSuchMethodException e) {
                     // This is okay, we have a plural complex
+                    
                     IDecodeHandler decoder = internalMetaData.getDecoder();
                     internalValue = decoder.decodeXml(obj, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
                 }
@@ -82,7 +86,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 String type = (String) this.readXml(obj, "getType");
                 Boolean primary = (Boolean) this.readXml(obj, "getPrimary");
                 primary = (primary == null ? false : primary);
-                Boolean delete = (Boolean) this.readXml(obj, "getDelete");
+                Boolean delete = null; //(Boolean) this.readXml(obj, "getDelete"); // TODO fix for xml
                 delete = (delete == null ? false : delete);
 
                 result.add(new PluralType(internalValue, type, primary, delete));
@@ -146,7 +150,8 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
                 this.writeXml(internalXmlObject, singular.getType(), "setType");
                 this.writeXml(internalXmlObject, singular.isPrimary(), "setPrimary");
-                this.writeXml(internalXmlObject, singular.isDelete(), "setDelete");
+                // TODO fix setting of delete
+                //this.writeXml(internalXmlObject, singular.isDelete(), "setDelete");
             }
             return xmlObject;
         } catch (IllegalArgumentException e) {
@@ -166,18 +171,16 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     public Object merge(Object from, Object to) {
         List<PluralType> toList = (List<PluralType>) to;
         List<PluralType> fromList = (List<PluralType>) from;
-
+        
         for (PluralType singular : fromList) {
             if (singular.isDelete()) {
                 toList.remove(singular);
             } else if (singular.isPrimary()) {
                 toList.remove(singular);
                 clearPrimary(toList);
-                // TODO merge?
                 toList.add(singular);
             } else if (toList.contains(singular)) {
                 toList.remove(singular);
-                // TODO merge?
                 toList.add(singular);
             } else {
                 toList.add(singular);
@@ -208,7 +211,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     private void writeXml(Object internalXmlObject, Object obj, String methodName) throws SecurityException, NoSuchMethodException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        Method getType = internalXmlObject.getClass().getMethod(methodName, obj.getClass());
+        Method getType = ReflectionHelper.getMethod(methodName, internalXmlObject.getClass());
         getType.invoke(internalXmlObject, obj);
     }
 
