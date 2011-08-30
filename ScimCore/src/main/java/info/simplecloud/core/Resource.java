@@ -1,6 +1,7 @@
 package info.simplecloud.core;
 
 import info.simplecloud.core.annotations.Attribute;
+import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.coding.ReflectionHelper;
 import info.simplecloud.core.coding.decode.IResourceDecoder;
 import info.simplecloud.core.coding.decode.JsonDecoder;
@@ -45,7 +46,6 @@ public abstract class Resource extends ComplexType {
 
     private List<Object>                         extensions          = new ArrayList<Object>();
     private String                               id;
-    private List<String>                         schemas;
     private Meta                                 meta;
 
     protected Resource(String resource, String encoding, List<Class<?>> extensionTypes) throws UnknownEncoding, InvalidUser {
@@ -170,7 +170,23 @@ public abstract class Resource extends ComplexType {
 
     @Attribute(name = "schemas", handler = ListHandler.class)
     public List<String> getSchemas() {
-        return this.schemas;
+        List<String> schemas = new ArrayList<String>();
+        if(!this.getClass().isAnnotationPresent(Extension.class)){
+            throw new RuntimeException("Extension class '"+this.getClass().getName()+"' is missing annotation");
+        }
+        Extension metaData = this.getClass().getAnnotation(Extension.class);
+        schemas.add(metaData.schema());
+        
+        
+        for(Object extension : this.extensions){
+            if(!extension.getClass().isAnnotationPresent(Extension.class)){
+                throw new RuntimeException("Extension class '"+extension.getClass().getName()+"' is missing annotation");
+            }
+            metaData = extension.getClass().getAnnotation(Extension.class);
+            schemas.add(metaData.schema());
+        }
+        
+        return schemas;
     }
 
     @Attribute(name = "meta", handler = ComplexHandler.class, type = Meta.class)
@@ -183,7 +199,7 @@ public abstract class Resource extends ComplexType {
     }
 
     public void setSchemas(List<String> schemas) {
-        this.schemas = schemas;
+        // Ignore and it will go away (we do not set schemas only read)
     }
 
     public void setMeta(Meta meta) {
