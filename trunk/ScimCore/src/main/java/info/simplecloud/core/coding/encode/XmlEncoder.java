@@ -10,7 +10,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import x0.scimSchemasCore1.ResourceDocument;
+import org.apache.xmlbeans.XmlObject;
+
 import x0.scimSchemasCore1.Response;
 import x0.scimSchemasCore1.Response.Resources;
 import x0.scimSchemasCore1.ResponseDocument;
@@ -24,11 +25,32 @@ public class XmlEncoder implements IUserEncoder {
 
     @Override
     public String encode(Resource resource, List<String> attributesList) {
-        x0.scimSchemasCore1.Resource xmlResource = this.internalEncode(resource, attributesList);
-        ResourceDocument doc = ResourceDocument.Factory.newInstance();
-        doc.setResource(xmlResource);
-        
-        return doc.xmlText();
+        try {
+            x0.scimSchemasCore1.Resource xmlResource = this.internalEncode(resource, attributesList);
+
+            Complex complex = resource.getClass().getAnnotation(Complex.class);
+            Class<?> factory = ReflectionHelper.getFactory(complex.xmlDoc());
+            XmlObject doc = (XmlObject) factory.getMethod("newInstance").invoke(null);
+
+            String name = complex.xmlType().getName();
+            String setterName = "set";
+            setterName += name.substring(name.lastIndexOf('.') + 1);
+            doc.getClass().getMethod(setterName, complex.xmlType()).invoke(doc, xmlResource);
+
+            return doc.xmlText();
+        } catch (FactoryNotFoundException e) {
+            throw new RuntimeException("Internal error, xml encode failed", e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Internal error, xml encode failed", e);
+        } catch (SecurityException e) {
+            throw new RuntimeException("Internal error, xml encode failed", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Internal error, xml encode failed", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Internal error, xml encode failed", e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Internal error, xml encode failed", e);
+        }
     }
 
     @Override
@@ -48,7 +70,6 @@ public class XmlEncoder implements IUserEncoder {
         }
         xmlResources.setResourceArray(xmlResourceArray);
 
-        
         ResponseDocument doc = ResponseDocument.Factory.newInstance();
         doc.setResponse(resp);
         return resp.xmlText();

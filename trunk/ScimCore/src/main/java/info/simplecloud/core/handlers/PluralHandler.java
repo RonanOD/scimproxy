@@ -17,8 +17,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import x0.scimSchemasCore1.PluralAttribute;
-
 public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
@@ -70,15 +68,17 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
         try {
             Method getter = value.getClass().getMethod(getterName, new Class<?>[] {});
             Object[] array = (Object[]) getter.invoke(value, new Object[] {});
+            int nrPrimary = 0;
+
             for (Object obj : array) {
                 Object internalValue = null;
                 try {
                     // Look and see if this is a simple or complex plural
-                    Method getValueMethod = obj.getClass().getMethod("getValue", new Class[] {});
-                    internalValue = getValueMethod.invoke(obj, new Object[] {});
+                    Method getValueMethod = obj.getClass().getMethod("getValue");
+                    internalValue = getValueMethod.invoke(obj);
                 } catch (NoSuchMethodException e) {
                     // This is okay, we have a plural complex
-                    
+
                     IDecodeHandler decoder = internalMetaData.getDecoder();
                     internalValue = decoder.decodeXml(obj, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
                 }
@@ -86,10 +86,16 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 String type = (String) this.readXml(obj, "getType");
                 Boolean primary = (Boolean) this.readXml(obj, "getPrimary");
                 primary = (primary == null ? false : primary);
-                Boolean delete = null; //(Boolean) this.readXml(obj, "getDelete"); // TODO fix for xml
+                Boolean delete = null; // (Boolean) this.readXml(obj,
+                                       // "getDelete"); // TODO fix for xml
                 delete = (delete == null ? false : delete);
 
+                nrPrimary += (primary ? 1 : 0);
                 result.add(new PluralType(internalValue, type, primary, delete));
+            }
+
+            if (nrPrimary > 1) {
+                throw new InvalidUser("Only one primary value is allowed");
             }
         } catch (SecurityException e) {
             throw new RuntimeException("Internal error, decoding plural", e);
@@ -147,11 +153,17 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, internalMetaData.getName());
 
                 Object encodedValue = encoder.encodeXml(value, includeAttributes, internalMetaData, internalXmlObject);
-
+                try {
+                    Method setValueMethod = internalXmlObject.getClass().getMethod("setValue", String.class);
+                    setValueMethod.invoke(internalXmlObject, encodedValue);
+                } catch (NoSuchMethodException e) {
+                    // This is okay, value has been assigned internally
+                }
                 this.writeXml(internalXmlObject, singular.getType(), "setType");
                 this.writeXml(internalXmlObject, singular.isPrimary(), "setPrimary");
                 // TODO fix setting of delete
-                //this.writeXml(internalXmlObject, singular.isDelete(), "setDelete");
+                // this.writeXml(internalXmlObject, singular.isDelete(),
+                // "setDelete");
             }
             return xmlObject;
         } catch (IllegalArgumentException e) {
@@ -171,7 +183,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     public Object merge(Object from, Object to) {
         List<PluralType> toList = (List<PluralType>) to;
         List<PluralType> fromList = (List<PluralType>) from;
-        
+
         for (PluralType singular : fromList) {
             if (singular.isDelete()) {
                 toList.remove(singular);
