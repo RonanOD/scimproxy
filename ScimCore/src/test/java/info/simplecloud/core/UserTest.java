@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import x0.scimSchemasCore1.UserDocument;
+
 public class UserTest {
     @Test
     public void create() throws Exception {
@@ -119,14 +121,15 @@ public class UserTest {
         includeAttributes.add("userName");
         includeAttributes.add("title");
         String stringUser = user.getUser(Resource.ENCODING_JSON); 
-        //System.out.println(stringUser);
+        System.out.println(stringUser);
         User user2 = new User(stringUser, Resource.ENCODING_JSON);
         stringUser = user2.getUser(Resource.ENCODING_XML);
-        //System.out.println(stringUser);        
+        System.out.println(stringUser); 
+        
         User user3 = new User(stringUser, Resource.ENCODING_XML);
         stringUser = user3.getUser(Resource.ENCODING_XML);
-        //System.out.println(stringUser);
-        //System.out.println(user3.getUser(Resource.ENCODING_JSON));
+        System.out.println(stringUser);
+        System.out.println(user3.getUser(Resource.ENCODING_JSON));
         
     }
 

@@ -181,6 +181,43 @@ public class ComplexHandlerTest {
 
     @Test
     public void merge() {
-        // TODO implement test
+        ComplexTestType from = new ComplexTestType();
+        ComplexTestType to = new ComplexTestType();
+        
+        to.setSimpleAttribute("hello");
+        to.setSimpleAttribute2("kalle");
+        
+        from.setSimpleAttribute2("world");
+        
+        
+        ch.merge(from, to);
+        
+        Assert.assertEquals("hello", to.getSimpleAttribute());
+        Assert.assertEquals("world", to.getSimpleAttribute2());
+        
+        from = new ComplexTestType();
+        ComplexTestType internal = new ComplexTestType();
+        internal.setSimpleAttribute("a1");
+        internal.setSimpleAttribute2("a2");
+        from.setComplexAttribute(internal);
+        
+        ch.merge(from, to);
+
+        Assert.assertEquals("hello", to.getSimpleAttribute());
+        Assert.assertEquals("world", to.getSimpleAttribute2());
+        Assert.assertEquals("a1", to.getComplexAttribute().getSimpleAttribute());
+        Assert.assertEquals("a2", to.getComplexAttribute().getSimpleAttribute2());
+        
+        from = new ComplexTestType();
+        internal = new ComplexTestType();
+        internal.setSimpleAttribute("a3");
+        from.setComplexAttribute(internal);;
+        
+        ch.merge(from, to);
+
+        Assert.assertEquals("hello", to.getSimpleAttribute());
+        Assert.assertEquals("world", to.getSimpleAttribute2());
+        Assert.assertEquals("a3", to.getComplexAttribute().getSimpleAttribute());
+        Assert.assertEquals("a2", to.getComplexAttribute().getSimpleAttribute2());
     }
 }
