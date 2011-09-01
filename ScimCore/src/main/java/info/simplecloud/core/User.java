@@ -16,9 +16,11 @@ import info.simplecloud.core.types.PluralType;
 import java.util.ArrayList;
 import java.util.List;
 
+import x0.scimSchemasCore1.GroupDocument;
+import x0.scimSchemasCore1.UserDocument;
 
-@Extension(schema="urn:scim:schemas:core:1.0")
-@Complex(xmlType = x0.scimSchemasCore1.User.class)
+@Extension(schema = "urn:scim:schemas:core:1.0")
+@Complex(xmlType = x0.scimSchemasCore1.User.class, xmlDoc = UserDocument.class)
 public class User extends Resource {
 
     private static List<Class<?>> extensionTypes = new ArrayList<Class<?>>();

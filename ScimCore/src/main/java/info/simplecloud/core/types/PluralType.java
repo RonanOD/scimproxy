@@ -10,14 +10,14 @@ public class PluralType<T> implements Comparable<PluralType<?>> {
         if (value == null) {
             throw new IllegalArgumentException("Cannot create plural object without value");
         }
-        this.value = value; // TODO clone to make PluralType immutable
+        this.value = value;
         this.type = type;
         this.primary = primary;
         this.delete = delete;
     }
 
     public T getValue() {
-        return this.value; // TODO clone to make PluralType immutable;
+        return this.value;
     }
 
     public String getType() {

@@ -9,8 +9,10 @@ import info.simplecloud.core.exceptions.UnknownEncoding;
 import java.util.ArrayList;
 import java.util.List;
 
+import x0.scimSchemasCore1.GroupDocument;
+
 @Extension(schema="urn:scim:schemas:core:1.0")
-@Complex(xmlType = x0.scimSchemasCore1.Group.class)
+@Complex(xmlType = x0.scimSchemasCore1.Group.class, xmlDoc = GroupDocument.class)
 public class Group extends Resource {
     private static List<Class<?>> extensionTypes = new ArrayList<Class<?>>();
     static {
