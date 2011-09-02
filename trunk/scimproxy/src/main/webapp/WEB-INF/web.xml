@@ -62,7 +62,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Batch</servlet-name>
-		<url-pattern>/v1/Batch</url-pattern>
+		<url-pattern>/v1/Batch*</url-pattern>
 	</servlet-mapping>
 
 

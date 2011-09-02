@@ -24,6 +24,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
         String query = getContent(req);
         String batchLocation = HttpGenerator.getBatchLocation(Util.generateVersionString(), req);
         
@@ -39,6 +40,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 				JSONArray entities = jsonObj.getJSONArray("Entries");
 				for (int i = 0; i < entities.length(); ++i) {
 				    JSONObject entity = entities.getJSONObject(i);
+
 				    String method = entity.getString("method");
 				    String batchId = "";
 				    if(!entity.isNull("batchId")) {
@@ -52,11 +54,6 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 				    if(!entity.isNull("etag")) {
 				    	etag = entity.getString("etag");
 				    }
-				    String type = "";
-				    if(!entity.isNull("type")) {
-				    	type = entity.getString("type");
-				    }
-
 				    JSONObject data = null;
 				    if(!entity.isNull("data")) {
 				    	data = entity.getJSONObject("data");
@@ -69,24 +66,18 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		        	      "\"status\":{";
 
 		                try {
+		                	info.simplecloud.core.User scimUser = internalPost(data.toString(), req);
+		                	// TODO: move this into storage? 
+		                	scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 		                	
-		                	if("user".equalsIgnoreCase(type)) {
-			                	info.simplecloud.core.User scimUser = internalPost(data.toString(), req);
-			                	// TODO: move this into storage? 
-			                	scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
-			                	
-			                	response += "\"code\":\"201\"," +
-				        	        		"\"reason\":\"Created\"" + 
-			                				"},";
-				        	        
-			                	response += "\"etag\": \"" + scimUser.getMeta().getVersion() + "\"," +
-				        	      			"\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + "," +
-				        	      			"\"location\":\"" + scimUser.getMeta().getLocation() + "\"";
-		                	}
-		                	else {
-		                		// todo GROUPS
-		                	}
-			        	      
+		                	response += "\"code\":\"201\"," +
+			        	        		"\"reason\":\"Created\"" + 
+		                				"},";
+			        	        
+		                	response += "\"etag\": \"" + scimUser.getMeta().getVersion() + "\"," +
+			        	      			"\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + "," +
+			        	      			"\"location\":\"" + scimUser.getMeta().getLocation() + "\"";
+		                 
 		                	// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
 		                	// trigger.create(scimUser);				
 		                } catch (Exception e) {
@@ -105,25 +96,21 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 
 	                	String id = getIdFromUri(location);
 		                try {
-		                	if("user".equalsIgnoreCase(type)) {
-		                		info.simplecloud.core.User scimUser = internalPut(id, etag, data.toString(), req);
-		                		// TODO: move this into storage? 
-		                		scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
+	                		info.simplecloud.core.User scimUser = internalPut(id, etag, data.toString(), req);
+	                		// TODO: move this into storage? 
+	                		scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 
-		                		response += "\"code\":\"200\"," +
-			        	        		"\"reason\":\"Updated\"" + 
-		                				"},";
-			        	        
-		                		response += "\"etag\": \"" + scimUser.getMeta().getVersion() + "\"," +
-			        	      				"\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + "," +
-		                					"\"location\":\"" + scimUser.getMeta().getLocation() + "\"";
-			        	      
-		                		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-		                		// trigger.create(scimUser);
-		                	}
-		                	else {
-		                		// todo: implement groups
-		                	}
+	                		response += "\"code\":\"200\"," +
+		        	        		"\"reason\":\"Updated\"" + 
+	                				"},";
+		        	        
+	                		response += "\"etag\": \"" + scimUser.getMeta().getVersion() + "\"," +
+		        	      				"\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + "," +
+	                					"\"location\":\"" + scimUser.getMeta().getLocation() + "\"";
+		        	      
+	                		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+	                		// trigger.create(scimUser);
+
 		                } catch (PreconditionException e) {
 		                	response += "\"code\":\"412\"," + 
 		                				"\"reason\":\"SC_PRECONDITION_FAILED\"," + 
@@ -150,17 +137,11 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 
 	                	String id = getIdFromUri(location);
 		                try {
-		                	if("user".equalsIgnoreCase(type)) {
-		                		internalDelete(id, etag, req);
+	                		internalDelete(id, etag, req);
 
-		                		response += "\"code\":\"200\"," +
-			        	        		"\"reason\":\"Deleted\"" + 
-		                				"},";
-			        	        
-		                	}
-		                	else {
-		                		// todo: implement groups
-		                	}
+	                		response += "\"code\":\"200\"," +
+		        	        		"\"reason\":\"Deleted\"" + 
+	                				"},";
 		                	
 		                } catch (PreconditionException e) {
 		                	response += "\"code\":\"412\"," + 
@@ -183,7 +164,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		                response += "}";
 		            }		            
 				}
-				
+			
 				response += "]" +
 							"}";
 
@@ -197,7 +178,6 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
         } else {
             HttpGenerator.badRequest(resp);
         }
-
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -206,6 +186,5 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
     }
     
     
-
     
 }

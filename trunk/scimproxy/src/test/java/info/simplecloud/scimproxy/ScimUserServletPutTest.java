@@ -16,6 +16,7 @@ public class ScimUserServletPutTest {
     private static ServletTester  tester   = null;
 
     private static String id       = "";
+    private static String etag       = "";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -39,6 +40,7 @@ public class ScimUserServletPutTest {
 
         User tmp = new User(response.getContent(), "JSON");
         id = tmp.getId();
+        etag = tmp.getMeta().getVersion();
     }
 
     @Test
@@ -55,6 +57,8 @@ public class ScimUserServletPutTest {
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimUser.getUser("JSON"));
+        request.setHeader("ETag", etag);
+
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());

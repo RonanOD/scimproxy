@@ -9,7 +9,7 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.testing.HttpTester;
 import org.mortbay.jetty.testing.ServletTester;
 
-public class ScimUserServletBatchTest {
+public class ScimUserServletBatchUserTest {
 
     private static HttpTester    request  = new HttpTester();
     private static HttpTester    response = new HttpTester();
@@ -18,7 +18,7 @@ public class ScimUserServletBatchTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimBatchServlet.class, "/v1/Batch");
+        tester.addServlet(ScimBatchServlet.class, "/v1/Batch/User");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
     }
@@ -28,7 +28,6 @@ public class ScimUserServletBatchTest {
 	  "\"Entries\":[" + 
 	    "{" + 
 	      "\"method\":\"POST\"," + 
-	      "\"type\":\"User\"," + 
 	      "\"batchId\":\"qwerty\"," + 
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
@@ -48,12 +47,11 @@ public class ScimUserServletBatchTest {
 	  "\"Entries\":[" + 
 	    "{" + 
 	      "\"method\":\"PUT\"," + 
-	      "\"type\":\"User\"," + 
-	      "\"location\":\"http://localhost/v1/User/PLACEHOLDER\"," +
-	      "\"etag\":\"b431af54f0671a1\"," +
+	      "\"location\":\"http://localhost/v1/User/IDPLACEHOLDER\"," +
+	      "\"etag\":\"ETAGPLACEHOLDER\"," +
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," +
-	        "\"id\":\"PLACEHOLDER\"," + 
+	        "\"id\":\"IDPLACEHOLDER\"," + 
 	        "\"userName\":\"Bob\"," + 
 	        "\"name\":{" + 
 	          "\"formatted\":\"Bob Doe\"," + 
@@ -61,7 +59,7 @@ public class ScimUserServletBatchTest {
 	          "\"givenName\":\"Bob\"" + 
 	        "}," +
 	        "\"meta\":{" + 
-	            "\"location\":\"https://example.com/v1/User/PLACEHOLDER\"," + 
+	            "\"location\":\"https://example.com/v1/User/IDPLACEHOLDER\"," + 
 	            "\"version\":\"b431af54f0671a1\"," + 
 	            "\"created\":\"2010-05-01T21:32:44.882Z\"," +
 	            "\"lastModified\":\"2010-05-01T21:32:44.882Z\"" +
@@ -77,7 +75,6 @@ public class ScimUserServletBatchTest {
 	  "\"Entries\":[" + 
 	    "{" + 
 	      "\"method\":\"DELETE\"," + 
-	      "\"type\":\"User\"," + 
 	      "\"location\":\"http://localhost/v1/User/IDPLACEHOLDER\"," +
 	      "\"etag\":\"ETAGPLACEHOLDER\"" +
 	    "}" + 
@@ -92,7 +89,7 @@ public class ScimUserServletBatchTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Batch");
+        request.setURI("/v1/Batch/User");
         request.setHeader("Content-Length", Integer.toString(postJson.length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(postJson);
@@ -109,7 +106,7 @@ public class ScimUserServletBatchTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Batch");
+        request.setURI("/v1/Batch/User");
         request.setHeader("Content-Length", Integer.toString(putJson.length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(postJson);
@@ -121,6 +118,8 @@ public class ScimUserServletBatchTest {
         postTester(content, "qwerty", "alice");
 
         String aliceId = "";
+        String aliceEtag = "";
+
 		JSONObject jsonObj = new JSONObject(content);
 		JSONArray entities = jsonObj.getJSONArray("Entries");
 		for (int i = 0; i < entities.length(); ++i) {
@@ -128,11 +127,15 @@ public class ScimUserServletBatchTest {
 		    
 		    JSONObject data = entity.getJSONObject("data");
 		    aliceId = data.getString("id");
+		    aliceEtag = entity.getString("etag");
+
 		}
         
-		putJson = putJson.replaceAll("PLACEHOLDER", aliceId);
+		putJson = putJson.replaceAll("IDPLACEHOLDER", aliceId);
+		putJson = putJson.replaceAll("ETAGPLACEHOLDER", aliceEtag);
+
 		
-        request.setURI("/v1/Batch");
+        request.setURI("/v1/Batch/User");
         request.setHeader("Content-Length", Integer.toString(putJson.length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(putJson);
@@ -150,7 +153,7 @@ public class ScimUserServletBatchTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Batch");
+        request.setURI("/v1/Batch/User");
         request.setHeader("Content-Length", Integer.toString(putJson.length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(postJson);
@@ -178,7 +181,7 @@ public class ScimUserServletBatchTest {
 		deleteJson = deleteJson.replaceAll("IDPLACEHOLDER", aliceId);
 		deleteJson = deleteJson.replaceAll("ETAGPLACEHOLDER", aliceEtag);
 		
-        request.setURI("/v1/Batch");
+        request.setURI("/v1/Batch/User");
         request.setHeader("Content-Length", Integer.toString(deleteJson.length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(deleteJson);
