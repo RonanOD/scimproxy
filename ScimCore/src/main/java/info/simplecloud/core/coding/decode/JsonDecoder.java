@@ -104,18 +104,21 @@ public class JsonDecoder implements IResourceDecoder {
     public void decode(String userList, List<Resource> resources) throws InvalidUser {
 
         try {
-            JSONObject userListJson = new JSONObject(userList);
-            if (userListJson.has("entry")) {
-                JSONArray jsonUsers = userListJson.getJSONArray("entry");
-                for (int i = 0; i < jsonUsers.length(); i++) {
-                    JSONObject user = jsonUsers.getJSONObject(i);
-
-                    // TODO this is wrong
-                    User data = new User("tmp");
-                    decode(user.toString(), data);
-                    resources.add(data);
-                }
-            }
+        	if(userList != null && !"".equals(userList)) {
+	        		
+	            JSONObject userListJson = new JSONObject(userList);
+	            if (userListJson.has("entry")) {
+	                JSONArray jsonUsers = userListJson.getJSONArray("entry");
+	                for (int i = 0; i < jsonUsers.length(); i++) {
+	                    JSONObject user = jsonUsers.getJSONObject(i);
+	
+	                    // TODO this is wrong
+	                    User data = new User("tmp");
+	                    decode(user.toString(), data);
+	                    resources.add(data);
+	                }
+	            }
+        	}
 
         } catch (JSONException e) {
             throw new InvalidUser("Failed to parse user", e);
