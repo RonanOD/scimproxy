@@ -68,7 +68,7 @@ public class ScimUserUpdatesServlet extends RestServlet {
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
         	if(oldUser.getMeta() != null) {
-        		if(etag.equals(oldUser.getMeta().getVersion())) {
+        		if(!etag.equals(oldUser.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
