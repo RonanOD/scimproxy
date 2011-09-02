@@ -49,8 +49,12 @@ public class List extends HttpServlet {
 
 				// set auth if it's authenticated
 				client.getParams().setAuthenticationPreemptive(true);
-				Credentials defaultcreds = new UsernamePasswordCredentials("usr", "pw");
-				client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+				Credentials creds = auth.getCred();
+				if(creds == null)
+				{
+					creds = new UsernamePasswordCredentials("default", "pw");
+				}
+				client.getState().setCredentials(AuthScope.ANY, creds);
 				
 				// Create a method instance.
 				DeleteMethod method = new DeleteMethod("http://localhost:8080/v1/User/" + delete);
@@ -65,8 +69,12 @@ public class List extends HttpServlet {
 
 			// set auth if it's authenticated
 			client.getParams().setAuthenticationPreemptive(true);
-			Credentials defaultcreds = new UsernamePasswordCredentials("usr", "pw");
-			client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+			Credentials creds = auth.getCred();
+			if(creds == null)
+			{
+				creds = new UsernamePasswordCredentials("default", "pw");
+			}
+			client.getState().setCredentials(AuthScope.ANY, creds);
 			
 			
 			// Create a method instance.

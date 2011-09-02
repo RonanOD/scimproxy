@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy.config;
 
 import info.simplecloud.scimproxy.ScimUserServlet;
+import info.simplecloud.scimproxy.authentication.AuthenticationUsers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,8 +23,14 @@ public class Config {
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
 	<auth type="basic">
-		<username>usr</username>
-		<password>pw</password>
+		<user>
+			<username>usr</username>
+			<password>pw</password>
+		</user>
+		<user>
+			<username>usr3</username>
+			<password>pw</password>
+		</user>
 	</auth>
 	<storages>
 		<storage>
@@ -65,6 +72,7 @@ public class Config {
 	private static Config INSTANCE = null;
 
 	private Log log = LogFactory.getLog(ScimUserServlet.class);
+	private AuthenticationUsers authUsers = AuthenticationUsers.getInstance();
 
 	
 	private boolean basicAuth = false;
@@ -138,8 +146,20 @@ public class Config {
 
 		    if("basic".equals(config.getString("auth[@type]"))) {
 		    	setBasicAuth(true);
-			    setBasicAuthUsername(config.getString("auth.username"));
-			    setBasicAuthPassword(config.getString("auth.password"));
+		    	String[] userNames = config.getStringArray("auth.user.username");
+		    	String[] passwords = config.getStringArray("auth.user.password");
+		    	if(userNames.length != passwords.length)
+		    	{
+		    		
+		    	}
+		    	else
+		    	{
+		    		for(int i = 0; i < userNames.length; i++)
+		    		{
+		    			authUsers.addUser(userNames[i], passwords[i]);
+		    		}
+		    	}
+		    	
 		    }
 		    if("none".equals(config.getString("auth[@type]"))) {
 		    	setNoneAuth(true);
@@ -199,36 +219,11 @@ public class Config {
 	
 	
 	
-
-	public void setBasicAuthUsername(String basicAuthUsername) {
-		this.basicAuthUsername = basicAuthUsername;
+	
+	public void setBasicAuth(boolean b) {
+		this.basicAuth = true;
+		
 	}
-
-
-
-	public String getBasicAuthUsername() {
-		return basicAuthUsername;
-	}
-
-
-
-	public void setBasicAuthPassword(String basicAuthPassword) {
-		this.basicAuthPassword = basicAuthPassword;
-	}
-
-
-
-	public String getBasicAuthPassword() {
-		return basicAuthPassword;
-	}
-
-
-
-	public void setBasicAuth(boolean basicAuth) {
-		this.basicAuth = basicAuth;
-	}
-
-
 
 	public boolean isBasicAuth() {
 		return basicAuth;
