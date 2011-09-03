@@ -1,12 +1,11 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.exceptions.InvalidUser;
+import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
-import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 import info.simplecloud.scimproxy.user.User;
-import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -203,7 +202,37 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
      *             Servlet I/O exception.
      */
     public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    	patch(req, resp);
+        String userId = getIdFromUri(req.getRequestURI());
+        String query = getContent(req);
+        String etag = req.getHeader("ETag");
+        
+
+        if (!"".equals(query) && userId != null && etag != null && !"".equals(etag)) {
+
+        	try {
+				info.simplecloud.core.User scimUser = internalPatch(userId, etag, query, req);
+				
+                resp.setContentType(HttpGenerator.getContentType(req));
+                resp.setHeader("Location", scimUser.getMeta().getLocation());
+                resp.setHeader("ETag", scimUser.getMeta().getVersion());
+                HttpGenerator.ok(resp, scimUser.getUser(HttpGenerator.getEncoding(req)));
+
+                log.info("Patching user " + scimUser.getId());
+				
+			} catch (UnknownEncoding e) {
+                HttpGenerator.badRequest(resp, "Unknown encoding.");
+			} catch (InvalidUser e) {
+                HttpGenerator.badRequest(resp, "Invalid user.");
+			} catch (UserNotFoundException e) {
+                HttpGenerator.notFound(resp);
+			} catch (PreconditionException e) {
+                HttpGenerator.preconditionFailed(resp, userId);
+			} catch (UnknownAttribute e) {
+                HttpGenerator.badRequest(resp, "Malformed user.");
+			}
+	    } else {
+            HttpGenerator.badRequest(resp, "Missing user id or ETag");
+	    }
     }
     
     private List<String> getAttributeStringFromRequest(HttpServletRequest req) {
