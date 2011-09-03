@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -94,21 +92,51 @@ public class ScimUserUpdatesServlet extends RestServlet {
         return scimUser;
     }
 
-    /**
-     * PUT performs a full update.
-     * 
-     * @param req
-     *            Servlet request.
-     * @param resp
-     *            Servlet response.
-     * @throws IOException
-     *             Servlet I/O exception.
-     */
-    public void put(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    
+    protected info.simplecloud.core.User internalPatch(String userId, String etag, String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser, UserNotFoundException, PreconditionException, UnknownAttribute {
+
+        info.simplecloud.core.User scimUser = new info.simplecloud.core.User(query, HttpGenerator.getEncoding(req));
+
+        // verify that user have not been changed since latest get and this operation
+        info.simplecloud.core.User oldUser = User.getInstance().getUser(userId);
+        
+        // TODO: should return precondition exception if oldUser is not found or don't have a version.
+        if(oldUser != null) {
+        	if(oldUser.getMeta() != null) {
+        		if(!etag.equals(oldUser.getMeta().getVersion())) {
+        			throw new PreconditionException();
+        		}
+        	}
+        }
+
+        // patch user
+        scimUser.patch(query, HttpGenerator.getEncoding(req));
+        // generate new version number
+        User.getInstance().updateVersionNumber(scimUser);
+
+        
+        // set a new version number on the user that we are about to change
+        Meta meta = scimUser.getMeta();
+        if (meta == null) {
+            meta = new Meta();
+        }
+        meta.setVersion(Util.generateVersionString());
+        scimUser.setMeta(meta);
+        
+        // delete old user
+        User.getInstance().deletetUser(userId);
+
+        // add new user
+        User.getInstance().addUser(scimUser);
+        
+        // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+        // TODO:   trigger.put(query, userId, etag);				
+
+        return scimUser;
+	}
 
 
-    }
-
+    
     /**
      * Delete a scim user.
      * 

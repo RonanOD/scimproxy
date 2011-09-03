@@ -81,6 +81,32 @@ public class ScimUserServletBatchUserTest {
 	  "]" + 
 	"}";
 	
+
+	String patchJson = "{" + 
+	  "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
+	  "\"Entries\":[" + 
+	    "{" + 
+	      "\"method\":\"PATCH\"," + 
+	      "\"location\":\"http://localhost/v1/User/IDPLACEHOLDER\"," +
+	      "\"etag\":\"ETAGPLACEHOLDER\"," +
+	      "\"data\":{" + 
+	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," +
+	        "\"id\":\"IDPLACEHOLDER\"," + 
+	        "\"userName\":\"Bob\"," + 
+	        "\"name\":{" + 
+	          "\"formatted\":\"Bob Doe\"," + 
+	          "\"familyName\":\"Doe\"," + 
+	          "\"givenName\":\"Bob\"" + 
+	        "}," +
+	        "\"meta\":{" + 
+	            "\"location\":\"https://example.com/v1/User/IDPLACEHOLDER\"," + 
+	            "\"version\":\"b431af54f0671a1\"" + 
+	          "}" +
+	      "}" + 
+	    "}" + 
+	  "]" + 
+	"}";
+		
 	
     @Test
     public void postUser() throws Exception {
@@ -146,7 +172,55 @@ public class ScimUserServletBatchUserTest {
         putTester(response.getContent(), aliceId, "Bob");
     }
 
+    
     @Test
+    public void patchUser() throws Exception {
+    	
+        request.setMethod("POST");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Batch/User");
+        request.setHeader("Content-Length", Integer.toString(putJson.length()));
+        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.setContent(postJson);
+        response.parse(tester.getResponses(request.generate()));
+
+        Assert.assertEquals(200, response.getStatus());
+        String content = response.getContent();
+        
+        postTester(content, "qwerty", "alice");
+
+        String aliceId = "";
+        String aliceEtag = "";
+
+		JSONObject jsonObj = new JSONObject(content);
+		JSONArray entities = jsonObj.getJSONArray("Entries");
+		for (int i = 0; i < entities.length(); ++i) {
+		    JSONObject entity = entities.getJSONObject(i);
+		    
+		    JSONObject data = entity.getJSONObject("data");
+		    aliceId = data.getString("id");
+		    aliceEtag = entity.getString("etag");
+
+		}
+        
+		patchJson = patchJson.replaceAll("IDPLACEHOLDER", aliceId);
+		patchJson = patchJson.replaceAll("ETAGPLACEHOLDER", aliceEtag);
+
+        request.setMethod("POST");
+        request.setURI("/v1/Batch/User");
+        request.setHeader("Content-Length", Integer.toString(putJson.length()));
+        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.setContent(patchJson);
+        response.parse(tester.getResponses(request.generate()));
+
+        Assert.assertEquals(200, response.getStatus());
+
+        patchTester(response.getContent(), aliceId, "Bob");
+    }
+
+	@Test
     public void deleteUser() throws Exception {
     	
         request.setMethod("POST");
@@ -232,6 +306,26 @@ public class ScimUserServletBatchUserTest {
 		}
     }
     
+    
+    private void patchTester(String content, String aliceId, String userName) throws Exception {
+		JSONObject jsonObj = new JSONObject(content);
+		JSONArray entities = jsonObj.getJSONArray("Entries");
+		for (int i = 0; i < entities.length(); ++i) {
+		    JSONObject entity = entities.getJSONObject(i);
+
+		    Assert.assertEquals("PATCH", entity.getString("method"));
+		    JSONObject status = entity.getJSONObject("status");
+		    Assert.assertEquals("200", status.getString("code"));
+		    Assert.assertEquals("Patched", status.getString("reason"));
+		    
+		    JSONObject data = entity.getJSONObject("data");
+		    Assert.assertEquals(userName, data.getString("userName"));
+		    JSONObject meta = data.getJSONObject("meta");
+		    Assert.assertEquals(meta.getString("location"), entity.getString("location"));
+		    Assert.assertEquals(meta.getString("version"), entity.getString("etag"));
+		}
+	}
+
 
     private void deleteTester(String content) throws Exception {
 		JSONObject jsonObj = new JSONObject(content);

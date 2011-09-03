@@ -130,6 +130,46 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		                response += "}";
 		            }
 		            
+		            if("patch".equalsIgnoreCase(method)) {
+	                	response += "{" +
+		        	      "\"method\":\"PATCH\"," +
+		        	      "\"status\":{";
+
+	                	String id = getIdFromUri(location);
+		                try {
+	                		info.simplecloud.core.User scimUser = internalPatch(id, etag, data.toString(), req);
+	                		// TODO: move this into storage? 
+	                		scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
+
+	                		response += "\"code\":\"200\"," +
+		        	        		"\"reason\":\"Patched\"" + 
+	                				"},";
+		        	        
+	                		response += "\"etag\": \"" + scimUser.getMeta().getVersion() + "\"," +
+		        	      				"\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + "," +
+	                					"\"location\":\"" + scimUser.getMeta().getLocation() + "\"";
+		        	      
+	                		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+	                		// trigger.create(scimUser);
+
+		                } catch (PreconditionException e) {
+		                	response += "\"code\":\"412\"," + 
+		                				"\"reason\":\"SC_PRECONDITION_FAILED\"," + 
+		                				"\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"" +
+		                				"}";
+		                } catch (UserNotFoundException e) {
+		                	response += "\"code\":\"404\"," + 
+	            						"\"reason\":\"NOT FOUND\"," + 
+	            						"\"error\":\"Specified resource; e.g., User, does not exist.\"" +
+	            						"}";
+		                } catch (Exception e) {
+		                	response += "\"code\":\"400\"," + 
+		                				"\"reason\":\"BAD REQUEST\"," + 
+		                				"\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"" +
+		                				"}";
+		                }
+		                response += "}";
+		            }		            
 		            if("delete".equalsIgnoreCase(method)) {
 	                	response += "{" +
 		        	      "\"method\":\"DELETE\"," +
@@ -180,7 +220,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
         }
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.error("BATCH get");
     	doPost(req, resp);
     }
