@@ -17,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,22 +33,31 @@ public class ScimUserUpdatesServlet extends RestServlet {
     private Log               log              = LogFactory.getLog(ScimUserServlet.class);
 
     protected Trigger trigger = new Trigger();
-
-   
     
     protected info.simplecloud.core.User internalPost(String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser {
         info.simplecloud.core.User scimUser = new info.simplecloud.core.User(query, HttpGenerator.getEncoding(req));
-        Meta meta = scimUser.getMeta();
-        if (meta == null) {
-            meta = new Meta();
+        if (scimUser.getMeta() == null) {
+        	scimUser.setMeta(new Meta());
         }
-        if(meta.getVersion() == null || "".equals(meta.getVersion())) {
-            meta.setVersion(Util.generateVersionString());
+        if(scimUser.getMeta().getVersion() == null || "".equals(scimUser.getMeta().getVersion())) {
+        	scimUser.getMeta().setVersion(Util.generateVersionString());
         }
+        scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 
-        scimUser.setMeta(meta);
-
+        // add user to set ID
         User.getInstance().addUser(scimUser);
+
+        // set location to object
+        scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
+
+        // TODO: this is really not a nice way to get the Location into the meta data
+        try {
+			User.getInstance().deletetUser(scimUser.getId());
+		} catch (UserNotFoundException e) {
+			// do nothing
+		}
+        User.getInstance().addUser(scimUser);
+
         
         // TODO:   trigger.post(...);				
 
@@ -78,6 +86,8 @@ public class ScimUserUpdatesServlet extends RestServlet {
             meta = new Meta();
         }
         meta.setVersion(Util.generateVersionString());
+    	meta.setLocation(HttpGenerator.getLocation(scimUser, req));
+
         scimUser.setMeta(meta);
         
         // delete old user
@@ -121,6 +131,8 @@ public class ScimUserUpdatesServlet extends RestServlet {
             meta = new Meta();
         }
         meta.setVersion(Util.generateVersionString());
+    	meta.setLocation(HttpGenerator.getLocation(scimUser, req));
+
         scimUser.setMeta(meta);
         
         // delete old user
@@ -164,64 +176,6 @@ public class ScimUserUpdatesServlet extends RestServlet {
         }
     }
 
-    /**
-     * Change or remove attribute on a scim user.
-     * 
-     * @param req
-     *            Servlet request.
-     * @param resp
-     *            Servlet response.
-     * @throws IOException
-     *             Servlet I/O exception.
-     */
-    public void patch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-        String query = getContent(req);
-        String userId = getIdFromUri(req.getRequestURI());
-        String etag = req.getHeader("ETag");
-
-        if (!"".equals(query) && userId != null && etag != null && !"".equals(etag)) {
-
-            // TODO: SPEC: REST: Should the post message be base64 encoded in
-            // spec or not?
-
-            // TODO: SPEC: Add support for the /User/{id}/password function.
-
-            try {
-                info.simplecloud.core.User scimUser = User.getInstance().getUser(userId);
-                // check that version haven't changed since loaded from server
-                String version = scimUser.getMeta().getVersion();
-                if (etag.equals(version)) {
-                    // patch user
-                    scimUser.patch(query, HttpGenerator.getEncoding(req));
-                    // generate new version number
-                    User.getInstance().updateVersionNumber(scimUser);
-
-                    // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-                    trigger.patch(query, userId, etag);				
-
-                    resp.getWriter().print(scimUser.getUser(HttpGenerator.getEncoding(req)));
-                    resp.setStatus(HttpServletResponse.SC_OK); // 200
-                    log.info("Patching user " + scimUser.getId());
-                } else {
-                    HttpGenerator.preconditionFailed(resp, scimUser.getId());
-                }
-
-            } catch (UserNotFoundException e) {
-                HttpGenerator.notFound(resp);
-            } catch (UnknownEncoding e) {
-                HttpGenerator.badRequest(resp, "Unknown encoding.");
-            } catch (InvalidUser e) {
-                HttpGenerator.badRequest(resp, "Malformed user.");
-            } catch (UnknownAttribute e) {
-                HttpGenerator.badRequest(resp, "Malformed user.");
-            }
-
-        } else {
-            HttpGenerator.badRequest(resp, "Missing user id or ETag");
-        }
-
-    }
 
     /**
      * Gets the content from a request by looping though all lines.

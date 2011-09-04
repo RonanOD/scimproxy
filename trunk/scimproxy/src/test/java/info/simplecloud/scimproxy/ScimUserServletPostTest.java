@@ -24,7 +24,7 @@ public class ScimUserServletPostTest {
     }
 
     @Test
-    public void createUser() throws Exception {
+    public void createUserJson() throws Exception {
 
         User scimUser = new User("ABC123-post");
         scimUser.setUserName("Alice");
@@ -36,7 +36,28 @@ public class ScimUserServletPostTest {
         request.setURI("/v1/User");
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.setContent(scimUser.getUser("JSON"));
+        request.setContent(scimUser.getUser(User.ENCODING_JSON));
+        response.parse(tester.getResponses(request.generate()));
+
+        Assert.assertEquals(201, response.getStatus());
+    }
+
+
+    @Test
+    public void createUserXml() throws Exception {
+
+        User scimUser = new User("ABC123-post");
+        scimUser.setUserName("Alice");
+
+        request.setMethod("POST");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/User");
+        request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
+        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.setHeader("Accept", "application/xml");
+        request.setContent(scimUser.getUser(User.ENCODING_XML));
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(201, response.getStatus());
