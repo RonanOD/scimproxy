@@ -26,12 +26,12 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String query = getContent(req);
-        String batchLocation = HttpGenerator.getBatchLocation(Util.generateVersionString(), req);
+        String batchLocation = HttpGenerator.getBatchUserLocation(Util.generateVersionString(), req);
         
-        String response = "{" + 
-        					"\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
-        					"\"location\":\"" + batchLocation + "\"," + 
-        					"\"Entries\":[";
+        String response = "{\n" + 
+        					"\t\"schemas\": [\"urn:scim:schemas:core:1.0\"],\n" + 
+        					"\t\"location\":\"" + batchLocation + "\",\n" + 
+        					"\t\"Entries\":[\n";
         
         if (query != null && !"".equals(query)) {
         	
@@ -60,39 +60,39 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 				    }
 				    
 		            if("post".equalsIgnoreCase(method)) {
-	                	response += "{" +
-		        	      "\"method\":\"POST\"," +
-		        	      "\"batchId\":\"" + batchId + "\"," +
-		        	      "\"status\":{";
+	                	response += "\t\t{\n" +
+		        	      "\t\t\t\"method\":\"POST\",\n" +
+		        	      "\t\t\t\"batchId\":\"" + batchId + "\",\n" +
+		        	      "\t\t\t\"status\":{\n";
 
 		                try {
 		                	info.simplecloud.core.User scimUser = internalPost(data.toString(), req);
 		                	// TODO: move this into storage? 
 		                	scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 		                	
-		                	response += "\"code\":\"201\"," +
-			        	        		"\"reason\":\"Created\"" + 
-		                				"},";
+		                	response += "\t\t\t\t\"code\":\"201\",\n" +
+			        	        		"\t\t\t\t\"reason\":\"Created\"\n" + 
+		                				"\t\t\t},\n";
 			        	        
-		                	response += "\"etag\": \"" + scimUser.getMeta().getVersion() + "\"," +
-			        	      			"\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + "," +
-			        	      			"\"location\":\"" + scimUser.getMeta().getLocation() + "\"";
+		                	response += "\t\t\t\"etag\": \"" + scimUser.getMeta().getVersion() + "\",\n" +
+			        	      			"\t\t\t\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + ",\n" +
+			        	      			"\t\t\t\"location\":\"" + scimUser.getMeta().getLocation() + "\"\n";
 		                 
 		                	// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
 		                	// trigger.create(scimUser);				
 		                } catch (Exception e) {
-		                	response += "\"code\":\"400\"," + 
-		                				"\"reason\":\"BAD REQUEST\"," + 
-		                				"\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"" +
-		                				"}";
+		                	response += "\t\t\t\t\"code\":\"400\",\n" + 
+		                				"\t\t\t\t\"reason\":\"BAD REQUEST\",\n" + 
+		                				"\t\t\t\t\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
+		                				"\t\t\t}\n";
 		                }
-		                response += "}";
+		                response += "\t\t}\n";
 		            }
 		            
 		            if("put".equalsIgnoreCase(method)) {
-	                	response += "{" +
-		        	      "\"method\":\"PUT\"," +
-		        	      "\"status\":{";
+	                	response += "\t\t{\n" +
+		        	      "\t\t\t\"method\":\"PUT\",\n" +
+		        	      "\t\t\t\"status\":{\n";
 
 	                	String id = getIdFromUri(location);
 		                try {
@@ -100,40 +100,40 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 	                		// TODO: move this into storage? 
 	                		scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 
-	                		response += "\"code\":\"200\"," +
-		        	        		"\"reason\":\"Updated\"" + 
-	                				"},";
+	                		response += "\t\t\t\t\"code\":\"200\",\n" +
+		        	        		"\t\t\t\t\"reason\":\"Updated\"\n" + 
+	                				"\t\t\t},\n";
 		        	        
-	                		response += "\"etag\": \"" + scimUser.getMeta().getVersion() + "\"," +
-		        	      				"\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + "," +
-	                					"\"location\":\"" + scimUser.getMeta().getLocation() + "\"";
+	                		response += "\t\t\t\"etag\": \"" + scimUser.getMeta().getVersion() + "\",\n" +
+		        	      				"\t\t\t\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + ",\n" +
+	                					"\t\t\t\"location\":\"" + scimUser.getMeta().getLocation() + "\"\n";
 		        	      
 	                		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
 	                		// trigger.create(scimUser);
 
 		                } catch (PreconditionException e) {
-		                	response += "\"code\":\"412\"," + 
-		                				"\"reason\":\"SC_PRECONDITION_FAILED\"," + 
-		                				"\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"" +
-		                				"}";
+		                	response += "\t\t\t\t\"code\":\"412\",\n" + 
+		                				"\t\t\t\t\"reason\":\"SC_PRECONDITION_FAILED\",\n" + 
+		                				"\t\t\t\t\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"\n" +
+		                				"\t\t\t}\n";
 		                } catch (UserNotFoundException e) {
-		                	response += "\"code\":\"404\"," + 
-	            						"\"reason\":\"NOT FOUND\"," + 
-	            						"\"error\":\"Specified resource; e.g., User, does not exist.\"" +
-	            						"}";
+		                	response += "\t\t\t\t\"code\":\"404\",\n" + 
+	            						"\t\t\t\t\"reason\":\"NOT FOUND\",\n" + 
+	            						"\t\t\t\t\"error\":\"Specified resource; e.g., User, does not exist.\"\n" +
+	            						"\t\t\t}\n";
 		                } catch (Exception e) {
-		                	response += "\"code\":\"400\"," + 
-		                				"\"reason\":\"BAD REQUEST\"," + 
-		                				"\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"" +
-		                				"}";
+		                	response += "\t\t\t\t\"code\":\"400\",\n" + 
+		                				"\t\t\t\t\"reason\":\"BAD REQUEST\",\n" + 
+		                				"\t\t\t\t\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
+		                				"\t\t\t}\n";
 		                }
-		                response += "}";
+		                response += "\t\t}\n";
 		            }
 		            
 		            if("patch".equalsIgnoreCase(method)) {
-	                	response += "{" +
-		        	      "\"method\":\"PATCH\"," +
-		        	      "\"status\":{";
+	                	response += "\t\t{\n" +
+		        	      "\t\t\t\"method\":\"PATCH\",\n" +
+		        	      "\t\t\t\"status\":{\n";
 
 	                	String id = getIdFromUri(location);
 		                try {
@@ -141,72 +141,72 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 	                		// TODO: move this into storage? 
 	                		scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 
-	                		response += "\"code\":\"200\"," +
-		        	        		"\"reason\":\"Patched\"" + 
-	                				"},";
+	                		response += "\t\t\t\t\"code\":\"200\",\n" +
+		        	        		"\t\t\t\t\"reason\":\"Patched\"\n" + 
+	                				"\t\t\t},\n";
 		        	        
-	                		response += "\"etag\": \"" + scimUser.getMeta().getVersion() + "\"," +
-		        	      				"\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + "," +
-	                					"\"location\":\"" + scimUser.getMeta().getLocation() + "\"";
+	                		response += "\t\t\t\"etag\": \"" + scimUser.getMeta().getVersion() + "\",\n" +
+		        	      				"\t\t\t\"data\":" + scimUser.getUser(HttpGenerator.getEncoding(req)) + ",\n" +
+	                					"\t\t\t\"location\":\"" + scimUser.getMeta().getLocation() + "\"\n";
 		        	      
 	                		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
 	                		// trigger.create(scimUser);
 
 		                } catch (PreconditionException e) {
-		                	response += "\"code\":\"412\"," + 
-		                				"\"reason\":\"SC_PRECONDITION_FAILED\"," + 
-		                				"\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"" +
-		                				"}";
+		                	response += "\t\t\t\t\"code\":\"412\",\n" + 
+		                				"\t\t\t\t\"reason\":\"SC_PRECONDITION_FAILED\",\n" + 
+		                				"\t\t\t\t\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"\n" +
+		                				"\t\t\t}\n";
 		                } catch (UserNotFoundException e) {
-		                	response += "\"code\":\"404\"," + 
-	            						"\"reason\":\"NOT FOUND\"," + 
-	            						"\"error\":\"Specified resource; e.g., User, does not exist.\"" +
-	            						"}";
+		                	response += "\t\t\t\t\"code\":\"404\",\n" + 
+	            						"\t\t\t\t\"reason\":\"NOT FOUND\",\n" + 
+	            						"\t\t\t\t\"error\":\"Specified resource; e.g., User, does not exist.\"\n" +
+	            						"\t\t\t}\n";
 		                } catch (Exception e) {
-		                	response += "\"code\":\"400\"," + 
-		                				"\"reason\":\"BAD REQUEST\"," + 
-		                				"\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"" +
-		                				"}";
+		                	response += "\t\t\t\t\"code\":\"400\",\n" + 
+		                				"\t\t\t\t\"reason\":\"BAD REQUEST\",\n" + 
+		                				"\t\t\t\t\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
+		                				"\t\t\t}\n";
 		                }
-		                response += "}";
+		                response += "\t\t}\n";
 		            }		            
 		            if("delete".equalsIgnoreCase(method)) {
-	                	response += "{" +
-		        	      "\"method\":\"DELETE\"," +
-		        	      "\"status\":{";
+	                	response += "\t\t{\n" +
+		        	      "\t\t\t\"method\":\"DELETE\",\n" +
+		        	      "\t\t\t\"status\":{\n";
 
 	                	String id = getIdFromUri(location);
 		                try {
 	                		internalDelete(id, etag, req);
 
-	                		response += "\"code\":\"200\"," +
-		        	        		"\"reason\":\"Deleted\"" + 
-	                				"},";
+	                		response += "\t\t\t\t\"code\":\"200\",\n" +
+		        	        		"\t\t\t\"reason\":\"Deleted\"\n" + 
+	                				"\t\t\t},\n";
 		                	
 		                } catch (PreconditionException e) {
-		                	response += "\"code\":\"412\"," + 
-		                				"\"reason\":\"SC_PRECONDITION_FAILED\"," + 
-		                				"\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"" +
-		                				"}";
+		                	response += "\t\t\t\t\"code\":\"412\",\n" + 
+		                				"\t\t\t\t\"reason\":\"SC_PRECONDITION_FAILED\",\n" + 
+		                				"\t\t\t\t\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"\n" +
+		                				"\t\t\t}\n";
 		                } catch (UserNotFoundException e) {
-		                	response += "\"code\":\"404\"," + 
-	            						"\"reason\":\"NOT FOUND\"," + 
-	            						"\"error\":\"Specified resource; e.g., User, does not exist.\"" +
-	            						"}";
+		                	response += "\t\t\t\t\"code\":\"404\",\n" + 
+	            						"\t\t\t\t\"reason\":\"NOT FOUND\",\n" + 
+	            						"\t\t\t\t\"error\":\"Specified resource; e.g., User, does not exist.\"\n" +
+	            						"\t\t\t}\n";
 		                } catch (Exception e) {
-		                	response += "\"code\":\"400\"," + 
-		                				"\"reason\":\"BAD REQUEST\"," + 
-		                				"\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"" +
-		                				"}";
+		                	response += "\t\t\t\t\"code\":\"400\",\n" + 
+		                				"\t\t\t\t\"reason\":\"BAD REQUEST\",\n" + 
+		                				"\t\t\t\t\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
+		                				"\t\t\t}\n";
 		                }
-                		response += "\"location\":\"" + location + "\"";
+                		response += "\"location\":\"" + location + "\"\n";
 
-		                response += "}";
+		                response += "\t\t}\n";
 		            }		            
 				}
 			
-				response += "]" +
-							"}";
+				response += "\t\t]\n" +
+							"}\n";
 
 				resp.setHeader("Location", batchLocation);
                 HttpGenerator.ok(resp, response);

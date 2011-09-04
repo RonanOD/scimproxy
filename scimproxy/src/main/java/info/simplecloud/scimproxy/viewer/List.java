@@ -94,35 +94,82 @@ public class List extends HttpServlet {
 				log.debug("Response: \n" + new String(responseBody));
 				java.util.List<User> users = User.getUsers(new String(responseBody), User.ENCODING_JSON);
 
-		        resp.getWriter().print("<html>");
-		        resp.getWriter().print("<a href=\"List\">List</a>&nbsp;");
-		        resp.getWriter().print("<a href=\"Add\">Add user</a>&nbsp;");
-		        resp.getWriter().print("<a href=\"Batch\">Batch</a>");
-		        resp.getWriter().print("<br/>");
+		        resp.getWriter().println("<html>");
+		        resp.getWriter().println("<head>");
+		        resp.getWriter().println("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css\">");
+		        resp.getWriter().println("<script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js\"></script>");
+		        resp.getWriter().println("<script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/jquery-ui.min.js\"></script>");
+		      // resp.getWriter().println("<script type=\"text/javascript\" src=\"/js/jquery-1.6.2.min.js\"></script>");
+		        resp.getWriter().println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/style.css\" />");
+		        resp.getWriter().println("</head>");
+		        resp.getWriter().println("<body>");
 
-                resp.getWriter().print("<table border=\"1\">");
+		        resp.getWriter().println("<div id=\"container\">");
+		        resp.getWriter().println("<div id=\"header\"><h1>Simple Cloud Identity Management</h1></div>"); 
+
+		        resp.getWriter().println("<div id=\"navigation\">"); 
+		        resp.getWriter().println("<ul>"); 
+		        resp.getWriter().println("<li><a href=\"List\">List</a></li>"); 
+		        resp.getWriter().println("<li><a href=\"Add\">Add</a></li>"); 
+		        resp.getWriter().println("<li><a href=\"Batch\">Batch</a></li>"); 
+		        resp.getWriter().println("</ul>"); 
+		        resp.getWriter().println("</div"); 
+
+		        resp.getWriter().println("<div id=\"content\">"); 
+		        resp.getWriter().println("<div id=\"content\">"); 
+
+		        resp.getWriter().println("<h2>List users</h2>"); 
+
+		        resp.getWriter().println("<p>"); 
+		        
+                resp.getWriter().println("<table class=\"list\">");
+
+                resp.getWriter().println("<tr>");
+                resp.getWriter().println("<th>&nbsp;</th>");
+                resp.getWriter().println("<th>id</th>");
+                resp.getWriter().println("<th>user name</th>");
+                resp.getWriter().println("<th>json</th>");
+                resp.getWriter().println("</tr>");
 
 				for (User scimUser : users) {
-	                resp.getWriter().print("<tr>");
-	                resp.getWriter().print("<td>");
+	                resp.getWriter().println("<tr>");
+	                resp.getWriter().println("<td>");
 	                if(scimUser.getMeta() != null) {
-		                resp.getWriter().print("<a href=\"?delete=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">delete</a><br/>");
-		                resp.getWriter().print("<a href=\"Edit?id=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">edit</a>");
+		                resp.getWriter().println("<a href=\"?delete=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">delete</a><br/>");
+		                resp.getWriter().println("<a href=\"Edit?id=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">edit</a>");
 	                }
 	                else {
-	                	resp.getWriter().print("No meta");
+	                	resp.getWriter().println("No meta");
 	                }
-	                resp.getWriter().print("</td>");
-	                resp.getWriter().print("<td>");
-	                resp.getWriter().print(scimUser.toString() + "<br/>");
-	                resp.getWriter().print("</tr>");
-	                resp.getWriter().print("</td>");
+	                resp.getWriter().println("</td>");
+	                resp.getWriter().println("<td>");
+	                resp.getWriter().println(scimUser.getId());
+	                resp.getWriter().println("</td>");
+	                resp.getWriter().println("<td>");
+	                resp.getWriter().println(scimUser.getUserName());
+	                resp.getWriter().println("</td>");
+	                resp.getWriter().println("<td>");
+	                resp.getWriter().println("<pre>" + scimUser.getUser(User.ENCODING_JSON) + "</pre>");
+	                resp.getWriter().println("</td>");
+	                resp.getWriter().println("</tr>");
 				}
 				if(users.size() == 0) {
-	                resp.getWriter().print("<tr><td>No users in storage.</td></tr>");
+	                resp.getWriter().println("<tr><td colspan=\"4\">No users in storage.</td></tr>");
 				}
-                resp.getWriter().print("</table>");
-                resp.getWriter().print("</html>");
+                resp.getWriter().println("</table>");
+               
+		        resp.getWriter().println("</p>"); 
+		        resp.getWriter().println("</div>"); 
+
+
+                resp.getWriter().println("<div id=\"footer\">");
+                resp.getWriter().println("SCIM Viewer");
+                resp.getWriter().println("</div>");
+                
+                resp.getWriter().println("</div>");
+                
+		        resp.getWriter().println("</body>");
+                resp.getWriter().println("</html>");
 				
 			} catch (HttpException e) {
 				log.error("Fatal protocol violation: " + e.getMessage());

@@ -154,7 +154,7 @@ public class HttpGenerator {
 	 * @return XML if xml otherwise JSON.
 	 */
 	public static String getEncoding(HttpServletRequest req) {
-		String encoding = "json"; // default to JSON
+		String encoding = User.ENCODING_JSON; // default to JSON
 		
 		String uri = req.getRequestURI();
 		if(uri == null) {
@@ -168,11 +168,11 @@ public class HttpGenerator {
 		acceptHeader = acceptHeader.toLowerCase();
 		
 		if(acceptHeader.indexOf("application/json") != -1  || uri.endsWith(".json")) {
-			encoding = "json";
+			encoding = User.ENCODING_JSON;
 		}
 
 		if(acceptHeader.indexOf("application/xml") != -1 || uri.endsWith(".xml")) {
-			encoding = "xml";
+			encoding = User.ENCODING_XML;
 		}
 
 		return encoding;
@@ -203,8 +203,12 @@ public class HttpGenerator {
 		return getInternalLocation("/v1/User/" + user.getId(), req);
 	}
 
-	public static String getBatchLocation(String batch, HttpServletRequest req) {
-		return getInternalLocation("/v1/Batch/" + batch, req);
+	public static String getBatchUserLocation(String batch, HttpServletRequest req) {
+		return getInternalLocation("/v1/Batch/User/" + batch, req);
+	}
+
+	public static String getBatchGroupLocation(String batch, HttpServletRequest req) {
+		return getInternalLocation("/v1/Batch/Group/" + batch, req);
 	}
 
 	private static String getInternalLocation(String path, HttpServletRequest req) {
