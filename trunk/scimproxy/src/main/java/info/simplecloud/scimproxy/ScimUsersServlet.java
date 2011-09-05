@@ -1,9 +1,9 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.core.coding.encode.JsonEncoder;
 import info.simplecloud.core.coding.encode.XmlEncoder;
+import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 import info.simplecloud.scimproxy.trigger.Trigger;
 
@@ -35,6 +35,7 @@ public class ScimUsersServlet extends RestServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String attributesString = req.getParameter("attributes") == null ? "" : req.getParameter("attributes");
+        AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
         List<String> attributesList = new ArrayList<String>();
         if (attributesString != null && !"".equals(attributesString)) {
             for (String attribute : attributesString.split(",")) {
@@ -51,7 +52,7 @@ public class ScimUsersServlet extends RestServlet {
             return;
         }
 
-        DummyStorage storage = DummyStorage.getInstance();
+        DummyStorage storage = DummyStorage.getInstance(authUser.getSessionId());
         List users = null;
 
         String filterBy = req.getParameter("filterBy");

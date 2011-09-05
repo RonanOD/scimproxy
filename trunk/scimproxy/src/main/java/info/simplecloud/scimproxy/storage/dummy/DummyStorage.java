@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public class DummyStorage implements IStorage {
 
-    private static final DummyStorage INSTANCE = new DummyStorage();
+    private static final HashMap<String, DummyStorage> STORAGE_INSTANCES = new HashMap<String, DummyStorage>();
 
     // TODO: synchronize users object
     private ArrayList<User>           users    = new ArrayList<User>();
@@ -91,8 +92,12 @@ public class DummyStorage implements IStorage {
      * 
      * @return
      */
-    public static DummyStorage getInstance() {
-        return INSTANCE;
+    public static DummyStorage getInstance( String sessionId) {
+        if(STORAGE_INSTANCES.get(sessionId) == null)
+        {
+        	STORAGE_INSTANCES.put(sessionId, new DummyStorage());
+        }
+        return STORAGE_INSTANCES.get(sessionId);
     }
 
     @Override

@@ -16,7 +16,6 @@ import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -39,7 +38,6 @@ public class List extends HttpServlet {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
 		}
 		else {
-			
 			String delete = req.getParameter("delete");
 			String etag = req.getParameter("etag");
 			
@@ -49,11 +47,7 @@ public class List extends HttpServlet {
 
 				// set auth if it's authenticated
 				client.getParams().setAuthenticationPreemptive(true);
-				Credentials creds = auth.getCred();
-				if(creds == null)
-				{
-					creds = new UsernamePasswordCredentials("default", "pw");
-				}
+				Credentials creds = auth.getAuthUser().getCred();
 				client.getState().setCredentials(AuthScope.ANY, creds);
 				
 				// Create a method instance.
@@ -69,11 +63,7 @@ public class List extends HttpServlet {
 
 			// set auth if it's authenticated
 			client.getParams().setAuthenticationPreemptive(true);
-			Credentials creds = auth.getCred();
-			if(creds == null)
-			{
-				creds = new UsernamePasswordCredentials("default", "pw");
-			}
+			Credentials creds = auth.getAuthUser().getCred();
 			client.getState().setCredentials(AuthScope.ANY, creds);
 			
 			

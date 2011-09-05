@@ -11,9 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -75,7 +73,7 @@ public class Add extends HttpServlet {
 	
 				// set auth if it's authenticated
 				client.getParams().setAuthenticationPreemptive(true);
-				Credentials defaultcreds = new UsernamePasswordCredentials("usr", "pw");
+				Credentials defaultcreds = auth.getAuthUser().getCred();
 				client.getState().setCredentials(AuthScope.ANY, defaultcreds);
 				
 				// Create a method instance.

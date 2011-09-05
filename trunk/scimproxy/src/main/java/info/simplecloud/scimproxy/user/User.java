@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy.user;
 
+import java.util.HashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,17 +19,17 @@ import info.simplecloud.scimproxy.util.Util;
  * pooling against different storages.
  */
 public class User {
-
-	private static User INSTANCE = null;
+	
+	private static final HashMap<String, User> USER_INSTANCES = new HashMap<String, User>();
 
 	private static IStorage storage = null;
 	
     private Log log = LogFactory.getLog(ScimUserServlet.class);
 
-	private User() {
+	private User(String sessionId) {
 		// read storage type from config
 		if("dummy".equalsIgnoreCase(Config.getInstance().getStorageType())) {
-			storage = DummyStorage.getInstance();
+			storage = DummyStorage.getInstance(sessionId);
 			log.info("Dummy storage configured.");
 		}
 		else {
@@ -40,11 +42,11 @@ public class User {
 	 * 
 	 * @return
 	 */
-	public static User getInstance() {
-		if(INSTANCE == null) {
-			INSTANCE = new User();
+	public static User getInstance(String sessionId) {
+		if(USER_INSTANCES.get(sessionId) == null) {
+			USER_INSTANCES.put(sessionId, new User(sessionId));
 		}
-		return INSTANCE;
+		return USER_INSTANCES.get(sessionId);
 	}
 
 	
