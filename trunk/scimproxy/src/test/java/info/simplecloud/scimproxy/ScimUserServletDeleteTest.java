@@ -24,8 +24,8 @@ public class ScimUserServletDeleteTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        User scimUser = new User("ABC123-delete");
-        scimUser.setUserName("Alice");
+        User scimUser = new User("ABC123-deleteed");
+        scimUser.setUserName("AliceDelete");
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");

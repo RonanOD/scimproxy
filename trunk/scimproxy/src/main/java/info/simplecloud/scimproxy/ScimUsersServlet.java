@@ -28,7 +28,7 @@ public class ScimUsersServlet extends RestServlet {
 
 	private static final long serialVersionUID = 3404477020945307825L;
 
-	private Log               log              = LogFactory.getLog(ScimUserServlet.class);
+	private Log               log              = LogFactory.getLog(ScimUsersServlet.class);
 
     private Trigger trigger = new Trigger();
 

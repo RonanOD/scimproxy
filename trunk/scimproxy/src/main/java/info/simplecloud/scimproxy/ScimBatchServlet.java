@@ -1,7 +1,8 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.exception.PreconditionException;
-import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
+import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
 import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        String query = getContent(req);
+        String query = Util.getContent(req);
         String batchLocation = HttpGenerator.getBatchUserLocation(Util.generateVersionString(), req);
         
         String response = "{\n" + 
@@ -66,9 +67,9 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		        	      "\t\t\t\"status\":{\n";
 
 		                try {
-		                	info.simplecloud.core.User scimUser = internalPost(data.toString(), req);
+		                	User scimUser = internalPost(data.toString(), req);
 		                	// TODO: move this into storage? 
-		                	scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
+		                	scimUser.getMeta().setLocation(HttpGenerator.getUserLocation(scimUser, req));
 		                	
 		                	response += "\t\t\t\t\"code\":\"201\",\n" +
 			        	        		"\t\t\t\t\"reason\":\"Created\"\n" + 
@@ -94,11 +95,11 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		        	      "\t\t\t\"method\":\"PUT\",\n" +
 		        	      "\t\t\t\"status\":{\n";
 
-	                	String id = getIdFromUri(location);
+	                	String id = Util.getUserIdFromUri(location);
 		                try {
-	                		info.simplecloud.core.User scimUser = internalPut(id, etag, data.toString(), req);
+	                		User scimUser = internalPut(id, etag, data.toString(), req);
 	                		// TODO: move this into storage? 
-	                		scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
+	                		scimUser.getMeta().setLocation(HttpGenerator.getUserLocation(scimUser, req));
 
 	                		response += "\t\t\t\t\"code\":\"200\",\n" +
 		        	        		"\t\t\t\t\"reason\":\"Updated\"\n" + 
@@ -116,7 +117,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		                				"\t\t\t\t\"reason\":\"SC_PRECONDITION_FAILED\",\n" + 
 		                				"\t\t\t\t\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"\n" +
 		                				"\t\t\t}\n";
-		                } catch (UserNotFoundException e) {
+		                } catch (ResourceNotFoundException e) {
 		                	response += "\t\t\t\t\"code\":\"404\",\n" + 
 	            						"\t\t\t\t\"reason\":\"NOT FOUND\",\n" + 
 	            						"\t\t\t\t\"error\":\"Specified resource; e.g., User, does not exist.\"\n" +
@@ -135,11 +136,11 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		        	      "\t\t\t\"method\":\"PATCH\",\n" +
 		        	      "\t\t\t\"status\":{\n";
 
-	                	String id = getIdFromUri(location);
+	                	String id = Util.getUserIdFromUri(location);
 		                try {
-	                		info.simplecloud.core.User scimUser = internalPatch(id, etag, data.toString(), req);
+	                		User scimUser = internalPatch(id, etag, data.toString(), req);
 	                		// TODO: move this into storage? 
-	                		scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
+	                		scimUser.getMeta().setLocation(HttpGenerator.getUserLocation(scimUser, req));
 
 	                		response += "\t\t\t\t\"code\":\"200\",\n" +
 		        	        		"\t\t\t\t\"reason\":\"Patched\"\n" + 
@@ -157,7 +158,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		                				"\t\t\t\t\"reason\":\"SC_PRECONDITION_FAILED\",\n" + 
 		                				"\t\t\t\t\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"\n" +
 		                				"\t\t\t}\n";
-		                } catch (UserNotFoundException e) {
+		                } catch (ResourceNotFoundException e) {
 		                	response += "\t\t\t\t\"code\":\"404\",\n" + 
 	            						"\t\t\t\t\"reason\":\"NOT FOUND\",\n" + 
 	            						"\t\t\t\t\"error\":\"Specified resource; e.g., User, does not exist.\"\n" +
@@ -175,7 +176,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		        	      "\t\t\t\"method\":\"DELETE\",\n" +
 		        	      "\t\t\t\"status\":{\n";
 
-	                	String id = getIdFromUri(location);
+	                	String id = Util.getUserIdFromUri(location);
 		                try {
 	                		internalDelete(id, etag, req);
 
@@ -188,7 +189,7 @@ public class ScimBatchServlet extends ScimUserUpdatesServlet {
 		                				"\t\t\t\t\"reason\":\"SC_PRECONDITION_FAILED\",\n" + 
 		                				"\t\t\t\t\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"\n" +
 		                				"\t\t\t}\n";
-		                } catch (UserNotFoundException e) {
+		                } catch (ResourceNotFoundException e) {
 		                	response += "\t\t\t\t\"code\":\"404\",\n" + 
 	            						"\t\t\t\t\"reason\":\"NOT FOUND\",\n" + 
 	            						"\t\t\t\t\"error\":\"Specified resource; e.g., User, does not exist.\"\n" +

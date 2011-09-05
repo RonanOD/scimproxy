@@ -31,13 +31,13 @@ public class ScimUserServletGetTest {
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
         request.setURI("/v1/User");
-        request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
+        request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setHeader("Authorization", "Basic dXNyOnB3");
-        request.setContent(scimUser.getUser("JSON"));
+        request.setContent(scimUser.getUser(User.ENCODING_JSON));
         response.parse(tester.getResponses(request.generate()));
 
-        User tmp = new User(response.getContent(), "JSON");
+        User tmp = new User(response.getContent(), User.ENCODING_JSON);
         id = tmp.getId();
     }
 
@@ -52,7 +52,7 @@ public class ScimUserServletGetTest {
 
         Assert.assertEquals(200, response.getStatus());
 
-        User scimUser = new User(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), User.ENCODING_JSON);
 
         Assert.assertEquals(id, scimUser.getId());
         Assert.assertEquals("Alice", scimUser.getUserName());
@@ -76,7 +76,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/1/User/asdasdasdasd");
+        request.setURI("/v1/User/asdasdasdasd");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(404, response.getStatus());
@@ -88,7 +88,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/1/User/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsd");
+        request.setURI("/v1/User/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsd");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(404, response.getStatus());
@@ -119,7 +119,7 @@ public class ScimUserServletGetTest {
 
         Assert.assertEquals(200, response.getStatus());
 
-        User scimUser = new User(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), User.ENCODING_JSON);
         Assert.assertEquals(id, scimUser.getId());
         Assert.assertNull(scimUser.getUserName());
     }
@@ -136,7 +136,7 @@ public class ScimUserServletGetTest {
 
         Assert.assertEquals(200, response.getStatus());
 
-        User scimUser = new User(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), User.ENCODING_JSON);
 
         Assert.assertEquals(id, scimUser.getId());
         Assert.assertEquals(null, scimUser.getUserName());

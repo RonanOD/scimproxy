@@ -1,5 +1,6 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 
 import org.junit.Assert;
@@ -9,7 +10,7 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.testing.HttpTester;
 import org.mortbay.jetty.testing.ServletTester;
 
-public class ScimUserServletPostTest {
+public class ScimGroupServletPostTest {
 
     private static HttpTester    request  = new HttpTester();
     private static HttpTester    response = new HttpTester();
@@ -18,49 +19,47 @@ public class ScimUserServletPostTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Group/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
     }
 
     @Test
-    public void createUserJson() throws Exception {
+    public void createGroupJson() throws Exception {
 
-        User scimUserJson = new User("ABC123json");
-        scimUserJson.setUserName("Alice");
+        Group scimGroup = new Group("ABC123-post");
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User");
-        request.setHeader("Content-Length", Integer.toString(scimUserJson.getUser("JSON").length()));
+        request.setURI("/v1/Group");
+        request.setHeader("Content-Length", Integer.toString(scimGroup.getGroup(Group.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.setContent(scimUserJson.getUser(User.ENCODING_JSON));
+        request.setContent(scimGroup.getGroup(Group.ENCODING_JSON));
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(201, response.getStatus());
     }
 
-/*
+
     @Test
     public void createUserXml() throws Exception {
 
-        User scimUserXml = new User("ABC123xml");
-        scimUserXml.setUserName("Bob");
+        Group scimGroup = new Group("ABC123-post");
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User");
-        request.setHeader("Content-Length", Integer.toString(scimUserXml.getUser(User.ENCODING_XML).length()));
+        request.setURI("/v1/Group");
+        request.setHeader("Content-Length", Integer.toString(scimGroup.getGroup(Group.ENCODING_XML).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setHeader("Accept", "application/xml");
-        request.setContent(scimUserXml.getUser(User.ENCODING_XML));
+        request.setContent(scimGroup.getGroup(Group.ENCODING_XML));
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(201, response.getStatus());
     }
-*/
+
 }

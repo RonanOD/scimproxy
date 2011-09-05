@@ -1,5 +1,6 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 
 import java.io.IOException;
@@ -199,10 +200,24 @@ public class HttpGenerator {
 	 *            A servlet request for retrieving paths and server names.
 	 * @return A URI to a scim user to be used as a Location HTTP header.
 	 */
-	public static String getLocation(User user, HttpServletRequest req) {
+	public static String getUserLocation(User user, HttpServletRequest req) {
 		return getInternalLocation("/v1/User/" + user.getId(), req);
 	}
+	
+	/**
+	 * Generating a location for a group on the current web server.
+	 * 
+	 * @param group
+	 *            The group we want the location for.
+	 * @param req
+	 *            A servlet request for retrieving paths and server names.
+	 * @return A URI to a scim group to be used as a Location HTTP header.
+	 */
+	public static String getGroupLocation(Group group, HttpServletRequest req) {
+		return getInternalLocation("/v1/Group/" + group.getId(), req);
+	}
 
+	
 	public static String getBatchUserLocation(String batch, HttpServletRequest req) {
 		return getInternalLocation("/v1/Batch/User/" + batch, req);
 	}
