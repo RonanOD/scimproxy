@@ -31,13 +31,13 @@ public class ScimUserServletAuthTest {
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
         request.setURI("/v1/User");
-        request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
+        request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setHeader("Authorization", "Basic dXNyOnB3");
-        request.setContent(scimUser.getUser("JSON"));
+        request.setContent(scimUser.getUser(User.ENCODING_JSON));
         response.parse(tester.getResponses(request.generate()));
 
-        User tmp = new User(response.getContent(), "JSON");
+        User tmp = new User(response.getContent(), User.ENCODING_JSON);
         id = tmp.getId();
     }
 

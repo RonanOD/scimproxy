@@ -1,5 +1,6 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 
 import org.junit.Assert;
@@ -9,7 +10,7 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.testing.HttpTester;
 import org.mortbay.jetty.testing.ServletTester;
 
-public class ScimUserServletPutTest {
+public class ScimGroupServletPutTest {
 
     private static HttpTester     request  = new HttpTester();
     private static HttpTester     response = new HttpTester();
@@ -21,64 +22,61 @@ public class ScimUserServletPutTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Group/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        User scimUser = new User("ABC123-put");
-        scimUser.setUserName("Alice");
+        Group scimGroup = new Group("ABC123-put");
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User");
-        request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
+        request.setURI("/v1/Group");
+        request.setHeader("Content-Length", Integer.toString(scimGroup.getGroup(Group.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.setContent(scimUser.getUser(User.ENCODING_JSON));
+        request.setContent(scimGroup.getGroup(Group.ENCODING_JSON));
         response.parse(tester.getResponses(request.generate()));
 
-        User tmp = new User(response.getContent(), User.ENCODING_JSON);
+        Group tmp = new Group(response.getContent(), Group.ENCODING_JSON);
         id = tmp.getId();
         etag = tmp.getMeta().getVersion();
     }
 
     @Test
-    public void putUser() throws Exception {
-        User scimUser = new User("ABC123-put");
-        scimUser.setId(id);
-        scimUser.setUserName("Bob");
+    public void putGroup() throws Exception {
+    	Group scimGroup = new Group("ABC123-put");
+        scimGroup.setId(id);
 
         request.setMethod("PUT");
         request.setVersion("HTTP/1.0");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Group/" + id);
 
-        request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
+        request.setHeader("Content-Length", Integer.toString(scimGroup.getGroup(Group.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.setContent(scimUser.getUser(User.ENCODING_JSON));
+        request.setContent(scimGroup.getGroup(Group.ENCODING_JSON));
         request.setHeader("ETag", etag);
 
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
 
-        User returnedUser = new User(response.getContent(), User.ENCODING_JSON);
+        Group returnedGroup = new Group(response.getContent(), Group.ENCODING_JSON);
 
-        Assert.assertEquals(id, returnedUser.getId());
-        Assert.assertEquals("Bob", returnedUser.getUserName());
+        Assert.assertEquals(id, returnedGroup.getId());
     }
 
     @Test
-    public void putInvalidUser() throws Exception {
+    public void putInvalidGroup() throws Exception {
         request.setMethod("PUT");
         request.setVersion("HTTP/1.0");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Group/" + id);
 
-        request.setHeader("Content-Length", Integer.toString("very invalid user".length()));
+        request.setHeader("Content-Length", Integer.toString("very invalid Group".length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.setContent("very invalid user");
+        request.setContent("very invalid Group");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(400, response.getStatus());

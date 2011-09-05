@@ -16,9 +16,6 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * To retrieve a known Resource, clients send GET requests to the Resource end
  * point; e.g., /User/{id}. This servlet is the /User end point.
@@ -27,8 +24,6 @@ import org.apache.commons.logging.LogFactory;
 public class ScimUserUpdatesServlet extends RestServlet {
 
     private static final long serialVersionUID = -5875059636322733570L;
-
-    private Log               log              = LogFactory.getLog(ScimUserServlet.class);
 
     protected Trigger trigger = new Trigger();
     
