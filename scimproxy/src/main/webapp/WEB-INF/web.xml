@@ -101,6 +101,14 @@
 		<servlet-name>ViewerBatch</servlet-name>
 		<url-pattern>/Viewer/Batch</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>AddUser</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.AddUser</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AddUser</servlet-name>
+		<url-pattern>/AddUser</url-pattern>
+	</servlet-mapping> 
 
 	<filter>
 		<filter-name>MethodOverrideFilter</filter-name>
@@ -109,7 +117,9 @@
 	<filter-mapping>
 		<filter-name>MethodOverrideFilter</filter-name>
 		<url-pattern>/*</url-pattern>
-	</filter-mapping>  
+	</filter-mapping>
+	
+ 
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
