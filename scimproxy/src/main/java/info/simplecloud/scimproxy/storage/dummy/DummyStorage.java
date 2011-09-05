@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy.storage.dummy;
 
 import info.simplecloud.core.ComplexTypeComparator;
+import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.scimproxy.storage.IStorage;
@@ -24,67 +25,13 @@ public class DummyStorage implements IStorage {
     // TODO: synchronize users object
     private ArrayList<User>           users    = new ArrayList<User>();
 
+    private ArrayList<Group>           groups    = new ArrayList<Group>();
+
     /**
      * Constructor. Adds two users to storage.
      */
     private DummyStorage() {
-        /*
-         * ScimUser carol = new ScimUser(); ScimUser dave = new ScimUser();
-         * 
-         * // create carol carol.setUserName("Carol");
-         * carol.setAttribute(ScimUser.ATTRIBUTE_ID, generateId());
-         * carol.setAttribute(ScimUser.ATTRIBUTE_NAME, new
-         * Name().setAttribute(Name.ATTRIBUTE_GIVEN_NAME,
-         * "Carol").setAttribute(Name.ATTRIBUTE_HONORIFIC_PREFIX, "ms."));
-         * 
-         * List<PluralType<String>> carolEmail = new
-         * LinkedList<PluralType<String>>(); carolEmail.add(new
-         * PluralType<String>("carol@foo.bar", "private", true));
-         * carolEmail.add(new PluralType<String>("carol@bar.foo", "work",
-         * false)); carol.setAttribute(ScimUser.ATTRIBUTE_EMAILS, carolEmail);
-         * 
-         * List<PluralType<ComplexType>> carolAddress = new
-         * LinkedList<PluralType<ComplexType>>(); carolAddress.add(new
-         * PluralType<ComplexType>(new
-         * Address().setAttribute(Address.ATTRIBUTE_CONTRY,
-         * "Sweden").setAttribute(Address.ATTRIBUTE_POSTAL_CODE, "12 345"),
-         * "home", true)); carolAddress.add(new PluralType<ComplexType>(new
-         * Address().setAttribute(Address.ATTRIBUTE_CONTRY,
-         * "USA").setAttribute(Address.ATTRIBUTE_POSTAL_CODE, "67-890"), "work",
-         * false));
-         * 
-         * carol.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES, carolAddress); Meta
-         * carolMeta = new Meta();
-         * carolMeta.setVersion(Util.generateVersionString());
-         * carol.setMeta(carolMeta);
-         * 
-         * 
-         * // create dave dave.setUserName("Dave");
-         * dave.setAttribute(ScimUser.ATTRIBUTE_ID, generateId());
-         * dave.setAttribute(ScimUser.ATTRIBUTE_NAME, new
-         * Name().setAttribute(Name.ATTRIBUTE_GIVEN_NAME,
-         * "Dave").setAttribute(Name.ATTRIBUTE_HONORIFIC_PREFIX, "mr."));
-         * 
-         * List<PluralType<String>> daveEmail = new
-         * LinkedList<PluralType<String>>(); daveEmail.add(new
-         * PluralType<String>("dave@foo.bar", "private", false));
-         * daveEmail.add(new PluralType<String>("dave@bar.foo", "work", true));
-         * dave.setAttribute(ScimUser.ATTRIBUTE_EMAILS, daveEmail);
-         * 
-         * List<PluralType<ComplexType>> daveAddress = new
-         * LinkedList<PluralType<ComplexType>>(); daveAddress.add(new
-         * PluralType<ComplexType>(new
-         * Address().setAttribute(Address.ATTRIBUTE_CONTRY,
-         * "Sweden").setAttribute(Address.ATTRIBUTE_POSTAL_CODE, "112 50"),
-         * "home", true)); dave.setAttribute(ScimUser.ATTRIBUTE_ADDRESSES,
-         * daveAddress);
-         * 
-         * dave.setDisplayName("Dave"); Meta daveMeta = new Meta();
-         * daveMeta.setVersion(Util.generateVersionString());
-         * dave.setMeta(daveMeta);
-         * 
-         * users.add(carol); users.add(dave);
-         */
+   
     }
 
     /**
@@ -101,7 +48,7 @@ public class DummyStorage implements IStorage {
     }
 
     @Override
-    public User getUserForId(String id) throws UserNotFoundException {
+    public User getUserForId(String id) throws ResourceNotFoundException {
         User scimUser = null;
         if (users != null && !"".equals(id)) {
             for (User user : users) {
@@ -116,7 +63,7 @@ public class DummyStorage implements IStorage {
             }
         }
         if (scimUser == null) {
-            throw new UserNotFoundException();
+            throw new ResourceNotFoundException();
         }
         return scimUser;
 
@@ -124,6 +71,7 @@ public class DummyStorage implements IStorage {
 
     @Override
     public void addUser(User user) {
+		// TODO: Verify that id is not already there.
         if (user.getId() == null) {
             user.setId(generateId());
         }
@@ -229,7 +177,7 @@ public class DummyStorage implements IStorage {
     }
 
     @Override
-    public void deleteUser(String id) throws UserNotFoundException {
+    public void deleteUser(String id) throws ResourceNotFoundException {
         boolean found = false;
         if (id != null && !"".equals(id.trim())) {
             for (int i = 0; i < users.size(); i++) {
@@ -241,7 +189,7 @@ public class DummyStorage implements IStorage {
             }
         }
         if (!found) {
-            throw new UserNotFoundException();
+            throw new ResourceNotFoundException();
         }
     }
 
@@ -251,4 +199,52 @@ public class DummyStorage implements IStorage {
         return new BigInteger(130, random).toString(32);
     }
 
+	@Override
+	public Group getGroupForId(String groupId) throws ResourceNotFoundException {
+		Group scimGroup= null;
+        if (groups != null && !"".equals(groupId)) {
+            for (Group group : groups) {
+                try {
+                    if (groupId.equals(group.getAttribute("id"))) {
+                        scimGroup = group;
+                        break;
+                    }
+                } catch (UnknownAttribute e) {
+                    throw new RuntimeException("Internal error", e);
+                }
+            }
+        }
+        if (scimGroup == null) {
+            throw new ResourceNotFoundException();
+        }
+        return scimGroup;
+
+	}
+
+	@Override
+	public void addGroup(Group group) {
+		// TODO: Verify that id is not already there.
+        if (group.getId() == null) {
+        	group.setId(generateId());
+        }
+        groups.add(group);
+	}
+
+    @Override
+    public void deleteGroup(String id) throws ResourceNotFoundException {
+        boolean found = false;
+        if (id != null && !"".equals(id.trim())) {
+            for (int i = 0; i < groups.size(); i++) {
+                if (id.equals(groups.get(i).getId())) {
+                    groups.remove(i);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (!found) {
+            throw new ResourceNotFoundException();
+        }
+    }
+	
 }

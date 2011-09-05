@@ -1,7 +1,8 @@
 package info.simplecloud.scimproxy.storage;
 
+import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
-import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
+import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +21,9 @@ public interface IStorage {
 	 * @return If id is found in storage then the fully populated SCIM user
 	 *         object is returned. If it's not found or if id is empty then null
 	 *         is returned.
-	 * @throws UserNotFoundException
+	 * @throws ResourceNotFoundException
 	 */
-	public User getUserForId(String id) throws UserNotFoundException;
+	public User getUserForId(String id) throws ResourceNotFoundException;
 
 	/**
 	 * Adds a user in the user storage.
@@ -46,15 +47,21 @@ public interface IStorage {
 	 * 
 	 * @param id
 	 *            The id for the user to be deleted from storage.
-	 * @throws UserNotFoundException
+	 * @throws ResourceNotFoundException
 	 *             Thrown when user was not found in database.
 	 */
-	public void deleteUser(String id) throws UserNotFoundException;
+	public void deleteUser(String id) throws ResourceNotFoundException;
 
 	
 	
 	ArrayList<User> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp);
 
 	void addList(List<User> upstreamUsers);
+
+	public Group getGroupForId(String groupId) throws ResourceNotFoundException;
+
+	public void addGroup(Group group);
+
+	public void deleteGroup(String id) throws ResourceNotFoundException;
 
 }
