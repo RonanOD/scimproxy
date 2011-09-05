@@ -1,16 +1,16 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
-import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
-import info.simplecloud.scimproxy.user.User;
+import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
+import info.simplecloud.scimproxy.user.UserDelegator;
+import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,17 +44,18 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
      *             Servlet I/O exception.
      */
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String userId = getIdFromUri(req.getRequestURI());
+        String userId = Util.getUserIdFromUri(req.getRequestURI());
         AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
 
         try {
         	// TODO: should CSP trigger GET call be made before trying locally?
 
-            info.simplecloud.core.User scimUser = User.getInstance(authUser.getSessionId()).getUser(userId);
+        	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(userId);
+
             String userStr = null;
 
             if (req.getParameter("attributes") != null) {
-                userStr = scimUser.getUser(HttpGenerator.getEncoding(req), getAttributeStringFromRequest(req));
+                userStr = scimUser.getUser(HttpGenerator.getEncoding(req), Util.getAttributeStringFromRequest(req));
             } else {
                 userStr = scimUser.getUser(HttpGenerator.getEncoding(req));
             }
@@ -71,7 +72,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
 
         } catch (UnknownEncoding e) {
             HttpGenerator.serverError(resp);
-        } catch (UserNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             HttpGenerator.notFound(resp);
         }
     }
@@ -88,14 +89,14 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
      */
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        String query = getContent(req);
+        String query = Util.getContent(req);
         // TODO: SPEC: REST: Should the post message be base64 encoded in spec
         // or not?
 
         if (query != null && !"".equals(query)) {
             try {
             	
-            	info.simplecloud.core.User scimUser = internalPost(query, req);
+            	User scimUser = internalPost(query, req);
             	
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimUser.getMeta().getLocation());
@@ -130,14 +131,14 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
      */
     public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        String userId = getIdFromUri(req.getRequestURI());
-        String query = getContent(req);
+        String userId = Util.getUserIdFromUri(req.getRequestURI());
+        String query = Util.getContent(req);
         String etag = req.getHeader("ETag");
         
         if (query != null && !"".equals(query) && userId != null) {
 
             try {
-            	info.simplecloud.core.User scimUser = internalPut(userId, etag, query, req);
+            	User scimUser = internalPut(userId, etag, query, req);
 
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimUser.getMeta().getLocation());
@@ -147,7 +148,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
                 log.info("Replacing user " + scimUser.getId());
             } catch (PreconditionException e) {
                 HttpGenerator.preconditionFailed(resp, userId);
-            } catch (UserNotFoundException e) {
+            } catch (ResourceNotFoundException e) {
                 HttpGenerator.notFound(resp);
             } catch (UnknownEncoding e) {
                 HttpGenerator.badRequest(resp, "Unknown encoding.");
@@ -171,7 +172,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
      *             Servlet I/O exception.
      */
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String userId = getIdFromUri(req.getRequestURI());
+        String userId = Util.getUserIdFromUri(req.getRequestURI());
         log.trace("Trying to deleting user " + userId + ".");
 
         if (userId != null) {
@@ -180,7 +181,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
                     HttpGenerator.ok(resp);
                     log.info("Deleating user " + userId + ".");
 
-            } catch (UserNotFoundException e) {
+            } catch (ResourceNotFoundException e) {
                 HttpGenerator.notFound(resp);
                 log.trace("User " + userId + " is not found.");
             }
@@ -204,15 +205,15 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
      *             Servlet I/O exception.
      */
     public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String userId = getIdFromUri(req.getRequestURI());
-        String query = getContent(req);
+        String userId = Util.getUserIdFromUri(req.getRequestURI());
+        String query = Util.getContent(req);
         String etag = req.getHeader("ETag");
         
 
         if (!"".equals(query) && userId != null && etag != null && !"".equals(etag)) {
 
         	try {
-				info.simplecloud.core.User scimUser = internalPatch(userId, etag, query, req);
+				User scimUser = internalPatch(userId, etag, query, req);
 				
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimUser.getMeta().getLocation());
@@ -225,7 +226,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
                 HttpGenerator.badRequest(resp, "Unknown encoding.");
 			} catch (InvalidUser e) {
                 HttpGenerator.badRequest(resp, "Invalid user.");
-			} catch (UserNotFoundException e) {
+			} catch (ResourceNotFoundException e) {
                 HttpGenerator.notFound(resp);
 			} catch (PreconditionException e) {
                 HttpGenerator.preconditionFailed(resp, userId);
@@ -235,17 +236,6 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
 	    } else {
             HttpGenerator.badRequest(resp, "Missing user id or ETag");
 	    }
-    }
-    
-    private List<String> getAttributeStringFromRequest(HttpServletRequest req) {
-        String attributesString = req.getParameter("attributes") == null ? "" : req.getParameter("attributes");
-        List<String> attributesList = new ArrayList<String>();
-        if (attributesString != null && !"".equals(attributesString)) {
-            for (String attribute : attributesString.split(",")) {
-                attributesList.add(attribute.trim());
-            }
-        }
-        return attributesList;
     }
     
 }
