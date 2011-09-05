@@ -43,23 +43,4 @@ public class ScimGroupServletPostTest {
     }
 
 
-    @Test
-    public void createUserXml() throws Exception {
-
-        Group scimGroup = new Group("ABC123-post");
-
-        request.setMethod("POST");
-        request.setVersion("HTTP/1.0");
-        request.setHeader("Authorization", "Basic dXNyOnB3");
-
-        request.setURI("/v1/Group");
-        request.setHeader("Content-Length", Integer.toString(scimGroup.getGroup(Group.ENCODING_XML).length()));
-        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.setHeader("Accept", "application/xml");
-        request.setContent(scimGroup.getGroup(Group.ENCODING_XML));
-        response.parse(tester.getResponses(request.generate()));
-
-        Assert.assertEquals(201, response.getStatus());
-    }
-
 }

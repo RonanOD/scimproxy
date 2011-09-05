@@ -34,7 +34,7 @@ public class ScimUserServletPostTest {
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
         request.setURI("/v1/User");
-        request.setHeader("Content-Length", Integer.toString(scimUserJson.getUser("JSON").length()));
+        request.setHeader("Content-Length", Integer.toString(scimUserJson.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimUserJson.getUser(User.ENCODING_JSON));
         response.parse(tester.getResponses(request.generate()));

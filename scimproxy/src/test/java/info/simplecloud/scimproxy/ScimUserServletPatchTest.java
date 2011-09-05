@@ -32,12 +32,12 @@ public class ScimUserServletPatchTest {
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
         request.setURI("/v1/User");
-        request.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
+        request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.setContent(scimUser.getUser("JSON"));
+        request.setContent(scimUser.getUser(User.ENCODING_JSON));
         response.parse(tester.getResponses(request.generate()));
 
-        User tmp = new User(response.getContent(), "JSON");
+        User tmp = new User(response.getContent(), User.ENCODING_JSON);
         id = tmp.getId();
     }
 
@@ -55,7 +55,7 @@ public class ScimUserServletPatchTest {
         response.parse(tester.getResponses(request.generate()));
         Assert.assertEquals(200, response.getStatus());
 
-        User scimUser = new User(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), User.ENCODING_JSON);
         Assert.assertEquals(null, scimUser.getDisplayName());
 
         // edit user by adding display name
@@ -68,8 +68,8 @@ public class ScimUserServletPatchTest {
         request2.setHeader("Authorization", "Basic dXNyOnB3");
 
         request2.setURI("/v1/User/" + id);
-        request2.setContent(scimUser.getUser("JSON"));
-        request2.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
+        request2.setContent(scimUser.getUser(User.ENCODING_JSON));
+        request2.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request2.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request2.setHeader("ETag", scimUser.getMeta().getVersion());
         response2.parse(tester.getResponses(request2.generate()));
@@ -86,7 +86,7 @@ public class ScimUserServletPatchTest {
         response3.parse(tester.getResponses(request3.generate()));
 
         String r = response3.getContent();
-        Assert.assertEquals("Bob", new User(r, "JSON").getDisplayName());
+        Assert.assertEquals("Bob", new User(r, User.ENCODING_JSON).getDisplayName());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ScimUserServletPatchTest {
         response.parse(tester.getResponses(request.generate()));
         Assert.assertEquals(200, response.getStatus());
 
-        User scimUser = new User(response.getContent(), "JSON");
+        User scimUser = new User(response.getContent(), User.ENCODING_JSON);
 
         // edit user by adding display name
         scimUser.setDisplayName("Bob");
@@ -138,8 +138,8 @@ public class ScimUserServletPatchTest {
         request2.setHeader("Authorization", "Basic dXNyOnB3");
 
         request2.setURI("/v1/User/" + id);
-        request2.setContent(scimUser.getUser("JSON"));
-        request2.setHeader("Content-Length", Integer.toString(scimUser.getUser("JSON").length()));
+        request2.setContent(scimUser.getUser(User.ENCODING_JSON));
+        request2.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request2.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
         // missing etag
@@ -176,7 +176,7 @@ public class ScimUserServletPatchTest {
          * 
          * assertEquals(200, response.getStatus());
          * 
-         * ScimUser scimUser = new ScimUser(response.getContent(), "JSON");
+         * ScimUser scimUser = new ScimUser(response.getContent(), User.ENCODING_JSON);
          * 
          * // set display name and remove email attributes
          * scimUser.setDisplayName("Bob"); Meta meta = new Meta();
@@ -186,9 +186,9 @@ public class ScimUserServletPatchTest {
          * HttpTester request2 = new HttpTester(); HttpTester response2 = new
          * HttpTester(); request2.setMethod("PATCH");
          * request2.setVersion("HTTP/1.0"); request2.setURI("/User/" + id);
-         * request2.setContent(scimUser.getUser("JSON"));
+         * request2.setContent(scimUser.getUser(User.ENCODING_JSON));
          * request2.setHeader("Content-Length",
-         * Integer.toString(scimUser.getUser("JSON").length()));
+         * Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
          * request2.setHeader("Content-Type",
          * "application/x-www-form-urlencoded"); request2.setHeader("ETag",
          * scimUser.getMeta().getVersion());
@@ -201,7 +201,7 @@ public class ScimUserServletPatchTest {
          * HttpTester(); request3.setURI("/User/" + id);
          * response3.parse(tester.getResponses(request2.generate()));
          * 
-         * ScimUser scimUser2 = new ScimUser(response3.getContent(), "JSON");
+         * ScimUser scimUser2 = new ScimUser(response3.getContent(), User.ENCODING_JSON);
          * 
          * assertEquals("Bob", scimUser2.getDisplayName()); assertEquals(null,
          * scimUser2.getEmails());

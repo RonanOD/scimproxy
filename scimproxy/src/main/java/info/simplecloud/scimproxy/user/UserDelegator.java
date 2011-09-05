@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy.user;
 
 import info.simplecloud.core.Group;
+import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.storage.IStorage;
@@ -107,8 +108,8 @@ public class UserDelegator {
 	 * @param user
 	 *            User to update version number on.
 	 */
-	public void updateVersionNumber(User user) {
-		user.getMeta().setVersion(Util.generateVersionString());
+	public void updateVersionNumber(Resource resource) {
+		resource.getMeta().setVersion(Util.generateVersionString());
 	}
 
 	/**
