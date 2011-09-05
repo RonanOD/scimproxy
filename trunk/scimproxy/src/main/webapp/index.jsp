@@ -7,6 +7,8 @@ Read more about scimproxy at <a href="http://code.google.com/p/scimproxy/">http:
 <br/>
 <br/>
 <a href="/Viewer/List">Login to list and create users</a>
+<br/>
+<a href="/adduser.jsp">Add new user to login with</a>
 </h4>
 
 </body>
