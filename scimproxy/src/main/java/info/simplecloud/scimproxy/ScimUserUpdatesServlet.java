@@ -4,6 +4,7 @@ import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.core.types.Meta;
+import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 import info.simplecloud.scimproxy.trigger.Trigger;
@@ -36,6 +37,8 @@ public class ScimUserUpdatesServlet extends RestServlet {
     
     protected info.simplecloud.core.User internalPost(String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser {
         info.simplecloud.core.User scimUser = new info.simplecloud.core.User(query, HttpGenerator.getEncoding(req));
+        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+        
         if (scimUser.getMeta() == null) {
         	scimUser.setMeta(new Meta());
         }
@@ -45,18 +48,18 @@ public class ScimUserUpdatesServlet extends RestServlet {
         scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 
         // add user to set ID
-        User.getInstance().addUser(scimUser);
+        User.getInstance(authUser.getSessionId()).addUser(scimUser);
 
         // set location to object
         scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
 
         // TODO: this is really not a nice way to get the Location into the meta data
         try {
-			User.getInstance().deletetUser(scimUser.getId());
+			User.getInstance(authUser.getSessionId()).deletetUser(scimUser.getId());
 		} catch (UserNotFoundException e) {
 			// do nothing
 		}
-        User.getInstance().addUser(scimUser);
+        User.getInstance(authUser.getSessionId()).addUser(scimUser);
 
         
         // TODO:   trigger.post(...);				
@@ -67,9 +70,10 @@ public class ScimUserUpdatesServlet extends RestServlet {
     protected info.simplecloud.core.User internalPut(String userId, String etag, String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser, UserNotFoundException, PreconditionException {
 
         info.simplecloud.core.User scimUser = new info.simplecloud.core.User(query, HttpGenerator.getEncoding(req));
-
+        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+        
         // verify that user have not been changed since latest get and this operation
-        info.simplecloud.core.User oldUser = User.getInstance().getUser(userId);
+        info.simplecloud.core.User oldUser = User.getInstance(authUser.getSessionId()).getUser(userId);
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
@@ -91,10 +95,10 @@ public class ScimUserUpdatesServlet extends RestServlet {
         scimUser.setMeta(meta);
         
         // delete old user
-        User.getInstance().deletetUser(userId);
+        User.getInstance(authUser.getSessionId()).deletetUser(userId);
 
         // add new user
-        User.getInstance().addUser(scimUser);
+        User.getInstance(authUser.getSessionId()).addUser(scimUser);
         
         // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         // TODO:   trigger.put(query, userId, etag);				
@@ -106,9 +110,10 @@ public class ScimUserUpdatesServlet extends RestServlet {
     protected info.simplecloud.core.User internalPatch(String userId, String etag, String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser, UserNotFoundException, PreconditionException, UnknownAttribute {
 
         info.simplecloud.core.User scimUser = new info.simplecloud.core.User(query, HttpGenerator.getEncoding(req));
-
+        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+        
         // verify that user have not been changed since latest get and this operation
-        info.simplecloud.core.User oldUser = User.getInstance().getUser(userId);
+        info.simplecloud.core.User oldUser = User.getInstance(authUser.getSessionId()).getUser(userId);
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
@@ -122,7 +127,7 @@ public class ScimUserUpdatesServlet extends RestServlet {
         // patch user
         scimUser.patch(query, HttpGenerator.getEncoding(req));
         // generate new version number
-        User.getInstance().updateVersionNumber(scimUser);
+        User.getInstance(authUser.getSessionId()).updateVersionNumber(scimUser);
 
         
         // set a new version number on the user that we are about to change
@@ -136,10 +141,10 @@ public class ScimUserUpdatesServlet extends RestServlet {
         scimUser.setMeta(meta);
         
         // delete old user
-        User.getInstance().deletetUser(userId);
+        User.getInstance(authUser.getSessionId()).deletetUser(userId);
 
         // add new user
-        User.getInstance().addUser(scimUser);
+        User.getInstance(authUser.getSessionId()).addUser(scimUser);
         
         // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         // TODO:   trigger.put(query, userId, etag);				
@@ -163,10 +168,11 @@ public class ScimUserUpdatesServlet extends RestServlet {
      */
     public void internalDelete(String userId, String etag, HttpServletRequest req) throws UserNotFoundException, PreconditionException {
 
-    	info.simplecloud.core.User scimUser = User.getInstance().getUser(userId);
+    	AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+    	info.simplecloud.core.User scimUser = User.getInstance(authUser.getSessionId()).getUser(userId);
         String version = scimUser.getMeta().getVersion();
         if (etag != null && !"".equals(etag) && etag.equals(version)) {
-        	User.getInstance().deletetUser(userId);
+        	User.getInstance(authUser.getSessionId()).deletetUser(userId);
             // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         	// TODO: trigger
         	//trigger.delete(scimUser);				

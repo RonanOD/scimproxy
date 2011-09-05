@@ -57,6 +57,7 @@ public abstract class RestServlet extends HttpServlet {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No matching authentication schema could be found.");
 		}
 		else {
+			req.setAttribute("AuthUser", auth.getAuthUser());
 			if (method.equals(METHOD_PATCH)) {
 				doPatch(req, resp);
 			} else {

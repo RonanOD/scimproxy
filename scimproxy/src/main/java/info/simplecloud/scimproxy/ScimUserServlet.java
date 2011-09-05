@@ -3,6 +3,7 @@ package info.simplecloud.scimproxy;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
+import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.dummy.UserNotFoundException;
 import info.simplecloud.scimproxy.user.User;
@@ -44,11 +45,12 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
      */
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String userId = getIdFromUri(req.getRequestURI());
+        AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
 
         try {
         	// TODO: should CSP trigger GET call be made before trying locally?
 
-            info.simplecloud.core.User scimUser = User.getInstance().getUser(userId);
+            info.simplecloud.core.User scimUser = User.getInstance(authUser.getSessionId()).getUser(userId);
             String userStr = null;
 
             if (req.getParameter("attributes") != null) {

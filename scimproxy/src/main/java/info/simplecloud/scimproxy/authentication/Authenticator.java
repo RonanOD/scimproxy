@@ -5,12 +5,10 @@ import info.simplecloud.scimproxy.config.Config;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.Credentials;
-
 public class Authenticator {
 
 	private Config config = null;
-	private Credentials cred = null;
+	private AuthenticateUser authUser = null;
 	
 	public Authenticator(Config config) {
 		this.config = config;
@@ -25,21 +23,24 @@ public class Authenticator {
 			if(basicAuth != null && basicAuth.indexOf("Basic ") == 0) {
 				Basic basic = new Basic();
 				authStatus = basic.authenticate(basicAuth);
-				this.cred = basic.getCred();
+				this.authUser = basic.getAuthUser();
 			}
 		}
 		if(config.isNoneAuth()) {
 			authStatus = true; // this means public to all and everything!
+			
+			//Dummy user
+			authUser = new AuthenticateUser("usr","pw");
 		}
 
 		return authStatus;
 	}
 
-	public void setCred(Credentials cred) {
-		this.cred = cred;
+	public void setAuthUser(AuthenticateUser cred) {
+		this.authUser = cred;
 	}
 
-	public Credentials getCred() {
-		return cred;
+	public AuthenticateUser getAuthUser() {
+		return authUser;
 	}
 }
