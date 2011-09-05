@@ -1,0 +1,58 @@
+
+{
+  "schemas": ["urn:scim:schemas:core:1.0"],
+  "Entries":[
+    {
+      "method":"POST",
+      "batchId":"alicebatchid",
+      "data":{
+        "schemas": ["urn:scim:schemas:core:1.0"],
+        "userName":"alice",
+        "name":{
+          "formatted":"Alice Doe",
+          "familyName":"Doe",
+          "givenName":"Alice"
+        }
+      }
+    },
+    {
+      "method":"POST",
+      "batchId":"bobbatchid",
+      "data":{
+        "schemas": ["urn:scim:schemas:core:1.0"],
+        "userName":"bob",
+        "name":{
+          "formatted":"Bob Doe",
+          "familyName":"Doe",
+          "givenName":"Bob"
+        }
+      }
+    },
+    {
+      "method":"POST",
+      "batchId":"charliebatchid",
+      "data":{
+        "schemas": ["urn:scim:schemas:core:1.0"],
+        "userName":"charlie",
+        "name":{
+          "formatted":"Charlie Doe",
+          "familyName":"Doe",
+          "givenName":"Charlie"
+        }
+      }
+    },
+    {
+      "method":"POST",
+      "batchId":"davebatchid",
+      "data":{
+        "schemas": ["urn:scim:schemas:core:1.0"],
+        "userName":"dave",
+        "name":{
+          "formatted":"Dave Doe",
+          "familyName":"Doe",
+          "givenName":"Dave"
+        }
+      }
+    }
+  ]
+}

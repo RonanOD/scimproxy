@@ -1,0 +1,44 @@
+
+{
+  "schemas": ["urn:scim:schemas:core:1.0"],
+  "Entries":[
+    {
+      "method":"POST",
+      "batchId":"evebatchid",
+      "data":{
+        "schemas": ["urn:scim:schemas:core:1.0"],
+        "userName":"eve",
+        "name":{
+          "formatted":"Eve Doe",
+          "familyName":"Doe",
+          "givenName":"Eve"
+        }
+      }
+    },
+    {
+      "method":"PUT",
+      "location":"BOBLOCATIONPLACEHOLDER",
+      "etag":"BOBETAGPLACEHOLDER",
+      "data":{
+        "schemas": ["urn:scim:schemas:core:1.0"],
+        "id":"BOBIDPLACEHOLDER",
+        "userName":"Bobby",
+        "name":{
+          "formatted":"Bob Doe",
+          "familyName":"Doe",
+          "givenName":"Bob"
+        },
+        "meta":{
+          "location":"BOBLOCATIONPLACEHOLDER",
+          "version":"BOBETAGPLACEHOLDER",
+          "created":"2010-05-01T21:32:44.882Z",
+          "lastModified":"2010-05-01T21:32:44.882Z"
+        }
+    },
+    {
+        "method":"DELETE",
+        "location":"CHARLIELOCATIONPLACEHOLDER",
+        "etag":"CHARLIEETAGPLACEHOLDER"
+    }
+  ]
+}
