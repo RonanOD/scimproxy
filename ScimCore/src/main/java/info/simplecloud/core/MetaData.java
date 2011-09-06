@@ -95,4 +95,13 @@ public class MetaData {
     public String getName() {
         return (attribute == null ? this.name : attribute.name());
     }
+
+    public Class<?> getXmlDoc() {
+        return this.attribute.xmlDoc();
+    }
+
+    @Override
+    public String toString() {
+        return this.attribute.name();
+    }
 }

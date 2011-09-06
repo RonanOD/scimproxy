@@ -18,8 +18,6 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import x0.scimSchemasCore1.User;
-
 public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
