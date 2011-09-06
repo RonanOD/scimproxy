@@ -21,4 +21,6 @@ public @interface Attribute {
     Class<?> internalType() default DummyType.class;
     
     String internalName() default "dummy";
+    
+    Class<?> xmlDoc() default DummyType.class;
 }
