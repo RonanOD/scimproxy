@@ -1,6 +1,8 @@
 package info.simplecloud.core.coding.encode;
 
+import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
+import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.coding.ReflectionHelper;
 import info.simplecloud.core.exceptions.FactoryNotFoundException;
@@ -10,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 
 import x0.scimSchemasCore1.Response;
@@ -38,6 +41,7 @@ public class XmlEncoder implements IUserEncoder {
             doc.getClass().getMethod(setterName, complex.xmlType()).invoke(doc, xmlResource);
 
             return doc.xmlText();
+            // return doc.toString();
         } catch (FactoryNotFoundException e) {
             throw new RuntimeException("Internal error, xml encode failed", e);
         } catch (NoSuchMethodException e) {
@@ -73,6 +77,7 @@ public class XmlEncoder implements IUserEncoder {
         ResponseDocument doc = ResponseDocument.Factory.newInstance();
         doc.setResponse(resp);
         return resp.xmlText();
+        // return resp.toString();
     }
 
     private Object createXmlObject(Resource resource) {
@@ -83,6 +88,8 @@ public class XmlEncoder implements IUserEncoder {
             Complex complexMetadata = resource.getClass().getAnnotation(Complex.class);
             Class<?> factory = ReflectionHelper.getFactory(complexMetadata.xmlType());
             Method parse = factory.getMethod("newInstance");
+
+            // TODO create from document
             return parse.invoke(null);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Internal error, encoding xml", e);
@@ -101,13 +108,70 @@ public class XmlEncoder implements IUserEncoder {
         try {
             Object xmlObject = createXmlObject(resource);
 
-            x0.scimSchemasCore1.Resource xmlResource = (x0.scimSchemasCore1.Resource) new ComplexHandler().encodeXml(resource, null, null,
-                    xmlObject);
+            x0.scimSchemasCore1.Resource xmlResource = (x0.scimSchemasCore1.Resource) new ComplexHandler().encodeXml(resource,
+                    attributesList, null, xmlObject);
 
-            // TODO encode extensions
+            // TODO check include attributes for extensions too
+            List<Object> extensions = resource.getExtensions();
+            for (Object extension : extensions) {
+                for (Method method : extension.getClass().getMethods()) {
+                    if (!method.isAnnotationPresent(Attribute.class)) {
+                        continue;
+                    }
+
+                    Object data = method.invoke(extension);
+                    if (data == null) {
+                        continue;
+                    }
+
+                    MetaData metaData = new MetaData(method.getAnnotation(Attribute.class));
+
+                    if (attributesList != null && !attributesList.contains(metaData.getName())) {
+                        continue;
+                    }
+
+                    Class<?> factory = ReflectionHelper.getFactory(metaData.getXmlDoc());
+                    XmlObject doc = (XmlObject) factory.getMethod("newInstance").invoke(null);
+                    Object innerXml = null;
+                    try {
+                        String adder = "addNew";
+                        adder += metaData.getName().substring(0, 1).toUpperCase();
+                        adder += metaData.getName().substring(1);
+                        innerXml = doc.getClass().getMethod(adder).invoke(doc);
+                    } catch (NoSuchMethodException e) {
+                        // It is okay this is a simple type
+                    }
+                    IEncodeHandler encoder = metaData.getEncoder();
+                    Object result = encoder.encodeXml(data, attributesList, metaData.getInternalMetaData(), innerXml);
+
+                    String setter = "set";
+                    setter += metaData.getName().substring(0, 1).toUpperCase();
+                    setter += metaData.getName().substring(1);
+                    ReflectionHelper.getMethod(setter, doc.getClass()).invoke(doc, result);
+
+                    XmlCursor docCursor = doc.newCursor();
+                    docCursor.toFirstChild();
+
+                    XmlCursor cursor = xmlResource.newCursor();
+                    cursor.toEndToken();
+                    docCursor.moveXml(cursor);
+                    cursor.dispose();
+                    docCursor.dispose();
+                }
+            }
 
             return xmlResource;
         } catch (SecurityException e) {
+            throw new RuntimeException("Internal error, encoding xml", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Internal error, encoding xml", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Internal error, encoding xml", e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Internal error, encoding xml", e);
+        } catch (FactoryNotFoundException e) {
+            throw new RuntimeException("Internal error, encoding xml", e);
+        } catch (NoSuchMethodException e) {
             throw new RuntimeException("Internal error, encoding xml", e);
         }
     }
