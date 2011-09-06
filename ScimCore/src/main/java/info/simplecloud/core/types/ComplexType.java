@@ -46,7 +46,7 @@ public abstract class ComplexType {
             if (method == null) {
                 throw new UnknownAttribute("Has no method for attribute '" + name + "'");
             }
-            // TODO think of something smarter
+            
             String setter = "s" + method.getName().substring(1);
             Method setMethod = null;
             try {
