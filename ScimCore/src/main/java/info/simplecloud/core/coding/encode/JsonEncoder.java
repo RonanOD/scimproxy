@@ -7,6 +7,7 @@ import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.exceptions.EncodingFailed;
 import info.simplecloud.core.handlers.ComplexHandler;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,26 +96,30 @@ public class JsonEncoder implements IUserEncoder {
                 }
 
                 MetaData metaData = new MetaData(method.getAnnotation(Attribute.class));
-
                 if (attributesList != null && !attributesList.contains(metaData.getName())) {
                     continue;
                 }
+                
 
                 IEncodeHandler encoder = metaData.getEncoder();
 
                 try {
-                    Object object = method.invoke(extension);
-                    if (object != null) {
-                        Object encodedValue = encoder.encode(extensionJson, attributesList, metaData.getInternalMetaData());
+                    Object value = method.invoke(extension);
+                    if (value != null) {
+                        Object encodedValue = encoder.encode(value, attributesList, metaData.getInternalMetaData());
                         extensionJson.put(metaData.getName(), encodedValue);
                     }
-                } catch (Exception e) {
-                    throw new EncodingFailed("failed to read data from object", e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Internal error, failed to read data from object", e);
+                } catch (IllegalArgumentException e) {
+                    throw new RuntimeException("Internal error, failed to read data from object", e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException("Internal error, failed to read data from object", e);
                 }
 
             }
             
-            result.put(extensionMetaData.schema(), extensionMetaData);
+            result.put(extensionMetaData.schema(), extensionJson);
         }
 
         return result;
