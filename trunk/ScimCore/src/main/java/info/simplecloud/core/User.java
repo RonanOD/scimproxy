@@ -16,7 +16,6 @@ import info.simplecloud.core.types.PluralType;
 import java.util.ArrayList;
 import java.util.List;
 
-import x0.scimSchemasCore1.GroupDocument;
 import x0.scimSchemasCore1.UserDocument;
 
 @Extension(schema = "urn:scim:schemas:core:1.0")
@@ -61,6 +60,8 @@ public class User extends Resource {
     private List<PluralType<String>>  photoUrls;
     private List<PluralType<String>>  memberOf;
     private List<PluralType<Address>> addresses;
+    private List<PluralType<String>> entitlements;
+    private List<PluralType<String>> roles;
 
     public User(String user, String encoding) throws UnknownEncoding, InvalidUser {
         super(user, encoding, extensionTypes);
@@ -196,6 +197,16 @@ public class User extends Resource {
         return this.addresses;
     }
 
+    @Attribute(name = "entitlements", handler = PluralHandler.class, internalName = "entitlement", internalHandler = StringHandler.class)
+    public List<PluralType<String>> getEntitlements() {
+        return this.entitlements;
+    }
+
+    @Attribute(name = "roles", handler = PluralHandler.class, internalName = "role", internalHandler = StringHandler.class)
+    public List<PluralType<String>> getRoles() {
+        return this.roles;
+    }
+
     public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
@@ -262,6 +273,14 @@ public class User extends Resource {
 
     public void setAddresses(List<PluralType<Address>> addresses) {
         this.addresses = addresses;
+    }
+
+    public void setEntitlements(List<PluralType<String>> entitlements) {
+        this.entitlements = entitlements;
+    }
+
+    public void setRoles(List<PluralType<String>> roles) {
+        this.roles = roles;
     }
 
 }
