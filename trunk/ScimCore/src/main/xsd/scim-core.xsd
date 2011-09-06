@@ -168,6 +168,19 @@
     <xs:complexContent>
       <xs:extension base="tns:Resource">
         <xs:sequence>
+          <xs:element name="displayName" type="xs:string" minOccurs="0"
+                      maxOccurs="1"/>
+          <xs:element name="members" minOccurs="1"
+                      maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="member"
+                            type="tns:pluralAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
           <xs:any namespace="##other" minOccurs="0"/>
         </xs:sequence>
       </xs:extension>

@@ -1,17 +1,21 @@
 package info.simplecloud.core;
 
+import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
+import info.simplecloud.core.handlers.PluralHandler;
+import info.simplecloud.core.handlers.StringHandler;
+import info.simplecloud.core.types.PluralType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import x0.scimSchemasCore1.GroupDocument;
 
-@Extension(schema="urn:scim:schemas:core:1.0")
+@Extension(schema = "urn:scim:schemas:core:1.0")
 @Complex(xmlType = x0.scimSchemasCore1.Group.class, xmlDoc = GroupDocument.class)
 public class Group extends Resource {
     private static List<Class<?>> extensionTypes = new ArrayList<Class<?>>();
@@ -34,6 +38,9 @@ public class Group extends Resource {
             extensionTypes.add(clazz);
         }
     }
+
+    private List<PluralType<String>> members;
+    private String                   displayName;
 
     public Group(String user, String encoding) throws UnknownEncoding, InvalidUser {
         super(user, encoding, extensionTypes);
@@ -71,4 +78,21 @@ public class Group extends Resource {
         return super.equals(otherGroup);
     }
 
+    @Attribute(name = "members", handler = PluralHandler.class, internalName = "member", internalHandler = StringHandler.class)
+    public List<PluralType<String>> getMembers() {
+        return this.members;
+    }
+
+    @Attribute(name = "displayName", handler = StringHandler.class)
+    public String getDisplayName() {
+        return this.displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setMembers(List<PluralType<String>> members) {
+        this.members = members;
+    }
 }
