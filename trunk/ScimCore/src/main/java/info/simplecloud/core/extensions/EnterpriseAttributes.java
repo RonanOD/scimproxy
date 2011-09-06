@@ -1,46 +1,54 @@
 package info.simplecloud.core.extensions;
 
+import x0.scimSchemasExtensionEnterprise1.CostCenterDocument;
+import x0.scimSchemasExtensionEnterprise1.DepartmentDocument;
+import x0.scimSchemasExtensionEnterprise1.DivisionDocument;
+import x0.scimSchemasExtensionEnterprise1.EmployeeNumberDocument;
+import x0.scimSchemasExtensionEnterprise1.ManagerDocument;
+import x0.scimSchemasExtensionEnterprise1.OrganizationDocument;
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Extension;
+import info.simplecloud.core.extensions.types.Manager;
+import info.simplecloud.core.handlers.ComplexHandler;
 import info.simplecloud.core.handlers.StringHandler;
 
-@Extension(schema = "enterprise")
+@Extension(schema = "urn:scim:schemas:extension:enterprise:1.0")
 public class EnterpriseAttributes {
 
-    private String employeeNumber;
-    private String costCenter;
-    private String organization;
-    private String division;
-    private String department;
-    private String manager;
+    private String  employeeNumber;
+    private String  costCenter;
+    private String  organization;
+    private String  division;
+    private String  department;
+    private Manager manager;
 
-    @Attribute(name = "employeeNumber", handler = StringHandler.class)
+    @Attribute(name = "employeeNumber", handler = StringHandler.class, xmlDoc = EmployeeNumberDocument.class)
     public String getEmployeeNumber() {
         return this.employeeNumber;
     }
 
-    @Attribute(name = "costCenter", handler = StringHandler.class)
+    @Attribute(name = "costCenter", handler = StringHandler.class, xmlDoc = CostCenterDocument.class)
     public String getCostCenter() {
         return this.costCenter;
     }
 
-    @Attribute(name = "organization", handler = StringHandler.class)
+    @Attribute(name = "organization", handler = StringHandler.class, xmlDoc = OrganizationDocument.class)
     public String getOrganization() {
         return this.organization;
     }
 
-    @Attribute(name = "division", handler = StringHandler.class)
+    @Attribute(name = "division", handler = StringHandler.class, xmlDoc = DivisionDocument.class)
     public String getDivision() {
         return this.division;
     }
 
-    @Attribute(name = "department", handler = StringHandler.class)
+    @Attribute(name = "department", handler = StringHandler.class, xmlDoc = DepartmentDocument.class)
     public String getDepartment() {
         return this.department;
     }
 
-    @Attribute(name = "manager", handler = StringHandler.class)
-    public String getManager() {
+    @Attribute(name = "manager", handler = ComplexHandler.class, type = Manager.class, xmlDoc = ManagerDocument.class)
+    public Manager getManager() {
         return this.manager;
     }
 
@@ -64,7 +72,7 @@ public class EnterpriseAttributes {
         this.department = department;
     }
 
-    public void setManager(String manager) {
+    public void setManager(Manager manager) {
         this.manager = manager;
     }
 }
