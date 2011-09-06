@@ -38,9 +38,9 @@ public interface IStorage {
 	 * 
 	 * @return All users. ArrayList with size 0 if empty.
 	 */
-	public List<User> getList();
+	public List<User> getUserList();
 
-	public List<User> getList(String sortBy, String sortOrder);
+	public List<User> getUserList(String sortBy, String sortOrder);
 
 	/**
 	 * Deletes a SCIM user from storage.
@@ -63,5 +63,9 @@ public interface IStorage {
 	public void addGroup(Group group);
 
 	public void deleteGroup(String id) throws ResourceNotFoundException;
+
+	ArrayList<Group> getGroupList();
+
+	ArrayList<Group> getGroupList(String sortBy, String sortOrder);
 
 }

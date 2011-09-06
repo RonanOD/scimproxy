@@ -84,7 +84,7 @@ public class DummyStorage implements IStorage {
     }
 
     @Override
-    public ArrayList<User> getList() {
+    public ArrayList<User> getUserList() {
         ArrayList<User> list = new ArrayList<User>();
         for (User user : users) {
             list.add(user);
@@ -93,7 +93,7 @@ public class DummyStorage implements IStorage {
     }
 
     @Override
-    public ArrayList<User> getList(String sortBy, String sortOrder) {
+    public ArrayList<User> getUserList(String sortBy, String sortOrder) {
         ArrayList<User> list = new ArrayList<User>();
         for (User user : users) {
             list.add(user);
@@ -102,6 +102,25 @@ public class DummyStorage implements IStorage {
         return list;
     }
 
+    @Override
+    public ArrayList<Group> getGroupList() {
+        ArrayList<Group> list = new ArrayList<Group>();
+        for (Group group : groups) {
+            list.add(group);
+        }
+        return list;
+    }
+
+    @Override
+    public ArrayList<Group> getGroupList(String sortBy, String sortOrder) {
+        ArrayList<Group> list = new ArrayList<Group>();
+        for (Group group : groups) {
+            list.add(group);
+        }
+        Collections.sort(list, new ComplexTypeComparator(sortBy, sortOrder.equalsIgnoreCase("ascending")));
+        return list;
+    }    
+    
     @Override
     public ArrayList<User> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp) {
         ArrayList<User> list = new ArrayList<User>();
