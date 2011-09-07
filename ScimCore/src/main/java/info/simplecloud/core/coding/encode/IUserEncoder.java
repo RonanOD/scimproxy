@@ -7,12 +7,12 @@ import java.util.List;
 
 public interface IUserEncoder {
 
-    String encode(Resource data) throws EncodingFailed;
+    String encode(Resource resource) throws EncodingFailed;
 
-    String encode(Resource data, List<String> includeAttributes) throws EncodingFailed;
+    String encode(Resource resource, List<String> includeAttributes) throws EncodingFailed;
 
-    String encode(List<Resource> scimUsers, List<String> includeAttributes) throws EncodingFailed;
+    String encode(List<Resource> resources, List<String> includeAttributes) throws EncodingFailed;
 
-    String encode(List<Resource> scimUser) throws EncodingFailed;
+    String encode(List<Resource> resources) throws EncodingFailed;
 
 }

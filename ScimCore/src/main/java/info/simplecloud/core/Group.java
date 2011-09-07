@@ -42,8 +42,8 @@ public class Group extends Resource {
     private List<PluralType<String>> members;
     private String                   displayName;
 
-    public Group(String user, String encoding) throws UnknownEncoding, InvalidUser {
-        super(user, encoding, extensionTypes);
+    public Group(String group, String encoding) throws UnknownEncoding, InvalidUser {
+        super(group, encoding, extensionTypes);
     }
 
     public Group(String id) {

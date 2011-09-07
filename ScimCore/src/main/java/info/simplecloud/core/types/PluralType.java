@@ -6,6 +6,8 @@ public class PluralType<T> implements Comparable<PluralType<?>> {
     private boolean primary;
     private boolean delete;
 
+    // TODO add display
+
     public PluralType(T value, String type, boolean primary, boolean delete) {
         if (value == null) {
             throw new IllegalArgumentException("Cannot create plural object without value");

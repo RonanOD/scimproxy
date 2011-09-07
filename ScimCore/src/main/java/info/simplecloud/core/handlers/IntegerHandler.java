@@ -11,11 +11,17 @@ public class IntegerHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object decode(Object value, Object instance, MetaData internalMetaData) {
+        if (value instanceof String) {
+            return Integer.parseInt((String) value);
+        }
         return HandlerHelper.typeCheck(value, Integer.class);
     }
 
     @Override
     public Object decodeXml(Object value, Object newInstance, MetaData internalMetaData) {
+        if (value instanceof String) {
+            return Integer.parseInt((String) value);
+        }
         return HandlerHelper.typeCheck(value, Integer.class);
     }
 

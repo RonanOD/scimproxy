@@ -26,24 +26,24 @@ import x0.scimSchemasCore1.Response.Resources;
 public class XmlDecoder implements IResourceDecoder {
 
     @Override
-    public void decode(String user, Resource data) throws InvalidUser {
+    public void decode(String resourceString, Resource resource) throws InvalidUser {
         try {
-            if (!data.getClass().isAnnotationPresent(Complex.class)) {
-                throw new RuntimeException("Missing annotation complex on, '" + data.getClass().getName() + "'");
+            if (!resource.getClass().isAnnotationPresent(Complex.class)) {
+                throw new RuntimeException("Missing annotation complex on, '" + resource.getClass().getName() + "'");
             }
-            Complex complex = data.getClass().getAnnotation(Complex.class);
+            Complex complex = resource.getClass().getAnnotation(Complex.class);
             Class<?> factory = ReflectionHelper.getFactory(complex.xmlDoc());
             Method parse = factory.getMethod("parse", String.class);
-            XmlObject xmlDoc = (XmlObject) parse.invoke(null, user);
+            XmlObject xmlDoc = (XmlObject) parse.invoke(null, resourceString);
 
             String name = complex.xmlType().getName();
             String getterName = "get";
             getterName += name.substring(name.lastIndexOf('.') + 1);
             Object xmlResource2 = xmlDoc.getClass().getMethod(getterName).invoke(xmlDoc);
 
-            this.internalDecode(xmlResource2, data);
+            this.internalDecode(xmlResource2, resource);
 
-            for (Object extension : data.getExtensions()) {
+            for (Object extension : resource.getExtensions()) {
                 if (!extension.getClass().isAnnotationPresent(Extension.class)) {
                     throw new RuntimeException("Extension '" + extension.getClass() + "' misses extension annotation");
                 }
@@ -63,17 +63,14 @@ public class XmlDecoder implements IResourceDecoder {
                     }
 
                     Object value = cursor.getObject();
-                    if(value instanceof XmlAnySimpleType){                        
-                        Method getter = value.getClass().getMethod("getStringValue");
-                        value = getter.invoke(value);
+                    if (value instanceof XmlAnySimpleType) {
+                        value = ((XmlAnySimpleType) value).getStringValue();
                     }
-                    
+
                     IDecodeHandler decoder = metaData.getDecoder();
                     Object decodedValue = decoder.decodeXml(value, metaData.newInstance(), metaData.getInternalMetaData());
 
-                    String setterName = "set";
-                    setterName += metaData.getName().substring(0,1).toUpperCase();
-                    setterName += metaData.getName().substring(1);
+                    String setterName = "s" + method.getName().substring(1);
                     Method setter = extension.getClass().getMethod(setterName, decodedValue.getClass());
                     setter.invoke(extension, decodedValue);
                 }
@@ -94,9 +91,9 @@ public class XmlDecoder implements IResourceDecoder {
     }
 
     @Override
-    public void decode(String resourcesList, List<Resource> resources) throws InvalidUser {
+    public void decode(String resourcesListString, List<Resource> resources) throws InvalidUser {
         try {
-            Response resp = Response.Factory.parse(resourcesList);
+            Response resp = Response.Factory.parse(resourcesListString);
             Resources xmlResources = resp.getResources();
 
             x0.scimSchemasCore1.Resource[] xmlResourceArray = xmlResources.getResourceArray();

@@ -6,7 +6,6 @@ import info.simplecloud.core.User;
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.coding.ReflectionHelper;
-import info.simplecloud.core.exceptions.DecodingFailed;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 
@@ -21,29 +20,29 @@ import org.json.JSONObject;
 public class JsonDecoder implements IResourceDecoder {
 
     @Override
-    public void decode(String user, Resource data) throws InvalidUser {
+    public void decode(String resourceString, Resource resource) throws InvalidUser {
         try {
-            JSONObject userJson = new JSONObject(user);
+            JSONObject userJson = new JSONObject(resourceString);
 
             // Decode core attributes
-            for (String name : data.getNames()) {
+            for (String name : resource.getNames()) {
                 try {
                     if (!userJson.has(name)) {
                         continue;
                     }
                     Object value = userJson.get(name);
-                    MetaData metaData = data.getMetaData(name);
+                    MetaData metaData = resource.getMetaData(name);
                     IDecodeHandler decoder = metaData.getDecoder();
                     Object decodedValue = decoder.decode(value, metaData.newInstance(), metaData.getInternalMetaData());
 
-                    data.setAttribute(name, decodedValue);
+                    resource.setAttribute(name, decodedValue);
                 } catch (UnknownAttribute e) {
                     new RuntimeException("Internal error", e);
                 }
             }
 
             // Decode extension attributes
-            for (Object extension : data.getExtensions()) {
+            for (Object extension : resource.getExtensions()) {
 
                 if (!extension.getClass().isAnnotationPresent(Extension.class)) {
                     throw new InvalidUser("The extension '" + extension.getClass().getName()
@@ -73,21 +72,9 @@ public class JsonDecoder implements IResourceDecoder {
 
                         Object decodedValue = decoder.decode(value, type, metaData.getInternalMetaData());
 
-                        // TODO think of something smarter
-                        String setter = "s" + method.getName().substring(1);
-
-                        try {
-                            Method setMethod = ReflectionHelper.getMethod(setter, extension.getClass());
-                            setMethod.invoke(extension, decodedValue);
-                        } catch (NoSuchMethodException e) {
-                            throw new RuntimeException("Internal error, failed to invoke: " + setter + " with arg: " + decodedValue, e);
-                        } catch (IllegalArgumentException e) {
-                            throw new RuntimeException("Internal error, failed to invoke: " + setter + " with arg: " + decodedValue, e);
-                        } catch (IllegalAccessException e) {
-                            throw new RuntimeException("Internal error, failed to invoke: " + setter + " with arg: " + decodedValue, e);
-                        } catch (InvocationTargetException e) {
-                            throw new RuntimeException("Internal error, failed to invoke: " + setter + " with arg: " + decodedValue, e);
-                        }
+                        String setterName = "s" + method.getName().substring(1);
+                        Method setter = ReflectionHelper.getMethod(setterName, extension.getClass());
+                        setter.invoke(extension, decodedValue);
 
                     }
                 } catch (JSONException e) {
@@ -97,28 +84,36 @@ public class JsonDecoder implements IResourceDecoder {
 
         } catch (JSONException e) {
             throw new InvalidUser("Failed to parse user", e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Internal error, failed to invoke setter", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Internal error, failed to invoke setter", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Internal error, failed to invoke setter", e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Internal error, failed to invoke setter", e);
         }
     }
 
     @Override
-    public void decode(String userList, List<Resource> resources) throws InvalidUser {
+    public void decode(String resourceListString, List<Resource> resources) throws InvalidUser {
 
         try {
-        	if(userList != null && !"".equals(userList)) {
-	        		
-	            JSONObject userListJson = new JSONObject(userList);
-	            if (userListJson.has("entry")) {
-	                JSONArray jsonUsers = userListJson.getJSONArray("entry");
-	                for (int i = 0; i < jsonUsers.length(); i++) {
-	                    JSONObject user = jsonUsers.getJSONObject(i);
-	
-	                    // TODO this is wrong
-	                    User data = new User("tmp");
-	                    decode(user.toString(), data);
-	                    resources.add(data);
-	                }
-	            }
-        	}
+            if (resourceListString != null && !"".equals(resourceListString)) {
+
+                JSONObject userListJson = new JSONObject(resourceListString);
+                if (userListJson.has("entry")) {
+                    JSONArray jsonUsers = userListJson.getJSONArray("entry");
+                    for (int i = 0; i < jsonUsers.length(); i++) {
+                        JSONObject user = jsonUsers.getJSONObject(i);
+
+                        // TODO this is wrong
+                        User data = new User("tmp");
+                        decode(user.toString(), data);
+                        resources.add(data);
+                    }
+                }
+            }
 
         } catch (JSONException e) {
             throw new InvalidUser("Failed to parse user", e);
