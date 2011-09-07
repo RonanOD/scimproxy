@@ -13,10 +13,10 @@ import org.junit.Test;
 public class XmlDecoderTest {
 
     @BeforeClass
-    public static void setUp(){
-        User.registerExtension(EnterpriseAttributes.class);        
+    public static void setUp() {
+        User.registerExtension(EnterpriseAttributes.class);
     }
-    
+
     @Test
     public void decode() throws InvalidUser, XmlException, UnknownExtension {
 
@@ -33,4 +33,10 @@ public class XmlDecoderTest {
         Assert.assertEquals("MI-123ABC", ea.getManager().getManagerId());
         Assert.assertEquals("Test division", ea.getDivision());
     }
+
+    @Test
+    public void decodeList() throws InvalidUser, XmlException, UnknownExtension {
+        // TODO implement test
+    }
+
 }

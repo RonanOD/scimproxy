@@ -11,11 +11,17 @@ public class BooleanHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object decode(Object value, Object instance, MetaData internalMetaData) {
+        if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        }
         return HandlerHelper.typeCheck(value, Boolean.class);
     }
 
     @Override
     public Object decodeXml(Object value, Object newInstance, MetaData internalMetaData) {
+        if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        }
         return HandlerHelper.typeCheck(value, Boolean.class);
     }
 

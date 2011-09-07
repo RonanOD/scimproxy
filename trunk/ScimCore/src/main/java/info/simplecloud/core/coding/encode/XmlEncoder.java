@@ -27,9 +27,9 @@ public class XmlEncoder implements IUserEncoder {
     }
 
     @Override
-    public String encode(Resource resource, List<String> attributesList) {
+    public String encode(Resource resource, List<String> includeAttributes) {
         try {
-            x0.scimSchemasCore1.Resource xmlResource = this.internalEncode(resource, attributesList);
+            x0.scimSchemasCore1.Resource xmlResource = this.internalEncode(resource, includeAttributes);
 
             Complex complex = resource.getClass().getAnnotation(Complex.class);
             Class<?> factory = ReflectionHelper.getFactory(complex.xmlDoc());
@@ -85,11 +85,11 @@ public class XmlEncoder implements IUserEncoder {
             if (!resource.getClass().isAnnotationPresent(Complex.class)) {
                 throw new RuntimeException("Missing annotation complex on, '" + resource.getClass().getName() + "'");
             }
+            
             Complex complexMetadata = resource.getClass().getAnnotation(Complex.class);
             Class<?> factory = ReflectionHelper.getFactory(complexMetadata.xmlType());
             Method parse = factory.getMethod("newInstance");
 
-            // TODO create from document
             return parse.invoke(null);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Internal error, encoding xml", e);

@@ -19,8 +19,10 @@ public class CalendarHandler implements IDecodeHandler, IEncodeHandler, IMerger 
     }
 
     @Override
-    public Object decodeXml(Object value, Object newInstance, MetaData internalMetaData) {
-
+    public Object decodeXml(Object value, Object newInstance, MetaData internalMetaData) throws InvalidUser {
+        if(value instanceof String){
+            return this.parse((String)value);
+        }
         return HandlerHelper.typeCheck(value, Calendar.class);
     }
 

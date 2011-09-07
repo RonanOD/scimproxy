@@ -20,14 +20,14 @@ public class JsonEncoder implements IUserEncoder {
     private static final int INDENT_SIZE = Integer.parseInt(System.getProperty(JsonEncoder.class.getName() + ".INDENT_SIZE", "2"));
 
     @Override
-    public String encode(Resource data) throws EncodingFailed {
-        return encode(data, null);
+    public String encode(Resource resource) throws EncodingFailed {
+        return encode(resource, null);
     }
 
     @Override
-    public String encode(Resource data, List<String> includeAttributes) throws EncodingFailed {
+    public String encode(Resource resource, List<String> includeAttributes) throws EncodingFailed {
         try {
-            JSONObject obj = internalEncode(data, includeAttributes);
+            JSONObject obj = internalEncode(resource, includeAttributes);
             if (obj != null) {
                 return obj.toString(2);
             } else {
@@ -44,19 +44,19 @@ public class JsonEncoder implements IUserEncoder {
     }
 
     @Override
-    public String encode(List<Resource> scimUsers, List<String> includeAttributes) throws EncodingFailed {
+    public String encode(List<Resource> resources, List<String> includeAttributes) throws EncodingFailed {
         try {
             JSONObject result = new JSONObject();
 
-            if (scimUsers == null) {
-                scimUsers = new ArrayList<Resource>();
+            if (resources == null) {
+                resources = new ArrayList<Resource>();
             }
 
             // TODO: Should this be done in core? Return the JSON list of more
             // resporces when you send an List into encode method?
             JSONArray users = new JSONArray();
             int counter = 0;
-            for (Resource scimUser : scimUsers) {
+            for (Resource scimUser : resources) {
                 JSONObject o = internalEncode(scimUser, includeAttributes);
                 if (o != null) {
                     users.put(o);
@@ -76,10 +76,10 @@ public class JsonEncoder implements IUserEncoder {
         }
     }
 
-    private JSONObject internalEncode(Resource data, List<String> attributesList) throws JSONException {
-        JSONObject result = (JSONObject) new ComplexHandler().encode(data, attributesList, null);
+    private JSONObject internalEncode(Resource resource, List<String> includeAttributes) throws JSONException {
+        JSONObject result = (JSONObject) new ComplexHandler().encode(resource, includeAttributes, null);
 
-        for (Object extension : data.getExtensions()) {
+        for (Object extension : resource.getExtensions()) {
 
             if (!extension.getClass().isAnnotationPresent(Extension.class)) {
                 throw new RuntimeException("The extension '" + extension.getClass().getName()
@@ -96,7 +96,7 @@ public class JsonEncoder implements IUserEncoder {
                 }
 
                 MetaData metaData = new MetaData(method.getAnnotation(Attribute.class));
-                if (attributesList != null && !attributesList.contains(metaData.getName())) {
+                if (includeAttributes != null && !includeAttributes.contains(metaData.getName())) {
                     continue;
                 }
                 
@@ -106,7 +106,7 @@ public class JsonEncoder implements IUserEncoder {
                 try {
                     Object value = method.invoke(extension);
                     if (value != null) {
-                        Object encodedValue = encoder.encode(value, attributesList, metaData.getInternalMetaData());
+                        Object encodedValue = encoder.encode(value, includeAttributes, metaData.getInternalMetaData());
                         extensionJson.put(metaData.getName(), encodedValue);
                     }
                 } catch (IllegalAccessException e) {

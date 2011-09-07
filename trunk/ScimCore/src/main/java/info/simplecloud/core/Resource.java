@@ -123,7 +123,6 @@ public abstract class Resource extends ComplexType {
                     Method patchMethod = patchObj.getClass().getMethod(method.getName(), method.getParameterTypes());
                     Object patchData = patchMethod.invoke(patchObj);
 
-                    // TODO think of something smarter
                     String setter = "s" + method.getName().substring(1);
                     ReflectionHelper.getMethod(setter, extension.getClass()).invoke(extension, patchData);
 

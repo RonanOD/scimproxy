@@ -48,5 +48,8 @@ public class JsonDecoderTest {
          * scimUser.getEmails().size());
          * Assert.assertTrue(scimUser.getEmails().contains(new
          * PluralType<String>("bjensen@example.com", "work", true)));
-         */}
+         */
+        
+        // TODO implement test
+    }
 }

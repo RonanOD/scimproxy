@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IResourceDecoder {
 
-    void decode(String user, Resource data) throws InvalidUser;
+    void decode(String resourceString, Resource resource) throws InvalidUser;
 
-    void decode(String userList, List<Resource> users) throws InvalidUser;
+    void decode(String resourceListString, List<Resource> resources) throws InvalidUser;
 }

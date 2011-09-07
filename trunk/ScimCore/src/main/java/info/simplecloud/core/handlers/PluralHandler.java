@@ -86,8 +86,9 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 String type = (String) this.readXml(obj, "getType");
                 Boolean primary = (Boolean) this.readXml(obj, "getPrimary");
                 primary = (primary == null ? false : primary);
-                Boolean delete = null; // (Boolean) this.readXml(obj,
-                                       // "getDelete"); // TODO fix for xml
+                Boolean delete = null;
+                // TODO fix for xml
+                // Boolean delete = (Boolean) this.readXml(obj,"getDelete");
                 delete = (delete == null ? false : delete);
 
                 nrPrimary += (primary ? 1 : 0);
