@@ -1,0 +1,37 @@
+
+{
+	"schemas": ["urn:scim:schemas:core:1.0"],
+	"Entries":[
+		{	
+			"method":"PUT",
+			"type":"group",
+			"location":"http://localhost:8080/v1/Group/groupid1",
+			"etag":"44piovq0kqjrq5lud4evkh7s0u1315577489767",
+			"data":{
+				"schemas": ["urn:scim:schemas:core:1.0"],
+				"id": "groupid1",
+				"displayName": "Tour Guides",
+				"members": [
+					{
+						"display": "Alice Doe",
+						"value": "qwerty",
+					},
+					{
+						"display": "Bob Doe",
+						"value": "ytrewq",
+					},
+					{
+						"display": "Charlie Doe",
+						"value": "123456",
+					}
+				]
+			}
+		},
+		{	
+			"method":"DELETE",
+			"type":"group",
+ 			"location":"http://localhost:8080/v1/Group/groupid2",
+			"etag":"pk29c630p7nnj4h6shtsvfn9l51315577489769"
+		}
+	]
+}
