@@ -1,5 +1,6 @@
 package info.simplecloud.core.coding.decode;
 
+import info.simplecloud.core.Group;
 import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
@@ -19,6 +20,8 @@ import org.apache.xmlbeans.XmlAnySimpleType;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import x0.scimSchemasCore1.Response;
 import x0.scimSchemasCore1.Response.Resources;
@@ -100,6 +103,9 @@ public class XmlDecoder implements IResourceDecoder {
 
             for (x0.scimSchemasCore1.Resource res : xmlResourceArray) {
                 // TODO this is wrong
+            	
+            	// TODO: add support to groups! See JsonDecoder.
+            	
                 User data = new User("tmp");
                 Resource resource = internalDecode(res, data);
                 resources.add(resource);
