@@ -21,6 +21,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -94,12 +95,14 @@ public class List extends HttpServlet {
 		        resp.getWriter().println("<html>");
 		        resp.getWriter().println("<head>");
 		        resp.getWriter().println("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css\">");
-		        resp.getWriter().println("<script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js\"></script>");
-		        resp.getWriter().println("<script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/jquery-ui.min.js\"></script>");
-		      // resp.getWriter().println("<script type=\"text/javascript\" src=\"/js/jquery-1.6.2.min.js\"></script>");
+		        resp.getWriter().println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/prettify.css\" />");
 		        resp.getWriter().println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/style.css\" />");
+		        resp.getWriter().println("<script type=\"text/javascript\" src=\"/js/prettify/prettify.js\"></script>");
+		        resp.getWriter().println("<script type=\"text/javascript\" src=\"http://code.jquery.com/jquery-latest.js\"></script>");
+
+		        
 		        resp.getWriter().println("</head>");
-		        resp.getWriter().println("<body>");
+		        resp.getWriter().println("<body onload=\"prettyPrint()\">");
 
 		        resp.getWriter().println("<div id=\"container\">");
 		        resp.getWriter().println("<div id=\"header\"><h1>Simple Cloud Identity Management</h1></div>"); 
@@ -115,17 +118,18 @@ public class List extends HttpServlet {
 		        resp.getWriter().println("<div id=\"content\">"); 
 		        resp.getWriter().println("<div id=\"content\">"); 
 
+		        resp.getWriter().println("<p><button>Change format</button><br/>"); 
+
 		        resp.getWriter().println("<h2>Users</h2>"); 
 
-		        resp.getWriter().println("<p>"); 
-		        
+
                 resp.getWriter().println("<table class=\"list\">");
 
                 resp.getWriter().println("<tr>");
                 resp.getWriter().println("<th>&nbsp;</th>");
                 resp.getWriter().println("<th>id</th>");
                 resp.getWriter().println("<th>user name</th>");
-                resp.getWriter().println("<th>json</th>");
+                resp.getWriter().println("<th><div class=\"resource\">JSON</div><div class=\"resource\" style=\"display: none\">XML</div></th>");
                 resp.getWriter().println("</tr>");
 
 				for (User scimUser : users) {
@@ -146,12 +150,13 @@ public class List extends HttpServlet {
 	                resp.getWriter().println(scimUser.getUserName());
 	                resp.getWriter().println("</td>");
 	                resp.getWriter().println("<td>");
-	                resp.getWriter().println("<pre>" + scimUser.getUser(User.ENCODING_JSON) + "</pre>");
+	                resp.getWriter().println("<div class=\"resource\"><pre class=\"prettyprint\" id=\"javascript\">" + scimUser.getUser(User.ENCODING_JSON) + "</pre></div>");
+	                resp.getWriter().println("<div class=\"resource\" style=\"display: none\"><pre class=\"prettyprint\">" + StringEscapeUtils.escapeHtml(scimUser.getUser(User.ENCODING_XML)) + "</pre></div>");
 	                resp.getWriter().println("</td>");
 	                resp.getWriter().println("</tr>");
 				}
 				if(users.size() == 0) {
-	                resp.getWriter().println("<tr><td colspan=\"4\">No users in storage.</td></tr>");
+	                resp.getWriter().println("<tr><td colspan=\"5\">No users in storage.</td></tr>");
 				}
                 resp.getWriter().println("</table>");
                
@@ -182,7 +187,7 @@ public class List extends HttpServlet {
                 resp.getWriter().println("<th>&nbsp;</th>");
                 resp.getWriter().println("<th>id</th>");
                 resp.getWriter().println("<th>display name</th>");
-                resp.getWriter().println("<th>json</th>");
+                resp.getWriter().println("<th><div class=\"resource\">JSON</div><div class=\"resource\" style=\"display: none\">XML</div></th>");
                 resp.getWriter().println("</tr>");
 
 				for (Group scimGroup : groups) {
@@ -203,12 +208,13 @@ public class List extends HttpServlet {
 	                resp.getWriter().println(scimGroup.getDisplayName());
 	                resp.getWriter().println("</td>");
 	                resp.getWriter().println("<td>");
-	                resp.getWriter().println("<pre>" + scimGroup.getGroup(Group.ENCODING_JSON) + "</pre>");
+	                resp.getWriter().println("<div class=\"resource\"><pre class=\"prettyprint\" id=\"javascript\">" + scimGroup.getGroup(Group.ENCODING_JSON) + "</pre></div>");
+	                resp.getWriter().println("<div class=\"resource\" style=\"display: none\"><pre class=\"prettyprint\">" + StringEscapeUtils.escapeHtml(scimGroup.getGroup(Group.ENCODING_XML)) + "</pre></div>");
 	                resp.getWriter().println("</td>");
 	                resp.getWriter().println("</tr>");
 				}
 				if(groups.size() == 0) {
-	                resp.getWriter().println("<tr><td colspan=\"4\">No users in storage.</td></tr>");
+	                resp.getWriter().println("<tr><td colspan=\"5\">No groups in storage.</td></tr>");
 				}
                 resp.getWriter().println("</table>");
                
@@ -224,6 +230,11 @@ public class List extends HttpServlet {
                 
                 resp.getWriter().println("</div>");
                 
+		        resp.getWriter().println("<script>");
+		        resp.getWriter().println("$(\"button\").click(function () {");
+		        resp.getWriter().println("$(\"div.resource\").toggle();");
+		        resp.getWriter().println("});");
+		        resp.getWriter().println("</script>");
 		        resp.getWriter().println("</body>");
                 resp.getWriter().println("</html>");
 				

@@ -15,6 +15,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,8 +49,10 @@ public class Add extends HttpServlet {
 	        resp.getWriter().println("<head>");
 	        resp.getWriter().println("<script type=\"text/javascript\" src=\"/js/jquery-1.6.2.min.js\"></script>");
 	        resp.getWriter().println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/style.css\" />");
+	        resp.getWriter().println("<link href=\"/css/prettify.css\" type=\"text/css\" rel=\"stylesheet\" />");
+	        resp.getWriter().println("<script type=\"text/javascript\" src=\"/js/prettify/prettify.js\"></script>");
 	        resp.getWriter().println("</head>");
-	        resp.getWriter().println("<body>");
+	        resp.getWriter().println("<body onload=\"prettyPrint()\">");
 
 	        resp.getWriter().println("<div id=\"container\">");
 	        resp.getWriter().println("<div id=\"header\"><h1>Simple Cloud Identity Management</h1></div>"); 
@@ -89,16 +92,22 @@ public class Add extends HttpServlet {
 				if(responseCode == 201) {
 			        resp.getWriter().print("Resource added successfully.<br/><br/>");
 			        resp.getWriter().print("<b>Response header:</b>");
-			        resp.getWriter().print("<pre>");
+			        resp.getWriter().print("<pre class=\"prettyprint\">");
 			        
 			        for(int i=0; i<method.getResponseHeaders().length; i++) {
-				        resp.getWriter().print("<br/>" + method.getResponseHeaders()[i].getName() + ": " + method.getResponseHeaders()[i].getValue());
+				        resp.getWriter().print(method.getResponseHeaders()[i].getName() + ": " + method.getResponseHeaders()[i].getValue() + "<br/>");
 			        }
 			        
 			        resp.getWriter().print("</pre>");
 			        resp.getWriter().print("<b>Response body:</b><br/>");
-			        resp.getWriter().print("<pre>");
-			        resp.getWriter().print(method.getResponseBodyAsString());
+			        resp.getWriter().print("<pre class=\"prettyprint\">");
+			        if("application/json".equals(encoding)) {
+			        	resp.getWriter().print(method.getResponseBodyAsString());
+			        }
+			        else {
+			        	resp.getWriter().print(StringEscapeUtils.escapeHtml(method.getResponseBodyAsString()));
+			        }
+			        
 			        resp.getWriter().print("</pre>");
 				}
 				else {
