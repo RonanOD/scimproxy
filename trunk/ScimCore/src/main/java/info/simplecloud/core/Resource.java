@@ -162,6 +162,16 @@ public abstract class Resource extends ComplexType {
         }
     }
 
+    public <T> T getAttribute(String name) throws UnknownAttribute {
+        // TODO implement magic getter of extension attribute
+        return super.getAttribute(name);
+    }
+
+    public ComplexType setAttribute(String name, Object attribute) throws UnknownAttribute {
+        // TODO implement magic setter of extension attribute
+        return super.setAttribute(name, attribute);
+    }
+
     @Attribute(name = "id", handler = StringHandler.class)
     public String getId() {
         return this.id;
@@ -170,21 +180,20 @@ public abstract class Resource extends ComplexType {
     @Attribute(name = "schemas", handler = ListHandler.class)
     public List<String> getSchemas() {
         List<String> schemas = new ArrayList<String>();
-        if(!this.getClass().isAnnotationPresent(Extension.class)){
-            throw new RuntimeException("Extension class '"+this.getClass().getName()+"' is missing annotation");
+        if (!this.getClass().isAnnotationPresent(Extension.class)) {
+            throw new RuntimeException("Extension class '" + this.getClass().getName() + "' is missing annotation");
         }
         Extension metaData = this.getClass().getAnnotation(Extension.class);
         schemas.add(metaData.schema());
-        
-        
-        for(Object extension : this.extensions){
-            if(!extension.getClass().isAnnotationPresent(Extension.class)){
-                throw new RuntimeException("Extension class '"+extension.getClass().getName()+"' is missing annotation");
+
+        for (Object extension : this.extensions) {
+            if (!extension.getClass().isAnnotationPresent(Extension.class)) {
+                throw new RuntimeException("Extension class '" + extension.getClass().getName() + "' is missing annotation");
             }
             metaData = extension.getClass().getAnnotation(Extension.class);
             schemas.add(metaData.schema());
         }
-        
+
         return schemas;
     }
 

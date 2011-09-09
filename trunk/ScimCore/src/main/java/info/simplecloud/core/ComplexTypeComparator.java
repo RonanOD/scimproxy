@@ -22,6 +22,7 @@ public class ComplexTypeComparator implements Comparator<ComplexType> {
             Object attribute0 = complex0.getAttribute(this.compareAttribute);
             Object attribute1 = complex1.getAttribute(this.compareAttribute);
 
+            // TODO null attributes should be first/last depending on sortOrder
             if (attribute0 == attribute1) {
                 return 0;
             } else if (attribute0 == null) {
