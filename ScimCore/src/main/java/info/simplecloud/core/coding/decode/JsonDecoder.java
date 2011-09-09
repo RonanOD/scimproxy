@@ -1,5 +1,6 @@
 package info.simplecloud.core.coding.decode;
 
+import info.simplecloud.core.Group;
 import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
@@ -105,12 +106,27 @@ public class JsonDecoder implements IResourceDecoder {
                 if (userListJson.has("entry")) {
                     JSONArray jsonUsers = userListJson.getJSONArray("entry");
                     for (int i = 0; i < jsonUsers.length(); i++) {
-                        JSONObject user = jsonUsers.getJSONObject(i);
+                        JSONObject resource = jsonUsers.getJSONObject(i);
 
-                        // TODO this is wrong
-                        User data = new User("tmp");
-                        decode(user.toString(), data);
-                        resources.add(data);
+                        boolean isGroup = false;
+                        try {
+                            // only groups have the member field
+                        	resource.getJSONArray("members");
+                        	isGroup = true;
+                        } catch (JSONException missing) {
+                        	isGroup = false;
+                        }
+
+                        if(isGroup) {
+                            Group data = new Group("tmp");
+                            decode(resource.toString(), data);
+                            resources.add(data);
+                        }
+                        else {
+                            User data = new User("tmp");
+                            decode(resource.toString(), data);
+                            resources.add(data);
+                        }
                     }
                 }
             }

@@ -78,6 +78,20 @@ public class Group extends Resource {
         return super.equals(otherGroup);
     }
 
+	public static List<Group> getGroups(String groups, String encoding) throws UnknownEncoding, InvalidUser {
+        List<Resource> grouplist = new ArrayList<Resource>();
+        List<Group> resultlist = new ArrayList<Group>();
+        // TODO This is ugly
+        
+        Resource.getResources(groups, encoding, grouplist);
+        for (Resource r : grouplist) {
+            if (r instanceof Group) {
+                resultlist.add((Group) r);
+            }
+        }
+        return resultlist;
+	}
+
     @Attribute(name = "members", handler = PluralHandler.class, internalName = "member", internalHandler = StringHandler.class)
     public List<PluralType<String>> getMembers() {
         return this.members;
