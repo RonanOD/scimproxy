@@ -34,6 +34,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 value = decoder.decode(value, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
 
                 String type = (String) getOptional(internalObj, "type");
+                String display = (String) getOptional(internalObj, "display");
                 Boolean primary = (Boolean) getOptional(internalObj, "primary");
                 primary = (primary == null ? false : primary);
                 Boolean delete = (Boolean) getOptional(internalObj, "delete");
@@ -41,7 +42,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
                 nrPrimary += (primary ? 1 : 0);
 
-                result.add(new PluralType(value, type, primary, delete));
+                result.add(new PluralType(value, type, display, primary, delete));
             }
 
             if (nrPrimary > 1) {
@@ -84,15 +85,14 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 }
 
                 String type = (String) this.readXml(obj, "getType");
+                String display = (String) this.readXml(obj, "getDisplay");
                 Boolean primary = (Boolean) this.readXml(obj, "getPrimary");
                 primary = (primary == null ? false : primary);
-                Boolean delete = null;
-                // TODO fix for xml
-                // Boolean delete = (Boolean) this.readXml(obj,"getDelete");
+                Boolean delete = (Boolean) this.readXml(obj, "getDelete");
                 delete = (delete == null ? false : delete);
 
                 nrPrimary += (primary ? 1 : 0);
-                result.add(new PluralType(internalValue, type, primary, delete));
+                result.add(new PluralType(internalValue, type, display, primary, delete));
             }
 
             if (nrPrimary > 1) {
@@ -126,6 +126,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
             try {
                 jsonObject.put("value", value);
                 jsonObject.put("type", singular.getType());
+                jsonObject.put("display", singular.getDisplay());
                 if (singular.isPrimary()) {
                     jsonObject.put("primary", singular.isPrimary());
                 }
@@ -161,10 +162,13 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                     // This is okay, value has been assigned internally
                 }
                 this.writeXml(internalXmlObject, singular.getType(), "setType");
-                this.writeXml(internalXmlObject, singular.isPrimary(), "setPrimary");
-                // TODO fix setting of delete
-                // this.writeXml(internalXmlObject, singular.isDelete(),
-                // "setDelete");
+                this.writeXml(internalXmlObject, singular.getDisplay(), "setDisplay");
+                if (singular.isPrimary()) {
+                    this.writeXml(internalXmlObject, singular.isPrimary(), "setPrimary");
+                }
+                if (singular.isDelete()) {
+                    this.writeXml(internalXmlObject, singular.isDelete(), "setDelete");
+                }
             }
             return xmlObject;
         } catch (IllegalArgumentException e) {

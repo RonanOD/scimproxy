@@ -206,6 +206,8 @@
       <xs:element name="country" type="xs:string" minOccurs="0"/>
       <xs:element name="primary" type="xs:boolean" minOccurs="0"/>
       <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="delete" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="display" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -214,6 +216,8 @@
       <xs:element name="value" type="xs:string" minOccurs="0"/>
       <xs:element name="primary" type="xs:boolean" minOccurs="0"/>
       <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="delete" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="display" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
