@@ -59,7 +59,8 @@ public class Add extends HttpServlet {
 
 	        resp.getWriter().println("<div id=\"navigation\">"); 
 	        resp.getWriter().println("<ul>"); 
-	        resp.getWriter().println("<li><a href=\"List\">List</a></li>"); 
+	        resp.getWriter().println("<li><a href=\"List?listType=user\">Users</a></li>"); 
+	        resp.getWriter().println("<li><a href=\"List?listType=group\">Groups</a></li>"); 
 	        resp.getWriter().println("<li><a href=\"Add\">Add</a></li>"); 
 	        resp.getWriter().println("<li><a href=\"Batch\">Batch</a></li>"); 
 	        resp.getWriter().println("</ul>"); 

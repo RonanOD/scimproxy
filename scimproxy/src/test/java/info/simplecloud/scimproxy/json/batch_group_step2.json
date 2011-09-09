@@ -14,15 +14,15 @@
 				"members": [
 					{
 						"display": "Alice Doe",
-						"value": "qwerty",
+						"value": "qwerty"
 					},
 					{
 						"display": "Bob Doe",
-						"value": "ytrewq",
+						"value": "ytrewq"
 					},
 					{
 						"display": "Charlie Doe",
-						"value": "123456",
+						"value": "123456"
 					}
 				]
 			}

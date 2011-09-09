@@ -13,11 +13,11 @@
 	    "members": [
 	        {
 	          "display": "Alice Doe",
-	          "value": "qwerty",
+	          "value": "qwerty"
 	        },
 	        {
 	          "display": "Bob Doe",
-	          "value": "ytrewq",
+	          "value": "ytrewq"
 	        }
 	    ]
 	  }
@@ -33,7 +33,7 @@
 	    "members": [
 	        {
 	          "display": "Bob Doe",
-	          "value": "ytrewq",
+	          "value": "ytrewq"
 	        }
 	    ]
 	  }

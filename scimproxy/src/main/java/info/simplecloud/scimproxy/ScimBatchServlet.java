@@ -66,6 +66,10 @@ public class ScimBatchServlet extends ScimResourceServlet {
 				    	data = entity.getJSONObject("data");
 				    }
 				    
+				    if(i != 0) {
+				    	response += "\t\t,\n";
+				    }
+				    
 		            if("post".equalsIgnoreCase(method)) {
 	                	response += "\t\t{\n" +
 		        	      "\t\t\t\"method\":\"POST\",\n" +
@@ -108,7 +112,7 @@ public class ScimBatchServlet extends ScimResourceServlet {
 		            
 		            if("put".equalsIgnoreCase(method)) {
 	                	response += "\t\t{\n" +
-	                	  "\t\t\t\"location\":\"" + location + "\"\n" +
+	                	  "\t\t\t\"location\":\"" + location + "\",\n" +
 		        	      "\t\t\t\"method\":\"PUT\",\n" +
 		        	      "\t\t\t\"status\":{\n";
 
@@ -127,7 +131,6 @@ public class ScimBatchServlet extends ScimResourceServlet {
 			                	scimResource = internalGroupPut(id, etag, data.toString(), req);
 			                	scimResourceString = ((Group)scimResource).getGroup(HttpGenerator.getEncoding(req));
 		                	}
-		                	
 		                	
 	                		// TODO: move this into storage? 
 		                	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, req));
@@ -177,7 +180,7 @@ public class ScimBatchServlet extends ScimResourceServlet {
 
 	                		response += "\t\t\t\t\"code\":\"200\",\n" +
 		        	        		"\t\t\t\t\"reason\":\"Patched\"\n" + 
-	                				"\t\t\t},\n";
+	                				"\t\t\t}\n";
 		        	        
 	                		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
 		        	      				"\t\t\t\"data\":" + scimResourceString + ",\n" +
@@ -194,8 +197,9 @@ public class ScimBatchServlet extends ScimResourceServlet {
 		            }		            
 		            if("delete".equalsIgnoreCase(method)) {
 	                	response += "\t\t{\n" +
-		        	      "\t\t\t\"method\":\"DELETE\",\n" +
-		        	      "\t\t\t\"status\":{\n";
+                			"\t\t\t\"location\":\"" + location + "\",\n" + 
+                			"\t\t\t\"method\":\"DELETE\",\n" +
+                			"\t\t\t\"status\":{\n";
 
 	                	String id = "";
 		                try {
@@ -210,13 +214,12 @@ public class ScimBatchServlet extends ScimResourceServlet {
 		                	
 	                		response += "\t\t\t\t\"code\":\"200\",\n" +
 		        	        		"\t\t\t\t\"reason\":\"Deleted\"\n" + 
-	                				"\t\t\t},\n";
+	                				"\t\t\t}\n";
 		                
 		                } catch (Exception e) {
 		                	response += handleExceptions(e, id);
 		                }
 
-                		response += "\t\t\t\"location\":\"" + location + "\"\n";
 
 		                response += "\t\t}\n";
 		            }		            
@@ -226,7 +229,7 @@ public class ScimBatchServlet extends ScimResourceServlet {
 							"}\n";
 
 				resp.setHeader("Location", batchLocation);
-                HttpGenerator.ok(resp, response);
+				HttpGenerator.ok(resp, response);
 		        				
 			} catch (JSONException e) {
 	            HttpGenerator.badRequest(resp, "Malformed batch request.");
