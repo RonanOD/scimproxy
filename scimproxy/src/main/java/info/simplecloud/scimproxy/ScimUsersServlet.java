@@ -62,7 +62,7 @@ public class ScimUsersServlet extends RestServlet {
         if (filterBy != null && !"".equals(filterBy)) {
             users = storage.getList(sortBy, sortOrder, filterBy, filterValue, filterOp);
         } else {
-            users = storage.getList(sortBy, sortOrder);
+            users = storage.getUserList(sortBy, sortOrder);
         }
 
         int index = 0;

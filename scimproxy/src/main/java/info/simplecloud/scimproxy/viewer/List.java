@@ -1,5 +1,6 @@
 package info.simplecloud.scimproxy.viewer;
 
+import info.simplecloud.core.Group; 
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownEncoding;
@@ -40,6 +41,7 @@ public class List extends HttpServlet {
 		else {
 			String delete = req.getParameter("delete");
 			String etag = req.getParameter("etag");
+			String type = req.getParameter("type");
 			
 			if(delete != null && !"".equals(delete)) {
 				// Create an instance of HttpClient.
@@ -51,7 +53,7 @@ public class List extends HttpServlet {
 				client.getState().setCredentials(AuthScope.ANY, creds);
 				
 				// Create a method instance.
-				DeleteMethod method = new DeleteMethod("http://localhost:8080/v1/User/" + delete);
+				DeleteMethod method = new DeleteMethod("http://localhost:8080/v1/" + type + "/" + delete);
 				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 				method.setRequestHeader("Content-Type", "text/html; charset=UTF-8");
 				method.setRequestHeader("ETag", etag);
@@ -68,21 +70,26 @@ public class List extends HttpServlet {
 			
 			
 			// Create a method instance.
-			GetMethod method = new GetMethod("http://localhost:8080/v1/Users");
-			method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-			method.setRequestHeader("Content-Type", "text/html; charset=UTF-8");
+			GetMethod methodUsers = new GetMethod("http://localhost:8080/v1/Users");
+			methodUsers.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+			methodUsers.setRequestHeader("Content-Type", "text/html; charset=UTF-8");
+
+			// Create a method instance.
+			GetMethod methodGroups = new GetMethod("http://localhost:8080/v1/Groups");
+			methodGroups.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+			methodGroups.setRequestHeader("Content-Type", "text/html; charset=UTF-8");
 
 			try {
 				// Execute the method.
-				int statusCode = client.executeMethod(method);
+				int statusCodeUser = client.executeMethod(methodUsers);
 
 				// Read the response body.
-				byte[] responseBody = method.getResponseBody();
+				byte[] responseBodyUser = methodUsers.getResponseBody();
 
-				log.debug("Response code: " + Integer.toString(statusCode));
-				log.debug("Status line: " + method.getStatusLine());
-				log.debug("Response: \n" + new String(responseBody));
-				java.util.List<User> users = User.getUsers(new String(responseBody), User.ENCODING_JSON);
+				log.debug("Response code: " + Integer.toString(statusCodeUser));
+				log.debug("Status line: " + methodUsers.getStatusLine());
+				log.debug("Response: \n" + new String(responseBodyUser));
+				java.util.List<User> users = User.getUsers(new String(responseBodyUser), User.ENCODING_JSON);
 
 		        resp.getWriter().println("<html>");
 		        resp.getWriter().println("<head>");
@@ -108,7 +115,7 @@ public class List extends HttpServlet {
 		        resp.getWriter().println("<div id=\"content\">"); 
 		        resp.getWriter().println("<div id=\"content\">"); 
 
-		        resp.getWriter().println("<h2>List users</h2>"); 
+		        resp.getWriter().println("<h2>Users</h2>"); 
 
 		        resp.getWriter().println("<p>"); 
 		        
@@ -125,8 +132,8 @@ public class List extends HttpServlet {
 	                resp.getWriter().println("<tr>");
 	                resp.getWriter().println("<td>");
 	                if(scimUser.getMeta() != null) {
-		                resp.getWriter().println("<a href=\"?delete=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">delete</a><br/>");
-		                resp.getWriter().println("<a href=\"Edit?id=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">edit</a>");
+		                resp.getWriter().println("<a href=\"?type=User&delete=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">delete</a><br/>");
+		                resp.getWriter().println("<a href=\"Edit?type=User&id=" + scimUser.getId() + "&etag=" + scimUser.getMeta().getVersion() + "\">edit</a>");
 	                }
 	                else {
 	                	resp.getWriter().println("No meta");
@@ -149,6 +156,65 @@ public class List extends HttpServlet {
                 resp.getWriter().println("</table>");
                
 		        resp.getWriter().println("</p>"); 
+		        
+				// Execute the method.
+				int statusCodeGroup = client.executeMethod(methodGroups);
+
+				// Read the response body.
+				byte[] responseBodyGroup = methodGroups.getResponseBody();
+
+				log.debug("Response code: " + Integer.toString(statusCodeGroup));
+				log.debug("Status line: " + methodGroups.getStatusLine());
+				log.debug("Response: \n" + new String(responseBodyGroup));
+
+				String groupsStr = new String(responseBodyGroup);
+				
+				java.util.List<Group> groups = Group.getGroups(groupsStr, Group.ENCODING_JSON);
+
+
+		        resp.getWriter().println("<h2>Groups</h2>"); 
+
+		        resp.getWriter().println("<p>"); 
+		        
+                resp.getWriter().println("<table class=\"list\">");
+
+                resp.getWriter().println("<tr>");
+                resp.getWriter().println("<th>&nbsp;</th>");
+                resp.getWriter().println("<th>id</th>");
+                resp.getWriter().println("<th>display name</th>");
+                resp.getWriter().println("<th>json</th>");
+                resp.getWriter().println("</tr>");
+
+				for (Group scimGroup : groups) {
+	                resp.getWriter().println("<tr>");
+	                resp.getWriter().println("<td>");
+	                if(scimGroup.getMeta() != null) {
+		                resp.getWriter().println("<a href=\"?type=Group&delete=" + scimGroup.getId() + "&etag=" + scimGroup.getMeta().getVersion() + "\">delete</a><br/>");
+		                resp.getWriter().println("<a href=\"Edit?type=Group&id=" + scimGroup.getId() + "&etag=" + scimGroup.getMeta().getVersion() + "\">edit</a>");
+	                }
+	                else {
+	                	resp.getWriter().println("No meta");
+	                }
+	                resp.getWriter().println("</td>");
+	                resp.getWriter().println("<td>");
+	                resp.getWriter().println(scimGroup.getId());
+	                resp.getWriter().println("</td>");
+	                resp.getWriter().println("<td>");
+	                resp.getWriter().println(scimGroup.getDisplayName());
+	                resp.getWriter().println("</td>");
+	                resp.getWriter().println("<td>");
+	                resp.getWriter().println("<pre>" + scimGroup.getGroup(Group.ENCODING_JSON) + "</pre>");
+	                resp.getWriter().println("</td>");
+	                resp.getWriter().println("</tr>");
+				}
+				if(groups.size() == 0) {
+	                resp.getWriter().println("<tr><td colspan=\"4\">No users in storage.</td></tr>");
+				}
+                resp.getWriter().println("</table>");
+               
+		        resp.getWriter().println("</p>"); 
+		        
+		        
 		        resp.getWriter().println("</div>"); 
 
 
@@ -175,7 +241,8 @@ public class List extends HttpServlet {
 				e.printStackTrace();
 			} finally {
 				// Release the connection.
-				method.releaseConnection();
+				methodGroups.releaseConnection();
+				methodUsers.releaseConnection();
 			}
 		
 		
