@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 @SuppressWarnings("serial")
-public class ScimGroupServlet extends ScimGroupUpdatesServlet {
+public class ScimGroupServlet extends ScimResourceServlet {
 	
     private Log log = LogFactory.getLog(ScimGroupServlet.class);
 	
@@ -60,7 +60,7 @@ public class ScimGroupServlet extends ScimGroupUpdatesServlet {
 
         if (query != null && !"".equals(query)) {
             try {
-            	Group scimGroup = internalPost(query, req);
+            	Group scimGroup = internalGroupPost(query, req);
             	
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimGroup.getMeta().getLocation());
@@ -91,7 +91,7 @@ public class ScimGroupServlet extends ScimGroupUpdatesServlet {
         if (query != null && !"".equals(query) && groupId != null) {
 
             try {
-            	Group scimGroup = internalPut(groupId, etag, query, req);
+            	Group scimGroup = internalGroupPut(groupId, etag, query, req);
 
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimGroup.getMeta().getLocation());
@@ -120,7 +120,7 @@ public class ScimGroupServlet extends ScimGroupUpdatesServlet {
 		
 		if (groupId != null) {
 		    try {
-				internalDelete(groupId, req.getHeader("ETag"), req);
+				internalGroupDelete(groupId, req.getHeader("ETag"), req);
 		        HttpGenerator.ok(resp);
 		        log.info("Deleating group " + groupId + ".");
 			} catch (ResourceNotFoundException e) {
@@ -144,7 +144,7 @@ public class ScimGroupServlet extends ScimGroupUpdatesServlet {
         if (!"".equals(query) && groupId != null && etag != null && !"".equals(etag)) {
 
         	try {
-				Group scimGroup = internalPatch(groupId, etag, query, req);
+				Group scimGroup = internalGroupPatch(groupId, etag, query, req);
 				
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimGroup.getMeta().getLocation());

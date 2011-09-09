@@ -4,6 +4,7 @@
   "Entries":[
     {
       "method":"POST",
+      "type":"user",
       "batchId":"evebatchid",
       "data":{
         "schemas": ["urn:scim:schemas:core:1.0"],
@@ -17,6 +18,7 @@
     },
     {
       "method":"PUT",
+      "type":"user",
       "location":"BOBLOCATIONPLACEHOLDER",
       "etag":"BOBETAGPLACEHOLDER",
       "data":{
@@ -36,7 +38,8 @@
         }
     },
     {
-        "method":"DELETE",
+		"method":"DELETE",
+		"type":"user",
         "location":"CHARLIELOCATIONPLACEHOLDER",
         "etag":"CHARLIEETAGPLACEHOLDER"
     }

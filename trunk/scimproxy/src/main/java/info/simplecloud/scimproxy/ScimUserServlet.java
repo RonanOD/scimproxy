@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
  * point; e.g., /User/{id}. This servlet is the /User end point.
  */
 
-public class ScimUserServlet extends ScimUserUpdatesServlet {
+public class ScimUserServlet extends ScimResourceServlet {
 
     /**
      * Serialize id.
@@ -96,7 +96,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
         if (query != null && !"".equals(query)) {
             try {
             	
-            	User scimUser = internalPost(query, req);
+            	User scimUser = internalUserPost(query, req);
             	
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimUser.getMeta().getLocation());
@@ -138,7 +138,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
         if (query != null && !"".equals(query) && userId != null) {
 
             try {
-            	User scimUser = internalPut(userId, etag, query, req);
+            	User scimUser = internalUserPut(userId, etag, query, req);
 
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimUser.getMeta().getLocation());
@@ -177,7 +177,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
 
         if (userId != null) {
             try {
-					internalDelete(userId, req.getHeader("ETag"), req);
+					internalUserDelete(userId, req.getHeader("ETag"), req);
                     HttpGenerator.ok(resp);
                     log.info("Deleating user " + userId + ".");
 
@@ -213,7 +213,7 @@ public class ScimUserServlet extends ScimUserUpdatesServlet {
         if (!"".equals(query) && userId != null && etag != null && !"".equals(etag)) {
 
         	try {
-				User scimUser = internalPatch(userId, etag, query, req);
+				User scimUser = internalUserPatch(userId, etag, query, req);
 				
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimUser.getMeta().getLocation());

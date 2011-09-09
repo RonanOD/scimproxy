@@ -1,6 +1,6 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.Group;
+import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 
 import java.io.IOException;
@@ -192,38 +192,28 @@ public class HttpGenerator {
 	}
 
 	/**
-	 * Generating a location for a user on the current web server.
+	 * Generating a location for a resource on the current web server.
 	 * 
-	 * @param user
-	 *            The user we want the location for.
+	 * @param resource
+	 *            The resource we want the location for.
 	 * @param req
 	 *            A servlet request for retrieving paths and server names.
-	 * @return A URI to a scim user to be used as a Location HTTP header.
+	 * @return A URI to a scim resource to be used as a Location HTTP header.
 	 */
-	public static String getUserLocation(User user, HttpServletRequest req) {
-		return getInternalLocation("/v1/User/" + user.getId(), req);
+	public static String getLocation(Resource resource, HttpServletRequest req) {
+		String path = "";
+		if(resource instanceof User) {
+			path = "User";
+		}
+		else {
+			path = "Group";
+		}
+		return getInternalLocation("/v1/" + path + "/" + resource.getId(), req);
 	}
 	
-	/**
-	 * Generating a location for a group on the current web server.
-	 * 
-	 * @param group
-	 *            The group we want the location for.
-	 * @param req
-	 *            A servlet request for retrieving paths and server names.
-	 * @return A URI to a scim group to be used as a Location HTTP header.
-	 */
-	public static String getGroupLocation(Group group, HttpServletRequest req) {
-		return getInternalLocation("/v1/Group/" + group.getId(), req);
-	}
-
 	
-	public static String getBatchUserLocation(String batch, HttpServletRequest req) {
-		return getInternalLocation("/v1/Batch/User/" + batch, req);
-	}
-
-	public static String getBatchGroupLocation(String batch, HttpServletRequest req) {
-		return getInternalLocation("/v1/Batch/Group/" + batch, req);
+	public static String getBatchLocation(String batch, HttpServletRequest req) {
+		return getInternalLocation("/v1/Batch/" + batch, req);
 	}
 
 	private static String getInternalLocation(String path, HttpServletRequest req) {

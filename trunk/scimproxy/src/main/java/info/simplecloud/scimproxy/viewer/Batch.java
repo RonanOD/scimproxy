@@ -97,7 +97,7 @@ public class Batch extends HttpServlet {
 			        resp.getWriter().print("</pre>");
 				}
 				else {
-			        resp.getWriter().print("Failed to add user to storage.<br/><br/>");
+			        resp.getWriter().print("Failed to add resources to storage.<br/><br/>");
 				}
 			}	
 	        resp.getWriter().print("<form method='POST'>");
