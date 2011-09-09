@@ -5,10 +5,17 @@ public class PluralType<T> implements Comparable<PluralType<?>> {
     private String  type;
     private boolean primary;
     private boolean delete;
+    private String  display;
 
-    // TODO add display
+    public PluralType(T value, String type, String display, boolean primary) {
+        this(value, type, display, primary, false);
+    }
 
     public PluralType(T value, String type, boolean primary, boolean delete) {
+        this(value, type, null, primary, delete);
+    }
+
+    public PluralType(T value, String type, String display, boolean primary, boolean delete) {
         if (value == null) {
             throw new IllegalArgumentException("Cannot create plural object without value");
         }
@@ -16,18 +23,7 @@ public class PluralType<T> implements Comparable<PluralType<?>> {
         this.type = type;
         this.primary = primary;
         this.delete = delete;
-    }
-
-    public T getValue() {
-        return this.value;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public boolean isPrimary() {
-        return this.primary;
+        this.display = display;
     }
 
     @Override
@@ -53,6 +49,22 @@ public class PluralType<T> implements Comparable<PluralType<?>> {
         }
 
         return 0;
+    }
+
+    public T getValue() {
+        return this.value;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public String getDisplay() {
+        return this.display;
+    }
+
+    public boolean isPrimary() {
+        return this.primary;
     }
 
     public boolean isDelete() {
