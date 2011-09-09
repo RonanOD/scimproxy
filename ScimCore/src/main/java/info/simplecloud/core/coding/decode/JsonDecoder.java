@@ -1,9 +1,7 @@
 package info.simplecloud.core.coding.decode;
 
-import info.simplecloud.core.Group;
 import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
-import info.simplecloud.core.User;
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.coding.ReflectionHelper;
@@ -97,7 +95,7 @@ public class JsonDecoder implements IResourceDecoder {
     }
 
     @Override
-    public void decode(String resourceListString, List<Resource> resources) throws InvalidUser {
+    public void decode(String resourceListString, List<Resource> resources, Class<?> type) throws InvalidUser {
 
         try {
             if (resourceListString != null && !"".equals(resourceListString)) {
@@ -106,35 +104,21 @@ public class JsonDecoder implements IResourceDecoder {
                 if (userListJson.has("entry")) {
                     JSONArray jsonUsers = userListJson.getJSONArray("entry");
                     for (int i = 0; i < jsonUsers.length(); i++) {
-                        JSONObject resource = jsonUsers.getJSONObject(i);
+                        JSONObject jsonResource = jsonUsers.getJSONObject(i);
 
-                        boolean isGroup = false;
-                        try {
-                            // only groups have the member field
-                        	resource.getJSONArray("members");
-                        	isGroup = true;
-                        } catch (JSONException missing) {
-                        	isGroup = false;
-                        }
-
-                        if(isGroup) {
-                            Group data = new Group("tmp");
-                            decode(resource.toString(), data);
-                            resources.add(data);
-                        }
-                        else {
-                            User data = new User("tmp");
-                            decode(resource.toString(), data);
-                            resources.add(data);
-                        }
+                        Resource resource = (Resource) type.newInstance();
+                        decode(jsonResource.toString(), resource);
+                        resources.add(resource);
                     }
                 }
             }
 
         } catch (JSONException e) {
-            throw new InvalidUser("Failed to parse user", e);
+            throw new InvalidUser("Failed to parse resource set", e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Internal error, decoding json", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Internal error, decoding json", e);
         }
-
     }
-
 }

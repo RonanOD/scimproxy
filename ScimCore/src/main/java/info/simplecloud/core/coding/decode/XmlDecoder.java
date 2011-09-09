@@ -1,9 +1,7 @@
 package info.simplecloud.core.coding.decode;
 
-import info.simplecloud.core.Group;
 import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
-import info.simplecloud.core.User;
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.annotations.Extension;
@@ -20,8 +18,6 @@ import org.apache.xmlbeans.XmlAnySimpleType;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import x0.scimSchemasCore1.Response;
 import x0.scimSchemasCore1.Response.Resources;
@@ -94,7 +90,7 @@ public class XmlDecoder implements IResourceDecoder {
     }
 
     @Override
-    public void decode(String resourcesListString, List<Resource> resources) throws InvalidUser {
+    public void decode(String resourcesListString, List<Resource> resources, Class<?> type) throws InvalidUser {
         try {
             Response resp = Response.Factory.parse(resourcesListString);
             Resources xmlResources = resp.getResources();
@@ -102,16 +98,15 @@ public class XmlDecoder implements IResourceDecoder {
             x0.scimSchemasCore1.Resource[] xmlResourceArray = xmlResources.getResourceArray();
 
             for (x0.scimSchemasCore1.Resource res : xmlResourceArray) {
-                // TODO this is wrong
-            	
-            	// TODO: add support to groups! See JsonDecoder.
-            	
-                User data = new User("tmp");
-                Resource resource = internalDecode(res, data);
+                Resource resource = internalDecode(res, (Resource)type.newInstance());
                 resources.add(resource);
             }
 
         } catch (XmlException e) {
+            throw new InvalidUser("Failed to parse resource set ", e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Internal error, decoding xml", e);
+        } catch (IllegalAccessException e) {
             throw new RuntimeException("Internal error, decoding xml", e);
         }
     }
@@ -119,5 +114,4 @@ public class XmlDecoder implements IResourceDecoder {
     private Resource internalDecode(Object resources, Resource data) throws InvalidUser {
         return (Resource) new ComplexHandler().decodeXml(resources, data, null);
     }
-
 }

@@ -84,13 +84,13 @@ public abstract class Resource extends ComplexType {
 
     }
 
-    public static List<Resource> getResources(String users, String encoding, List<Resource> resources) throws UnknownEncoding, InvalidUser {
+    public static List<Resource> getResources(String users, String encoding, List<Resource> resources, Class<?> type) throws UnknownEncoding, InvalidUser {
         IResourceDecoder decoder = decoders.get(encoding.toLowerCase());
         if (decoder == null) {
             throw new UnknownEncoding(encoding);
         }
 
-        decoder.decode(users, resources);
+        decoder.decode(users, resources, type);
         return resources;
     }
 

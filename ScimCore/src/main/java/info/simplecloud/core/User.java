@@ -66,6 +66,10 @@ public class User extends Resource {
     public User(String user, String encoding) throws UnknownEncoding, InvalidUser {
         super(user, encoding, extensionTypes);
     }
+    
+    public User() {
+        this("");
+    }
 
     public User(String id) {
         super(id, extensionTypes);
@@ -89,7 +93,7 @@ public class User extends Resource {
         List<Resource> userlist = new ArrayList<Resource>();
         List<User> resultlist = new ArrayList<User>();
         // TODO This is ugly
-        Resource.getResources(users, encoding, userlist);
+        Resource.getResources(users, encoding, userlist, User.class);
         for (Resource r : userlist) {
             if (r instanceof User) {
                 resultlist.add((User) r);

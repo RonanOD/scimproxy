@@ -46,6 +46,9 @@ public class Group extends Resource {
         super(group, encoding, extensionTypes);
     }
 
+    public Group() {
+        this("");
+    }
     public Group(String id) {
         super(id, extensionTypes);
     }
@@ -83,7 +86,7 @@ public class Group extends Resource {
         List<Group> resultlist = new ArrayList<Group>();
         // TODO This is ugly
         
-        Resource.getResources(groups, encoding, grouplist);
+        Resource.getResources(groups, encoding, grouplist, Group.class);
         for (Resource r : grouplist) {
             if (r instanceof Group) {
                 resultlist.add((Group) r);
