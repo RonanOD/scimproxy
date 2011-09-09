@@ -108,19 +108,22 @@ public class ScimBatchServlet extends ScimResourceServlet {
 		            
 		            if("put".equalsIgnoreCase(method)) {
 	                	response += "\t\t{\n" +
+	                	  "\t\t\t\"location\":\"" + location + "\"\n" +
 		        	      "\t\t\t\"method\":\"PUT\",\n" +
 		        	      "\t\t\t\"status\":{\n";
 
-	                	String id = Util.getUserIdFromUri(location);
+	                	String id = "";
 		                try {
 		                	Resource scimResource = null;
 		                	String scimResourceString = "";
 		                	
 		                	if("user".equalsIgnoreCase(type)) {
+			                	id = Util.getUserIdFromUri(location);
 			                	scimResource = internalUserPut(id, etag, data.toString(), req);
 			                	scimResourceString = ((User)scimResource).getUser(HttpGenerator.getEncoding(req));
 		                	}
 		                	else {
+			                	id = Util.getGroupIdFromUri(location);
 			                	scimResource = internalGroupPut(id, etag, data.toString(), req);
 			                	scimResourceString = ((Group)scimResource).getGroup(HttpGenerator.getEncoding(req));
 		                	}
@@ -149,19 +152,22 @@ public class ScimBatchServlet extends ScimResourceServlet {
 		            
 		            if("patch".equalsIgnoreCase(method)) {
 	                	response += "\t\t{\n" +
+	                	  "\t\t\t\"location\":\"" + location + "\"\n" +
 		        	      "\t\t\t\"method\":\"PATCH\",\n" +
 		        	      "\t\t\t\"status\":{\n";
 
-	                	String id = Util.getUserIdFromUri(location);
+	                	String id = "";
 		                try {
 		                	Resource scimResource = null;
 		                	String scimResourceString = "";
 		                	
 		                	if("user".equalsIgnoreCase(type)) {
+			                	id = Util.getUserIdFromUri(location);
 			                	scimResource = internalUserPatch(id, etag, data.toString(), req);
 			                	scimResourceString = ((User)scimResource).getUser(HttpGenerator.getEncoding(req));
 		                	}
 		                	else {
+			                	id = Util.getGroupIdFromUri(location);
 			                	scimResource = internalGroupPatch(id, etag, data.toString(), req);
 			                	scimResourceString = ((Group)scimResource).getGroup(HttpGenerator.getEncoding(req));
 		                	}
@@ -191,24 +197,26 @@ public class ScimBatchServlet extends ScimResourceServlet {
 		        	      "\t\t\t\"method\":\"DELETE\",\n" +
 		        	      "\t\t\t\"status\":{\n";
 
-	                	String id = Util.getUserIdFromUri(location);
+	                	String id = "";
 		                try {
 		                	if("user".equalsIgnoreCase(type)) {
+			                	id = Util.getUserIdFromUri(location);
 		                		internalUserDelete(id, etag, req);
 		                	}
 		                	else {
+			                	id = Util.getGroupIdFromUri(location);
 		                		internalGroupDelete(id, etag, req);
 		                	}
 		                	
 	                		response += "\t\t\t\t\"code\":\"200\",\n" +
-		        	        		"\t\t\t\"reason\":\"Deleted\"\n" + 
+		        	        		"\t\t\t\t\"reason\":\"Deleted\"\n" + 
 	                				"\t\t\t},\n";
 		                
 		                } catch (Exception e) {
 		                	response += handleExceptions(e, id);
 		                }
 
-                		response += "\"location\":\"" + location + "\"\n";
+                		response += "\t\t\t\"location\":\"" + location + "\"\n";
 
 		                response += "\t\t}\n";
 		            }		            
