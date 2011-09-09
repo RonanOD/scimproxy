@@ -9,5 +9,5 @@ public interface IResourceDecoder {
 
     void decode(String resourceString, Resource resource) throws InvalidUser;
 
-    void decode(String resourceListString, List<Resource> resources) throws InvalidUser;
+    void decode(String resourceListString, List<Resource> resources, Class<?> type) throws InvalidUser;
 }
