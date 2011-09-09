@@ -12,12 +12,8 @@
 		"displayName": "Tour Guides",
 	    "members": [
 	        {
-	          "display": "Babs Jensen",
-	          "value": "005D0000001Az1u",
-	        },
-	        {
-	          "display": "Mandy Pepperidge",
-	          "value": "005D0000001AQRE"
+	          "display": "Alice Doe",
+	          "value": "batchid:alicebatchid",
 	        }
 	    ]
 	  }
