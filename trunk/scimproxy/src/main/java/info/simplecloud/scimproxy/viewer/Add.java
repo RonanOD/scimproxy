@@ -39,8 +39,10 @@ public class Add extends HttpServlet {
 		}
 		else {
 			
-			String user = req.getParameter("user");
+			String resource = req.getParameter("resource");
 			String encoding = req.getParameter("encoding");
+			String resourceType = req.getParameter("resourceType");
+			
 			
 	        resp.getWriter().println("<html>");
 	        resp.getWriter().println("<head>");
@@ -63,11 +65,11 @@ public class Add extends HttpServlet {
 	        resp.getWriter().println("<div id=\"content\">"); 
 	        resp.getWriter().println("<div id=\"content\">"); 
 
-	        resp.getWriter().println("<h2>Add user</h2>"); 
+	        resp.getWriter().println("<h2>Add resource</h2>"); 
 
 	        resp.getWriter().print("<p>"); 
 	        
-			if(user!= null && !"".equals(user)) {
+			if(resource!= null && !"".equals(resource)) {
 				// Create an instance of HttpClient.
 				HttpClient client = new HttpClient();
 	
@@ -77,15 +79,15 @@ public class Add extends HttpServlet {
 				client.getState().setCredentials(AuthScope.ANY, defaultcreds);
 				
 				// Create a method instance.
-				PostMethod method = new PostMethod("http://localhost:8080/v1/User");
+				PostMethod method = new PostMethod("http://localhost:8080/v1/" + resourceType);
 				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-		        method.setRequestBody(user);
+		        method.setRequestBody(resource);
 		        
 		        method.setRequestHeader("Accept", encoding);
 		        	
 				int responseCode = client.executeMethod(method);
 				if(responseCode == 201) {
-			        resp.getWriter().print("User added successfully.<br/><br/>");
+			        resp.getWriter().print("Resource added successfully.<br/><br/>");
 			        resp.getWriter().print("<b>Response header:</b>");
 			        resp.getWriter().print("<pre>");
 			        
@@ -100,15 +102,23 @@ public class Add extends HttpServlet {
 			        resp.getWriter().print("</pre>");
 				}
 				else {
-			        resp.getWriter().print("Failed to add user to storage.<br/><br/>");
+			        resp.getWriter().print("Failed to add resource to storage.<br/><br/>");
 				}
 			}
 	
 	        resp.getWriter().print("<form method='POST'>");
+	        resp.getWriter().print("<table>");
+	        resp.getWriter().print("<tr><td>");
 	        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" value=\"application/json\" checked=\"true\" /> JSON<br/>");
 	        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" value=\"application/xml\" /> XML<br/>");
-	        resp.getWriter().print("<textarea cols=\"50\" rows=\"15\" name=\"user\"></textarea><br/>");
-	        resp.getWriter().print("<input type=\"submit\" value=\"Add user\"><br/>");
+	        resp.getWriter().print("</td>");
+	        resp.getWriter().print("<td>");
+	        resp.getWriter().print("<input type=\"radio\" name=\"resourceType\" value=\"User\" checked=\"true\" /> User<br/>");
+	        resp.getWriter().print("<input type=\"radio\" name=\"resourceType\" value=\"Group\" /> Group<br/>");
+	        resp.getWriter().print("</td></tr>");
+	        resp.getWriter().print("</table>");
+	        resp.getWriter().print("<textarea cols=\"50\" rows=\"15\" name=\"resource\"></textarea><br/>");
+	        resp.getWriter().print("<input type=\"submit\" value=\"Add resource\"><br/>");
 	        resp.getWriter().print("</form>");
 
 	        resp.getWriter().println("</p>"); 

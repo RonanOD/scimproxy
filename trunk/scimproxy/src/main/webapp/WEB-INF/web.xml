@@ -29,7 +29,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Group</servlet-name>
-		<url-pattern>/v1/Group</url-pattern>
+		<url-pattern>/v1/Group/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Groups</servlet-name>

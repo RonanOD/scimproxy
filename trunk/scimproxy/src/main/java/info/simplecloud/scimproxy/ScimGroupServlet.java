@@ -1,7 +1,6 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.Group;
-import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;

@@ -43,7 +43,8 @@ public class Edit extends HttpServlet {
 			String id = req.getParameter("id");
 			String etag = req.getParameter("etag");
 			String encoding = req.getParameter("encoding");
-			String user = req.getParameter("user");
+			String resource = req.getParameter("resource");
+			String type = req.getParameter("type");
 				
 
 	        resp.getWriter().println("<html>");
@@ -67,7 +68,7 @@ public class Edit extends HttpServlet {
 	        resp.getWriter().println("<div id=\"content\">"); 
 	        resp.getWriter().println("<div id=\"content\">"); 
 
-	        resp.getWriter().println("<h2>Edit user " + id + "</h2>");
+	        resp.getWriter().println("<h2>Edit resource " + id + "</h2>");
 	        
 	        if("true".equals(save)) {
 				
@@ -83,15 +84,15 @@ public class Edit extends HttpServlet {
 				
 				if("put".equalsIgnoreCase(scimMethod)) {
 					// Create a method instance.
-					PutMethod method = new PutMethod("http://localhost:8080/v1/User/" + id);
+					PutMethod method = new PutMethod("http://localhost:8080/v1/" + type + "/" + id);
 					method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 			        method.setRequestHeader("etag", etag);
 			        method.setRequestHeader("Accept", encoding);
-			        method.setRequestBody(user);
+			        method.setRequestBody(resource);
 			        
 					int responseCode = client.executeMethod(method);
 					if(responseCode == 200) {
-				        resp.getWriter().print("User replaced successfully.<br/><br/>");
+				        resp.getWriter().print("Resource replaced successfully.<br/><br/>");
 				        resp.getWriter().print("<b>Response header:</b>");
 				        resp.getWriter().print("<pre>");
 				        
@@ -106,24 +107,24 @@ public class Edit extends HttpServlet {
 				        resp.getWriter().print("</pre>");
 					}
 					else {
-				        resp.getWriter().print("Failed to replace user.<br/><br/>");
+				        resp.getWriter().print("Failed to replace resource.<br/><br/>");
 					}					
 				}
 				else {
 					// Create a method instance.
-					PostMethod method = new PostMethod("http://localhost:8080/v1/User/" + id);
+					PostMethod method = new PostMethod("http://localhost:8080/v1/" + type + "/" + id);
 					method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 			        method.setRequestHeader("X-HTTP-Method-Override", "PATCH");
 			        method.setRequestHeader("etag", etag);
 			        method.setRequestHeader("Accept", encoding);
-			        method.setRequestBody(user);
+			        method.setRequestBody(resource);
 			        
 					int responseCode = client.executeMethod(method);
 					if(responseCode == 200) {
-				        resp.getWriter().print("User edited successfully.<br/><br/>");
+				        resp.getWriter().print("Resource edited successfully.<br/><br/>");
 					}
 					else {
-				        resp.getWriter().print("Failed to replace user.<br/><br/>");
+				        resp.getWriter().print("Failed to replace resource.<br/><br/>");
 					}					
 				}
 
@@ -133,13 +134,15 @@ public class Edit extends HttpServlet {
 		        if(id != null && !"".equals(id)) {
 					resp.getWriter().print("<form method=\"POST\">");
 	        	
+			        resp.getWriter().print("<table>");
 			        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" value=\"application/json\" checked=\"true\" /> JSON<br/>");
-			        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" disabled=\"false\" value=\"application/xml\" /> XML<br/>");
-			        resp.getWriter().print("<textarea cols=\"50\" rows=\"15\" name=\"user\"></textarea><br/>");
+			        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" value=\"application/xml\" /> XML<br/>");
+			        resp.getWriter().print("<textarea cols=\"50\" rows=\"15\" name=\"resource\"></textarea><br/>");
 					resp.getWriter().print("Put: <input type=\"radio\" name=\"scimMethod\" value=\"put\"/><br/>");
 					resp.getWriter().print("Patch: <input type=\"radio\" name=\"scimMethod\" value=\"patch\"/><br/>");
 					resp.getWriter().print("<input type=\"hidden\" name=\"save\" value=\"true\"/>");
 					resp.getWriter().print("<input type=\"hidden\" name=\"etag\" value=\"" + etag + "\"/>");
+					resp.getWriter().print("<input type=\"hidden\" name=\"type\" value=\"" + type + "\"/>");
 					resp.getWriter().print("<input type=\"hidden\" name=\"id\" value=\"" + id + "\"/>");
 					resp.getWriter().print("<input type=\"submit\" value=\"Edit\"/><br/>");
 					resp.getWriter().print("</form>");
