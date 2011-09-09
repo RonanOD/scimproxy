@@ -43,7 +43,6 @@ public class List extends HttpServlet {
 			String delete = req.getParameter("delete");
 			String etag = req.getParameter("etag");
 			String type = req.getParameter("type");
-			String listType = req.getParameter("listType");
 			
 			if(delete != null && !"".equals(delete)) {
 				// Create an instance of HttpClient.
@@ -92,8 +91,8 @@ public class List extends HttpServlet {
 
 		        resp.getWriter().println("<div id=\"navigation\">"); 
 		        resp.getWriter().println("<ul>"); 
-		        resp.getWriter().println("<li><a href=\"List?listType=user\">Users</a></li>"); 
-		        resp.getWriter().println("<li><a href=\"List?listType=group\">Groups</a></li>"); 
+		        resp.getWriter().println("<li><a href=\"List?type=user\">Users</a></li>"); 
+		        resp.getWriter().println("<li><a href=\"List?type=group\">Groups</a></li>"); 
 		        resp.getWriter().println("<li><a href=\"Add\">Add</a></li>"); 
 		        resp.getWriter().println("<li><a href=\"Batch\">Batch</a></li>"); 
 		        resp.getWriter().println("</ul>"); 
@@ -105,7 +104,7 @@ public class List extends HttpServlet {
 		        resp.getWriter().println("<p><button>Change format</button><br/>"); 
 
 		        
-				if("group".equalsIgnoreCase(listType)) {
+				if("group".equalsIgnoreCase(type)) {
 
 					
 					// Create a method instance.
