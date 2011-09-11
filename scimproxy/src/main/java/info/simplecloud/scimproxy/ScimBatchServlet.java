@@ -227,6 +227,9 @@ public class ScimBatchServlet extends ScimResourceServlet {
 			
 				response += "\t\t]\n" +
 							"}\n";
+				
+				
+				response = Util.formatJsonPretty(response);
 
 				resp.setHeader("Location", batchLocation);
 				HttpGenerator.ok(resp, response);

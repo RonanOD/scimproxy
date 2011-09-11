@@ -4,11 +4,17 @@ import info.simplecloud.scimproxy.authentication.Authenticator;
 import info.simplecloud.scimproxy.config.Config;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
@@ -20,25 +26,56 @@ import org.apache.commons.lang.StringEscapeUtils;
 @SuppressWarnings("serial")
 public class Batch extends HttpServlet {
 
-
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		doGet(req, resp);
-	}
-
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 	
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		
 		Config config = null;
 		config = Config.getInstance();
 		// authenticate
 		Authenticator auth = new Authenticator(config);
 		if(!auth.authenticate(req, resp)) {
-		     resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
+			resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
 		}
 		else {
+
+			String batch = "";
+			String encoding = "";
 			
-			String batch = req.getParameter("batch");
-			String encoding = req.getParameter("encoding");
+			FileItemFactory factory = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(factory);
+
+			boolean isMultipart = ServletFileUpload.isMultipartContent(req);
+
+			if(isMultipart) {
+				try {
+					java.util.List items = upload.parseRequest(req);
+					// Process the uploaded items
+					Iterator iter = items.iterator();
+					while (iter.hasNext()) {
+					    FileItem item = (FileItem) iter.next();
+
+					    if (!item.isFormField()) {
+					    	byte[] data = item.get();
+					    	batch = new String(data);
+					    }
+					    
+						if (item.isFormField()) {
+						    String name = item.getFieldName();
+						    String value = item.getString();
+						    if("batch".equalsIgnoreCase(name)) {
+								batch = value;
+						    }
+						    if("encoding".equalsIgnoreCase(name)) {
+						    	encoding = value;
+						    }
+						}
+
+					}
+				} catch (FileUploadException e) {
+					e.printStackTrace();
+				}
+			}
 
 
 	        resp.getWriter().println("<html>");
@@ -71,7 +108,7 @@ public class Batch extends HttpServlet {
 			if(batch!= null && !"".equals(batch)) {
 				// Create an instance of HttpClient.
 				HttpClient client = new HttpClient();
-	
+				
 				// set auth if it's authenticated
 				client.getParams().setAuthenticationPreemptive(true);
 				Credentials defaultcreds = auth.getAuthUser().getCred();
@@ -80,6 +117,7 @@ public class Batch extends HttpServlet {
 				// Create a method instance.
 				PostMethod method = new PostMethod("http://localhost:8080/v1/Batch/User");
 				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+				
 		        method.setRequestBody(batch);
 		        
 		        method.setRequestHeader("Accept", encoding);
@@ -87,6 +125,13 @@ public class Batch extends HttpServlet {
 				int responseCode = client.executeMethod(method);
 				if(responseCode == 200) {
 			        resp.getWriter().print("Batch job processed successfully.<br/><br/>");
+
+			        for(int i=0; i<method.getResponseHeaders().length; i++) {
+			        	if("location".equalsIgnoreCase(method.getResponseHeaders()[i].getName())) {
+					        resp.getWriter().print("<a href=\"?progress=" + method.getResponseHeaders()[i].getValue() + "\">Get progress</a><br/><br/>");
+			        	}
+			        }
+
 			        resp.getWriter().print("<b>Response header:</b>");
 			        resp.getWriter().print("<pre class=\"prettyprint\">");
 			        
@@ -109,10 +154,10 @@ public class Batch extends HttpServlet {
 			        resp.getWriter().print("Failed to add resources to storage.<br/><br/>");
 				}
 			}	
-	        resp.getWriter().print("<form method='POST'>");
-	        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" value=\"application/json\" checked=\"true\" /> JSON<br/>");
-	        resp.getWriter().print("<input type=\"radio\" name=\"encoding\" disabled=\"false\" value=\"application/xml\" /> XML<br/>");
-	        resp.getWriter().print("<textarea cols=\"50\" rows=\"15\" name=\"batch\"></textarea><br/>");
+	        resp.getWriter().print("<form id=\"batchform\" method=\"POST\" enctype=\"multipart/form-data\">");
+	        resp.getWriter().print("<input type=\"radio\" id=\"encoding\" value=\"application/json\" checked=\"true\" /> JSON<br/>");
+	        resp.getWriter().print("<input type=\"radio\" id=\"encoding\" disabled=\"false\" value=\"application/xml\" /> XML<br/>");
+	        resp.getWriter().print("<input type=\"file\" name=\"batchFile\" /><br/>");
 	        resp.getWriter().print("<input type=\"submit\" value=\"Start job\"><br/>");
 	        resp.getWriter().print("</form>");
 	
@@ -131,6 +176,10 @@ public class Batch extends HttpServlet {
 
 			resp.setStatus(HttpServletResponse.SC_OK);
 		}
+	}
+
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		doPost(req, resp);
 	}
 
 }
