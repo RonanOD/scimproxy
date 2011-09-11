@@ -191,6 +191,33 @@ public class HttpGenerator {
 		return "application/json; charset=UTF-8";
 	}
 
+	public static String getLocation(Resource resource, String server) {
+		String path = "";
+		if(resource instanceof User) {
+			path = "User";
+		}
+		else {
+			path = "Group";
+		}
+		return server + "/v1/" + path + "/" + resource.getId();
+	}
+	
+	public static String getServer(HttpServletRequest req) {
+		// generate the Location url
+		String scheme = req.getScheme(); // http
+		String serverName = req.getServerName(); // acme.com
+		int serverPort = req.getServerPort(); // 80
+		String serverPortStr = "";
+		if (("http".equals(scheme) && serverPort != 80) || ("https".equals(scheme) && serverPort != 443)) {
+			serverPortStr = ":" + Integer.toString(serverPort);
+		}
+		String contextPath = req.getContextPath();
+		String location = scheme + "://" + serverName + serverPortStr + contextPath;
+
+		return location;
+	}	
+	
+	
 	/**
 	 * Generating a location for a resource on the current web server.
 	 * 

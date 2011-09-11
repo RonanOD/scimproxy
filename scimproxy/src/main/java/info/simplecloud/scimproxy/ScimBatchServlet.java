@@ -3,11 +3,13 @@ package info.simplecloud.scimproxy;
 import info.simplecloud.core.Group;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
+import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
 import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,12 +27,17 @@ public class ScimBatchServlet extends ScimResourceServlet {
 
 	private Log log = LogFactory.getLog(ScimBatchServlet.class);
 
-
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+    	ArrayList<ResourceJob> resources = new ArrayList<ResourceJob>();
+    	
         String query = Util.getContent(req);
         String batchLocation = HttpGenerator.getBatchLocation(Util.generateVersionString(), req);
         
+        String server = HttpGenerator.getServer(req);
+        String outEncoding = HttpGenerator.getEncoding(req);
+        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+
         String response = "{\n" + 
         					"\t\"schemas\": [\"urn:scim:schemas:core:1.0\"],\n" + 
         					"\t\"location\":\"" + batchLocation + "\",\n" + 
@@ -40,6 +47,9 @@ public class ScimBatchServlet extends ScimResourceServlet {
         	
         	try {
 				JSONObject jsonObj = new JSONObject(query);
+				
+				// get all entries and load into memory 
+				// TODO: parse and handle job as file stream to support larger files
 				JSONArray entities = jsonObj.getJSONArray("Entries");
 				for (int i = 0; i < entities.length(); ++i) {
 				    JSONObject entity = entities.getJSONObject(i);
@@ -61,173 +71,45 @@ public class ScimBatchServlet extends ScimResourceServlet {
 				    if(!entity.isNull("type")) {
 				    	type = entity.getString("type");
 				    }
-				    JSONObject data = null;
+				    String data = null;
 				    if(!entity.isNull("data")) {
-				    	data = entity.getJSONObject("data");
+				    	data = entity.getJSONObject("data").toString();
 				    }
 				    
-				    if(i != 0) {
-				    	response += "\t\t,\n";
-				    }
-				    
-		            if("post".equalsIgnoreCase(method)) {
-	                	response += "\t\t{\n" +
-		        	      "\t\t\t\"method\":\"POST\",\n" +
-		        	      "\t\t\t\"batchId\":\"" + batchId + "\",\n" +
-		        	      "\t\t\t\"status\":{\n";
-
-		                try {
-		                	Resource scimResource = null;
-		                	String scimResourceString = "";
-		                	
-		                	if("user".equalsIgnoreCase(type)) {
-			                	scimResource = internalUserPost(data.toString(), req);
-			                	scimResourceString = ((User)scimResource).getUser(HttpGenerator.getEncoding(req));
-		                	}
-		                	else {
-			                	scimResource = internalGroupPost(data.toString(), req);
-			                	scimResourceString = ((Group)scimResource).getGroup(HttpGenerator.getEncoding(req));
-		                	}
-		                	// TODO: move this into storage? 
-		                	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, req));
-		                	
-		                	response += "\t\t\t\t\"code\":\"201\",\n" +
-			        	        		"\t\t\t\t\"reason\":\"Created\"\n" + 
-		                				"\t\t\t},\n";
-			        	        
-		                	response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
-			        	      			"\t\t\t\"data\":" + scimResourceString + ",\n" +
-			        	      			"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
-		                 
-		                	// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-		                	// trigger.create(scimUser);				
-		                } catch (Exception e) {
-		                	response += "\t\t\t\t\"code\":\"400\",\n" + 
-		                				"\t\t\t\t\"reason\":\"BAD REQUEST\",\n" + 
-		                				"\t\t\t\t\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
-		                				"\t\t\t}\n";
-		                }
-		                response += "\t\t}\n";
-		            }
-		            
-		            if("put".equalsIgnoreCase(method)) {
-	                	response += "\t\t{\n" +
-	                	  "\t\t\t\"location\":\"" + location + "\",\n" +
-		        	      "\t\t\t\"method\":\"PUT\",\n" +
-		        	      "\t\t\t\"status\":{\n";
-
-	                	String id = "";
-		                try {
-		                	Resource scimResource = null;
-		                	String scimResourceString = "";
-		                	
-		                	if("user".equalsIgnoreCase(type)) {
-			                	id = Util.getUserIdFromUri(location);
-			                	scimResource = internalUserPut(id, etag, data.toString(), req);
-			                	scimResourceString = ((User)scimResource).getUser(HttpGenerator.getEncoding(req));
-		                	}
-		                	else {
-			                	id = Util.getGroupIdFromUri(location);
-			                	scimResource = internalGroupPut(id, etag, data.toString(), req);
-			                	scimResourceString = ((Group)scimResource).getGroup(HttpGenerator.getEncoding(req));
-		                	}
-		                	
-	                		// TODO: move this into storage? 
-		                	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, req));
-
-	                		response += "\t\t\t\t\"code\":\"200\",\n" +
-		        	        		"\t\t\t\t\"reason\":\"Updated\"\n" + 
-	                				"\t\t\t},\n";
-		        	        
-	                		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
-		        	      				"\t\t\t\"data\":" + scimResourceString + ",\n" +
-	                					"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
-		        	      
-	                		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-	                		// trigger.create(scimUser);
-
-		                } catch (Exception e) {
-		                	response += handleExceptions(e, id);
-		                }
-
-		                response += "\t\t}\n";
-		            }
-		            
-		            if("patch".equalsIgnoreCase(method)) {
-	                	response += "\t\t{\n" +
-	                	  "\t\t\t\"location\":\"" + location + "\"\n" +
-		        	      "\t\t\t\"method\":\"PATCH\",\n" +
-		        	      "\t\t\t\"status\":{\n";
-
-	                	String id = "";
-		                try {
-		                	Resource scimResource = null;
-		                	String scimResourceString = "";
-		                	
-		                	if("user".equalsIgnoreCase(type)) {
-			                	id = Util.getUserIdFromUri(location);
-			                	scimResource = internalUserPatch(id, etag, data.toString(), req);
-			                	scimResourceString = ((User)scimResource).getUser(HttpGenerator.getEncoding(req));
-		                	}
-		                	else {
-			                	id = Util.getGroupIdFromUri(location);
-			                	scimResource = internalGroupPatch(id, etag, data.toString(), req);
-			                	scimResourceString = ((Group)scimResource).getGroup(HttpGenerator.getEncoding(req));
-		                	}
-
-	                		// TODO: move this into storage? 
-		                	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, req));
-
-	                		response += "\t\t\t\t\"code\":\"200\",\n" +
-		        	        		"\t\t\t\t\"reason\":\"Patched\"\n" + 
-	                				"\t\t\t}\n";
-		        	        
-	                		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
-		        	      				"\t\t\t\"data\":" + scimResourceString + ",\n" +
-	                					"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
-		        	      
-	                		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-	                		// trigger.create(scimUser);
-
-		                } catch (Exception e) {
-		                	response += handleExceptions(e, id);
-		                }
-
-		                response += "\t\t}\n";
-		            }		            
-		            if("delete".equalsIgnoreCase(method)) {
-	                	response += "\t\t{\n" +
-                			"\t\t\t\"location\":\"" + location + "\",\n" + 
-                			"\t\t\t\"method\":\"DELETE\",\n" +
-                			"\t\t\t\"status\":{\n";
-
-	                	String id = "";
-		                try {
-		                	if("user".equalsIgnoreCase(type)) {
-			                	id = Util.getUserIdFromUri(location);
-		                		internalUserDelete(id, etag, req);
-		                	}
-		                	else {
-			                	id = Util.getGroupIdFromUri(location);
-		                		internalGroupDelete(id, etag, req);
-		                	}
-		                	
-	                		response += "\t\t\t\t\"code\":\"200\",\n" +
-		        	        		"\t\t\t\t\"reason\":\"Deleted\"\n" + 
-	                				"\t\t\t}\n";
-		                
-		                } catch (Exception e) {
-		                	response += handleExceptions(e, id);
-		                }
-
-
-		                response += "\t\t}\n";
-		            }		            
+				    resources.add(new ResourceJob(method, batchId, location, etag, type, data, ""));
 				}
-			
+				
+				boolean firstItem = true;
+				for (ResourceJob batchResource : resources) {
+
+					if(ResourceJob.TYPE_USER.equalsIgnoreCase(batchResource.getType())) {
+					    if(firstItem) {
+					    	firstItem = false;
+					    }
+					    else {
+					    	response += "\t\t,\n";
+					    }
+
+					    response += parseResource(batchResource, server, outEncoding, authUser);
+					}
+				}
+
+				for (ResourceJob batchResource : resources) {
+
+					if(ResourceJob.TYPE_GROUP.equalsIgnoreCase(batchResource.getType())) {
+					    if(firstItem) {
+					    	firstItem = false;
+					    }
+					    else {
+					    	response += "\t\t,\n";
+					    }
+
+					    response += parseResource(batchResource, server, outEncoding, authUser);
+					}
+				}
+
 				response += "\t\t]\n" +
 							"}\n";
-				
 				
 				response = Util.formatJsonPretty(response);
 
@@ -271,6 +153,176 @@ public class ScimBatchServlet extends ScimResourceServlet {
     				"\t\t\t}\n";
     	}
     	return response;
+    }
+    
+    private String parseResource(ResourceJob batchResource, String server, String encoding, AuthenticateUser authUser) {
+    	String response = "";
+	    
+        if("post".equalsIgnoreCase(batchResource.getMethod())) {
+        	response += "\t\t{\n" +
+    	      "\t\t\t\"method\":\"POST\",\n" +
+    	      "\t\t\t\"batchId\":\"" + batchResource.getBatchId() + "\",\n" +
+    	      "\t\t\t\"status\":{\n";
+
+            try {
+            	Resource scimResource = null;
+            	String scimResourceString = "";
+            	
+            	// om det är en grupp, 
+            	//		finns det ett batchid i members value, byt ut mot riktiga ID:t.
+            	// 		
+            	
+            	if("user".equalsIgnoreCase(batchResource.getType())) {
+                	scimResource = internalUserPost(batchResource, server, encoding, authUser);
+                	scimResourceString = ((User)scimResource).getUser(encoding);
+            	}
+            	else {
+                	scimResource = internalGroupPost(batchResource, server, encoding, authUser);
+                	scimResourceString = ((Group)scimResource).getGroup(encoding);
+            	}
+            	// TODO: move this into storage? 
+            	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
+            	
+            	response += "\t\t\t\t\"code\":\"201\",\n" +
+        	        		"\t\t\t\t\"reason\":\"Created\"\n" + 
+            				"\t\t\t},\n";
+        	        
+            	response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
+        	      			"\t\t\t\"data\":" + scimResourceString + ",\n" +
+        	      			"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
+             
+            	// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+            	// trigger.create(scimUser);				
+            } catch (Exception e) {
+            	response += "\t\t\t\t\"code\":\"400\",\n" + 
+            				"\t\t\t\t\"reason\":\"BAD REQUEST\",\n" + 
+            				"\t\t\t\t\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
+            				"\t\t\t}\n";
+            }
+            response += "\t\t}\n";
+        }
+        
+        if("put".equalsIgnoreCase(batchResource.getMethod())) {
+        	response += "\t\t{\n" +
+        	  "\t\t\t\"location\":\"" + batchResource.getLocation() + "\",\n" +
+    	      "\t\t\t\"method\":\"PUT\",\n" +
+    	      "\t\t\t\"status\":{\n";
+
+        	String id = "";
+            try {
+            	Resource scimResource = null;
+            	String scimResourceString = "";
+            	
+            	if("user".equalsIgnoreCase(batchResource.getType())) {
+                	id = Util.getUserIdFromUri(batchResource.getLocation());
+                	batchResource.setId(id);
+                	scimResource = internalUserPut(batchResource, server, encoding, authUser);
+                	scimResourceString = ((User)scimResource).getUser(encoding);
+            	}
+            	else {
+                	id = Util.getGroupIdFromUri(batchResource.getLocation());
+                	batchResource.setId(id);
+                	scimResource = internalGroupPut(batchResource, server, encoding, authUser);
+                	scimResourceString = ((Group)scimResource).getGroup(encoding);
+            	}
+            	
+        		// TODO: move this into storage? 
+            	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
+
+        		response += "\t\t\t\t\"code\":\"200\",\n" +
+    	        		"\t\t\t\t\"reason\":\"Updated\"\n" + 
+        				"\t\t\t},\n";
+    	        
+        		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
+    	      				"\t\t\t\"data\":" + scimResourceString + ",\n" +
+        					"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
+    	      
+        		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+        		// trigger.create(scimUser);
+
+            } catch (Exception e) {
+            	response += handleExceptions(e, id);
+            }
+
+            response += "\t\t}\n";
+        }
+        
+        if("patch".equalsIgnoreCase(batchResource.getMethod())) {
+        	response += "\t\t{\n" +
+        	  "\t\t\t\"location\":\"" + batchResource.getLocation() + "\"\n" +
+    	      "\t\t\t\"method\":\"PATCH\",\n" +
+    	      "\t\t\t\"status\":{\n";
+
+        	String id = "";
+            try {
+            	Resource scimResource = null;
+            	String scimResourceString = "";
+            	
+            	if("user".equalsIgnoreCase(batchResource.getType())) {
+                	id = Util.getUserIdFromUri(batchResource.getLocation());
+                	batchResource.setId(id);
+                	scimResource = internalUserPatch(batchResource, server, encoding, authUser);
+                	scimResourceString = ((User)scimResource).getUser(encoding);
+            	}
+            	else {
+                	id = Util.getGroupIdFromUri(batchResource.getLocation());
+                	batchResource.setId(id);
+                	scimResource = internalGroupPatch(batchResource, server, encoding, authUser);
+                	scimResourceString = ((Group)scimResource).getGroup(encoding);
+            	}
+
+        		// TODO: move this into storage? 
+            	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
+
+        		response += "\t\t\t\t\"code\":\"200\",\n" +
+    	        		"\t\t\t\t\"reason\":\"Patched\"\n" + 
+        				"\t\t\t}\n";
+    	        
+        		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
+    	      				"\t\t\t\"data\":" + scimResourceString + ",\n" +
+        					"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
+    	      
+        		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+        		// trigger.create(scimUser);
+
+            } catch (Exception e) {
+            	response += handleExceptions(e, id);
+            }
+
+            response += "\t\t}\n";
+        }		            
+        if("delete".equalsIgnoreCase(batchResource.getMethod())) {
+        	response += "\t\t{\n" +
+    			"\t\t\t\"location\":\"" + batchResource.getLocation() + "\",\n" + 
+    			"\t\t\t\"method\":\"DELETE\",\n" +
+    			"\t\t\t\"status\":{\n";
+
+        	String id = "";
+            try {
+            	if("user".equalsIgnoreCase(batchResource.getType())) {
+                	id = Util.getUserIdFromUri(batchResource.getLocation());
+                	batchResource.setId(id);
+            		internalUserDelete(batchResource, server, encoding, authUser);
+            	}
+            	else {
+                	id = Util.getGroupIdFromUri(batchResource.getLocation());
+                	batchResource.setId(id);
+            		internalGroupDelete(batchResource, server, encoding, authUser);
+            	}
+            	
+        		response += "\t\t\t\t\"code\":\"200\",\n" +
+    	        		"\t\t\t\t\"reason\":\"Deleted\"\n" + 
+        				"\t\t\t}\n";
+            
+            } catch (Exception e) {
+            	response += handleExceptions(e, id);
+            }
+
+
+            response += "\t\t}\n";
+        }	
+        
+        return response;
     }
     
 }
