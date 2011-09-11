@@ -28,9 +28,8 @@ public class ScimResourceServlet extends RestServlet {
 
     protected Trigger trigger = new Trigger();
     
-    protected User internalUserPost(String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser {
-        User scimUser = new User(query, HttpGenerator.getEncoding(req));
-        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+    protected User internalUserPost(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser {
+        User scimUser = new User(resource.getData(), encoding);
         
         if (scimUser.getMeta() == null) {
         	scimUser.setMeta(new Meta());
@@ -38,13 +37,13 @@ public class ScimResourceServlet extends RestServlet {
         if(scimUser.getMeta().getVersion() == null || "".equals(scimUser.getMeta().getVersion())) {
         	scimUser.getMeta().setVersion(Util.generateVersionString());
         }
-        scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
+        scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, server));
 
         // add user to set ID
 		UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
 
         // set location to object
-        scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, req));
+        scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, server));
 
         // TODO: this is really not a nice way to get the Location into the meta data
         try {
@@ -60,18 +59,17 @@ public class ScimResourceServlet extends RestServlet {
         return scimUser;
     }
 
-    protected User internalUserPut(String userId, String etag, String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException {
+    protected User internalUserPut(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException {
 
-        User scimUser = new User(query, HttpGenerator.getEncoding(req));
-        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
-        
+        User scimUser = new User(resource.getData().toString(), encoding);
+
         // verify that user have not been changed since latest get and this operation
-        User oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(userId);
+        User oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
         	if(oldUser.getMeta() != null) {
-        		if(!etag.equals(oldUser.getMeta().getVersion())) {
+        		if(!resource.getEtag().equals(oldUser.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
@@ -83,12 +81,12 @@ public class ScimResourceServlet extends RestServlet {
             meta = new Meta();
         }
         meta.setVersion(Util.generateVersionString());
-    	meta.setLocation(HttpGenerator.getLocation(scimUser, req));
+    	meta.setLocation(HttpGenerator.getLocation(scimUser, server));
 
         scimUser.setMeta(meta);
         
         // delete old user
-        UserDelegator.getInstance(authUser.getSessionId()).deletetUser(userId);
+        UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
 
         // add new user
         UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
@@ -100,25 +98,24 @@ public class ScimResourceServlet extends RestServlet {
     }
 
     
-    protected User internalUserPatch(String userId, String etag, String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException, UnknownAttribute {
+    protected User internalUserPatch(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException, UnknownAttribute {
 
-        User scimUser = new User(query, HttpGenerator.getEncoding(req));
-        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+        User scimUser = new User(resource.getData(), encoding);
         
         // verify that user have not been changed since latest get and this operation
-        User oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(userId);
+        User oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
         	if(oldUser.getMeta() != null) {
-        		if(!etag.equals(oldUser.getMeta().getVersion())) {
+        		if(!resource.getEtag().equals(oldUser.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
         }
 
         // patch user
-        scimUser.patch(query, HttpGenerator.getEncoding(req));
+        scimUser.patch(resource.getData(), encoding);
         // generate new version number
         UserDelegator.getInstance(authUser.getSessionId()).updateVersionNumber(scimUser);
         
@@ -128,12 +125,12 @@ public class ScimResourceServlet extends RestServlet {
             meta = new Meta();
         }
         meta.setVersion(Util.generateVersionString());
-    	meta.setLocation(HttpGenerator.getLocation(scimUser, req));
+    	meta.setLocation(HttpGenerator.getLocation(scimUser, server));
 
         scimUser.setMeta(meta);
         
         // delete old user
-        UserDelegator.getInstance(authUser.getSessionId()).deletetUser(userId);
+        UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
 
         // add new user
         UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
@@ -145,27 +142,12 @@ public class ScimResourceServlet extends RestServlet {
 	}
 
 
-  
-    /**
-     * Delete a scim user.
-     * 
-     * @param req
-     *            Servlet request.
-     * @param resp
-     *            Servlet response.
-     * @throws IOException
-     *             Servlet I/O exception.
-     * @throws ResourceNotFoundException 
-     * @throws PreconditionException 
-     */
-    public void internalUserDelete(String userId, String etag, HttpServletRequest req) throws ResourceNotFoundException, PreconditionException {
-
-    	AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
-    	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(userId);
+    public void internalUserDelete(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws ResourceNotFoundException, PreconditionException {
+    	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
 
         String version = scimUser.getMeta().getVersion();
-        if (etag != null && !"".equals(etag) && etag.equals(version)) {
-        	UserDelegator.getInstance(authUser.getSessionId()).deletetUser(userId);
+        if (resource.getEtag() != null && !"".equals(resource.getEtag()) && resource.getEtag().equals(version)) {
+        	UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
             // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         	// TODO: trigger
         	//trigger.delete(scimUser);				
@@ -176,23 +158,22 @@ public class ScimResourceServlet extends RestServlet {
     }
 
 
-    protected Group internalGroupPost(String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser {
-        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+    protected Group internalGroupPost(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser {
 
-        Group scimGroup = new Group(query, HttpGenerator.getEncoding(req));
+        Group scimGroup = new Group(resource.getData(), encoding);
         if (scimGroup.getMeta() == null) {
         	scimGroup.setMeta(new Meta());
         }
         if(scimGroup.getMeta().getVersion() == null || "".equals(scimGroup.getMeta().getVersion())) {
         	scimGroup.getMeta().setVersion(Util.generateVersionString());
         }
-        scimGroup.getMeta().setLocation(HttpGenerator.getLocation(scimGroup, req));
+        scimGroup.getMeta().setLocation(HttpGenerator.getLocation(scimGroup, server));
 
         // add group to set ID
         UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
 
         // set location to object
-        scimGroup.getMeta().setLocation(HttpGenerator.getLocation(scimGroup, req));
+        scimGroup.getMeta().setLocation(HttpGenerator.getLocation(scimGroup, server));
 
         // TODO: this is really not a nice way to get the Location into the meta data
         try {
@@ -208,18 +189,17 @@ public class ScimResourceServlet extends RestServlet {
         return scimGroup;
     }
 
-    protected Group internalGroupPut(String groupId, String etag, String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException {
-        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+    protected Group internalGroupPut(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException {
 
-        Group scimGroup = new Group(query, HttpGenerator.getEncoding(req));
+        Group scimGroup = new Group(resource.getData().toString(), encoding);
 
         // verify that group have not been changed since latest get and this operation
-        Group oldGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(groupId);
+        Group oldGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(resource.getId());
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldGroup != null) {
         	if(oldGroup.getMeta() != null) {
-        		if(!etag.equals(oldGroup.getMeta().getVersion())) {
+        		if(!resource.getEtag().equals(oldGroup.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
@@ -231,12 +211,12 @@ public class ScimResourceServlet extends RestServlet {
             meta = new Meta();
         }
         meta.setVersion(Util.generateVersionString());
-    	meta.setLocation(HttpGenerator.getLocation(scimGroup, req));
+    	meta.setLocation(HttpGenerator.getLocation(scimGroup, server));
 
     	scimGroup.setMeta(meta);
         
         // delete old user
-        UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(groupId);
+        UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(resource.getId());
 
         // add new user
         UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
@@ -248,25 +228,23 @@ public class ScimResourceServlet extends RestServlet {
     }
 
     
-    protected Group internalGroupPatch(String groupId, String etag, String query, HttpServletRequest req) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException, UnknownAttribute {
-        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
-
-        Group scimGroup = new Group(query, HttpGenerator.getEncoding(req));
+    protected Group internalGroupPatch(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException, UnknownAttribute {
+        Group scimGroup = new Group(resource.getData(), encoding);
 
         // verify that group have not been changed since latest get and this operation
-        Group oldGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(groupId);
+        Group oldGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(resource.getId());
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldGroup != null) {
         	if(oldGroup.getMeta() != null) {
-        		if(!etag.equals(oldGroup.getMeta().getVersion())) {
+        		if(!resource.getEtag().equals(oldGroup.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
         }
 
         // patch group
-        scimGroup.patch(query, HttpGenerator.getEncoding(req));
+        scimGroup.patch(resource.getData(), encoding);
         // generate new version number
         UserDelegator.getInstance(authUser.getSessionId()).updateVersionNumber(scimGroup);
 
@@ -277,12 +255,12 @@ public class ScimResourceServlet extends RestServlet {
             meta = new Meta();
         }
         meta.setVersion(Util.generateVersionString());
-    	meta.setLocation(HttpGenerator.getLocation(scimGroup, req));
+    	meta.setLocation(HttpGenerator.getLocation(scimGroup, server));
 
     	scimGroup.setMeta(meta);
         
         // delete old user
-        UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(groupId);
+        UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(resource.getId());
 
         // add new user
         UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
@@ -293,27 +271,12 @@ public class ScimResourceServlet extends RestServlet {
         return scimGroup;
 	}
 
+    public void internalGroupDelete(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws ResourceNotFoundException, PreconditionException {
 
-    
-    /**
-     * Delete a scim user.
-     * 
-     * @param req
-     *            Servlet request.
-     * @param resp
-     *            Servlet response.
-     * @throws IOException
-     *             Servlet I/O exception.
-     * @throws ResourceNotFoundException 
-     * @throws PreconditionException 
-     */
-    public void internalGroupDelete(String groupId, String etag, HttpServletRequest req) throws ResourceNotFoundException, PreconditionException {
-        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
-
-    	Group scimGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(groupId);
+    	Group scimGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(resource.getId());
         String version = scimGroup.getMeta().getVersion();
-        if (etag != null && !"".equals(etag) && etag.equals(version)) {
-        	UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(groupId);
+        if (resource.getEtag() != null && !"".equals(resource.getEtag()) && resource.getEtag().equals(version)) {
+        	UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(resource.getId());
             // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         	// TODO: trigger
         	//trigger.delete(scimUser);				

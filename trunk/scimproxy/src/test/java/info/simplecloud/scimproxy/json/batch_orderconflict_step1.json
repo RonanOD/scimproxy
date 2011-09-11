@@ -1,0 +1,23 @@
+{
+    "schemas": [
+        "urn:scim:schemas:core:1.0"
+    ],
+    "Entries": [
+        {
+            "method": "POST",
+            "type": "user",
+            "batchId": "alicebatchid",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "userName": "alice",
+                "name": {
+                    "formatted": "Alice Doe",
+                    "familyName": "Doe",
+                    "givenName": "Alice"
+                }
+            }
+        }
+    ]
+}

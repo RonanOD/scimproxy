@@ -60,7 +60,15 @@ public class ScimGroupServlet extends ScimResourceServlet {
 
         if (query != null && !"".equals(query)) {
             try {
-            	Group scimGroup = internalGroupPost(query, req);
+            	
+                String server = HttpGenerator.getServer(req);
+                String outEncoding = HttpGenerator.getEncoding(req);
+                AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+
+                ResourceJob resource = new ResourceJob();
+                resource.setData(query);
+
+            	Group scimGroup = internalGroupPost(resource, server, outEncoding, authUser);
             	
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimGroup.getMeta().getLocation());
@@ -91,7 +99,16 @@ public class ScimGroupServlet extends ScimResourceServlet {
         if (query != null && !"".equals(query) && groupId != null) {
 
             try {
-            	Group scimGroup = internalGroupPut(groupId, etag, query, req);
+                String server = HttpGenerator.getServer(req);
+                String outEncoding = HttpGenerator.getEncoding(req);
+                AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+
+                ResourceJob resource = new ResourceJob();
+                resource.setData(query);
+                resource.setEtag(etag);
+                resource.setId(groupId);
+
+            	Group scimGroup = internalGroupPut(resource, server, outEncoding, authUser);
 
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimGroup.getMeta().getLocation());
@@ -114,28 +131,6 @@ public class ScimGroupServlet extends ScimResourceServlet {
         }	
 	}
 
-	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		String groupId = Util.getGroupIdFromUri(req.getRequestURI());
-		log.trace("Trying to deleting group " + groupId + ".");
-		
-		if (groupId != null) {
-		    try {
-				internalGroupDelete(groupId, req.getHeader("ETag"), req);
-		        HttpGenerator.ok(resp);
-		        log.info("Deleating group " + groupId + ".");
-			} catch (ResourceNotFoundException e) {
-			    HttpGenerator.notFound(resp);
-			    log.trace("Group " + groupId + " is not found.");
-		    }
-		    catch (PreconditionException e) {
-		    	HttpGenerator.preconditionFailed(resp, groupId);
-		    }
-		} else {
-		    log.trace("Trying to delete a group that can't be found in storage with group id " + groupId + ".");
-		    HttpGenerator.badRequest(resp, "Missing or malformed group id.");
-		}	
-	}
-
 	public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String groupId = Util.getGroupIdFromUri(req.getRequestURI());
         String query = Util.getContent(req);
@@ -144,7 +139,16 @@ public class ScimGroupServlet extends ScimResourceServlet {
         if (!"".equals(query) && groupId != null && etag != null && !"".equals(etag)) {
 
         	try {
-				Group scimGroup = internalGroupPatch(groupId, etag, query, req);
+                String server = HttpGenerator.getServer(req);
+                String outEncoding = HttpGenerator.getEncoding(req);
+                AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+
+                ResourceJob resource = new ResourceJob();
+                resource.setData(query);
+                resource.setEtag(etag);
+                resource.setId(groupId);
+        		
+				Group scimGroup = internalGroupPatch(resource, server, outEncoding, authUser);
 				
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimGroup.getMeta().getLocation());
@@ -169,4 +173,37 @@ public class ScimGroupServlet extends ScimResourceServlet {
 	    }
  	}
 
+
+	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String groupId = Util.getGroupIdFromUri(req.getRequestURI());
+        String etag = req.getHeader("ETag");
+        
+        log.trace("Trying to deleting group " + groupId + ".");
+		
+		if (groupId != null) {
+		    try {
+                String server = HttpGenerator.getServer(req);
+                String outEncoding = HttpGenerator.getEncoding(req);
+                AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+
+                ResourceJob resource = new ResourceJob();
+                resource.setEtag(etag);
+                resource.setId(groupId);
+                
+				internalGroupDelete(resource, server, outEncoding, authUser);
+		        HttpGenerator.ok(resp);
+		        log.info("Deleating group " + groupId + ".");
+			} catch (ResourceNotFoundException e) {
+			    HttpGenerator.notFound(resp);
+			    log.trace("Group " + groupId + " is not found.");
+		    }
+		    catch (PreconditionException e) {
+		    	HttpGenerator.preconditionFailed(resp, groupId);
+		    }
+		} else {
+		    log.trace("Trying to delete a group that can't be found in storage with group id " + groupId + ".");
+		    HttpGenerator.badRequest(resp, "Missing or malformed group id.");
+		}	
+	}
+	
 }

@@ -1,6 +1,13 @@
 package info.simplecloud.scimproxy;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
+import info.simplecloud.core.extensions.EnterpriseAttributes;
+import info.simplecloud.core.extensions.types.Manager;
+import info.simplecloud.core.types.PluralType;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -42,6 +49,7 @@ public class ScimUserServletPostTest {
         Assert.assertEquals(201, response.getStatus());
     }
 
+    
 /*
     @Test
     public void createUserXml() throws Exception {

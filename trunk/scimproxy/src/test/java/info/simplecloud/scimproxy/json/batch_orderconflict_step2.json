@@ -1,0 +1,44 @@
+{
+    "schemas": [
+        "urn:scim:schemas:core:1.0"
+    ],
+    "Entries": [
+        {
+            "method": "POST",
+            "type": "user",
+            "batchId": "bobBatchId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "userName": "bob",
+                "name": {
+                    "formatted": "Bob Doe",
+                    "familyName": "Doe",
+                    "givenName": "Bob"
+                }
+            }
+        },
+        {
+            "method": "POST",
+            "type": "group",
+            "batchId": "groupBatchId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "displayName": "Tour Guides",
+                "members": [
+                    {
+                        "type": "user",
+                        "value": "batchid:bobBatchId"
+                    },
+                    {
+                        "display": "user",
+                        "value": "ALICEID"
+                    }
+                ]
+            }
+        }
+    ]
+}
