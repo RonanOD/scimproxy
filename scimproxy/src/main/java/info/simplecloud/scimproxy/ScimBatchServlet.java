@@ -89,7 +89,7 @@ public class ScimBatchServlet extends ScimResourceServlet {
 					    else {
 					    	response += "\t\t,\n";
 					    }
-
+					    
 					    response += parseResource(batchResource, server, outEncoding, authUser);
 					}
 				}
@@ -103,6 +103,32 @@ public class ScimBatchServlet extends ScimResourceServlet {
 					    else {
 					    	response += "\t\t,\n";
 					    }
+
+					    // find any references to a batchId, and replace it with of earlier created resource id´s.
+					    
+					    // parse group for batchID instead of resourceId
+					    String data = batchResource.getData();
+						JSONObject dataObj = new JSONObject(data);
+						
+						// get all entries and load into memory 
+						// TODO: parse and handle job as file stream to support larger files
+						JSONArray members = dataObj.getJSONArray("members");
+						for (int i = 0; i < members.length(); ++i) {
+							try {
+							    JSONObject entity = members.getJSONObject(i);
+							    String value = entity.getString("value");
+							    if(value.indexOf("batchid:") != -1) {
+							    	for (ResourceJob resourceJob : resources) {
+										if(resourceJob.getBatchId().equals(value.substring("batchid:".length()))) {
+											batchResource.setData(batchResource.getData().replaceFirst(value, resourceJob.getId()));
+										}
+									}
+							    }
+							}
+							catch (Exception e) {
+								// do nothing
+							}
+						}
 
 					    response += parseResource(batchResource, server, outEncoding, authUser);
 					}
@@ -182,6 +208,8 @@ public class ScimBatchServlet extends ScimResourceServlet {
             	}
             	// TODO: move this into storage? 
             	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
+            	
+            	batchResource.setId(scimResource.getId());
             	
             	response += "\t\t\t\t\"code\":\"201\",\n" +
         	        		"\t\t\t\t\"reason\":\"Created\"\n" + 

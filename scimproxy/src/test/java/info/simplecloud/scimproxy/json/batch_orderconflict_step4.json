@@ -1,3 +1,4 @@
+
 {
     "schemas": [
         "urn:scim:schemas:core:1.0"
@@ -22,7 +23,7 @@
         {
             "method": "POST",
             "type": "group",
-            "batchId": "groupBatchId",
+            "batchId": "groupBatchId1",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
@@ -34,11 +35,29 @@
                         "value": "batchid:bobBatchId"
                     },
                     {
-                        "display": "user",
-                        "value": "ALICEID"
+                        "type": "group",
+                        "value": "batchid:groupBatchId2"
+                    }
+                ]
+            }
+        },
+        {
+            "method": "POST",
+            "type": "group",
+            "batchId": "groupBatchId2",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "displayName": "Tour Guides",
+                "members": [
+                    {
+                        "type": "group",
+                        "value": "batchid:groupBatchId1"
                     }
                 ]
             }
         }
+        
     ]
 }

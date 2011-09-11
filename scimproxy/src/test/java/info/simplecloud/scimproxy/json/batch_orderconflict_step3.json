@@ -1,3 +1,4 @@
+
 {
     "schemas": [
         "urn:scim:schemas:core:1.0"
@@ -36,6 +37,31 @@
                     {
                         "display": "user",
                         "value": "ALICEID"
+                    }
+                ]
+            }
+        },
+        {
+            "method": "POST",
+            "type": "group",
+            "batchId": "groupBatchId2",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "displayName": "Tour Guides",
+                "members": [
+                    {
+                        "type": "user",
+                        "value": "batchid:bobBatchId"
+                    },
+                    {
+                        "display": "group",
+                        "value": "batchid:groupBatchId"
+                    },
+                    {
+                        "display": "user",
+                        "value": "aliceid"
                     }
                 ]
             }
