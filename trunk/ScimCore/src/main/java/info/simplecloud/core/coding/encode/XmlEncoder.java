@@ -20,6 +20,7 @@ import x0.scimSchemasCore1.Response.Resources;
 import x0.scimSchemasCore1.ResponseDocument;
 
 public class XmlEncoder implements IUserEncoder {
+    private static final boolean PRITTY_PRINT = Boolean.parseBoolean(System.getProperty(JsonEncoder.class.getName() + ".PRITTY_PRINT", "true"));
 
     @Override
     public String encode(Resource resource) {
@@ -40,8 +41,7 @@ public class XmlEncoder implements IUserEncoder {
             setterName += name.substring(name.lastIndexOf('.') + 1);
             doc.getClass().getMethod(setterName, complex.xmlType()).invoke(doc, xmlResource);
 
-            return doc.xmlText();
-            // return doc.toString();
+            return (PRITTY_PRINT ? doc.toString() : doc.xmlText());
         } catch (FactoryNotFoundException e) {
             throw new RuntimeException("Internal error, xml encode failed", e);
         } catch (NoSuchMethodException e) {
@@ -76,8 +76,7 @@ public class XmlEncoder implements IUserEncoder {
 
         ResponseDocument doc = ResponseDocument.Factory.newInstance();
         doc.setResponse(resp);
-        return resp.xmlText();
-        // return resp.toString();
+        return (PRITTY_PRINT ? doc.toString() : doc.xmlText());
     }
 
     private Object createXmlObject(Resource resource) {
