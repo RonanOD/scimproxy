@@ -27,12 +27,15 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
             int nrPrimary = 0;
 
             IDecodeHandler decoder = internalMetaData.getDecoder();
+            Object value = null;
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject internalObj = jsonArray.getJSONObject(i);
-
-                Object value = internalObj.get("value");
-                value = decoder.decode(value, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
-
+                try {
+                    value = internalObj.get("value");
+                } catch (JSONException e) {
+                    value = internalObj;
+                }
+                Object decodedValue = decoder.decode(value, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
                 String type = (String) getOptional(internalObj, "type");
                 String display = (String) getOptional(internalObj, "display");
                 Boolean primary = (Boolean) getOptional(internalObj, "primary");
@@ -42,7 +45,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
                 nrPrimary += (primary ? 1 : 0);
 
-                result.add(new PluralType(value, type, display, primary, delete));
+                result.add(new PluralType(decodedValue, type, display, primary, delete));
             }
 
             if (nrPrimary > 1) {
