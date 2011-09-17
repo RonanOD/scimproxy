@@ -116,14 +116,14 @@ public class ScimResourceServlet extends RestServlet {
 
         // patch user
         scimUser.patch(resource.getData(), encoding);
-        // generate new version number
-        UserDelegator.getInstance(authUser.getSessionId()).updateVersionNumber(scimUser);
         
         // set a new version number on the user that we are about to change
         Meta meta = scimUser.getMeta();
         if (meta == null) {
             meta = new Meta();
         }
+        // generate new version number
+//        UserDelegator.getInstance(authUser.getSessionId()).updateVersionNumber(scimUser);
         meta.setVersion(Util.generateVersionString());
     	meta.setLocation(HttpGenerator.getLocation(scimUser, server));
 

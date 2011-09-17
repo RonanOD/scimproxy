@@ -21,18 +21,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class ScimBatchServlet extends ScimResourceServlet {
+public class ScimBulkServlet extends ScimResourceServlet {
 
 	private static final long serialVersionUID = 3404477020945307825L;
 
-	private Log log = LogFactory.getLog(ScimBatchServlet.class);
+	private Log log = LogFactory.getLog(ScimBulkServlet.class);
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
     	ArrayList<ResourceJob> resources = new ArrayList<ResourceJob>();
+    	ArrayList<ResourceJob> notProcessed = new ArrayList<ResourceJob>();
     	
         String query = Util.getContent(req);
-        String batchLocation = HttpGenerator.getBatchLocation(Util.generateVersionString(), req);
+        String bulkLocation = HttpGenerator.getBulkLocation(Util.generateVersionString(), req);
         
         String server = HttpGenerator.getServer(req);
         String outEncoding = HttpGenerator.getEncoding(req);
@@ -40,7 +41,7 @@ public class ScimBatchServlet extends ScimResourceServlet {
 
         String response = "{\n" + 
         					"\t\"schemas\": [\"urn:scim:schemas:core:1.0\"],\n" + 
-        					"\t\"location\":\"" + batchLocation + "\",\n" + 
+        					"\t\"location\":\"" + bulkLocation + "\",\n" + 
         					"\t\"Entries\":[\n";
         
         if (query != null && !"".equals(query)) {
@@ -55,13 +56,13 @@ public class ScimBatchServlet extends ScimResourceServlet {
 				    JSONObject entity = entities.getJSONObject(i);
 
 				    String method = entity.getString("method");
-				    String batchId = "";
-				    if(!entity.isNull("batchId")) {
-				    	batchId = entity.getString("batchId");
+				    String bulkId = "";
+				    if(!entity.isNull("bulkId")) {
+				    	bulkId = entity.getString("bulkId");
 				    }
-				    String location = "";
-				    if(!entity.isNull("location")) {
-				    	location = entity.getString("location");
+				    String id = "";
+				    if(!entity.isNull("id")) {
+				    	id = entity.getString("id");
 				    }
 				    String etag = "";
 				    if(!entity.isNull("etag")) {
@@ -76,62 +77,71 @@ public class ScimBatchServlet extends ScimResourceServlet {
 				    	data = entity.getJSONObject("data").toString();
 				    }
 				    
-				    resources.add(new ResourceJob(method, batchId, location, etag, type, data, ""));
+				    resources.add(new ResourceJob(method, bulkId, id, etag, type, data));
 				}
 				
+				
+				// handle all bulk jobs
 				boolean firstItem = true;
-				for (ResourceJob batchResource : resources) {
-
-					if(ResourceJob.TYPE_USER.equalsIgnoreCase(batchResource.getType())) {
-					    if(firstItem) {
-					    	firstItem = false;
-					    }
-					    else {
-					    	response += "\t\t,\n";
-					    }
-					    
-					    response += parseResource(batchResource, server, outEncoding, authUser);
-					}
-				}
-
-				for (ResourceJob batchResource : resources) {
-
-					if(ResourceJob.TYPE_GROUP.equalsIgnoreCase(batchResource.getType())) {
-					    if(firstItem) {
-					    	firstItem = false;
-					    }
-					    else {
-					    	response += "\t\t,\n";
-					    }
-
-					    // find any references to a batchId, and replace it with of earlier created resource id´s.
-					    
-					    // parse group for batchID instead of resourceId
-					    String data = batchResource.getData();
-						JSONObject dataObj = new JSONObject(data);
+				boolean done = false;
+				int counter = 0;
+				
+				while(!done) {
+					
+					for (ResourceJob bulkResource : resources) {
+						boolean success = true;
 						
-						// get all entries and load into memory 
-						// TODO: parse and handle job as file stream to support larger files
-						JSONArray members = dataObj.getJSONArray("members");
-						for (int i = 0; i < members.length(); ++i) {
-							try {
-							    JSONObject entity = members.getJSONObject(i);
-							    String value = entity.getString("value");
-							    if(value.indexOf("batchid:") != -1) {
-							    	for (ResourceJob resourceJob : resources) {
-										if(resourceJob.getBatchId().equals(value.substring("batchid:".length()))) {
-											batchResource.setData(batchResource.getData().replaceFirst(value, resourceJob.getId()));
-										}
-									}
-							    }
-							}
-							catch (Exception e) {
-								// do nothing
-							}
-						}
+					    if(firstItem) {
+					    	firstItem = false;
+					    }
+					    else {
+					    	response += "\t\t,\n";
+					    }
 
-					    response += parseResource(batchResource, server, outEncoding, authUser);
+					    if(ResourceJob.TYPE_GROUP.equalsIgnoreCase(bulkResource.getType())) {
+					    	
+						    // search for bulkid:s and replace them with already created resource id
+						    String data = bulkResource.getData();
+							JSONObject dataObj = new JSONObject(data);
+							
+							JSONArray members = dataObj.getJSONArray("members");
+							for (int i = 0; i < members.length(); ++i) {
+								try {
+								    JSONObject entity = members.getJSONObject(i);
+								    String value = entity.getString("value");
+								    if(value.indexOf("bulkid:") != -1) {
+								    	for (ResourceJob resourceJob : resources) {
+											if(resourceJob.getBulkId().equals(value.substring("bulkid:".length()))) {
+												if(resourceJob.getId() != null && !"".equals(resourceJob.getId())) {
+													bulkResource.setData(bulkResource.getData().replaceFirst(value, resourceJob.getId()));
+												}
+												else {
+													success = false;
+												}
+											}
+										}
+								    }
+								}
+								catch (Exception e) {
+									// do nothing
+								}
+							}
+					    }
+
+					    response += parseResource(bulkResource, server, outEncoding, authUser);
+
+					    if(!success) {
+					    	notProcessed.add(bulkResource);
+					    }
+					    
 					}
+
+				    counter++;
+					if(counter == 3 || notProcessed.size() == 0) {
+						done = true;
+					}
+
+					resources = notProcessed;
 				}
 
 				response += "\t\t]\n" +
@@ -139,11 +149,11 @@ public class ScimBatchServlet extends ScimResourceServlet {
 				
 				response = Util.formatJsonPretty(response);
 
-				resp.setHeader("Location", batchLocation);
+				resp.setHeader("Location", bulkLocation);
 				HttpGenerator.ok(resp, response);
 		        				
 			} catch (JSONException e) {
-	            HttpGenerator.badRequest(resp, "Malformed batch request.");
+	            HttpGenerator.badRequest(resp, "Malformed bulk request.");
 			}
         	
         } else {
@@ -152,13 +162,13 @@ public class ScimBatchServlet extends ScimResourceServlet {
     }
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        log.error("BATCH get");
     	doPost(req, resp);
     }
 	
 	
     
     private String handleExceptions(Exception e, String id) {
+    	e.printStackTrace();
     	String response = "";
     	if(e instanceof PreconditionException) {
     		response += "\t\t\t\t\"code\":\"412\",\n" + 
@@ -181,35 +191,31 @@ public class ScimBatchServlet extends ScimResourceServlet {
     	return response;
     }
     
-    private String parseResource(ResourceJob batchResource, String server, String encoding, AuthenticateUser authUser) {
+    private String parseResource(ResourceJob bulkResource, String server, String encoding, AuthenticateUser authUser) {
     	String response = "";
 	    
-        if("post".equalsIgnoreCase(batchResource.getMethod())) {
+        if("post".equalsIgnoreCase(bulkResource.getMethod())) {
         	response += "\t\t{\n" +
     	      "\t\t\t\"method\":\"POST\",\n" +
-    	      "\t\t\t\"batchId\":\"" + batchResource.getBatchId() + "\",\n" +
+    	      "\t\t\t\"bulkId\":\"" + bulkResource.getBulkId() + "\",\n" +
     	      "\t\t\t\"status\":{\n";
 
             try {
             	Resource scimResource = null;
             	String scimResourceString = "";
             	
-            	// om det är en grupp, 
-            	//		finns det ett batchid i members value, byt ut mot riktiga ID:t.
-            	// 		
-            	
-            	if("user".equalsIgnoreCase(batchResource.getType())) {
-                	scimResource = internalUserPost(batchResource, server, encoding, authUser);
+            	if("user".equalsIgnoreCase(bulkResource.getType())) {
+                	scimResource = internalUserPost(bulkResource, server, encoding, authUser);
                 	scimResourceString = ((User)scimResource).getUser(encoding);
             	}
             	else {
-                	scimResource = internalGroupPost(batchResource, server, encoding, authUser);
+                	scimResource = internalGroupPost(bulkResource, server, encoding, authUser);
                 	scimResourceString = ((Group)scimResource).getGroup(encoding);
             	}
             	// TODO: move this into storage? 
             	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
             	
-            	batchResource.setId(scimResource.getId());
+            	bulkResource.setId(scimResource.getId());
             	
             	response += "\t\t\t\t\"code\":\"201\",\n" +
         	        		"\t\t\t\t\"reason\":\"Created\"\n" + 
@@ -230,9 +236,11 @@ public class ScimBatchServlet extends ScimResourceServlet {
             response += "\t\t}\n";
         }
         
-        if("put".equalsIgnoreCase(batchResource.getMethod())) {
+        if("put".equalsIgnoreCase(bulkResource.getMethod())) {
+        	
+        	
         	response += "\t\t{\n" +
-        	  "\t\t\t\"location\":\"" + batchResource.getLocation() + "\",\n" +
+        	  "\t\t\t\"location\":\"" + HttpGenerator.getLocation(bulkResource.getId(), bulkResource.getType(), server) + "\",\n" +
     	      "\t\t\t\"method\":\"PUT\",\n" +
     	      "\t\t\t\"status\":{\n";
 
@@ -241,16 +249,14 @@ public class ScimBatchServlet extends ScimResourceServlet {
             	Resource scimResource = null;
             	String scimResourceString = "";
             	
-            	if("user".equalsIgnoreCase(batchResource.getType())) {
-                	id = Util.getUserIdFromUri(batchResource.getLocation());
-                	batchResource.setId(id);
-                	scimResource = internalUserPut(batchResource, server, encoding, authUser);
+            	if("user".equalsIgnoreCase(bulkResource.getType())) {
+                	bulkResource.setId(bulkResource.getId());
+                	scimResource = internalUserPut(bulkResource, server, encoding, authUser);
                 	scimResourceString = ((User)scimResource).getUser(encoding);
             	}
             	else {
-                	id = Util.getGroupIdFromUri(batchResource.getLocation());
-                	batchResource.setId(id);
-                	scimResource = internalGroupPut(batchResource, server, encoding, authUser);
+                	bulkResource.setId(bulkResource.getId());
+                	scimResource = internalGroupPut(bulkResource, server, encoding, authUser);
                 	scimResourceString = ((Group)scimResource).getGroup(encoding);
             	}
             	
@@ -262,9 +268,8 @@ public class ScimBatchServlet extends ScimResourceServlet {
         				"\t\t\t},\n";
     	        
         		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
-    	      				"\t\t\t\"data\":" + scimResourceString + ",\n" +
-        					"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
-    	      
+    	      				"\t\t\t\"data\":" + scimResourceString + "\n";
+
         		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         		// trigger.create(scimUser);
 
@@ -275,9 +280,9 @@ public class ScimBatchServlet extends ScimResourceServlet {
             response += "\t\t}\n";
         }
         
-        if("patch".equalsIgnoreCase(batchResource.getMethod())) {
+        if("patch".equalsIgnoreCase(bulkResource.getMethod())) {
         	response += "\t\t{\n" +
-        	  "\t\t\t\"location\":\"" + batchResource.getLocation() + "\"\n" +
+        	  "\t\t\t\"location\":\"" + HttpGenerator.getLocation(bulkResource.getId(), bulkResource.getType(), server) + "\",\n" +
     	      "\t\t\t\"method\":\"PATCH\",\n" +
     	      "\t\t\t\"status\":{\n";
 
@@ -286,16 +291,14 @@ public class ScimBatchServlet extends ScimResourceServlet {
             	Resource scimResource = null;
             	String scimResourceString = "";
             	
-            	if("user".equalsIgnoreCase(batchResource.getType())) {
-                	id = Util.getUserIdFromUri(batchResource.getLocation());
-                	batchResource.setId(id);
-                	scimResource = internalUserPatch(batchResource, server, encoding, authUser);
+            	if("user".equalsIgnoreCase(bulkResource.getType())) {
+                	bulkResource.setId(bulkResource.getId());
+                	scimResource = internalUserPatch(bulkResource, server, encoding, authUser);
                 	scimResourceString = ((User)scimResource).getUser(encoding);
             	}
             	else {
-                	id = Util.getGroupIdFromUri(batchResource.getLocation());
-                	batchResource.setId(id);
-                	scimResource = internalGroupPatch(batchResource, server, encoding, authUser);
+                	bulkResource.setId(bulkResource.getId());
+                	scimResource = internalGroupPatch(bulkResource, server, encoding, authUser);
                 	scimResourceString = ((Group)scimResource).getGroup(encoding);
             	}
 
@@ -304,12 +307,11 @@ public class ScimBatchServlet extends ScimResourceServlet {
 
         		response += "\t\t\t\t\"code\":\"200\",\n" +
     	        		"\t\t\t\t\"reason\":\"Patched\"\n" + 
-        				"\t\t\t}\n";
+        				"\t\t\t},\n";
     	        
         		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
-    	      				"\t\t\t\"data\":" + scimResourceString + ",\n" +
-        					"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
-    	      
+    	      				"\t\t\t\"data\":" + scimResourceString + "\n";
+        		
         		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         		// trigger.create(scimUser);
 
@@ -319,23 +321,21 @@ public class ScimBatchServlet extends ScimResourceServlet {
 
             response += "\t\t}\n";
         }		            
-        if("delete".equalsIgnoreCase(batchResource.getMethod())) {
+        if("delete".equalsIgnoreCase(bulkResource.getMethod())) {
         	response += "\t\t{\n" +
-    			"\t\t\t\"location\":\"" + batchResource.getLocation() + "\",\n" + 
+    			"\t\t\t\"location\":\"" + HttpGenerator.getLocation(bulkResource.getId(), bulkResource.getType(), server) + "\",\n" + 
     			"\t\t\t\"method\":\"DELETE\",\n" +
     			"\t\t\t\"status\":{\n";
 
         	String id = "";
             try {
-            	if("user".equalsIgnoreCase(batchResource.getType())) {
-                	id = Util.getUserIdFromUri(batchResource.getLocation());
-                	batchResource.setId(id);
-            		internalUserDelete(batchResource, server, encoding, authUser);
+            	if("user".equalsIgnoreCase(bulkResource.getType())) {
+                	bulkResource.setId(bulkResource.getId());
+            		internalUserDelete(bulkResource, server, encoding, authUser);
             	}
             	else {
-                	id = Util.getGroupIdFromUri(batchResource.getLocation());
-                	batchResource.setId(id);
-            		internalGroupDelete(batchResource, server, encoding, authUser);
+                	bulkResource.setId(bulkResource.getId());
+            		internalGroupDelete(bulkResource, server, encoding, authUser);
             	}
             	
         		response += "\t\t\t\t\"code\":\"200\",\n" +

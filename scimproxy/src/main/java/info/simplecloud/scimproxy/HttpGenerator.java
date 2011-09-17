@@ -201,6 +201,18 @@ public class HttpGenerator {
 		}
 		return server + "/v1/" + path + "/" + resource.getId();
 	}
+
+
+	public static String getLocation(String id, String type, String server) {
+		String path = "";
+		if("user".equals(type)) {
+			path = "User";
+		}
+		else {
+			path = "Group";
+		}
+		return server + "/v1/" + path + "/" + id;
+	}
 	
 	public static String getServer(HttpServletRequest req) {
 		// generate the Location url
@@ -238,9 +250,8 @@ public class HttpGenerator {
 		return getInternalLocation("/v1/" + path + "/" + resource.getId(), req);
 	}
 	
-	
-	public static String getBatchLocation(String batch, HttpServletRequest req) {
-		return getInternalLocation("/v1/Batch/" + batch, req);
+	public static String getBulkLocation(String batch, HttpServletRequest req) {
+		return getInternalLocation("/v1/Bulk/" + batch, req);
 	}
 
 	private static String getInternalLocation(String path, HttpServletRequest req) {

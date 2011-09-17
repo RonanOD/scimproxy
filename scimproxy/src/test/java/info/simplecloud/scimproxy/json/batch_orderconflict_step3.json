@@ -7,7 +7,7 @@
         {
             "method": "POST",
             "type": "user",
-            "batchId": "bobBatchId",
+            "bulkId": "bobbulkId",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
@@ -23,7 +23,7 @@
         {
             "method": "POST",
             "type": "group",
-            "batchId": "groupBatchId",
+            "bulkId": "groupbulkId",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
@@ -32,7 +32,7 @@
                 "members": [
                     {
                         "type": "user",
-                        "value": "batchid:bobBatchId"
+                        "value": "bulkId:bobbulkId"
                     },
                     {
                         "display": "user",
@@ -44,7 +44,7 @@
         {
             "method": "POST",
             "type": "group",
-            "batchId": "groupBatchId2",
+            "bulkId": "groupbulkId2",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
@@ -53,11 +53,11 @@
                 "members": [
                     {
                         "type": "user",
-                        "value": "batchid:bobBatchId"
+                        "value": "bulkId:bobbulkId"
                     },
                     {
                         "display": "group",
-                        "value": "batchid:groupBatchId"
+                        "value": "bulkId:groupbulkId"
                     },
                     {
                         "display": "user",

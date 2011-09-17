@@ -5,7 +5,7 @@
     {
       "method":"POST",
       "type":"user",
-      "batchId":"evebatchid",
+      "bulkId":"evebulkId",
       "data":{
         "schemas": ["urn:scim:schemas:core:1.0"],
         "userName":"eve",
@@ -19,7 +19,7 @@
     {
       "method":"PUT",
       "type":"user",
-      "location":"BOBLOCATIONPLACEHOLDER",
+      "id":"BOBIDPLACEHOLDER",
       "etag":"BOBETAGPLACEHOLDER",
       "data":{
         "schemas": ["urn:scim:schemas:core:1.0"],
@@ -29,19 +29,13 @@
           "formatted":"Bob Doe",
           "familyName":"Doe",
           "givenName":"Bob"
-        },
-        "meta":{
-          "location":"BOBLOCATIONPLACEHOLDER",
-          "version":"BOBETAGPLACEHOLDER",
-          "created":"2010-05-01T21:32:44.882Z",
-          "lastModified":"2010-05-01T21:32:44.882Z"
         }
       }
     },
     {
 		"method":"DELETE",
 		"type":"user",
-        "location":"CHARLIELOCATIONPLACEHOLDER",
+        "id":"CHARLIEIDPLACEHOLDER",
         "etag":"CHARLIEETAGPLACEHOLDER"
     }
   ]
