@@ -13,25 +13,23 @@ public class ResourceJob {
 	public static String TYPE_GROUP = "group";
 	
 	private String method = "";
-	private String batchId = "";
-	private String location = "";
+	private String bulkId = "";
+	private String id = "";
 	private String etag = "";
 	private String type = "";
 	private String data = null;
-	private String id = "";
 
 	public ResourceJob() {
 		
 	}
 	
-	public ResourceJob(String method, String batchId, String location, String etag, String type, String data, String id) {
+	public ResourceJob(String method, String bulkId, String id, String etag, String type, String data) {
 		this.method = method;
-		this.batchId = batchId;
-		this.location = location;
+		this.bulkId = bulkId;
+		this.id = id;
 		this.etag = etag;
 		this.type = type;
 		this.data = data;
-		this.id = id;
 	}
 	
     public String getMethod() {
@@ -40,17 +38,11 @@ public class ResourceJob {
 	public void setMethod(String method) {
 		this.method = method;
 	}
-	public String getBatchId() {
-		return batchId;
+	public String getBulkId() {
+		return bulkId;
 	}
-	public void setBatchId(String batchId) {
-		this.batchId = batchId;
-	}
-	public String getLocation() {
-		return location;
-	}
-	public void setLocation(String location) {
-		this.location = location;
+	public void setBulkId(String bulkId) {
+		this.bulkId = bulkId;
 	}
 	public String getEtag() {
 		return etag;
@@ -79,4 +71,11 @@ public class ResourceJob {
 		return id;
 	}
 
+	public String toString() {
+		String d = "empty";
+		if(data != null) {
+			d = data;
+		}
+		return "method:" + method + ", bulkId:" + bulkId + ", id:" + id + ", etag:" + etag + ", type:" + type + ", data:" + d;
+	}
 }

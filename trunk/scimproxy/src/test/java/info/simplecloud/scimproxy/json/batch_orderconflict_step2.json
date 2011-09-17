@@ -6,7 +6,7 @@
         {
             "method": "POST",
             "type": "user",
-            "batchId": "bobBatchId",
+            "bulkId": "bobbulkId",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
@@ -22,7 +22,7 @@
         {
             "method": "POST",
             "type": "group",
-            "batchId": "groupBatchId",
+            "bulkId": "groupbulkId",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
@@ -31,11 +31,7 @@
                 "members": [
                     {
                         "type": "user",
-                        "value": "batchid:bobBatchId"
-                    },
-                    {
-                        "display": "user",
-                        "value": "ALICEID"
+                        "value": "bulkId:bobbulkId"
                     }
                 ]
             }

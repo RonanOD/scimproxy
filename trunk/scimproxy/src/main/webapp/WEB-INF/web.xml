@@ -57,14 +57,13 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>Batch</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.ScimBatchServlet</servlet-class>
+		<servlet-name>Bulk</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.ScimBulkServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Batch</servlet-name>
-		<url-pattern>/v1/Batch/User</url-pattern>
+		<servlet-name>Bulk</servlet-name>
+		<url-pattern>/v1/Bulk/User</url-pattern>
 	</servlet-mapping>
-
 
 	<servlet>
 		<servlet-name>List</servlet-name>
@@ -94,13 +93,15 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>ViewerBatch</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.viewer.Batch</servlet-class>
+		<servlet-name>ViewerBulk</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.Bulk</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>ViewerBatch</servlet-name>
-		<url-pattern>/Viewer/Batch</url-pattern>
+		<servlet-name>ViewerBulk</servlet-name>
+		<url-pattern>/Viewer/Bulk</url-pattern>
 	</servlet-mapping>
+
+
 	<servlet>
 		<servlet-name>AddUser</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.viewer.AddUser</servlet-class>

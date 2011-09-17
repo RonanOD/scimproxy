@@ -49,8 +49,7 @@ public class ScimUserServletPostTest {
         Assert.assertEquals(201, response.getStatus());
     }
 
-    
-/*
+    /*
     @Test
     public void createUserXml() throws Exception {
 

@@ -6,7 +6,7 @@
         {
             "method": "POST",
             "type": "user",
-            "batchId": "alicebatchid",
+            "bulkId": "alicebulkId",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
