@@ -2,10 +2,10 @@
     "schemas": [
         "urn:scim:schemas:core:1.0"
     ],
-    "Entries": [
+    "Operations": [
         {
             "method": "POST",
-            "type": "user",
+            "path": "/v1/User",
             "bulkId": "bobbulkId",
             "data": {
                 "schemas": [
@@ -21,7 +21,7 @@
         },
         {
             "method": "POST",
-            "type": "group",
+            "path": "/v1/Group",
             "bulkId": "groupbulkId",
             "data": {
                 "schemas": [

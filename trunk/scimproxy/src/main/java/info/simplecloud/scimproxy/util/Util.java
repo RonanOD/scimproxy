@@ -63,7 +63,7 @@ public class Util {
     public static String getUserIdFromUri(String query) {
         String id = "";
         // TODO: add more validation of input
-        String s = "/User/";
+        String s = "/v1/User/";
         if (query != null && query.length() > 0) {
             int indexOfUserId = query.indexOf(s) + s.length();
 
@@ -88,7 +88,7 @@ public class Util {
     public static String getGroupIdFromUri(String query) {
         String id = "";
         // TODO: add more validation of input
-        String s = "/Group/";
+        String s = "/v1/Group/";
         if (query != null && query.length() > 0) {
             int indexOfUserId = query.indexOf(s) + s.length();
 

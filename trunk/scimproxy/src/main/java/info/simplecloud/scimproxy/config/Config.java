@@ -32,6 +32,10 @@ public class Config {
 			<password>pw</password>
 		</user>
 	</auth>
+	<bulk>
+		<maxOperations>100</maxOperations>
+		<maxPayloadSize>1000000</maxPayloadSize>
+	</bulk>
 	<storages>
 		<storage>
 			<type>dummy</type>
@@ -79,6 +83,9 @@ public class Config {
 	private boolean noneAuth = false; // Public to all Internet users in the world!
 	private String basicAuthUsername = "";
 	private String basicAuthPassword = "";
+	
+	private int bulkMaxOperations = 0;
+	private int bulkMaxPayloadSize = 0;
 	
 	private List<CSP> downStreamCSP = new ArrayList<CSP>();
 	private List<CSP> upStreamCSP = new ArrayList<CSP>();
@@ -174,6 +181,9 @@ public class Config {
 		    	}
 		    }
 
+		    setBulkMaxOperations(config.getInt("bulk.maxOperations"));
+		    setBulkMaxPayloadSize(config.getInt("bulk.maxPayloadSize"));
+		    
 
 		    List<String> downProp = config.getList("down-stream.csp.url");
 		    if(downProp != null)
@@ -271,6 +281,22 @@ public class Config {
 
 	public String getStorageType() {
 		return storageType;
+	}
+
+	public int getBulkMaxOperations() {
+		return bulkMaxOperations;
+	}
+
+	public void setBulkMaxOperations(int bulkMaxOperations) {
+		this.bulkMaxOperations = bulkMaxOperations;
+	}
+
+	public void setBulkMaxPayloadSize(int bulkMaxPayloadSize) {
+		this.bulkMaxPayloadSize = bulkMaxPayloadSize;
+	}
+
+	public int getBulkMaxPayloadSize() {
+		return bulkMaxPayloadSize;
 	}
 
 	

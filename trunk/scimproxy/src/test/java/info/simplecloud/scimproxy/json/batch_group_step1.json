@@ -1,42 +1,45 @@
-
 {
-  "schemas": ["urn:scim:schemas:core:1.0"],
-  "Entries":[
-  	{	
-	  "method":"POST",
-      "type":"group",
-      "bulkId":"tourguidesbulkId",
-      "data":{
-		"schemas": ["urn:scim:schemas:core:1.0"],
-		"id": "groupid1",
-		"displayName": "Tour Guides",
-	    "members": [
-	        {
-	          "display": "Alice Doe",
-	          "value": "qwerty"
-	        },
-	        {
-	          "display": "Bob Doe",
-	          "value": "ytrewq"
-	        }
-	    ]
-	  }
-	},
-  	{	
-	  "method":"POST",
-      "type":"group",
-      "bulkId":"tourManagersbulkId",
-      "data":{
-		"schemas": ["urn:scim:schemas:core:1.0"],
-		"id": "groupid2",
-		"displayName": "Tour Managers",
-	    "members": [
-	        {
-	          "display": "Bob Doe",
-	          "value": "ytrewq"
-	        }
-	    ]
-	  }
-	}
-  ]
+    "schemas": [
+        "urn:scim:schemas:core:1.0"
+    ],
+    "Operations": [
+        {
+            "method": "POST",
+            "path": "/v1/Group",
+            "bulkId": "tourguidesbulkId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "displayName": "Tour Guides",
+                "members": [
+                    {
+                        "display": "Alice Doe",
+                        "value": "qwerty"
+                    },
+                    {
+                        "display": "Bob Doe",
+                        "value": "ytrewq"
+                    }
+                ]
+            }
+        },
+        {
+            "method": "POST",
+            "path": "/v1/Group",
+            "bulkId": "tourManagersbulkId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "displayName": "Tour Managers",
+                "members": [
+                    {
+                        "display": "Bob Doe",
+                        "value": "ytrewq"
+                    }
+                ]
+            }
+        }
+    ]
 }
