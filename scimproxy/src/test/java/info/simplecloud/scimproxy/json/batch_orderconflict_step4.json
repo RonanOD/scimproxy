@@ -1,12 +1,11 @@
-
 {
     "schemas": [
         "urn:scim:schemas:core:1.0"
     ],
-    "Entries": [
+    "Operations": [
         {
             "method": "POST",
-            "type": "user",
+            "path": "/v1/User",
             "bulkId": "bobbulkId",
             "data": {
                 "schemas": [
@@ -22,13 +21,13 @@
         },
         {
             "method": "POST",
-            "type": "group",
+            "path": "/v1/Group",
             "bulkId": "groupbulkId1",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
                 ],
-                "displayName": "Tour Guides",
+                "displayName": "Tour Guides 1",
                 "members": [
                     {
                         "type": "user",
@@ -43,13 +42,13 @@
         },
         {
             "method": "POST",
-            "type": "group",
+            "path": "/v1/Group",
             "bulkId": "groupbulkId2",
             "data": {
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
                 ],
-                "displayName": "Tour Guides",
+                "displayName": "Tour Guides 2",
                 "members": [
                     {
                         "type": "group",
@@ -58,6 +57,5 @@
                 ]
             }
         }
-        
     ]
 }

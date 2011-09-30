@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
+	<server>
+		<url>http://localhost</url>
+		<port>8080</port>
+		<version></version>
+	</server>
 	<auth type="basic">
 		<user>
 			<username>usr</username>
@@ -15,4 +20,8 @@
 			<type>dummy</type>
 		</storage>
 	</storages>
+	<bulk>
+		<maxOperations>1000</maxOperations>
+		<maxPayloadSize>10000000</maxPayloadSize>
+	</bulk>
 </config>

@@ -1,9 +1,8 @@
 package info.simplecloud.scimproxy;
 
-import info.simplecloud.core.Group;
 import info.simplecloud.core.Resource;
-import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
+import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
 import info.simplecloud.scimproxy.util.Util;
@@ -14,8 +13,6 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,8 +21,6 @@ import org.json.JSONObject;
 public class ScimBulkServlet extends ScimResourceServlet {
 
 	private static final long serialVersionUID = 3404477020945307825L;
-
-	private Log log = LogFactory.getLog(ScimBulkServlet.class);
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -41,43 +36,56 @@ public class ScimBulkServlet extends ScimResourceServlet {
 
         String response = "{\n" + 
         					"\t\"schemas\": [\"urn:scim:schemas:core:1.0\"],\n" + 
-        					"\t\"location\":\"" + bulkLocation + "\",\n" + 
-        					"\t\"Entries\":[\n";
+        					"\t\"Operations\":[\n";
+        
+        JSONArray operations = null;
+        boolean validRequest = false;
         
         if (query != null && !"".equals(query)) {
-        	
         	try {
-				JSONObject jsonObj = new JSONObject(query);
+            	JSONObject jsonObj = new JSONObject(query);
+    			// TODO: parse and handle job as file stream to support larger files
+    			operations = jsonObj.getJSONArray("Operations");
+    			if(operations.length() > Config.getInstance().getBulkMaxOperations() || query.length() > Config.getInstance().getBulkMaxPayloadSize()) {
+    				HttpGenerator.requestEntityToLarge(resp, Config.getInstance().getBulkMaxOperations(), Config.getInstance().getBulkMaxPayloadSize());
+    			}
+    			else {
+    				validRequest = true;
+    			}
+        	}
+        	catch (JSONException e) {
+            	HttpGenerator.badRequest(resp, "Malformed bulk request.");
+        	}
+	    } 
+        else {
+        	HttpGenerator.badRequest(resp);
+        }
+        
+        if(validRequest) {
+			try {
 				
-				// get all entries and load into memory 
-				// TODO: parse and handle job as file stream to support larger files
-				JSONArray entities = jsonObj.getJSONArray("Entries");
-				for (int i = 0; i < entities.length(); ++i) {
-				    JSONObject entity = entities.getJSONObject(i);
+				for (int i = 0; i < operations.length(); ++i) {
+				    JSONObject op = operations.getJSONObject(i);
 
-				    String method = entity.getString("method");
+				    String method = op.getString("method");
 				    String bulkId = "";
-				    if(!entity.isNull("bulkId")) {
-				    	bulkId = entity.getString("bulkId");
+				    if(!op.isNull("bulkId")) {
+				    	bulkId = op.getString("bulkId");
 				    }
-				    String id = "";
-				    if(!entity.isNull("id")) {
-				    	id = entity.getString("id");
+				    String path = "";
+				    if(!op.isNull("path")) {
+				    	path = op.getString("path");
 				    }
 				    String etag = "";
-				    if(!entity.isNull("etag")) {
-				    	etag = entity.getString("etag");
-				    }
-				    String type = "";
-				    if(!entity.isNull("type")) {
-				    	type = entity.getString("type");
+				    if(!op.isNull("etag")) {
+				    	etag = op.getString("etag");
 				    }
 				    String data = null;
-				    if(!entity.isNull("data")) {
-				    	data = entity.getJSONObject("data").toString();
+				    if(!op.isNull("data")) {
+				    	data = op.getJSONObject("data").toString();
 				    }
 				    
-				    resources.add(new ResourceJob(method, bulkId, id, etag, type, data));
+				    resources.add(new ResourceJob(method, bulkId, path, etag, data));
 				}
 				
 				
@@ -100,18 +108,18 @@ public class ScimBulkServlet extends ScimResourceServlet {
 
 					    if(ResourceJob.TYPE_GROUP.equalsIgnoreCase(bulkResource.getType())) {
 					    	
-						    // search for bulkid:s and replace them with already created resource id
-						    String data = bulkResource.getData();
-							JSONObject dataObj = new JSONObject(data);
-							
-							JSONArray members = dataObj.getJSONArray("members");
-							for (int i = 0; i < members.length(); ++i) {
-								try {
+							try {
+							    // search for bulkid:s and replace them with already created resource id
+							    String data = bulkResource.getData();
+								JSONObject dataObj = new JSONObject(data);
+								
+								JSONArray members = dataObj.getJSONArray("members");
+								for (int i = 0; i < members.length(); ++i) {
 								    JSONObject entity = members.getJSONObject(i);
 								    String value = entity.getString("value");
-								    if(value.indexOf("bulkid:") != -1) {
+								    if(value.indexOf("bulkId:") != -1) {
 								    	for (ResourceJob resourceJob : resources) {
-											if(resourceJob.getBulkId().equals(value.substring("bulkid:".length()))) {
+											if(resourceJob.getBulkId().equals(value.substring("bulkId:".length()))) {
 												if(resourceJob.getId() != null && !"".equals(resourceJob.getId())) {
 													bulkResource.setData(bulkResource.getData().replaceFirst(value, resourceJob.getId()));
 												}
@@ -122,9 +130,9 @@ public class ScimBulkServlet extends ScimResourceServlet {
 										}
 								    }
 								}
-								catch (Exception e) {
-									// do nothing
-								}
+							}
+							catch (Exception e) {
+								// do nothing
 							}
 					    }
 
@@ -151,13 +159,10 @@ public class ScimBulkServlet extends ScimResourceServlet {
 
 				resp.setHeader("Location", bulkLocation);
 				HttpGenerator.ok(resp, response);
-		        				
-			} catch (JSONException e) {
-	            HttpGenerator.badRequest(resp, "Malformed bulk request.");
 			}
-        	
-        } else {
-            HttpGenerator.badRequest(resp);
+			catch (JSONException e) {
+            	HttpGenerator.badRequest(resp, "Malformed bulk request.");
+			}
         }
     }
 
@@ -172,24 +177,24 @@ public class ScimBulkServlet extends ScimResourceServlet {
     	String response = "";
     	if(e instanceof PreconditionException) {
     		response += "\t\t\t\t\"code\":\"412\",\n" + 
-    				"\t\t\t\t\"reason\":\"SC_PRECONDITION_FAILED\",\n" + 
-    				"\t\t\t\t\"error\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"\n" +
+    				"\t\t\t\t\"description\":\"Failed to update as resource " + id + " changed on the server since you last retrieved it.\"\n" +
     				"\t\t\t}\n";
     	}
     	else if(e instanceof ResourceNotFoundException) {
         	response += "\t\t\t\t\"code\":\"404\",\n" + 
-        			"\t\t\t\t\"reason\":\"NOT FOUND\",\n" + 
-        			"\t\t\t\t\"error\":\"Specified resource does not exist.\"\n" +
+        			"\t\t\t\t\"description\":\"Specified resource does not exist.\"\n" +
         			"\t\t\t}\n";
     	}
     	else if(e instanceof Exception) {
     		response += "\t\t\t\t\"code\":\"400\",\n" + 
-    				"\t\t\t\t\"reason\":\"BAD REQUEST\",\n" + 
-    				"\t\t\t\t\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
+    				"\t\t\t\t\"description\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
     				"\t\t\t}\n";
     	}
     	return response;
     }
+    
+    
+    
     
     private String parseResource(ResourceJob bulkResource, String server, String encoding, AuthenticateUser authUser) {
     	String response = "";
@@ -202,43 +207,36 @@ public class ScimBulkServlet extends ScimResourceServlet {
 
             try {
             	Resource scimResource = null;
-            	String scimResourceString = "";
             	
             	if("user".equalsIgnoreCase(bulkResource.getType())) {
                 	scimResource = internalUserPost(bulkResource, server, encoding, authUser);
-                	scimResourceString = ((User)scimResource).getUser(encoding);
             	}
             	else {
                 	scimResource = internalGroupPost(bulkResource, server, encoding, authUser);
-                	scimResourceString = ((Group)scimResource).getGroup(encoding);
             	}
             	// TODO: move this into storage? 
             	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
             	
             	bulkResource.setId(scimResource.getId());
             	
-            	response += "\t\t\t\t\"code\":\"201\",\n" +
-        	        		"\t\t\t\t\"reason\":\"Created\"\n" + 
+            	response += "\t\t\t\t\"code\":\"201\"\n" +
             				"\t\t\t},\n";
         	        
-            	response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
-        	      			"\t\t\t\"data\":" + scimResourceString + ",\n" +
-        	      			"\t\t\t\"location\":\"" + scimResource.getMeta().getLocation() + "\"\n";
-             
+            	response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n";
+            	response += "\t\t\t\"location\": \"" + scimResource.getMeta().getLocation() + "\"\n";
+            	
             	// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
             	// trigger.create(scimUser);				
             } catch (Exception e) {
             	response += "\t\t\t\t\"code\":\"400\",\n" + 
-            				"\t\t\t\t\"reason\":\"BAD REQUEST\",\n" + 
-            				"\t\t\t\t\"error\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
+            				"\t\t\t\t\"description\":\"Request is unparseable, syntactically incorrect, or violates schema.\"\n" +
             				"\t\t\t}\n";
             }
             response += "\t\t}\n";
         }
         
         if("put".equalsIgnoreCase(bulkResource.getMethod())) {
-        	
-        	
+
         	response += "\t\t{\n" +
         	  "\t\t\t\"location\":\"" + HttpGenerator.getLocation(bulkResource.getId(), bulkResource.getType(), server) + "\",\n" +
     	      "\t\t\t\"method\":\"PUT\",\n" +
@@ -247,28 +245,23 @@ public class ScimBulkServlet extends ScimResourceServlet {
         	String id = "";
             try {
             	Resource scimResource = null;
-            	String scimResourceString = "";
             	
             	if("user".equalsIgnoreCase(bulkResource.getType())) {
                 	bulkResource.setId(bulkResource.getId());
                 	scimResource = internalUserPut(bulkResource, server, encoding, authUser);
-                	scimResourceString = ((User)scimResource).getUser(encoding);
             	}
             	else {
                 	bulkResource.setId(bulkResource.getId());
                 	scimResource = internalGroupPut(bulkResource, server, encoding, authUser);
-                	scimResourceString = ((Group)scimResource).getGroup(encoding);
             	}
             	
         		// TODO: move this into storage? 
             	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
 
-        		response += "\t\t\t\t\"code\":\"200\",\n" +
-    	        		"\t\t\t\t\"reason\":\"Updated\"\n" + 
+        		response += "\t\t\t\t\"code\":\"200\"\n" +
         				"\t\t\t},\n";
     	        
-        		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
-    	      				"\t\t\t\"data\":" + scimResourceString + "\n";
+        		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n";
 
         		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         		// trigger.create(scimUser);
@@ -289,29 +282,24 @@ public class ScimBulkServlet extends ScimResourceServlet {
         	String id = "";
             try {
             	Resource scimResource = null;
-            	String scimResourceString = "";
             	
             	if("user".equalsIgnoreCase(bulkResource.getType())) {
                 	bulkResource.setId(bulkResource.getId());
                 	scimResource = internalUserPatch(bulkResource, server, encoding, authUser);
-                	scimResourceString = ((User)scimResource).getUser(encoding);
             	}
             	else {
                 	bulkResource.setId(bulkResource.getId());
                 	scimResource = internalGroupPatch(bulkResource, server, encoding, authUser);
-                	scimResourceString = ((Group)scimResource).getGroup(encoding);
             	}
 
         		// TODO: move this into storage? 
             	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
 
-        		response += "\t\t\t\t\"code\":\"200\",\n" +
-    	        		"\t\t\t\t\"reason\":\"Patched\"\n" + 
+        		response += "\t\t\t\t\"code\":\"200\"\n" +
         				"\t\t\t},\n";
     	        
-        		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n" +
-    	      				"\t\t\t\"data\":" + scimResourceString + "\n";
-        		
+        		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n";
+
         		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         		// trigger.create(scimUser);
 
@@ -320,7 +308,8 @@ public class ScimBulkServlet extends ScimResourceServlet {
             }
 
             response += "\t\t}\n";
-        }		            
+        }	
+        
         if("delete".equalsIgnoreCase(bulkResource.getMethod())) {
         	response += "\t\t{\n" +
     			"\t\t\t\"location\":\"" + HttpGenerator.getLocation(bulkResource.getId(), bulkResource.getType(), server) + "\",\n" + 
@@ -338,8 +327,7 @@ public class ScimBulkServlet extends ScimResourceServlet {
             		internalGroupDelete(bulkResource, server, encoding, authUser);
             	}
             	
-        		response += "\t\t\t\t\"code\":\"200\",\n" +
-    	        		"\t\t\t\t\"reason\":\"Deleted\"\n" + 
+        		response += "\t\t\t\t\"code\":\"200\"\n" +
         				"\t\t\t}\n";
             
             } catch (Exception e) {

@@ -115,7 +115,7 @@ public class Bulk extends HttpServlet {
 				client.getState().setCredentials(AuthScope.ANY, defaultcreds);
 				
 				// Create a method instance.
-				PostMethod method = new PostMethod("http://localhost:8080/v1/Bulk/User");
+				PostMethod method = new PostMethod("http://localhost:8080/v1/Bulk");
 				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 				
 		        method.setRequestBody(bulk);
@@ -125,34 +125,28 @@ public class Bulk extends HttpServlet {
 				int responseCode = client.executeMethod(method);
 				if(responseCode == 200) {
 			        resp.getWriter().print("Bulk job processed successfully.<br/><br/>");
-
-			        for(int i=0; i<method.getResponseHeaders().length; i++) {
-			        	if("location".equalsIgnoreCase(method.getResponseHeaders()[i].getName())) {
-					        resp.getWriter().print("<a href=\"?progress=" + method.getResponseHeaders()[i].getValue() + "\">Get progress</a><br/><br/>");
-			        	}
-			        }
-
-			        resp.getWriter().print("<b>Response header:</b>");
-			        resp.getWriter().print("<pre class=\"prettyprint\">");
-			        
-			        for(int i=0; i<method.getResponseHeaders().length; i++) {
-				        resp.getWriter().print(method.getResponseHeaders()[i].getName() + ": " + method.getResponseHeaders()[i].getValue() + "<br/>");
-			        }
-			        
-			        resp.getWriter().print("</pre>");
-			        resp.getWriter().print("<b>Response body:</b><br/>");
-			        resp.getWriter().print("<pre class=\"prettyprint\">");
-			        if("application/json".equals(encoding)) {
-			        	resp.getWriter().print(method.getResponseBodyAsString());
-			        }
-			        else {
-			        	resp.getWriter().print(StringEscapeUtils.escapeHtml(method.getResponseBodyAsString()));
-			        }
-			        resp.getWriter().print("</pre>");
 				}
 				else {
-			        resp.getWriter().print("Failed to add resources to storage.<br/><br/>");
+			        resp.getWriter().print("Failed to add resources to storage. Response code: <b>" + Integer.toString(responseCode) + "</b><br/><br/>");
 				}
+
+		        resp.getWriter().print("<b>Response header:</b>");
+		        resp.getWriter().print("<pre class=\"prettyprint\">");
+		        
+		        for(int i=0; i<method.getResponseHeaders().length; i++) {
+			        resp.getWriter().print(method.getResponseHeaders()[i].getName() + ": " + method.getResponseHeaders()[i].getValue() + "<br/>");
+		        }
+		        
+		        resp.getWriter().print("</pre>");
+		        resp.getWriter().print("<b>Response body:</b><br/>");
+		        resp.getWriter().print("<pre class=\"prettyprint\">");
+		        if("application/json".equals(encoding)) {
+		        	resp.getWriter().print(method.getResponseBodyAsString());
+		        }
+		        else {
+		        	resp.getWriter().print(StringEscapeUtils.escapeHtml(method.getResponseBodyAsString()));
+		        }
+		        resp.getWriter().print("</pre>");
 			}	
 	        resp.getWriter().print("<form id=\"bulkform\" method=\"POST\" enctype=\"multipart/form-data\">");
 	        resp.getWriter().print("<input type=\"radio\" id=\"encoding\" value=\"application/json\" checked=\"true\" /> JSON<br/>");

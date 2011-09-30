@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.scimproxy.util.Util;
+
 
 
 public class ResourceJob {
@@ -15,6 +17,7 @@ public class ResourceJob {
 	private String method = "";
 	private String bulkId = "";
 	private String id = "";
+	private String path = "";
 	private String etag = "";
 	private String type = "";
 	private String data = null;
@@ -23,12 +26,27 @@ public class ResourceJob {
 		
 	}
 	
-	public ResourceJob(String method, String bulkId, String id, String etag, String type, String data) {
+	public ResourceJob(String method, String bulkId, String path, String etag, String data) {
 		this.method = method;
 		this.bulkId = bulkId;
-		this.id = id;
+		this.path = path;
+
+		// if type is not sent it's in the resource value, extract it.
+		if(path != null && path.indexOf("/v1/User") > -1) {
+			this.type = TYPE_USER;
+		}
+		if(path != null && path.indexOf("/v1/Group") > -1) {
+			this.type = TYPE_GROUP;
+		}
+		
+		if("user".equalsIgnoreCase(this.type)) {
+			this.id = Util.getUserIdFromUri(path);
+		}
+		if("group".equalsIgnoreCase(this.type)) {
+			this.id = Util.getGroupIdFromUri(path);
+		}
+
 		this.etag = etag;
-		this.type = type;
 		this.data = data;
 	}
 	
@@ -71,11 +89,20 @@ public class ResourceJob {
 		return id;
 	}
 
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
 	public String toString() {
 		String d = "empty";
 		if(data != null) {
 			d = data;
 		}
-		return "method:" + method + ", bulkId:" + bulkId + ", id:" + id + ", etag:" + etag + ", type:" + type + ", data:" + d;
+		return "method:" + method + ", bulkId:" + bulkId + ", id:" + id + ", resource:" + path + ", etag:" + etag + ", type:" + type + ", data:" + d;
 	}
+
 }

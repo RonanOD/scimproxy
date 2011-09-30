@@ -62,7 +62,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Bulk</servlet-name>
-		<url-pattern>/v1/Bulk/User</url-pattern>
+		<url-pattern>/v1/Bulk</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

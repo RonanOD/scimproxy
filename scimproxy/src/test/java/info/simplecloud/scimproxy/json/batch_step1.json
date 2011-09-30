@@ -1,82 +1,92 @@
-
 {
-  "schemas": ["urn:scim:schemas:core:1.0"],
-  "Entries":[
-  	{	
-	  "method":"POST",
-      "type":"group",
-      "bulkId":"tourguidesbulkId",
-      "data":{
-		"schemas": ["urn:scim:schemas:core:1.0"],
-		"id": "00300000005N98YT1",
-		"displayName": "Tour Guides",
-	    "members": [
-	        {
-	          "display": "Babs Jensen",
-	          "value": "005D0000001Az1u"
-	        },
-	        {
-	          "display": "Mandy Pepperidge",
-	          "value": "005D0000001AQRE"
-	        }
-	    ]
-	  }
-	},
-    {
-      "method":"POST",
-      "type":"user",
-      "bulkId":"alicebulkId",
-      "data":{
-        "schemas": ["urn:scim:schemas:core:1.0"],
-        "userName":"alice",
-        "name":{
-          "formatted":"Alice Doe",
-          "familyName":"Doe",
-          "givenName":"Alice"
+    "schemas": [
+        "urn:scim:schemas:core:1.0"
+    ],
+    "Operations": [
+        {
+            "method": "POST",
+            "path": "/v1/Group",
+            "bulkId": "tourguidesbulkId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "displayName": "Tour Guides",
+                "members": [
+                    {
+                        "display": "Babs Jensen",
+                        "value": "005D0000001Az1u"
+                    },
+                    {
+                        "display": "Mandy Pepperidge",
+                        "value": "005D0000001AQRE"
+                    }
+                ]
+            }
+        },
+        {
+            "method": "POST",
+            "path": "/v1/User",
+            "bulkId": "alicebulkId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "userName": "alice",
+                "name": {
+                    "formatted": "Alice Doe",
+                    "familyName": "Doe",
+                    "givenName": "Alice"
+                }
+            }
+        },
+        {
+            "method": "POST",
+            "path": "/v1/User",
+            "bulkId": "bobbulkId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "userName": "bob",
+                "name": {
+                    "formatted": "Bob Doe",
+                    "familyName": "Doe",
+                    "givenName": "Bob"
+                }
+            }
+        },
+        {
+            "method": "POST",
+            "path": "/v1/User",
+            "bulkId": "charliebulkId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "userName": "charlie",
+                "name": {
+                    "formatted": "Charlie Doe",
+                    "familyName": "Doe",
+                    "givenName": "Charlie"
+                }
+            }
+        },
+        {
+            "method": "POST",
+            "path": "/v1/User",
+            "bulkId": "davebulkId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "userName": "dave",
+                "name": {
+                    "formatted": "Dave Doe",
+                    "familyName": "Doe",
+                    "givenName": "Dave"
+                }
+            }
         }
-      }
-    },
-    {
-      "method":"POST",
-      "type":"user",
-      "bulkId":"bobbulkId",
-      "data":{
-        "schemas": ["urn:scim:schemas:core:1.0"],
-        "userName":"bob",
-        "name":{
-          "formatted":"Bob Doe",
-          "familyName":"Doe",
-          "givenName":"Bob"
-        }
-      }
-    },
-    {
-      "method":"POST",
-      "type":"user",
-      "bulkId":"charliebulkId",
-      "data":{
-        "schemas": ["urn:scim:schemas:core:1.0"],
-        "userName":"charlie",
-        "name":{
-          "formatted":"Charlie Doe",
-          "familyName":"Doe",
-          "givenName":"Charlie"
-        }
-      }
-    },
-    {
-      "method":"POST",
-      "type":"user",
-      "bulkId":"davebulkId",
-      "data":{
-        "schemas": ["urn:scim:schemas:core:1.0"],
-        "userName":"dave",
-        "name":{
-          "formatted":"Dave Doe",
-          "familyName":"Doe",
-          "givenName":"Dave"
-        }
-      }
-    }
-  ]
+    ]
 }

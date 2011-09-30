@@ -119,6 +119,19 @@ public class HttpGenerator {
 		}
 	}
 
+
+	public static void requestEntityToLarge(HttpServletResponse resp, int maxOperation, int maxPayloadSize) {
+		resp.setStatus(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE); // 413
+		try {
+			resp.getWriter().print("{\n" +
+					"\"maxOperations\": " + Integer.toString(maxOperation) + ",\n" +
+					"\"maxPayloadSize\": " + Integer.toString(maxPayloadSize) + "\n" +
+				"}");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Generates a HTTP 400, bad request message.
 	 * 
@@ -213,7 +226,21 @@ public class HttpGenerator {
 		}
 		return server + "/v1/" + path + "/" + id;
 	}
-	
+
+	public static String getPath(Resource resource) {
+		if(resource == null) {
+			return "";
+		}
+		String type = "";
+		if(resource instanceof User) {
+			type = "User";
+		}
+		else {
+			type = "Group";
+		}
+		return "/v1/" + type+ "/" + resource.getId();
+	}
+
 	public static String getServer(HttpServletRequest req) {
 		// generate the Location url
 		String scheme = req.getScheme(); // http

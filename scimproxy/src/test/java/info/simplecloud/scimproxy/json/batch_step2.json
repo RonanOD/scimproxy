@@ -1,42 +1,45 @@
-
 {
-  "schemas": ["urn:scim:schemas:core:1.0"],
-  "Entries":[
-    {
-      "method":"POST",
-      "type":"user",
-      "bulkId":"evebulkId",
-      "data":{
-        "schemas": ["urn:scim:schemas:core:1.0"],
-        "userName":"eve",
-        "name":{
-          "formatted":"Eve Doe",
-          "familyName":"Doe",
-          "givenName":"Eve"
+    "schemas": [
+        "urn:scim:schemas:core:1.0"
+    ],
+    "Operations": [
+        {
+            "method": "POST",
+            "path": "/v1/User",
+            "bulkId": "evebulkId",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "userName": "eve",
+                "name": {
+                    "formatted": "Eve Doe",
+                    "familyName": "Doe",
+                    "givenName": "Eve"
+                }
+            }
+        },
+        {
+            "method": "PUT",
+            "path": "/v1/User/n3sjmpq74lu5p4p9ror1rpaa7u",
+            "etag": "skr9eqcj3geqaqjq9se40nj9h1317390990901",
+            "data": {
+                "schemas": [
+                    "urn:scim:schemas:core:1.0"
+                ],
+                "id": "n3sjmpq74lu5p4p9ror1rpaa7u",
+                "userName": "Bobby",
+                "name": {
+                    "formatted": "Bob Doe",
+                    "familyName": "Doe",
+                    "givenName": "Bob"
+                }
+            }
+        },
+        {
+            "method": "DELETE",
+            "path": "/v1/User/qvt4oql5cle9g3etqkt6d87slm",
+            "etag": "lllrpvd5vugd6didu98qeor9ug1317390991459"
         }
-      }
-    },
-    {
-      "method":"PUT",
-      "type":"user",
-      "id":"BOBIDPLACEHOLDER",
-      "etag":"BOBETAGPLACEHOLDER",
-      "data":{
-        "schemas": ["urn:scim:schemas:core:1.0"],
-        "id":"BOBIDPLACEHOLDER",
-        "userName":"Bobby",
-        "name":{
-          "formatted":"Bob Doe",
-          "familyName":"Doe",
-          "givenName":"Bob"
-        }
-      }
-    },
-    {
-		"method":"DELETE",
-		"type":"user",
-        "id":"CHARLIEIDPLACEHOLDER",
-        "etag":"CHARLIEETAGPLACEHOLDER"
-    }
-  ]
+    ]
 }
