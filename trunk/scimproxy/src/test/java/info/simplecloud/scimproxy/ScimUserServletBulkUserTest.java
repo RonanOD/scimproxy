@@ -19,16 +19,18 @@ public class ScimUserServletBulkUserTest {
     public static void setUp() throws Exception {
         tester = new ServletTester();
         tester.addServlet(ScimBulkServlet.class, "/v1/Bulk");
+        tester.addServlet(ScimGroupServlet.class, "/v1/User/*");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Group/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
     }
     
 	String postJson = "{" + 
 	  "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
-	  "\"Entries\":[" + 
+	  "\"Operations\":[" + 
 	    "{" + 
 	      "\"method\":\"POST\"," + 
-	      "\"type\":\"user\"," + 
+	      "\"path\":\"/v1/User\"," + 
 	      "\"bulkId\":\"qwerty\"," + 
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
@@ -45,11 +47,10 @@ public class ScimUserServletBulkUserTest {
 
 	String putJson = "{" + 
 	  "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
-	  "\"Entries\":[" + 
+	  "\"Operations\":[" + 
 	    "{" + 
 	      "\"method\":\"PUT\"," + 
-	      "\"type\":\"user\"," + 
-	      "\"id\":\"IDPLACEHOLDER\"," +
+	      "\"path\":\"/v1/User/IDPLACEHOLDER\"," + 
 	      "\"etag\":\"ETAGPLACEHOLDER\"," +
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," +
@@ -68,11 +69,10 @@ public class ScimUserServletBulkUserTest {
 	
 	String deleteJson = "{" + 
 	  "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
-	  "\"Entries\":[" + 
+	  "\"Operations\":[" + 
 	    "{" + 
 	      "\"method\":\"DELETE\"," + 
-	      "\"type\":\"user\"," + 
-	      "\"id\":\"IDPLACEHOLDER\"," +
+	      "\"path\":\"/v1/User/IDPLACEHOLDER\"," + 
 	      "\"etag\":\"ETAGPLACEHOLDER\"" +
 	    "}" + 
 	  "]" + 
@@ -81,11 +81,10 @@ public class ScimUserServletBulkUserTest {
 
 	String patchJson = "{" + 
 	  "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
-	  "\"Entries\":[" + 
+	  "\"Operations\":[" + 
 	    "{" + 
 	      "\"method\":\"PATCH\"," +
-	      "\"type\":\"user\"," + 
-	      "\"id\":\"IDPLACEHOLDER\"," +
+	      "\"path\":\"/v1/User/IDPLACEHOLDER\"," + 
 	      "\"etag\":\"ETAGPLACEHOLDER\"," +
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," +
@@ -141,14 +140,13 @@ public class ScimUserServletBulkUserTest {
         String aliceEtag = "";
 
 		JSONObject jsonObj = new JSONObject(content);
-		JSONArray entities = jsonObj.getJSONArray("Entries");
+		JSONArray entities = jsonObj.getJSONArray("Operations");
 		for (int i = 0; i < entities.length(); ++i) {
 		    JSONObject entity = entities.getJSONObject(i);
 		    
-		    JSONObject data = entity.getJSONObject("data");
-		    aliceId = data.getString("id");
+		    String location = entity.getString("location");
+		    aliceId = location.substring(location.indexOf("/v1/User/") + "/v1/User/".length());
 		    aliceEtag = entity.getString("etag");
-
 		}
         
 		putJson = putJson.replaceAll("IDPLACEHOLDER", aliceId);
@@ -189,14 +187,13 @@ public class ScimUserServletBulkUserTest {
         String aliceEtag = "";
 
 		JSONObject jsonObj = new JSONObject(content);
-		JSONArray entities = jsonObj.getJSONArray("Entries");
+		JSONArray entities = jsonObj.getJSONArray("Operations");
 		for (int i = 0; i < entities.length(); ++i) {
 		    JSONObject entity = entities.getJSONObject(i);
 		    
-		    JSONObject data = entity.getJSONObject("data");
-		    aliceId = data.getString("id");
+		    String location = entity.getString("location");
+		    aliceId = location.substring(location.indexOf("/v1/User/") + "/v1/User/".length());
 		    aliceEtag = entity.getString("etag");
-
 		}
         
 		patchJson = patchJson.replaceAll("IDPLACEHOLDER", aliceId);
@@ -235,15 +232,13 @@ public class ScimUserServletBulkUserTest {
         String aliceId = "";
         String aliceEtag = "";
 		JSONObject jsonObj = new JSONObject(content);
-		JSONArray entities = jsonObj.getJSONArray("Entries");
+		JSONArray entities = jsonObj.getJSONArray("Operations");
 		for (int i = 0; i < entities.length(); ++i) {
 		    JSONObject entity = entities.getJSONObject(i);
 		    
-		    JSONObject data = entity.getJSONObject("data");
-		    aliceId = data.getString("id");
-
+		    String location = entity.getString("location");
+		    aliceId = location.substring(location.indexOf("/v1/User/") + "/v1/User/".length());
 		    aliceEtag = entity.getString("etag");
-
 		}
         
 		deleteJson = deleteJson.replaceAll("IDPLACEHOLDER", aliceId);
@@ -263,74 +258,52 @@ public class ScimUserServletBulkUserTest {
     
     private void postTester(String content, String bulkId, String userName) throws Exception {
 		JSONObject jsonObj = new JSONObject(content);
-		JSONArray entities = jsonObj.getJSONArray("Entries");
+		JSONArray entities = jsonObj.getJSONArray("Operations");
 		for (int i = 0; i < entities.length(); ++i) {
 		    JSONObject entity = entities.getJSONObject(i);
 
 		    Assert.assertEquals("POST", entity.getString("method"));
 		    JSONObject status = entity.getJSONObject("status");
 		    Assert.assertEquals("201", status.getString("code"));
-		    Assert.assertEquals("Created", status.getString("reason"));
 		    Assert.assertEquals(bulkId, entity.getString("bulkId"));
-		    
-		    JSONObject data = entity.getJSONObject("data");
-		    Assert.assertEquals(userName, data.getString("userName"));
-		    JSONObject meta = data.getJSONObject("meta");
-		    Assert.assertEquals(meta.getString("location"), entity.getString("location"));
-		    Assert.assertEquals(meta.getString("version"), entity.getString("etag"));
 		}
     }
 
     private void putTester(String content, String bulkId, String userName) throws Exception {
 		JSONObject jsonObj = new JSONObject(content);
-		JSONArray entities = jsonObj.getJSONArray("Entries");
+		JSONArray entities = jsonObj.getJSONArray("Operations");
 		for (int i = 0; i < entities.length(); ++i) {
 		    JSONObject entity = entities.getJSONObject(i);
 
 		    Assert.assertEquals("PUT", entity.getString("method"));
 		    JSONObject status = entity.getJSONObject("status");
 		    Assert.assertEquals("200", status.getString("code"));
-		    Assert.assertEquals("Updated", status.getString("reason"));
-		    
-		    JSONObject data = entity.getJSONObject("data");
-		    Assert.assertEquals(userName, data.getString("userName"));
-		    JSONObject meta = data.getJSONObject("meta");
-		    Assert.assertEquals(meta.getString("location"), entity.getString("location"));
-		    Assert.assertEquals(meta.getString("version"), entity.getString("etag"));
 		}
     }
     
     
     private void patchTester(String content, String aliceId, String userName) throws Exception {
 		JSONObject jsonObj = new JSONObject(content);
-		JSONArray entities = jsonObj.getJSONArray("Entries");
+		JSONArray entities = jsonObj.getJSONArray("Operations");
 		for (int i = 0; i < entities.length(); ++i) {
 		    JSONObject entity = entities.getJSONObject(i);
 
 		    Assert.assertEquals("PATCH", entity.getString("method"));
 		    JSONObject status = entity.getJSONObject("status");
 		    Assert.assertEquals("200", status.getString("code"));
-		    Assert.assertEquals("Patched", status.getString("reason"));
-		    
-		    JSONObject data = entity.getJSONObject("data");
-		    Assert.assertEquals(userName, data.getString("userName"));
-		    JSONObject meta = data.getJSONObject("meta");
-		    Assert.assertEquals(meta.getString("location"), entity.getString("location"));
-		    Assert.assertEquals(meta.getString("version"), entity.getString("etag"));
 		}
 	}
 
 
     private void deleteTester(String content) throws Exception {
 		JSONObject jsonObj = new JSONObject(content);
-		JSONArray entities = jsonObj.getJSONArray("Entries");
+		JSONArray entities = jsonObj.getJSONArray("Operations");
 		for (int i = 0; i < entities.length(); ++i) {
 		    JSONObject entity = entities.getJSONObject(i);
 
 		    Assert.assertEquals("DELETE", entity.getString("method"));
 		    JSONObject status = entity.getJSONObject("status");
 		    Assert.assertEquals("200", status.getString("code"));
-		    Assert.assertEquals("Deleted", status.getString("reason"));
 		}
     }
 
