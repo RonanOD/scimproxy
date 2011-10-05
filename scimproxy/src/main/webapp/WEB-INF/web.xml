@@ -57,6 +57,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>Configuration</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.ScimConfigurationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Configuration</servlet-name>
+		<url-pattern>/v1/Configuration</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>Bulk</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimBulkServlet</servlet-class>
 	</servlet>
@@ -90,6 +99,15 @@
 	<servlet-mapping>
 		<servlet-name>Edit</servlet-name>
 		<url-pattern>/Viewer/Edit</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ViewerConfiguration</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.Configuration</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ViewerConfiguration</servlet-name>
+		<url-pattern>/Viewer/Configuration</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
