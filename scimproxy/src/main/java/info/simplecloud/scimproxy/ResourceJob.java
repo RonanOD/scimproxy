@@ -18,7 +18,7 @@ public class ResourceJob {
 	private String bulkId = "";
 	private String id = "";
 	private String path = "";
-	private String etag = "";
+	private String version = "";
 	private String type = "";
 	private String data = null;
 
@@ -26,7 +26,7 @@ public class ResourceJob {
 		
 	}
 	
-	public ResourceJob(String method, String bulkId, String path, String etag, String data) {
+	public ResourceJob(String method, String bulkId, String path, String version, String data) {
 		this.method = method;
 		this.bulkId = bulkId;
 		this.path = path;
@@ -46,7 +46,7 @@ public class ResourceJob {
 			this.id = Util.getGroupIdFromUri(path);
 		}
 
-		this.etag = etag;
+		this.version = version;
 		this.data = data;
 	}
 	
@@ -62,11 +62,11 @@ public class ResourceJob {
 	public void setBulkId(String bulkId) {
 		this.bulkId = bulkId;
 	}
-	public String getEtag() {
-		return etag;
+	public String getVersion() {
+		return version;
 	}
-	public void setEtag(String etag) {
-		this.etag = etag;
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	public String getType() {
 		return type;
@@ -102,7 +102,7 @@ public class ResourceJob {
 		if(data != null) {
 			d = data;
 		}
-		return "method:" + method + ", bulkId:" + bulkId + ", id:" + id + ", resource:" + path + ", etag:" + etag + ", type:" + type + ", data:" + d;
+		return "method:" + method + ", bulkId:" + bulkId + ", id:" + id + ", resource:" + path + ", version:" + version + ", type:" + type + ", data:" + d;
 	}
 
 }

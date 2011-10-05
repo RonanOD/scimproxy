@@ -150,7 +150,7 @@ public class ScimUserServlet extends ScimResourceServlet {
 
                 ResourceJob resource = new ResourceJob();
                 resource.setData(query);
-                resource.setEtag(etag);
+                resource.setVersion(etag);
                 resource.setId(userId);
 
             	User scimUser = internalUserPut(resource, server, outEncoding, authUser);
@@ -202,7 +202,7 @@ public class ScimUserServlet extends ScimResourceServlet {
 
                 ResourceJob resource = new ResourceJob();
                 resource.setData(query);
-                resource.setEtag(etag);
+                resource.setVersion(etag);
                 resource.setId(userId);
 
 				User scimUser = internalUserPatch(resource, server, outEncoding, authUser);
@@ -253,7 +253,7 @@ public class ScimUserServlet extends ScimResourceServlet {
                 AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
 
                 ResourceJob resource = new ResourceJob();
-                resource.setEtag(etag);
+                resource.setVersion(etag);
                 resource.setId(userId);
 
 				internalUserDelete(resource, server, outEncoding, authUser);
