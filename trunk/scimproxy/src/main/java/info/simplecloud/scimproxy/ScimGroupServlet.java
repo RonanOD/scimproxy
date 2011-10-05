@@ -105,7 +105,7 @@ public class ScimGroupServlet extends ScimResourceServlet {
 
                 ResourceJob resource = new ResourceJob();
                 resource.setData(query);
-                resource.setEtag(etag);
+                resource.setVersion(etag);
                 resource.setId(groupId);
 
             	Group scimGroup = internalGroupPut(resource, server, outEncoding, authUser);
@@ -145,7 +145,7 @@ public class ScimGroupServlet extends ScimResourceServlet {
 
                 ResourceJob resource = new ResourceJob();
                 resource.setData(query);
-                resource.setEtag(etag);
+                resource.setVersion(etag);
                 resource.setId(groupId);
         		
 				Group scimGroup = internalGroupPatch(resource, server, outEncoding, authUser);
@@ -187,7 +187,7 @@ public class ScimGroupServlet extends ScimResourceServlet {
                 AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
 
                 ResourceJob resource = new ResourceJob();
-                resource.setEtag(etag);
+                resource.setVersion(etag);
                 resource.setId(groupId);
                 
 				internalGroupDelete(resource, server, outEncoding, authUser);

@@ -74,18 +74,18 @@ public class ScimBulkServlet extends ScimResourceServlet {
 				    }
 				    String path = "";
 				    if(!op.isNull("path")) {
-				    	path = op.getString("path");
+				    	path = "/v1" + op.getString("path");
 				    }
-				    String etag = "";
-				    if(!op.isNull("etag")) {
-				    	etag = op.getString("etag");
+				    String version = "";
+				    if(!op.isNull("version")) {
+				    	version = op.getString("version");
 				    }
 				    String data = null;
 				    if(!op.isNull("data")) {
 				    	data = op.getJSONObject("data").toString();
 				    }
 				    
-				    resources.add(new ResourceJob(method, bulkId, path, etag, data));
+				    resources.add(new ResourceJob(method, bulkId, path, version, data));
 				}
 				
 				
@@ -222,7 +222,7 @@ public class ScimBulkServlet extends ScimResourceServlet {
             	response += "\t\t\t\t\"code\":\"201\"\n" +
             				"\t\t\t},\n";
         	        
-            	response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n";
+            	response += "\t\t\t\"version\": \"" + scimResource.getMeta().getVersion() + "\",\n";
             	response += "\t\t\t\"location\": \"" + scimResource.getMeta().getLocation() + "\"\n";
             	
             	// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
@@ -261,7 +261,7 @@ public class ScimBulkServlet extends ScimResourceServlet {
         		response += "\t\t\t\t\"code\":\"200\"\n" +
         				"\t\t\t},\n";
     	        
-        		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n";
+        		response += "\t\t\t\"version\": \"" + scimResource.getMeta().getVersion() + "\",\n";
 
         		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         		// trigger.create(scimUser);
@@ -298,7 +298,7 @@ public class ScimBulkServlet extends ScimResourceServlet {
         		response += "\t\t\t\t\"code\":\"200\"\n" +
         				"\t\t\t},\n";
     	        
-        		response += "\t\t\t\"etag\": \"" + scimResource.getMeta().getVersion() + "\",\n";
+        		response += "\t\t\t\"version\": \"" + scimResource.getMeta().getVersion() + "\",\n";
 
         		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         		// trigger.create(scimUser);

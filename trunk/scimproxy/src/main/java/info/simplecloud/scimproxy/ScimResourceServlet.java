@@ -69,7 +69,7 @@ public class ScimResourceServlet extends RestServlet {
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
         	if(oldUser.getMeta() != null) {
-        		if(!resource.getEtag().equals(oldUser.getMeta().getVersion())) {
+        		if(!resource.getVersion().equals(oldUser.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
@@ -108,7 +108,7 @@ public class ScimResourceServlet extends RestServlet {
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
         	if(oldUser.getMeta() != null) {
-        		if(!resource.getEtag().equals(oldUser.getMeta().getVersion())) {
+        		if(!resource.getVersion().equals(oldUser.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
@@ -146,7 +146,7 @@ public class ScimResourceServlet extends RestServlet {
     	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
 
         String version = scimUser.getMeta().getVersion();
-        if (resource.getEtag() != null && !"".equals(resource.getEtag()) && resource.getEtag().equals(version)) {
+        if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
         	UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
             // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         	// TODO: trigger
@@ -199,7 +199,7 @@ public class ScimResourceServlet extends RestServlet {
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldGroup != null) {
         	if(oldGroup.getMeta() != null) {
-        		if(!resource.getEtag().equals(oldGroup.getMeta().getVersion())) {
+        		if(!resource.getVersion().equals(oldGroup.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
@@ -237,7 +237,7 @@ public class ScimResourceServlet extends RestServlet {
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldGroup != null) {
         	if(oldGroup.getMeta() != null) {
-        		if(!resource.getEtag().equals(oldGroup.getMeta().getVersion())) {
+        		if(!resource.getVersion().equals(oldGroup.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}
@@ -275,7 +275,7 @@ public class ScimResourceServlet extends RestServlet {
 
     	Group scimGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(resource.getId());
         String version = scimGroup.getMeta().getVersion();
-        if (resource.getEtag() != null && !"".equals(resource.getEtag()) && resource.getEtag().equals(version)) {
+        if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
         	UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(resource.getId());
             // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         	// TODO: trigger
