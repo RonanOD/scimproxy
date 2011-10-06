@@ -178,6 +178,11 @@ public class ComplexHandlerTest {
         Assert.assertEquals("Karl", scimUser.getAttribute("name.givenName"));
         Assert.assertEquals("Svensson", scimUser.getAttribute("name.familyName"));
     }
+    
+    @Test
+    public void decodeXml2() throws InvalidUser, UnknownAttribute {
+        // TODO decode meta
+    }
 
     @Test
     public void merge() {

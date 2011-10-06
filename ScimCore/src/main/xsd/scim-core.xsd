@@ -237,6 +237,7 @@
       <xs:element name="created" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="location" type="xs:string" minOccurs="0"/>
       <xs:element name="version" type="xs:string" minOccurs="0"/>
+      <xs:element name="attributes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>
