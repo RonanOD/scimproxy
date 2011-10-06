@@ -64,10 +64,15 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 String methodName = "get";
                 methodName += name.substring(0, 1).toUpperCase();
                 methodName += name.substring(1);
-
-                Method getter = xmlObject.getClass().getMethod(methodName);
+                Method getter = null;
+                try {
+                    getter = xmlObject.getClass().getMethod(methodName);
+                } catch (NoSuchMethodException e) {
+                    methodName += "Array";
+                    getter = xmlObject.getClass().getMethod(methodName);
+                }
                 Object value = getter.invoke(xmlObject);
-                if(value == null) {
+                if (value == null) {
                     continue;
                 }
                 MetaData metaData = complexObject.getMetaData(name);
@@ -146,8 +151,13 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 String setterName = "set";
                 setterName += name.substring(0, 1).toUpperCase();
                 setterName += name.substring(1);
-
-                Method setter = ReflectionHelper.getMethod(setterName, xmlObject.getClass());
+                Method setter = null;
+                try {
+                    setter = ReflectionHelper.getMethod(setterName, xmlObject.getClass());
+                }  catch (NoSuchMethodException e) {
+                    setterName += "Array";
+                    setter = ReflectionHelper.getMethod(setterName, xmlObject.getClass());
+                }
                 setter.invoke(xmlObject, encodedValue);
             }
 

@@ -31,10 +31,11 @@ public class ListHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object decodeXml(Object xmlObject, Object me, MetaData internalMetaData) {
+        String[] attributes = (String[]) xmlObject;
         List<String> result = new ArrayList<String>();
-
-        // TODO we need to change the schema before we can do this
-
+        for (String attribute : attributes) {
+            result.add(attribute);
+        }
         return result;
     }
 
@@ -54,10 +55,7 @@ public class ListHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     @Override
     public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
         List<String> list = (List<String>) me;
-
-        // TODO we need to change the schema before we can do this
-
-        return null;
+        return list.toArray(new String[] {});
     }
 
     @Override
