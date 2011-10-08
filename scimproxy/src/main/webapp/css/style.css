@@ -11,7 +11,10 @@
 	padding: 20px;
 }
 
-#header h1 { margin: 0; }
+#header h1 
+{ 
+	margin: 0; 
+}
 
 #navigation
 {
@@ -48,6 +51,7 @@
 {
 	clear: left;
 	padding: 20px;
+	width: 1000px;
 }
 
 #content h2
@@ -65,14 +69,9 @@
 	height: 1%;
 }
 
-textarea
-{
-	width:100%;
-}
 
 table
 {
-	width:100%;
 	border-collapse:collapse;
 }
 
@@ -81,5 +80,30 @@ table.list th, table.list td
 	font-size : small;
 	border: 1px solid black;
 	vertical-align:top;
+}
+
+div.section
+{
+	display: none;
+}
+
+input.textInput
+{
+	width: 200px;
+}
+
+td.left 
+{
+	width: 100px;
+	vertical-align: top;
+}
+td.bottomRight
+{
+	text-align: right;
+}
+
+select
+{
+	width: 200px;	
 }
 
