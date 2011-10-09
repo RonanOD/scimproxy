@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * To retrieve a known Resource, clients send GET requests to the Resource end
@@ -191,43 +193,67 @@ public class ScimUserServlet extends ScimResourceServlet {
         String userId = Util.getUserIdFromUri(req.getRequestURI());
         String query = Util.getContent(req);
         String etag = req.getHeader("ETag");
-        
 
-        if (!"".equals(query) && userId != null && etag != null && !"".equals(etag)) {
+        boolean isPassword = Util.isChangePassword(req.getRequestURI());
 
-        	try {
-                String server = HttpGenerator.getServer(req);
-                String outEncoding = HttpGenerator.getEncoding(req);
-                AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
-
-                ResourceJob resource = new ResourceJob();
-                resource.setData(query);
-                resource.setVersion(etag);
-                resource.setId(userId);
-
-				User scimUser = internalUserPatch(resource, server, outEncoding, authUser);
+        if(isPassword) {
+            AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+            ResourceJob resource = new ResourceJob();
+            resource.setId(userId);
+            resource.setData(query);
+            
+			try {
+				JSONObject jsonObj = new JSONObject(resource.getData());
+				String password = jsonObj.getString("password");
 				
-                resp.setContentType(HttpGenerator.getContentType(req));
-                resp.setHeader("Location", scimUser.getMeta().getLocation());
-                resp.setHeader("ETag", scimUser.getMeta().getVersion());
-                HttpGenerator.ok(resp, scimUser.getUser(HttpGenerator.getEncoding(req)));
+				// TODO: Add support for XML!
 
-                log.info("Patching user " + scimUser.getId());
-				
-			} catch (UnknownEncoding e) {
-                HttpGenerator.badRequest(resp, "Unknown encoding.");
-			} catch (InvalidUser e) {
-                HttpGenerator.badRequest(resp, "Invalid user.");
+				internalChangePasswordPatch(resource, password, authUser);
+                HttpGenerator.noContent(resp);
 			} catch (ResourceNotFoundException e) {
                 HttpGenerator.notFound(resp);
-			} catch (PreconditionException e) {
-                HttpGenerator.preconditionFailed(resp, userId);
-			} catch (UnknownAttribute e) {
-                HttpGenerator.badRequest(resp, "Malformed user.");
+			} catch (JSONException e) {
+                HttpGenerator.badRequest(resp, "Malformed request.");
 			}
-	    } else {
-            HttpGenerator.badRequest(resp, "Missing user id or ETag");
-	    }
+        }
+        else {
+            if (!"".equals(query) && userId != null && etag != null && !"".equals(etag)) {
+
+            	try {
+                    String server = HttpGenerator.getServer(req);
+                    String outEncoding = HttpGenerator.getEncoding(req);
+                    AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+
+                    ResourceJob resource = new ResourceJob();
+                    resource.setData(query);
+                    resource.setVersion(etag);
+                    resource.setId(userId);
+
+    				User scimUser = internalUserPatch(resource, server, outEncoding, authUser);
+    				
+                    resp.setContentType(HttpGenerator.getContentType(req));
+                    resp.setHeader("Location", scimUser.getMeta().getLocation());
+                    resp.setHeader("ETag", scimUser.getMeta().getVersion());
+                    HttpGenerator.ok(resp, scimUser.getUser(HttpGenerator.getEncoding(req)));
+
+                    log.info("Patching user " + scimUser.getId());
+    				
+    			} catch (UnknownEncoding e) {
+                    HttpGenerator.badRequest(resp, "Unknown encoding.");
+    			} catch (InvalidUser e) {
+                    HttpGenerator.badRequest(resp, "Invalid user.");
+    			} catch (ResourceNotFoundException e) {
+                    HttpGenerator.notFound(resp);
+    			} catch (PreconditionException e) {
+                    HttpGenerator.preconditionFailed(resp, userId);
+    			} catch (UnknownAttribute e) {
+                    HttpGenerator.badRequest(resp, "Malformed user.");
+    			}
+    	    } else {
+                HttpGenerator.badRequest(resp, "Missing user id or ETag");
+    	    }
+         }
+
     }
 
     /**

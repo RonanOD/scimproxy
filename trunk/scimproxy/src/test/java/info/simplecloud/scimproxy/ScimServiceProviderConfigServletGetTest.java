@@ -10,7 +10,7 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.testing.HttpTester;
 import org.mortbay.jetty.testing.ServletTester;
 
-public class ScimConfigurationServletGetTest {
+public class ScimServiceProviderConfigServletGetTest {
 
     private static HttpTester     request  = new HttpTester();
     private static HttpTester     response = new HttpTester();
@@ -19,7 +19,7 @@ public class ScimConfigurationServletGetTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimConfigurationServlet.class, "/v1/Configuration");
+        tester.addServlet(ScimServiceProviderConfigServlet.class, "/v1/ServiceProviderConfig");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
     }
@@ -30,7 +30,7 @@ public class ScimConfigurationServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Configuration");
+        request.setURI("/v1/ServiceProviderConfig");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());

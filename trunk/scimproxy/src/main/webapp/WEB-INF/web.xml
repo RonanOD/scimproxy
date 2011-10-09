@@ -45,7 +45,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Schema</servlet-name>
-		<url-pattern>/v1/Schema</url-pattern>
+		<url-pattern>/v1/Schema/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Schemas</servlet-name>
@@ -57,12 +57,12 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>Configuration</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.ScimConfigurationServlet</servlet-class>
+		<servlet-name>ServiceProviderConfig</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.ScimServiceProviderConfigServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Configuration</servlet-name>
-		<url-pattern>/v1/Configuration</url-pattern>
+		<servlet-name>ServiceProviderConfig</servlet-name>
+		<url-pattern>/v1/ServiceProviderConfig</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

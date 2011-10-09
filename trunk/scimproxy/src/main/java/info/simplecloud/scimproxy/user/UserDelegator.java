@@ -103,6 +103,16 @@ public class UserDelegator {
 	}
 
 	/**
+	 * Creates a new user in the configured user storage.
+	 * 
+	 * @param user
+	 *            User to be added.
+	 */
+	public void setPassword(String clearTextPassword, User user) {
+		storage.setPassword(clearTextPassword, user);
+	}
+
+	/**
 	 * Updates a version number on the user in the configured user storage.
 	 * 
 	 * @param user

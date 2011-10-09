@@ -75,7 +75,7 @@ public class Configuration extends HttpServlet {
 				client.getState().setCredentials(AuthScope.ANY, defaultcreds);
 				
 				// Create a method instance.
-				GetMethod method = new GetMethod("http://localhost:8080/v1/Configuration");
+				GetMethod method = new GetMethod("http://localhost:8080/v1/ServiceProviderConfig");
 				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 		        
 		        method.setRequestHeader("Accept", "application/json");

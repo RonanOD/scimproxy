@@ -40,6 +40,12 @@ public class HttpGenerator {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void noContent(HttpServletResponse resp) {
+		resp.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204
+		
+	}	
+
 
 	/**
 	 * Generates a HTTP 412, precondition failed message.
@@ -294,5 +300,6 @@ public class HttpGenerator {
 		String location = scheme + "://" + serverName + serverPortStr + contextPath + path;
 
 		return location;
-	}	
+	}
+
 }
