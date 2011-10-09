@@ -59,6 +59,9 @@ public class ScimResourceServlet extends RestServlet {
 		
 		UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
         
+        // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+        trigger.create(scimUser);				
+
         // TODO:   trigger.post(...);				
 
         return scimUser;

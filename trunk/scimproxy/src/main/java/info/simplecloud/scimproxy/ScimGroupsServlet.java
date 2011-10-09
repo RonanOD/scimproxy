@@ -71,14 +71,6 @@ public class ScimGroupsServlet extends RestServlet {
             index = groups.size();
         }
 
-    	// if we did not find any users in storage, try upstream servers
-    	if(groups == null || groups.size() == 0) {
-        	// try finding users in upstream CSP, any communication errors is handled in triggered and ignored here
-    		// TODO: Triggers?
-//    		groups = trigger.query(sortBy, sortOrder, filterBy, filterValue, filterOp);
-        	storage.addList(groups);
-    	}
-        
         try {
         	groups = groups.subList(index, max);
         } catch (IndexOutOfBoundsException e) {

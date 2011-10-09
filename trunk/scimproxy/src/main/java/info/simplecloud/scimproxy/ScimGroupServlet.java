@@ -27,7 +27,6 @@ public class ScimGroupServlet extends ScimResourceServlet {
 		String groupId = Util.getGroupIdFromUri(req.getRequestURI());
         AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
 
-
         try {
             Group scimGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(groupId);
             String groupStr = null;
@@ -76,9 +75,6 @@ public class ScimGroupServlet extends ScimResourceServlet {
 
                 log.info("Creating group " + scimGroup.getId());
                 
-                // TODO: creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-//                trigger.create(scimUser);				
-
                 HttpGenerator.created(resp, scimGroup.getGroup(HttpGenerator.getEncoding(req)));
             } catch (UnknownEncoding e) {
                 HttpGenerator.serverError(resp, "Unknown encoding.");

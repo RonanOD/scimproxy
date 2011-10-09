@@ -32,11 +32,11 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
         		    "\"maxPayloadSize\":" + Config.getInstance().getBulkMaxPayloadSize() +
         		  "}," +
         		  "\"filter\": {" +
-        		    "\"supported\":true," +
+        		    "\"supported\":false," +
         		    "\"maxResults\": 200" +
         		  "}," +
         		  "\"changePassword\" : {" +
-        		    "\"supported\":false" +
+        		    "\"supported\":true" +
         		  "}," +
         		  "\"sort\": {" +
         		    "\"supported\":true" +
