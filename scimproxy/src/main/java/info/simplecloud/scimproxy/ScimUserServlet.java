@@ -50,10 +50,7 @@ public class ScimUserServlet extends ScimResourceServlet {
         AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
 
         try {
-        	// TODO: should CSP trigger GET call be made before trying locally?
-
         	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(userId);
-
             String userStr = null;
 
             if (req.getParameter("attributes") != null) {
@@ -90,10 +87,7 @@ public class ScimUserServlet extends ScimResourceServlet {
      *             Servlet I/O exception.
      */
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         String query = Util.getContent(req);
-        // TODO: SPEC: REST: Should the post message be base64 encoded in spec
-        // or not?
 
         if (query != null && !"".equals(query)) {
             try {
@@ -112,9 +106,6 @@ public class ScimUserServlet extends ScimResourceServlet {
 
                 log.info("Creating user " + scimUser.getId());
                 
-                // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-                trigger.create(scimUser);				
-
                 HttpGenerator.created(resp, scimUser.getUser(HttpGenerator.getEncoding(req)));
             } catch (UnknownEncoding e) {
                 HttpGenerator.serverError(resp, "Unknown encoding.");

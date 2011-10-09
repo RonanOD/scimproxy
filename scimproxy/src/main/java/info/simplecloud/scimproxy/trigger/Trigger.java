@@ -1,15 +1,12 @@
 package info.simplecloud.scimproxy.trigger;
 
-import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
-import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.config.Config;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
@@ -20,7 +17,6 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
@@ -36,7 +32,7 @@ public class Trigger {
 
     /**
      * Sends the newly created user down streams to all configured servers. Only
-     * logs to log when communication errors.
+     * logs to log in case of communication errors.
      */
     public void create(User user) {
         ArrayList<CSP> servers = (ArrayList<CSP>) Config.getInstance().getDownStreamCSP();
@@ -156,59 +152,7 @@ public class Trigger {
         return null;
     }
 
-    public List<User> query(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp) {
 
-        String query = "";
-        // TODO: make use of the variables sent to this method!
-
-        List<User> users = new ArrayList<User>();
-        ArrayList<CSP> servers = (ArrayList<CSP>) Config.getInstance().getUpStreamCSP();
-        for (CSP csp : servers) {
-
-            HttpClient client = getHttpClientWithAuth(csp);
-
-            // Create a method instance.
-            GetMethod method = new GetMethod(csp.getUrl() + getVersionPath(csp) + "/Users?" + query);
-            configureMethod(method);
-
-            try {
-                // Execute the method.
-                int statusCode = client.executeMethod(method);
-
-                // Read the response body.
-                String responseBody = method.getResponseBodyAsString();
-
-                if (statusCode != 200) {
-                    log.error("Failed to delete user downstreams at " + csp.getUrl());
-                }
-                log.debug("Response code: " + Integer.toString(statusCode));
-                log.debug("Status line: " + method.getStatusLine());
-                log.debug("Response: \n" + responseBody);
-                for (Resource r : User.getUsers(new String(responseBody), "JSON")) {
-                    if (r instanceof User) {
-                        users.add((User) r);
-                    }
-                }
-            } catch (HttpException e) {
-                log.error("Fatal protocol violation: " + e.getMessage());
-                e.printStackTrace();
-            } catch (IOException e) {
-                log.error("Fatal transport violation: " + e.getMessage());
-                e.printStackTrace();
-            } catch (UnknownEncoding e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InvalidUser e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } finally {
-                // Release the connection.
-                method.releaseConnection();
-            }
-        }
-
-        return users;
-    }
 
     /**
      * Get a handle to a down stream HTTP REST server. Adds authentication

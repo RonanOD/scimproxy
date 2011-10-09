@@ -33,9 +33,9 @@ public class ScimUsersServlet extends RestServlet {
     private Trigger trigger = new Trigger();
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
 
         String attributesString = req.getParameter("attributes") == null ? "" : req.getParameter("attributes");
-        AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
         List<String> attributesList = new ArrayList<String>();
         if (attributesString != null && !"".equals(attributesString)) {
             for (String attribute : attributesString.split(",")) {
@@ -88,13 +88,6 @@ public class ScimUsersServlet extends RestServlet {
         if (index > users.size()) {
             index = users.size();
         }
-
-    	// if we did not find any users in storage, try upstream servers
-    	if(users == null || users.size() == 0) {
-        	// try finding users in upstream CSP, any communication errors is handled in triggered and ignored here
-    		users = trigger.query(sortBy, sortOrder, filterBy, filterValue, filterOp);
-        	storage.addList(users);
-    	}
         
         try {
             users = users.subList(index, max);

@@ -41,17 +41,6 @@ public class Config {
 			<type>dummy</type>
 		</storage>
 	</storages>
-	<up-stream>
-		<csp>
-			<url>http://192.168.41.137:8080</url>
-			<preferedEncoding>JSON</preferedEncoding>
-			<version>1.0</version>
-			<auth type="basic">
-				<username>usr</username>
-				<password>pw</password>
-			</auth>
-		</csp>
-	</up-stream>
 	<down-stream>
 		<csp>
 			<url>http://192.168.41.137:8080</url>
@@ -88,7 +77,6 @@ public class Config {
 	private int bulkMaxPayloadSize = 0;
 	
 	private List<CSP> downStreamCSP = new ArrayList<CSP>();
-	private List<CSP> upStreamCSP = new ArrayList<CSP>();
 
 	// only have support for dummy storage at the moment so it's just a string at the moment
 	private String storageType = "";
@@ -126,8 +114,6 @@ public class Config {
 		}
 		return INSTANCE;
 	}
-
-
 
 	private void readConfig(String confStr) {
 		try
@@ -203,32 +189,12 @@ public class Config {
 		    	}
 		    }
 
-		    List<String> upProp = config.getList("up-stream.csp.url");
-		    if(upProp != null)
-		    {
-		    	for(int i=0; i<upProp.size(); i++) {
-		    		CSP csp = new CSP();
-		    		csp.setUrl(config.getString("up-stream.csp(" + i + ").url"));
-		    		csp.setPreferedEncoding(config.getString("up-stream.csp(" + i + ").preferedEncoding"));
-
-		    		if(CSP.AUTH_BASIC.equals(config.getString("up-stream.csp(" + i + ").auth[@type]"))) {
-		    			csp.setAuthentication(CSP.AUTH_BASIC);
-		    			csp.setBasicUsername(config.getString("up-stream.csp(" + i + ").auth.username"));
-		    			csp.setBasicPassword(config.getString("up-stream.csp(" + i + ").auth.password"));
-		    		}
-		    		upStreamCSP.add(csp);
-		    	}
-		    }
-		    
 		}
 		catch(ConfigurationException cex)
 		{
 			log.error("Could not find configuration file. " + cex.toString() );
 		}
 	}
-	
-	
-	
 	
 	public void setBasicAuth(boolean b) {
 		this.basicAuth = true;
@@ -239,40 +205,20 @@ public class Config {
 		return basicAuth;
 	}
 
-
-
 	public void setNoneAuth(boolean noneAuth) {
 		this.noneAuth = noneAuth;
 	}
-
-
 
 	public boolean isNoneAuth() {
 		return noneAuth;
 	}
 
-
-
 	public void setDownStreamCSP(List<CSP> downStreamCSP) {
 		this.downStreamCSP = downStreamCSP;
 	}
 
-
-
 	public List<CSP> getDownStreamCSP() {
 		return downStreamCSP;
-	}
-
-
-
-	public void setUpStreamCSP(List<CSP> upStreamCSP) {
-		this.upStreamCSP = upStreamCSP;
-	}
-
-
-
-	public List<CSP> getUpStreamCSP() {
-		return upStreamCSP;
 	}
 
 	public void setStorageType(String storageType) {
@@ -297,9 +243,7 @@ public class Config {
 
 	public int getBulkMaxPayloadSize() {
 		return bulkMaxPayloadSize;
-	}
-
-	
+	}	
 }
 
 
