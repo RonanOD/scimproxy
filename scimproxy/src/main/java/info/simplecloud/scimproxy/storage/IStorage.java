@@ -68,4 +68,6 @@ public interface IStorage {
 
 	ArrayList<Group> getGroupList(String sortBy, String sortOrder);
 
+	public void setPassword(String clearTextPassword, User user);
+
 }

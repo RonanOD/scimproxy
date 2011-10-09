@@ -64,10 +64,18 @@ public class Util {
         String id = "";
         // TODO: add more validation of input
         String s = "/v1/User/";
+        String pw = "/password";
+        
         if (query != null && query.length() > 0) {
             int indexOfUserId = query.indexOf(s) + s.length();
+            int indexOfPw = query.indexOf(pw);
 
-            id = query.substring(indexOfUserId);
+            if(indexOfPw > -1) {
+            	id = query.substring(indexOfUserId, indexOfPw);
+            }
+            else {
+            	id = query.substring(indexOfUserId);
+            }
             try {
                 id = URLDecoder.decode(id, "UTF-8");
             } catch (UnsupportedEncodingException e) {
@@ -77,6 +85,16 @@ public class Util {
         return id;
     }
 
+    public static boolean isChangePassword(String query) {
+        String pw = "/password";
+        boolean isPw = false;
+        if (query != null && query.length() > 0) {
+        	if(query.endsWith(pw)) {
+        		isPw = true;
+        	}
+        }
+        return isPw;
+    }
 
     /**
      * Gets an group id from a request. /Group/myGroupId will return myGroupId.

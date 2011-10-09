@@ -89,7 +89,7 @@ public class ScimBulkServlet extends ScimResourceServlet {
 				}
 				
 				
-				// handle all bulk jobs
+				// execute all operations in bulk job 
 				boolean firstItem = true;
 				boolean done = false;
 				int counter = 0;
@@ -106,6 +106,9 @@ public class ScimBulkServlet extends ScimResourceServlet {
 					    	response += "\t\t,\n";
 					    }
 
+						
+						// TODO: Add support for extensions
+
 					    if(ResourceJob.TYPE_GROUP.equalsIgnoreCase(bulkResource.getType())) {
 					    	
 							try {
@@ -121,6 +124,7 @@ public class ScimBulkServlet extends ScimResourceServlet {
 								    	for (ResourceJob resourceJob : resources) {
 											if(resourceJob.getBulkId().equals(value.substring("bulkId:".length()))) {
 												if(resourceJob.getId() != null && !"".equals(resourceJob.getId())) {
+													// resource is processed, replacing bulkId with the id
 													bulkResource.setData(bulkResource.getData().replaceFirst(value, resourceJob.getId()));
 												}
 												else {
@@ -135,6 +139,28 @@ public class ScimBulkServlet extends ScimResourceServlet {
 								// do nothing
 							}
 					    }
+					    else if(ResourceJob.TYPE_USER.equalsIgnoreCase(bulkResource.getType())) {
+
+					    	// a change password path can have bulkId
+					        if(Util.isChangePassword(bulkResource.getPath())) {
+							    if(bulkResource.getPath().indexOf("bulkId:") != -1) {
+							    	for (ResourceJob resourceJob : resources) {
+							    		String path = bulkResource.getPath(); 
+							    		String r = path.substring(path.indexOf("bulkId:")+7, path.indexOf("/password"));
+										if(resourceJob.getBulkId().equals(r)) {
+											if(resourceJob.getId() != null && !"".equals(resourceJob.getId())) {
+												// resource is processed, replacing bulkId with the id
+												bulkResource.setPath(bulkResource.getPath().replaceFirst("bulkId:" + r, resourceJob.getId()));
+											}
+											else {
+												success = false;
+											}
+										}
+									}
+							    }
+					        }
+
+					    }					    
 
 					    response += parseResource(bulkResource, server, outEncoding, authUser);
 
@@ -274,40 +300,69 @@ public class ScimBulkServlet extends ScimResourceServlet {
         }
         
         if("patch".equalsIgnoreCase(bulkResource.getMethod())) {
-        	response += "\t\t{\n" +
-        	  "\t\t\t\"location\":\"" + HttpGenerator.getLocation(bulkResource.getId(), bulkResource.getType(), server) + "\",\n" +
-    	      "\t\t\t\"method\":\"PATCH\",\n" +
-    	      "\t\t\t\"status\":{\n";
+        	
+	        if(Util.isChangePassword(bulkResource.getPath())) {
+	        	String id = Util.getUserIdFromUri(bulkResource.getPath());
+	        	response += "\t\t{\n" +
+	        	  "\t\t\t\"location\":\"" + HttpGenerator.getLocation(id, bulkResource.getType(), server) + "/password\",\n" +
+	    	      "\t\t\t\"method\":\"PATCH\",\n" +
+	    	      "\t\t\t\"status\":{\n";
 
-        	String id = "";
-            try {
-            	Resource scimResource = null;
-            	
-            	if("user".equalsIgnoreCase(bulkResource.getType())) {
-                	bulkResource.setId(bulkResource.getId());
-                	scimResource = internalUserPatch(bulkResource, server, encoding, authUser);
-            	}
-            	else {
-                	bulkResource.setId(bulkResource.getId());
-                	scimResource = internalGroupPatch(bulkResource, server, encoding, authUser);
-            	}
+	            try {
+    				JSONObject jsonObj = new JSONObject(bulkResource.getData());
+    				String password = jsonObj.getString("password");
+    				
+	            	bulkResource.setId(id);
+	            	internalChangePasswordPatch(bulkResource, password, authUser);
 
-        		// TODO: move this into storage? 
-            	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
+	        		response += "\t\t\t\t\"code\":\"204\"\n" +
+	        				"\t\t\t}\n";
 
-        		response += "\t\t\t\t\"code\":\"200\"\n" +
-        				"\t\t\t},\n";
-    	        
-        		response += "\t\t\t\"version\": \"" + scimResource.getMeta().getVersion() + "\",\n";
+	        		// TODO: creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+	        		// trigger.create(scimUser);
+	            } catch (Exception e) {
+	            	response += handleExceptions(e, id);
+	            }
 
-        		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-        		// trigger.create(scimUser);
+	            response += "\t\t}\n";
+	        }
+	        else {
+	        	response += "\t\t{\n" +
+	        	  "\t\t\t\"location\":\"" + HttpGenerator.getLocation(bulkResource.getId(), bulkResource.getType(), server) + "\",\n" +
+	    	      "\t\t\t\"method\":\"PATCH\",\n" +
+	    	      "\t\t\t\"status\":{\n";
 
-            } catch (Exception e) {
-            	response += handleExceptions(e, id);
-            }
+	        	String id = "";
+	            try {
+	            	Resource scimResource = null;
+	            	
+	            	if("user".equalsIgnoreCase(bulkResource.getType())) {
+	                	bulkResource.setId(bulkResource.getId());
+	                	scimResource = internalUserPatch(bulkResource, server, encoding, authUser);
+	            	}
+	            	else {
+	                	bulkResource.setId(bulkResource.getId());
+	                	scimResource = internalGroupPatch(bulkResource, server, encoding, authUser);
+	            	}
 
-            response += "\t\t}\n";
+	        		// TODO: move this into storage? 
+	            	scimResource.getMeta().setLocation(HttpGenerator.getLocation(scimResource, server));
+
+	        		response += "\t\t\t\t\"code\":\"200\"\n" +
+	        				"\t\t\t},\n";
+	    	        
+	        		response += "\t\t\t\"version\": \"" + scimResource.getMeta().getVersion() + "\",\n";
+
+	        		// creating user in downstream CSP, any communication errors is handled in triggered and ignored here
+	        		// trigger.create(scimUser);
+
+	            } catch (Exception e) {
+	            	response += handleExceptions(e, id);
+	            }
+
+	            response += "\t\t}\n";
+	        }
+
         }	
         
         if("delete".equalsIgnoreCase(bulkResource.getMethod())) {

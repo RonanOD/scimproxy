@@ -5,6 +5,7 @@ import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.scimproxy.storage.IStorage;
+import info.simplecloud.scimproxy.user.UserDelegator;
 
 import java.lang.reflect.Method;
 import java.math.BigInteger;
@@ -14,11 +15,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A dummy storage. Holds users in an in memory, non persistent, database. When
  * initiated first time it populates it self with two users.
  */
 public class DummyStorage implements IStorage {
+
+    private Log log = LogFactory.getLog(DummyStorage.class);
 
     private static final HashMap<String, DummyStorage> STORAGE_INSTANCES = new HashMap<String, DummyStorage>();
 
@@ -72,7 +78,7 @@ public class DummyStorage implements IStorage {
     @Override
     public void addUser(User user) {
 		// TODO: Verify that id is not already there.
-        if (user.getId() == null) {
+        if (user.getId() == null || "".equals(user.getId())) {
             user.setId(generateId());
         }
         users.add(user);
@@ -265,5 +271,11 @@ public class DummyStorage implements IStorage {
             throw new ResourceNotFoundException();
         }
     }
+
+	@Override
+	public void setPassword(String clearTextPassword, User user) {
+		// TODO: Implement change password!
+        log.error("Implement change password! Set " + clearTextPassword + " on user " + user);
+	}
 	
 }

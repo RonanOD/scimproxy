@@ -17,6 +17,9 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * To retrieve a known Resource, clients send GET requests to the Resource end
  * point; e.g., /User/{id}. This servlet is the /User end point.
@@ -28,6 +31,8 @@ public class ScimResourceServlet extends RestServlet {
 
     protected Trigger trigger = new Trigger();
     
+    private Log               log              = LogFactory.getLog(ScimResourceServlet.class);
+
     protected User internalUserPost(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser {
         User scimUser = new User(resource.getData(), encoding);
         
@@ -286,5 +291,12 @@ public class ScimResourceServlet extends RestServlet {
         }
     }
 
+    public void internalChangePasswordPatch(ResourceJob resource, String password, AuthenticateUser authUser) throws ResourceNotFoundException {
+    	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+    	UserDelegator.getInstance(authUser.getSessionId()).setPassword(password, scimUser);
+    }
+
+    
+    
     
 }
