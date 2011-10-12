@@ -1,10 +1,94 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+	<title>Authentication - Simple Cloud Identity Management</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="/css/style.css" />
 </head>
 <body>
+	<div id="container">
+		<div id="header">
+			<h1>Simple Cloud Identity Management</h1>
+		</div>
+		<div id="navigation">
+			<ul>
+				<li><a href="#authenticate">Authenticate</a></li>
+				<li><a href="#adduser">Add User</a></li> 
+			</ul>
+		</div>
+	
+	
+		<div id="content">
+			<div id="authenticate" class="section">
+				<h2>Service provider authentication</h2>
+				<form action="Viewer/Authenticate/" method="post">
+					<table>
+						<tr>
+							<td class="left"><label>Type:</label></td>
+							<td> 
+								<select id="authSelection" name="AuthSelection">
+									<option>OAuth2</option>
+									<option>Basic</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+						<tr>
+							<td class="left"><label>Endpoint Base URL:</label></td>
+							<td><input class="textInput" name="BaseUrl" type="text"/></td>
+						</tr>
+						
+						<tr id="basicUsername">
+							<td class="left"><label>Username:</label></td>
+							<td><input class="textInput" name="Username" type="text"/></td>
+						</tr>
+						<tr id="basicPassword">
+							<td class="left"><label>Password:</label></td>
+							<td><input class="textInput" name="Password" type="password"/></td>
+						</tr>
+						<tr id="oauthAuthorizationServer">
+							<td class="left"><label>Authorization Server URL:</label></td>
+							<td><input class="textInput" name="AuthorizationServer" type="text" /></td>
+						</tr>
+						
+						<tr>
+							<td class="left"></td>
+							<td class="bottomRight"><input type="submit" value="Authenticate"/></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div id="adduser" class="section">
+				<h2>Add user to service provider</h2>
+				<form action="/AddUser" method="post">
+					<table>
+						<tr>
+							<td class="left"><label>Username:</label></td>
+							<td><input class="textInput" name="Username" type="text"/></td>
+						</tr>
+						<tr>
+							<td class="left"><label>Password:</label></td>
+							<td><input class="textInput" name="Password" type="password"/></td>
+						</tr>
+						
+						<tr>
+							<td class="left"></td>
+							<td class="bottomRight"><input type="submit" value="Add User"/></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</div>
+		
+		
+		<div id="footer">
+			SCIM Viewer
+		</div>
+	</div>
 
+
+	<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.url.js"></script>
+	<script type="text/javascript" src="/js/authenticate.js"></script>
 </body>
 </html>

@@ -1,15 +1,23 @@
 <html>
-<body>
-<h2>scimproxy</h2>
-
-<h4>
-Read more about scimproxy at <a href="http://code.google.com/p/scimproxy/">http://code.google.com/p/scimproxy/</a>
-<br/>
-<br/>
-<a href="/Viewer/List">Login to list and create users</a>
-<br/>
-<a href="/adduser.jsp">Add new user to login with</a>
-</h4>
-
-</body>
+	<head>
+		<title>scimproxy</title>
+	</head>
+	<body>
+		<div style="width: 400px;">
+			<h2>scimproxy</h2>
+			<p>
+				Read more about scimproxy project at <a href="http://code.google.com/p/scimproxy/" target="blank_">here</a>.
+			</p>
+			
+			<p>
+				 To create a user (and a SCIM storage for that user) and then authenticate for CRUD operations <a href="/authenticate.html">here</a>.
+			</p>
+			<p>
+				The SCIM specification can be found <a href="http://www.simplecloud.info/" target="blank_">here</a>.
+			</p>
+			<p>
+				This project has been created for <a href="http://www.nexussafe.com" target="blank_">Technology Nexus</a>, by Erik Wahlström, Samuel Erdtman and Alexander Lindholm.
+			</p>
+		</div>
+	</body>
 </html>

@@ -13,10 +13,11 @@ public class Basic implements IAuth {
 		
 		boolean authStatus = false;
 		try {
-			
+			System.out.println("token: " + token);
 			UsernamePasswordCredentials cred = parseBasicString(token);
+			System.out.println("cred.getUserName(): " + cred.getUserName());
 	        String correctPassword = AuthenticationUsers.getInstance().getPasswordForUser(cred.getUserName());
-
+	        System.out.println("correctPassword: " + correctPassword);
 	        if(correctPassword != null && correctPassword.equals(cred.getPassword())) {
 	        	this.authUser = AuthenticationUsers.getInstance().getAuthenticateUserWithUserName(cred.getUserName());
 	        	authStatus = true;
