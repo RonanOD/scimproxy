@@ -15,235 +15,209 @@ import org.xml.sax.SAXException;
 
 public class Config {
 
-/*
+    /*
+     * 
+     * An example config file. Create it under /opt/scimproxy/config.xml and
+     * save it as UTF-8.
+     * 
+     * 
+     * <?xml version="1.0" encoding="UTF-8" ?> <config> <auth type="basic">
+     * <user> <username>usr</username> <password>pw</password> </user> <user>
+     * <username>usr3</username> <password>pw</password> </user> </auth> <bulk>
+     * <maxOperations>100</maxOperations>
+     * <maxPayloadSize>1000000</maxPayloadSize> </bulk> <storages> <storage>
+     * <type>dummy</type> </storage> </storages> <down-stream> <csp>
+     * <url>http://192.168.41.137:8080</url>
+     * <preferedEncoding>JSON</preferedEncoding> <version>1.0</version> <auth
+     * type="basic"> <username>usr</username> <password>pw</password> </auth>
+     * </csp> </down-stream> </config>
+     */
 
-	An example config file. Create it under /opt/scimproxy/config.xml and save it as UTF-8.
-	
-	
-<?xml version="1.0" encoding="UTF-8" ?>
-<config>
-	<auth type="basic">
-		<user>
-			<username>usr</username>
-			<password>pw</password>
-		</user>
-		<user>
-			<username>usr3</username>
-			<password>pw</password>
-		</user>
-	</auth>
-	<bulk>
-		<maxOperations>100</maxOperations>
-		<maxPayloadSize>1000000</maxPayloadSize>
-	</bulk>
-	<storages>
-		<storage>
-			<type>dummy</type>
-		</storage>
-	</storages>
-	<down-stream>
-		<csp>
-			<url>http://192.168.41.137:8080</url>
-			<preferedEncoding>JSON</preferedEncoding>
-			<version>1.0</version>
-			<auth type="basic">
-				<username>usr</username>
-				<password>pw</password>
-			</auth>
-		</csp>
-	</down-stream>
-</config>
+    // TODO: read config file location from somewhere in system (property?)
+    private static String       CONFIG_FILE        = System.getProperty("info.simplecloud.scimproxy.config.Config.CONFIG_FILE",
+                                                           "src/main/resources/config.xml");
 
+    // lets keep it a singleton at the moment
+    private static Config       INSTANCE           = null;
 
+    private Log                 log                = LogFactory.getLog(ScimUserServlet.class);
+    private AuthenticationUsers authUsers          = AuthenticationUsers.getInstance();
 
- */
-	
-	// TODO: read config file location from somewhere in system (property?)
-	private static String CONFIG_FILE = System.getProperty("info.simplecloud.scimproxy.config.Config.CONFIG_FILE", "src/main/resources/config.xml");
-	
-	// lets keep it a singleton at the moment
-	private static Config INSTANCE = null;
+    private boolean             basicAuth          = false;
+    private boolean             noneAuth           = false;                                   // Public
+                                                                                               // to
+                                                                                               // all
+                                                                                               // Internet
+                                                                                               // users
+                                                                                               // in
+                                                                                               // the
+                                                                                               // world!
+    private String              basicAuthUsername  = "";
+    private String              basicAuthPassword  = "";
 
-	private Log log = LogFactory.getLog(ScimUserServlet.class);
-	private AuthenticationUsers authUsers = AuthenticationUsers.getInstance();
+    private int                 bulkMaxOperations  = 0;
+    private int                 bulkMaxPayloadSize = 0;
 
-	
-	private boolean basicAuth = false;
-	private boolean noneAuth = false; // Public to all Internet users in the world!
-	private String basicAuthUsername = "";
-	private String basicAuthPassword = "";
-	
-	private int bulkMaxOperations = 0;
-	private int bulkMaxPayloadSize = 0;
-	
-	private List<CSP> downStreamCSP = new ArrayList<CSP>();
+    private List<CSP>           downStreamCSP      = new ArrayList<CSP>();
 
-	// only have support for dummy storage at the moment so it's just a string at the moment
-	private String storageType = "";
+    // only have support for dummy storage at the moment so it's just a string
+    // at the moment
+    private String              storageType        = "";
 
-	/**
-	 * Private constructor that creates the singleton instance.
-	 */
-	private Config() {
-		readConfig("");
-	}
+    /**
+     * Private constructor that creates the singleton instance.
+     */
+    private Config() {
+        readConfig("");
+    }
 
-	/**
-	 * Private constructor that creates the singleton instance.
-	 */
-	private Config(String config) {
-		readConfig(config);
-	}
+    /**
+     * Private constructor that creates the singleton instance.
+     */
+    private Config(String config) {
+        readConfig(config);
+    }
 
-	/**
-	 * Returns singleton value for the config.
-	 * 
-	 * @return
-	 */
-	public static Config getInstance() {
-		if(INSTANCE == null) {
-			INSTANCE = new Config();
-		}
-		return INSTANCE;
-	}
+    /**
+     * Returns singleton value for the config.
+     * 
+     * @return
+     */
+    public static Config getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Config();
+        }
+        return INSTANCE;
+    }
 
-	
-	public static Config getInstance(String config) {
-		if(INSTANCE == null) {
-			INSTANCE = new Config(config);
-		}
-		return INSTANCE;
-	}
+    public static Config getInstance(String config) {
+        if (INSTANCE == null) {
+            INSTANCE = new Config(config);
+        }
+        return INSTANCE;
+    }
 
-	private void readConfig(String confStr) {
-		try
-		{
-			XMLConfiguration config = null;
-			if("".equals(confStr)) {
-				config = new XMLConfiguration(CONFIG_FILE);
-			}
-			else {
-				
-				config = new XMLConfiguration();
-				try {
-					config.getDocumentBuilder().parse(confStr);
-				} catch (SAXException e) {
-					// implementation error
-					e.printStackTrace();
-				} catch (IOException e) {
-					// implementation error
-					e.printStackTrace();
-				}
-			}
+    private void readConfig(String confStr) {
+        try {
+            XMLConfiguration config = null;
+            if ("".equals(confStr)) {
+                config = new XMLConfiguration(CONFIG_FILE);
+            } else {
 
+                config = new XMLConfiguration();
+                try {
+                    config.getDocumentBuilder().parse(confStr);
+                } catch (SAXException e) {
+                    // implementation error
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // implementation error
+                    e.printStackTrace();
+                }
+            }
 
-		    if("basic".equals(config.getString("auth[@type]"))) {
-		    	setBasicAuth(true);
-		    	String[] userNames = config.getStringArray("auth.user.username");
-		    	String[] passwords = config.getStringArray("auth.user.password");
-		    	if(userNames.length != passwords.length)
-		    	{
-		    		
-		    	}
-		    	else
-		    	{
-		    		for(int i = 0; i < userNames.length; i++)
-		    		{
-		    			authUsers.addUser(userNames[i], passwords[i]);
-		    		}
-		    	}
-		    	
-		    }
-		    if("none".equals(config.getString("auth[@type]"))) {
-		    	setNoneAuth(true);
-		    }
-		    
-		    List<String> storagesList = config.getList("storages.storage.type");
-		    if(storagesList != null)
-		    {
-		    	for(int i=0; i<storagesList.size(); i++) {
-		    		// only have dummy support at the moment
-		    		setStorageType(config.getString("storages.storage(" + i + ").type"));
-		    	}
-		    }
+            if ("basic".equals(config.getString("auth[@type]"))) {
+                setBasicAuth(true);
+                String[] userNames = config.getStringArray("auth.user.username");
+                String[] passwords = config.getStringArray("auth.user.password");
+                if (userNames.length != passwords.length) {
 
-		    setBulkMaxOperations(config.getInt("bulk.maxOperations"));
-		    setBulkMaxPayloadSize(config.getInt("bulk.maxPayloadSize"));
-		    
+                } else {
+                    for (int i = 0; i < userNames.length; i++) {
+                        authUsers.addUser(userNames[i], passwords[i]);
+                    }
+                }
 
-		    List<String> downProp = config.getList("down-stream.csp.url");
-		    if(downProp != null)
-		    {
-		    	for(int i=0; i<downProp.size(); i++) {
-		    		CSP csp = new CSP();
-		    		csp.setUrl(config.getString("down-stream.csp(" + i + ").url"));
-		    		csp.setPreferedEncoding(config.getString("down-stream.csp(" + i + ").preferedEncoding"));
-		    		csp.setVersion(config.getString("down-stream.csp(" + i + ").version"));
+            }
+            if ("none".equals(config.getString("auth[@type]"))) {
+                setNoneAuth(true);
+            }
 
-		    		if(CSP.AUTH_BASIC.equals(config.getString("down-stream.csp(" + i + ").auth[@type]"))) {
-		    			csp.setAuthentication(CSP.AUTH_BASIC);
-		    			csp.setBasicUsername(config.getString("down-stream.csp(" + i + ").auth.username"));
-		    			csp.setBasicPassword(config.getString("down-stream.csp(" + i + ").auth.password"));
-		    		}
-		    		downStreamCSP.add(csp);
-		    	}
-		    }
+            List<String> storagesList = config.getList("storages.storage.type");
+            if (storagesList != null) {
+                for (int i = 0; i < storagesList.size(); i++) {
+                    // only have dummy support at the moment
+                    setStorageType(config.getString("storages.storage(" + i + ").type"));
+                }
+            }
 
-		}
-		catch(ConfigurationException cex)
-		{
-			log.error("Could not find configuration file. " + cex.toString() );
-		}
-	}
-	
-	public void setBasicAuth(boolean b) {
-		this.basicAuth = true;
-		
-	}
+            setBulkMaxOperations(config.getInt("bulk.maxOperations"));
+            setBulkMaxPayloadSize(config.getInt("bulk.maxPayloadSize"));
 
-	public boolean isBasicAuth() {
-		return basicAuth;
-	}
+            List<String> downProp = config.getList("down-stream.csp.url");
+            if (downProp != null) {
+                for (int i = 0; i < downProp.size(); i++) {
+                    CSP csp = new CSP();
+                    csp.setUrl(config.getString("down-stream.csp(" + i + ").url"));
+                    csp.setPreferedEncoding(config.getString("down-stream.csp(" + i + ").preferedEncoding"));
+                    csp.setVersion(config.getString("down-stream.csp(" + i + ").version"));
 
-	public void setNoneAuth(boolean noneAuth) {
-		this.noneAuth = noneAuth;
-	}
+                    if (CSP.AUTH_BASIC.equals(config.getString("down-stream.csp(" + i + ").auth[@type]"))) {
+                        csp.setAuthentication(CSP.AUTH_BASIC);
+                        csp.setBasicUsername(config.getString("down-stream.csp(" + i + ").auth.username"));
+                        csp.setBasicPassword(config.getString("down-stream.csp(" + i + ").auth.password"));
+                    }
+                    downStreamCSP.add(csp);
+                }
+            }
 
-	public boolean isNoneAuth() {
-		return noneAuth;
-	}
+        } catch (ConfigurationException cex) {
+            log.error("Could not find configuration file. " + cex.toString());
+        }
+    }
 
-	public void setDownStreamCSP(List<CSP> downStreamCSP) {
-		this.downStreamCSP = downStreamCSP;
-	}
+    public void setBasicAuth(boolean b) {
+        this.basicAuth = true;
 
-	public List<CSP> getDownStreamCSP() {
-		return downStreamCSP;
-	}
+    }
 
-	public void setStorageType(String storageType) {
-		this.storageType = storageType;
-	}
+    public boolean isBasicAuth() {
+        return basicAuth;
+    }
 
-	public String getStorageType() {
-		return storageType;
-	}
+    public boolean isOAuth2() {
+        // TODO read config value
+        return true;
+    }
 
-	public int getBulkMaxOperations() {
-		return bulkMaxOperations;
-	}
+    public void setNoneAuth(boolean noneAuth) {
+        this.noneAuth = noneAuth;
+    }
 
-	public void setBulkMaxOperations(int bulkMaxOperations) {
-		this.bulkMaxOperations = bulkMaxOperations;
-	}
+    public boolean isNoneAuth() {
+        return noneAuth;
+    }
 
-	public void setBulkMaxPayloadSize(int bulkMaxPayloadSize) {
-		this.bulkMaxPayloadSize = bulkMaxPayloadSize;
-	}
+    public void setDownStreamCSP(List<CSP> downStreamCSP) {
+        this.downStreamCSP = downStreamCSP;
+    }
 
-	public int getBulkMaxPayloadSize() {
-		return bulkMaxPayloadSize;
-	}	
+    public List<CSP> getDownStreamCSP() {
+        return downStreamCSP;
+    }
+
+    public void setStorageType(String storageType) {
+        this.storageType = storageType;
+    }
+
+    public String getStorageType() {
+        return storageType;
+    }
+
+    public int getBulkMaxOperations() {
+        return bulkMaxOperations;
+    }
+
+    public void setBulkMaxOperations(int bulkMaxOperations) {
+        this.bulkMaxOperations = bulkMaxOperations;
+    }
+
+    public void setBulkMaxPayloadSize(int bulkMaxPayloadSize) {
+        this.bulkMaxPayloadSize = bulkMaxPayloadSize;
+    }
+
+    public int getBulkMaxPayloadSize() {
+        return bulkMaxPayloadSize;
+    }
+
 }
-
-
