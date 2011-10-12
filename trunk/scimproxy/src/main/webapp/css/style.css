@@ -94,7 +94,7 @@ input.textInput
 
 td.left 
 {
-	width: 100px;
+	width: 180px;
 	vertical-align: top;
 }
 td.bottomRight
@@ -105,5 +105,10 @@ td.bottomRight
 select
 {
 	width: 200px;	
+}
+
+pre
+{
+	width: 800px;
 }
 

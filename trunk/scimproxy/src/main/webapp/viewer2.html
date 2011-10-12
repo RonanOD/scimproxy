@@ -1,9 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<title>Insert title here</title>
+	<title>Viewer - Simple Cloud Identity Management</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="/css/prettify.css" />
 </head>
 <body>
 	<div id="container">
@@ -25,12 +26,12 @@
 		<div id="content">
 			<div id="list" class="section">
 				<h2>List resources</h2>
-				<form action="Viewer/delete" method="post">
+				<form action="Viewer/List" id="listForm" method="post">
 					<table>
 						<tr>
 							<td class="left"><label>Type:</label></td>
 							<td> 
-								<select>
+								<select id="listType">
 									<option>User</option>
 									<option>Group</option>
 								</select>
@@ -39,15 +40,15 @@
 						<tr>
 						<tr>
 							<td class="left"><label>Filter:</label></td>
-							<td><input class="textInput" type="text"/></td>
+							<td><input id="listFilter" class="textInput" type="text"/></td>
 						</tr>
 						<tr>
 							<td class="left"><label>Sort:</label></td>
-							<td><input class="textInput" type="text"/></td>
+							<td><input id="listSort" class="textInput" type="text"/></td>
 						</tr>
 						<tr>
 							<td class="left"><label>Attributes:</label></td>
-							<td><input class="textInput" type="text" /></td>
+							<td><input id="listAttributes" class="textInput" type="text" /></td>
 						</tr>
 						<tr>
 							<td class="left"></td>
@@ -59,12 +60,12 @@
 			
 			<div id="add" class="section">
 				<h2>Add resource</h2>
-				<form action="Viewer/delete" method="post">
+				<form action="Viewer/Add" id="addForm" method="post">
 					<table>
 						<tr>
 							<td class="left"><label>Type:</label></td>
 							<td> 
-								<select>
+								<select id="addType">
 									<option>User</option>
 									<option>Group</option>
 								</select>
@@ -72,7 +73,7 @@
 						</tr>
 						<tr>
 							<td class="left"><label>Resource:</label></td>
-							<td><textarea rows="10" cols="50"></textarea></td>
+							<td><textarea id="addData" rows="10" cols="50"></textarea></td>
 						</tr>
 						<tr>
 							<td class="left"></td>
@@ -84,12 +85,12 @@
 			
 			<div id="edit" class="section">
 				<h2>Edit resource</h2>
-				<form action="Viewer/delete" method="post">
+				<form action="Viewer/Edit" id="editForm" method="post">
 					<table>
 						<tr>
 							<td class="left"><label>Type:</label></td>
 							<td>
-								<select>
+								<select id="editType">
 									<option>User</option>
 									<option>Group</option>
 								</select>
@@ -98,15 +99,19 @@
 						<tr>
 							<td class="left"><label>Operation:</label></td>
 							<td> 
-								<select>
+								<select id="editOperation">
 									<option>PUT</option>
 									<option>PATCH</option>
 								</select>
 							</td>
 						</tr>
 						<tr>
+							<td class="left"><label>Id:</label></td>
+							<td><input class="textInput" id="editId" type="text"/></td>
+						</tr>
+						<tr>
 							<td class="left"><label>Data:</label></td>
-							<td><textarea rows="10" cols="50"></textarea></td>
+							<td><textarea id="editData" rows="10" cols="50"></textarea></td>
 						</tr>
 						<tr>
 							<td></td>
@@ -118,12 +123,12 @@
 			
 			<div id="delete" class="section">
 				<h2>Delete resource</h2>
-				<form action="Viewer/delete" method="post">
+				<form action="Viewer/Delete" id="deleteForm" method="post">
 					<table>
 						<tr>
 							<td class="left"><label>Type:</label></td>
 							<td>
-								<select>
+								<select id="deleteType">
 									<option>User</option>
 									<option>Group</option>
 								</select>
@@ -131,7 +136,7 @@
 						</tr>
 						<tr>
 							<td class="left"><label>Id:</label></td>
-							<td><input class="textInput" type="text"/></td>
+							<td><input class="textInput" id="deleteId" type="text"/></td>
 						</tr>
 						<tr>
 							<td class="left"></td>
@@ -150,8 +155,8 @@
 				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 			</div>
 			
-			<p id="result">
-			</p>
+			<div id="result">
+			</div>
 		</div>
 		
 		
@@ -160,9 +165,9 @@
 		</div>
 	</div>
 
-
 	<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src="/js/jquery.url.js"></script>
+	<script type="text/javascript" src="/js/prettify/prettify.js"></script>
 	<script type="text/javascript" src="/js/viewer2.js"></script>
 </body>
 </html>

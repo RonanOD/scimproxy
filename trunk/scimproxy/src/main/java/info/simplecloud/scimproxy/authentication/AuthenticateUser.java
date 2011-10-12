@@ -7,6 +7,8 @@ public class AuthenticateUser {
 	
 	private UsernamePasswordCredentials userCredentials;
 	private String sessionId;
+    private Object accessToken;
+    private String code;
 	
 	public AuthenticateUser(String userName, String password)
 	{
@@ -30,5 +32,23 @@ public class AuthenticateUser {
 	{
 		return userCredentials;
 	}
+
+    public boolean hasAccessToken(String token) {
+        return token.equals(this.accessToken);
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+        
+    }
+
+    public boolean hasCode(String code) {
+        System.out.println("this.code: " + this.code);
+        return code.equals(this.code);
+    }
 
 }
