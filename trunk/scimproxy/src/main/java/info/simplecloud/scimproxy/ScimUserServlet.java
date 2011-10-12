@@ -89,6 +89,7 @@ public class ScimUserServlet extends ScimResourceServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String query = Util.getContent(req);
 
+
         if (query != null && !"".equals(query)) {
             try {
                 String server = HttpGenerator.getServer(req);
