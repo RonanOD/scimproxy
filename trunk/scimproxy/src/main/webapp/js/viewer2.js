@@ -25,10 +25,12 @@ $(document).ready(function () {
 		var listType = $("#listType").val(),
 			listFilter = $("#listFilter").val(),
 			listSort = $("#listSort").val(),
+			listSortOrder = $("#listSortOrder").val(),
+			listEncoding = $("#listEncoding").val(),
 			listAttributes = $("#listAttributes").val();
 		
 		$.post("/Viewer/List", 
-				{ type: listType, filter: listFilter, sort: listSort, attributes: listAttributes }, 
+				{ type: listType, filter: listFilter, sort: listSort, attributes: listAttributes, encoding: listEncoding, sortOrder: listSortOrder }, 
 				handleResult)
 			.error(handleError);
 		
@@ -37,10 +39,11 @@ $(document).ready(function () {
 	
 	$("#addForm").submit(function () {
 		var addType = $("#addType").val(),
+			addEncoding = $("#addEncoding").val(),
 			addData = $("#addData").val();
 		
 		$.post("/Viewer/Add", 
-				{ type: addType, data: addData }, 
+				{ type: addType, data: addData, encoding: addEncoding }, 
 				handleResult)
 			.error(handleError);
 		
@@ -50,10 +53,12 @@ $(document).ready(function () {
 	$("#editForm").submit(function () {
 		var editType = $("#editType").val(),
 			editOperation = $("#editOperation").val(),
+			editId = $("#editId").val(),
+			editEncoding = $("#listEncoding").val(),
 			editData = $("#editData").val();
 		
 		$.post("/Viewer/Edit", 
-				{ type: editType, operation: editOperation, data: editData }, 
+				{ type: editType, operation: editOperation, data: editData, id: editId, encoding: editEncoding }, 
 				handleResult)
 			.error(handleError);
 		
@@ -62,10 +67,11 @@ $(document).ready(function () {
 	
 	$("#deleteForm").submit(function () {
 		var deleteType = $("#deleteType").val(),
+			deleteEncoding = $("#listEncoding").val(),
 			deleteId = $("#deleteId").val();
 		
 		$.post("/Viewer/Delete", 
-				{ type: deleteType, id: deleteId }, 
+				{ type: deleteType, id: deleteId, encoding: deleteEncoding }, 
 				handleResult)
 			.error(handleError);
 		
