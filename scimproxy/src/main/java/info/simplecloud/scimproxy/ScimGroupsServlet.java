@@ -14,6 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class ScimGroupsServlet extends RestServlet {
+
+
+	private static final long serialVersionUID = 5979024190676564472L;
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String attributesString = req.getParameter("attributes") == null ? "" : req.getParameter("attributes");
@@ -35,7 +39,8 @@ public class ScimGroupsServlet extends RestServlet {
         }
 
         DummyStorage storage = DummyStorage.getInstance(authUser.getSessionId());
-        List groups = null;
+        @SuppressWarnings("rawtypes")
+		List groups = null;
 
         String filterBy = req.getParameter("filterBy");
         String filterValue = req.getParameter("filterValue");

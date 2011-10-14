@@ -77,10 +77,8 @@ public class DummyStorage implements IStorage {
 
     @Override
     public void addUser(User user) {
-		// TODO: Verify that id is not already there.
-        if (user.getId() == null || "".equals(user.getId())) {
-            user.setId(generateId());
-        }
+    	// service provider always defines the id
+    	user.setId(generateId());
         users.add(user);
     }
 

@@ -13,10 +13,6 @@ import info.simplecloud.scimproxy.trigger.Trigger;
 import info.simplecloud.scimproxy.user.UserDelegator;
 import info.simplecloud.scimproxy.util.Util;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -60,9 +56,7 @@ public class ScimResourceServlet extends RestServlet {
 		UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
         
         // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-        trigger.create(scimUser);				
-
-        // TODO:   trigger.post(...);				
+        trigger.create(scimUser);
 
         return scimUser;
     }
@@ -155,9 +149,8 @@ public class ScimResourceServlet extends RestServlet {
         String version = scimUser.getMeta().getVersion();
         if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
         	UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
-            // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-        	// TODO: trigger
-        	//trigger.delete(scimUser);				
+            // deleting user in downstream CSP, any communication errors is handled in triggered and ignored here
+        	trigger.delete(scimUser);				
         }
         else {
         	throw new PreconditionException();

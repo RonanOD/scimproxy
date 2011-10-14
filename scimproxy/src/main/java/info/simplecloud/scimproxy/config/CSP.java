@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy.config;
 
+import java.util.HashMap;
+
 public class CSP {
 
 	public static String AUTH_BASIC = "basic";
@@ -10,6 +12,9 @@ public class CSP {
 	private String basicPassword = "";
 	private String preferedEncoding = "JSON";
 	private String version = "";
+	
+	private HashMap<String, String> resourceIdMapping = new HashMap<String, String>();
+	private HashMap<String, String> versionMapping = new HashMap<String, String>();
 	
 	public CSP() {
 		
@@ -68,5 +73,20 @@ public class CSP {
 		return version;
 	}
 	
-	
+	public String getExternalIdForId(String resourceId) {
+		return (String)resourceIdMapping.get(resourceId);
+	}
+
+	public void setExternalIdForId(String resourceId, String externalId) {
+		resourceIdMapping.put(resourceId, externalId);
+	}
+
+	public String getVersionForId(String resourceId) {
+		return (String)versionMapping.get(resourceId);
+	}
+
+	public void setVersionForId(String resourceId, String version) {
+		versionMapping.put(resourceId, version);
+	}
+
 }
