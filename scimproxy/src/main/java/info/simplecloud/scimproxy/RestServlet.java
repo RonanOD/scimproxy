@@ -43,6 +43,7 @@ public abstract class RestServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String method = req.getMethod();
+		System.out.println("method: " + method);
 		String configStr = (String) req.getAttribute("info.simplecloud.scimproxy.config");
 		Config config = null;
 		if(configStr != null && !"".equalsIgnoreCase(configStr)) {

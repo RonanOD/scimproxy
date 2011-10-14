@@ -107,8 +107,40 @@ select
 	width: 200px;	
 }
 
-pre
+pre.full
 {
 	width: 800px;
+	border-style: dashed;
+	border-width: 1px;
 }
 
+pre.table
+{
+	width: 650px;
+	border-style: dashed;
+	border-width: 1px;
+}
+
+td.alignTop
+{
+	vertical-align: top;
+	padding: 15px;
+}
+
+td.alignTop
+{
+	vertical-align: top;
+	padding: 15px;
+}
+
+tr.list
+{
+	border-top-style: solid;
+	border-top-width: 2px;
+}
+
+textarea.table
+{
+	width: 650px;
+	min-height: 200px;
+}

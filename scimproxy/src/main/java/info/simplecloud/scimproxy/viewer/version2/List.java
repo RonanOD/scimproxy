@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -52,17 +53,19 @@ public class List extends HttpServlet {
             query = query.substring(0, query.length() - 1);
         }
 
-        GetMethod method = new GetMethod(baseUrl + "v1/" + indata.get("type") + "s" + query);
+        GetMethod method = new GetMethod(baseUrl + "v1/" + indata.get("type") + "s");
+        System.out.println("query: " + query);
+        method.setQueryString(query);
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-        method.setRequestHeader("Accept", indata.get("encoding"));
+        method.setRequestHeader("Accept", "application/json");
         method.setRequestHeader("Authorization", creds);
 
-        client.executeMethod(method);
+        int responseCode = client.executeMethod(method);
         
-        if ("application/json".equals(indata.get("encoding"))) {
+        if (responseCode == 200) {
             resp.getWriter().print(method.getResponseBodyAsString());
         } else {
-            resp.getWriter().print(StringEscapeUtils.escapeHtml(method.getResponseBodyAsString()));
+            resp.getWriter().print("Error, server returned " + responseCode);
         }
     }
 }

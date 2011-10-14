@@ -36,7 +36,7 @@ public class Authenticate extends HttpServlet {
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setParameter("grant_type", "authorization_code");
         method.setParameter("code", code);
-        method.setParameter("redirect_uri", getRequestedURL(req) + "/Viewer/Authenticate/");
+        method.setParameter("redirect_uri", getRequestedURL(req) + "/Viewer2/Authenticate/");
         
 
         HttpClient client = new HttpClient();
@@ -78,7 +78,7 @@ public class Authenticate extends HttpServlet {
             String authorizationServer = req.getParameter("AuthorizationServer");
             req.getSession().setAttribute("AuthorizationServer", authorizationServer);
             authorizationServer += "?response_type=code&client_id=scimproxyviewer&redirect_uri=";
-            authorizationServer +=  getRequestedURL(req) + "/Viewer/Authenticate/";
+            authorizationServer +=  getRequestedURL(req) + "/Viewer2/Authenticate/";
             System.out.println("authorizationServer: " + authorizationServer);
             resp.sendRedirect(authorizationServer);
         }
@@ -86,6 +86,6 @@ public class Authenticate extends HttpServlet {
     
     private String getRequestedURL(HttpServletRequest req) {
         StringBuffer full = req.getRequestURL();
-        return full.substring(0, full.indexOf("/Viewer/Authenticate"));
+        return full.substring(0, full.indexOf("/Viewer2/Authenticate"));
     }
 }

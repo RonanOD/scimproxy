@@ -70,14 +70,13 @@ public class ScimResourceServlet extends RestServlet {
     protected User internalUserPut(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException {
 
         User scimUser = new User(resource.getData().toString(), encoding);
-
         // verify that user have not been changed since latest get and this operation
         User oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
         	if(oldUser.getMeta() != null) {
-        		if(!resource.getVersion().equals(oldUser.getMeta().getVersion())) {
+        		if(resource.getVersion() == null || !resource.getVersion().equals(oldUser.getMeta().getVersion())) {
         			throw new PreconditionException();
         		}
         	}

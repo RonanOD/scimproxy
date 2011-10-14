@@ -10,7 +10,7 @@
 			</p>
 			
 			<p>
-				 To create a user (and a SCIM storage for that user) and then authenticate for CRUD operations <a href="/authenticate.html">here</a>.
+				 To create a user (and a SCIM storage for that user) and then authenticate for CRUD operations,<a href="/Viewer/Add">Viewer</a> or <a href="/authenticate.html">Viewer2</a>.
 			</p>
 			<p>
 				The SCIM specification can be found <a href="http://www.simplecloud.info/" target="blank_">here</a>.
