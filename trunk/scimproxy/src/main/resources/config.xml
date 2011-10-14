@@ -24,4 +24,15 @@
 		<maxOperations>1000</maxOperations>
 		<maxPayloadSize>10000000</maxPayloadSize>
 	</bulk>
+	<down-stream> 
+		<csp>
+     		<url>http://107.20.133.41:8080</url>
+     		<preferedEncoding>JSON</preferedEncoding> 
+     		<version>v1</version>
+     		<auth type="basic">
+				<username>usr</username>
+				<password>pw</password>
+			</auth>
+		</csp>
+	</down-stream>
 </config>

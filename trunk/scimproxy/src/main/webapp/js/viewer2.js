@@ -7,7 +7,7 @@ $(document).ready(function () {
 			class: 'prettyprint, full',
 		    text: data
 		}).appendTo('#result');
-		
+
 		prettyPrint();
 		},
 		handleError = function () {
@@ -44,7 +44,7 @@ $(document).ready(function () {
 		                								$("#" + editId + "show").show();
 	            									};
 	            								}(current.id)),
-	            								$("<button>", {text: "Uppdate"}).click(function (editType, editData) {
+	            								$("<button>", {text: "update"}).click(function (editType, editData) {
 	            									return function () {
 	            										$.post("/Viewer2/Edit", 
 	            												{ type: editType, operation: "PUT", data: JSON.stringify(editData), id: editData.id, etag: editData.meta.version }, 
@@ -74,7 +74,7 @@ $(document).ready(function () {
 			} else {
 				$('<pre>', {
 					class: 'prettyprint, full',
-				    text: "Empty list"
+				    text: "No resources found."
 				}).appendTo('#result');
             }
 			prettyPrint();

@@ -15,9 +15,9 @@
 			<ul>
 				<li><a href="#list">List</a></li> 
 				<li><a href="#add">Add</a></li>
-				<li><a href="#edit">Edit</a></li>
+<!--  				<li><a href="#edit">Edit</a></li>
 				<li><a href="#delete">Delete</a></li> 
-				<li><a href="#bulk">Bulk</a></li>
+-->				<li><a href="#bulk">Bulk</a></li>
 				<li><a href="#configuration">Configuration</a></li> 
 			</ul>
 		</div>
@@ -76,6 +76,14 @@
 								<select id="addType">
 									<option>User</option>
 									<option>Group</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Encoding:</label></td>
+							<td> 
+								<select id="addEncoding">
+									<option>json</option>
 								</select>
 							</td>
 						</tr>
@@ -166,6 +174,14 @@
 				<form action="Viewer2/Bulk" id="bulkForm" method="post">
 					<table>
 						<tr>
+							<td class="left"><label>Encoding:</label></td>
+							<td> 
+								<select id="addEncoding">
+									<option>json</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
 							<td class="left"><label>Bulk data:</label></td>
 							<td><textarea id="bulkData" rows="15" cols="60"></textarea></td>
 						</tr>
@@ -180,14 +196,14 @@
 			<div id="configuration" class="section">
 				<h2>Configuration</h2>
 			</div>
-			
+
 			<div id="result">
 			</div>
+			
 		</div>
 		
-		
 		<div id="footer">
-			SCIM Viewer
+			<a href="http://code.google.com/p/scimproxy/">SCIM Viewer</a>
 		</div>
 	</div>
 

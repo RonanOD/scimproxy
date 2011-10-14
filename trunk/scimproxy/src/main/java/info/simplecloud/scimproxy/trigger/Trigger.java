@@ -1,6 +1,9 @@
 package info.simplecloud.scimproxy.trigger;
 
+import info.simplecloud.core.Group;
+import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
+import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.config.Config;
@@ -34,28 +37,67 @@ public class Trigger {
      * Sends the newly created user down streams to all configured servers. Only
      * logs to log in case of communication errors.
      */
-    public void create(User user) {
+    @SuppressWarnings("deprecation")
+	public void create(Resource resource) {
         ArrayList<CSP> servers = (ArrayList<CSP>) Config.getInstance().getDownStreamCSP();
         for (CSP csp : servers) {
 
             HttpClient client = getHttpClientWithAuth(csp);
 
-            // Create a method instance.
-            PostMethod method = new PostMethod(csp.getUrl() + getVersionPath(csp) + "/User");
-            configureMethod(method);
-
+            String resourceString = null;
+            String id = null;
+            String endpoint = null;
+            String createdResourceEndpoint = "";
+            PostMethod method = null;
             try {
-                method.setRequestBody(user.getUser(csp.getPreferedEncoding()));
+            	if(resource instanceof User) {
+	        		User user = (User)resource;
+	        		id = user.getId();
+					resourceString = user.getUser(csp.getPreferedEncoding());
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/User";
+	        	}
+	        	else if(resource instanceof Group) {
+	        		Group group = (Group)resource;
+	        		id = null;
+	        		// TODO: Implement externalId on Resource!
+	        		resourceString = group.getGroup(csp.getPreferedEncoding());
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Group";
+	        	}
 
-                // Execute the method.
+                method = new PostMethod(endpoint);
+
+	            // Create a method instance.
+	            configureMethod(method);
+
+                method.setRequestBody(resourceString);
+
+            	// Execute the method.
                 int statusCode = client.executeMethod(method);
 
                 // Read the response body.
                 byte[] responseBody = method.getResponseBody();
 
-                log.debug("Response code: " + Integer.toString(statusCode));
-                log.debug("Status line: " + method.getStatusLine());
-                log.debug("Response: \n" + new String(responseBody));
+                String externalId = null;
+                String version = "";
+            	if(resource instanceof User) {
+                    User cspUser = new User(new String(responseBody), csp.getPreferedEncoding());
+                    externalId = cspUser.getId();
+                    version = cspUser.getMeta().getVersion();
+                    createdResourceEndpoint = cspUser.getMeta().getLocation();
+            	}
+            	else if(resource instanceof Group) {
+                    Group cspGroup = new Group(new String(responseBody), csp.getPreferedEncoding());
+                    externalId = cspGroup.getId();
+                    version = cspGroup.getMeta().getVersion();
+                    createdResourceEndpoint = cspGroup.getMeta().getLocation();
+            	}
+
+                csp.setExternalIdForId(id, externalId);
+                csp.setVersionForId(id, version);
+
+                log.debug("Response from " + csp.getUrl());
+                log.debug("- Code : " + Integer.toString(statusCode) + " - " + method.getStatusLine());
+                log.debug("- Content: \n" + new String(responseBody));
 
             } catch (HttpException e) {
                 log.error("Fatal protocol violation: " + e.getMessage());
@@ -66,10 +108,18 @@ public class Trigger {
             } catch (UnknownEncoding e) {
                 log.error("Unknown encoding. XML and JSON is supported.");
                 e.printStackTrace();
-            } finally {
+            } catch (InvalidUser e) {
+                log.error("Invalid user returned from server.");
+				e.printStackTrace();
+            } catch (Exception e) {
+                log.error("Unknown error.");
+				e.printStackTrace();
+			} finally {
                 // Release the connection.
-                method.releaseConnection();
-                log.info("Created user " + user.getId() + " downstreams at: " + csp.getUrl());
+				if(method != null) {
+	                method.releaseConnection();
+				}
+                log.info("Created resource " + resource.getId() + " downstreams at " + createdResourceEndpoint);
             }
         }
     }
@@ -78,16 +128,35 @@ public class Trigger {
      * Deletes the user to all configured servers down stream to this server.
      * Only logs to log when communication errors.
      */
-    public void delete(User user) {
+    public void delete(Resource resource) {
         ArrayList<CSP> servers = (ArrayList<CSP>) Config.getInstance().getDownStreamCSP();
         for (CSP csp : servers) {
 
             HttpClient client = getHttpClientWithAuth(csp);
 
+            String endpoint = "";
+            String id = "";
+
+        	if(resource instanceof User) {
+        		User user = (User)resource;
+        		id = user.getId();
+                endpoint = csp.getUrl() + getVersionPath(csp) + "/User/";
+        	}
+        	else if(resource instanceof Group) {
+        		Group group = (Group)resource;
+        		id = null;
+        		// TODO: Implement externalId on Resource!
+                endpoint = csp.getUrl() + getVersionPath(csp) + "/Group/";
+        	}
+        	
+        	String externalId = csp.getExternalIdForId(id);
+        	String version = csp.getVersionForId(id);
+        	endpoint = endpoint + externalId;
+
             // Create a method instance.
-            DeleteMethod method = new DeleteMethod(csp.getUrl() + getVersionPath(csp) + "/User/" + user.getId());
+            DeleteMethod method = new DeleteMethod(endpoint);
             configureMethod(method);
-            method.setRequestHeader(new Header("ETag", user.getMeta().getVersion()));
+            method.setRequestHeader(new Header("ETag", version));
 
             try {
                 // Execute the method.
@@ -97,11 +166,11 @@ public class Trigger {
                 byte[] responseBody = method.getResponseBody();
 
                 if (statusCode != 200) {
-                    log.error("Failed to delete user downstreams at " + csp.getUrl());
+                    log.error("Failed to delete resource " + id + " downstreams at " + csp.getUrl());
                 }
-                log.debug("Response code: " + Integer.toString(statusCode));
-                log.debug("Status line: " + method.getStatusLine());
-                log.debug("Response: \n" + new String(responseBody));
+                log.debug("Response from " + csp.getUrl());
+                log.debug("- Code : " + Integer.toString(statusCode) + " - " + method.getStatusLine());
+                log.debug("- Content: \n" + new String(responseBody));
 
             } catch (HttpException e) {
                 log.error("Fatal protocol violation: " + e.getMessage());
@@ -109,10 +178,15 @@ public class Trigger {
             } catch (IOException e) {
                 log.error("Fatal transport violation: " + e.getMessage());
                 e.printStackTrace();
-            } finally {
+            } catch (Exception e) {
+                log.error("Unknown error.");
+				e.printStackTrace();
+			} finally {
                 // Release the connection.
-                method.releaseConnection();
-                log.info("Deleted user " + user.getId() + " downstreams at: " + csp.getUrl());
+				if(method != null) {
+	                method.releaseConnection();
+				}
+                log.info("Deleted user " + resource.getId() + " downstreams at " + endpoint);
             }
         }
     }
@@ -147,12 +221,6 @@ public class Trigger {
         log.info("Patch user " + userId + " downstreams. IMPLEMENT!");
     }
 
-    public User get(String userId) {
-        log.info("Patch user " + userId + " downstreams. IMPLEMENT!");
-        return null;
-    }
-
-
 
     /**
      * Get a handle to a down stream HTTP REST server. Adds authentication
@@ -165,7 +233,7 @@ public class Trigger {
     private HttpClient getHttpClientWithAuth(CSP csp) {
         // Create an instance of HttpClient.
         HttpClient client = new HttpClient();
-
+        
         // set auth if it's authenticated
         if ("basic".equalsIgnoreCase(csp.getAuthentication())) {
             client.getParams().setAuthenticationPreemptive(true);

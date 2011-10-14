@@ -25,7 +25,7 @@ public class ScimUserServletPutTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        User scimUser = new User("ABC123-put");
+        User scimUser = new User();
         scimUser.setUserName("Alice");
 
         request.setMethod("POST");
@@ -45,7 +45,7 @@ public class ScimUserServletPutTest {
 
     @Test
     public void putUser() throws Exception {
-        User scimUser = new User("ABC123-put");
+        User scimUser = new User();
         scimUser.setId(id);
         scimUser.setUserName("Bob");
 
@@ -65,7 +65,6 @@ public class ScimUserServletPutTest {
 
         User returnedUser = new User(response.getContent(), User.ENCODING_JSON);
 
-        Assert.assertEquals(id, returnedUser.getId());
         Assert.assertEquals("Bob", returnedUser.getUserName());
     }
 
