@@ -25,7 +25,7 @@ public class Helper {
                     String name = parameter.split("=")[0];
                     String value = parameter.split("=")[1];
                     if (!value.trim().isEmpty()) {
-                        result.put(name, URLDecoder.decode(value));
+                        result.put(name, URLDecoder.decode(value).trim());
                     }
                 }
             }

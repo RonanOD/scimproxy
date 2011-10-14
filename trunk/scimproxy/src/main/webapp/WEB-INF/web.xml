@@ -3,25 +3,31 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-
-  <display-name>scimproxy</display-name>
-  <servlet>
-    <servlet-name>User</servlet-name>
-    <servlet-class>info.simplecloud.scimproxy.ScimUserServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>User</servlet-name>
-	<url-pattern>/v1/User/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>Users</servlet-name>
-    <servlet-class>info.simplecloud.scimproxy.ScimUsersServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Users</servlet-name>
-	<url-pattern>/v1/Users</url-pattern>
-  </servlet-mapping>
+ 	<display-name>scimproxy</display-name>
+ 	
+ 	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	
+	
+	
+	<servlet>
+		<servlet-name>User</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.ScimUserServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>User</servlet-name>
+		<url-pattern>/v1/User/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Users</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.ScimUsersServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Users</servlet-name>
+		<url-pattern>/v1/Users</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>Group</servlet-name>
@@ -31,6 +37,7 @@
 		<servlet-name>Group</servlet-name>
 		<url-pattern>/v1/Group/*</url-pattern>
 	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>Groups</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimGroupsServlet</servlet-class>
@@ -39,6 +46,7 @@
 		<servlet-name>Groups</servlet-name>
 		<url-pattern>/v1/Groups</url-pattern>
 	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>Schema</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimSchemaServlet</servlet-class>
@@ -47,6 +55,7 @@
 		<servlet-name>Schema</servlet-name>
 		<url-pattern>/v1/Schema/*</url-pattern>
 	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>Schemas</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimSchemasServlet</servlet-class>
@@ -82,43 +91,92 @@
 		<servlet-name>AuthorizationServer</servlet-name>
 		<url-pattern>/AuthorizationServer/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>AddUser</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.AddUser</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AddUser</servlet-name>
+		<url-pattern>/AddUser</url-pattern>
+	</servlet-mapping>
+	
+	<filter>
+		<filter-name>MethodOverrideFilter</filter-name>
+		<filter-class>info.simplecloud.scimproxy.filter.MethodOverrideFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>MethodOverrideFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+ 
 
 	<servlet>
-		<servlet-name>List</servlet-name>
+		<servlet-name>List2</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.viewer.version2.List</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>List</servlet-name>
-		<url-pattern>/Viewer/List</url-pattern>
+		<servlet-name>List2</servlet-name>
+		<url-pattern>/Viewer2/List</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>Add</servlet-name>
+		<servlet-name>Add2</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.viewer.version2.Add</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Add</servlet-name>
-		<url-pattern>/Viewer/Add</url-pattern>
+		<servlet-name>Add2</servlet-name>
+		<url-pattern>/Viewer2/Add</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>Delete</servlet-name>
+		<servlet-name>Delete2</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.viewer.version2.Delete</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Delete</servlet-name>
-		<url-pattern>/Viewer/Delete</url-pattern>
+		<servlet-name>Delete2</servlet-name>
+		<url-pattern>/Viewer2/Delete</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>Edit</servlet-name>
+		<servlet-name>Edit2</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.viewer.version2.Edit</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Edit</servlet-name>
-		<url-pattern>/Viewer/Edit</url-pattern>
+		<servlet-name>Edit2</servlet-name>
+		<url-pattern>/Viewer2/Edit</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>ViewerConfiguration2</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.version2.Configuration</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ViewerConfiguration2</servlet-name>
+		<url-pattern>/Viewer2/Configuration</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ViewerBulk2</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.version2.Bulk</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ViewerBulk2</servlet-name>
+		<url-pattern>/Viewer2/Bulk</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ViewerAuthenticate2</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.version2.Authenticate</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ViewerAuthenticate2</servlet-name>
+		<url-pattern>/Viewer2/Authenticate/*</url-pattern>
+	</servlet-mapping> 
+	
+	
+	
 	<servlet>
 		<servlet-name>ViewerConfiguration</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.viewer.Configuration</servlet-class>
@@ -136,39 +194,32 @@
 		<servlet-name>ViewerBulk</servlet-name>
 		<url-pattern>/Viewer/Bulk</url-pattern>
 	</servlet-mapping>
-
-
-	<servlet>
-		<servlet-name>ViewerAuthenticate</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.viewer.version2.Authenticate</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ViewerAuthenticate</servlet-name>
-		<url-pattern>/Viewer/Authenticate/*</url-pattern>
-	</servlet-mapping> 
-
-	<filter>
-		<filter-name>MethodOverrideFilter</filter-name>
-		<filter-class>info.simplecloud.scimproxy.filter.MethodOverrideFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>MethodOverrideFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
 	
- 
 	<servlet>
-		<servlet-name>AddUser</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.viewer.AddUser</servlet-class>
+		<servlet-name>List</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.List</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>AddUser</servlet-name>
-		<url-pattern>/AddUser</url-pattern>
+		<servlet-name>List</servlet-name>
+		<url-pattern>/Viewer/List</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Add</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.Add</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Add</servlet-name>
+		<url-pattern>/Viewer/Add</url-pattern>
 	</servlet-mapping>
 	
-	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
-	</welcome-file-list>
-	
-	
+	<servlet>
+		<servlet-name>Edit</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.Edit</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Edit</servlet-name>
+		<url-pattern>/Viewer/Edit</url-pattern>
+	</servlet-mapping>
+
 </web-app>

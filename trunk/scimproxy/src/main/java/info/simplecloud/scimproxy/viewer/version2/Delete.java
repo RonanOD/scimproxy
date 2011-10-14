@@ -36,18 +36,18 @@ public class Delete extends HttpServlet {
         
         DeleteMethod method = new DeleteMethod(baseUrl+ "v1/" + indata.get("type") + "/" + indata.get("id"));
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));        
-        method.setRequestHeader("Accept", indata.get("encoding"));
+        method.setRequestHeader("Accept", "application/json");
+        method.setRequestHeader("ETag", indata.get("etag"));
         method.setRequestHeader("Authorization", creds);
             
-        client.executeMethod(method);
-        
-        if("application/json".equals(indata.get("encoding"))) {
-            resp.getWriter().print(method.getResponseBodyAsString());
+        int responseCode = client.executeMethod(method);
+        if(responseCode == 200) {            
+            resp.getWriter().print(indata.get("type") + " deleted");
+        } else if(responseCode == 404){
+            resp.getWriter().print(indata.get("type") + " not found");
+        } else {
+            resp.getWriter().print("Error, server returned " + responseCode);
         }
-        else {
-            resp.getWriter().print(StringEscapeUtils.escapeHtml(method.getResponseBodyAsString()));
-        }
-
     }
 }
 

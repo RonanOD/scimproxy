@@ -37,7 +37,6 @@ public class MethodOverrideFilter implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-
 		ServletRequest filteredRequest = request;
 
 		if (request instanceof HttpServletRequest) {
