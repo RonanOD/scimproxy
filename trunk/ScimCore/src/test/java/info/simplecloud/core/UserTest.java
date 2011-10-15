@@ -247,16 +247,16 @@ public class UserTest {
 
         List<PluralType<String>> l1 = new ArrayList<PluralType<String>>();
         l1.add(new PluralType<String>("String1", "type1", true, false));
-        user1.setMemberOf(l1);
+        user1.setGroups(l1);
         List<PluralType<String>> l2 = new ArrayList<PluralType<String>>();
         l2.add(new PluralType<String>("String1", "type1", true, false));
-        user1eq1.setMemberOf(l2);
+        user1eq1.setGroups(l2);
         List<PluralType<String>> l3 = new ArrayList<PluralType<String>>();
         l3.add(new PluralType<String>("not equal", "type1", true, false));
-        user1noteq4.setMemberOf(l3);
+        user1noteq4.setGroups(l3);
         List<PluralType<String>> l4 = new ArrayList<PluralType<String>>();
         l4.add(new PluralType<String>("String1", "type1", true, false));
-        user1noteq5.setMemberOf(l4);
+        user1noteq5.setGroups(l4);
 
         Assert.assertEquals(user1eq1, user1);
         Assert.assertFalse(user1.equals(user1noteq1));

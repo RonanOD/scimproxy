@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
 
-import x0.scimSchemasCore1.Meta;
+import x0.scimSchemasCore1.User;
 
 public class ListHandlerTest {
     private static ListHandler lh = new ListHandler();
@@ -46,8 +46,7 @@ public class ListHandlerTest {
 
     @Test
     public void decodeXml() throws JSONException {
-        Meta meta = Meta.Factory.newInstance();
-        meta.getAttributesArray();
+        
         // TODO implment test
     }
 

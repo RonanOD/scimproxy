@@ -154,7 +154,7 @@ public class GroupTest {
         Assert.assertNull(group.getMembers());
         // delete one member
         group.setMembers(members);
-        patch = "{\"members\":[{\"value\":\"user1\", \"delete\":true}]}";
+        patch = "{\"members\":[{\"value\":\"user1\", \"operation\":\"delete\"}]}";
         group.patch(patch, Resource.ENCODING_JSON);
         members = group.getMembers();
         Assert.assertFalse(members.contains(new PluralType<String>("user1", "user", "Adam", false)));

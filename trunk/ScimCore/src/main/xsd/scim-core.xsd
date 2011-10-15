@@ -2,11 +2,13 @@
 <xs:schema xmlns:tns="urn:scim:schemas:core:1.0"
            targetNamespace="urn:scim:schemas:core:1.0"
            xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+  <xs:element name="Response" type="tns:Response"/>
+  <xs:element name="Error" type="tns:Error"/>
   <xs:element name="User" type="tns:User"/>
   <xs:element name="Group" type="tns:Group"/>
   <xs:element name="Resource" type="tns:Resource"/>
-  <xs:element name="Response" type="tns:Response"/>
-  <xs:element name="Error" type="tns:Error"/>
+  <xs:element name="Schema" type="tns:Schema"/>
+  <xs:element name="ServiceProviderConfig" type="tns:ServiceProviderConfig"/>
 
   <xs:group name="Resources">
     <xs:sequence>
@@ -59,13 +61,13 @@
       <xs:element name="uri" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
+
+
   <xs:complexType name="User">
     <xs:complexContent>
-      <xs:extension base="tns:Resource">
+      <xs:extension base="tns:CoreResource">
         <xs:sequence>
           <xs:element name="userName" type="xs:string" minOccurs="0"/>
-          <xs:element name="externalId" type="xs:string"
-                      minOccurs="0"/>
           <xs:element name="name" type="tns:name" minOccurs="0"/>
           <xs:element name="displayName" type="xs:string"
                       minOccurs="0"/>
@@ -78,6 +80,7 @@
                       minOccurs="0"/>
           <xs:element name="locale" type="xs:string" minOccurs="0"/>
           <xs:element name="timezone" type="xs:string" minOccurs="0"/>
+          <xs:element name="active" type="xs:boolean" minOccurs="0"/>
           <xs:element name="password" type="xs:string" minOccurs="0"/>
           <xs:element name="emails" minOccurs="0">
             <xs:complexType>
@@ -108,10 +111,10 @@
               </xs:sequence>
             </xs:complexType>
           </xs:element>
-          <xs:element name="photoUrls" minOccurs="0">
+          <xs:element name="photos" minOccurs="0">
             <xs:complexType>
               <xs:sequence>
-                <xs:element name="photoUrl"
+                <xs:element name="photo"
                             type="tns:pluralAttribute"
                             minOccurs="0"
                             maxOccurs="unbounded"/>
@@ -127,20 +130,10 @@
               </xs:sequence>
             </xs:complexType>
           </xs:element>
-          <xs:element name="memberOf" minOccurs="0">
+          <xs:element name="groups" minOccurs="0">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="group"
-                            type="tns:pluralAttribute"
-                            minOccurs="0"
-                            maxOccurs="unbounded"/>
-              </xs:sequence>
-            </xs:complexType>
-          </xs:element>
-          <xs:element name="roles" minOccurs="0">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="role"
                             type="tns:pluralAttribute"
                             minOccurs="0"
                             maxOccurs="unbounded"/>
@@ -157,6 +150,16 @@
               </xs:sequence>
             </xs:complexType>
           </xs:element>
+          <xs:element name="roles" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="role"
+                            type="tns:pluralAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
           <xs:any namespace="##other" minOccurs="0"
                   maxOccurs="unbounded"/>
         </xs:sequence>
@@ -166,20 +169,19 @@
 
   <xs:complexType name="Group">
     <xs:complexContent>
-      <xs:extension base="tns:Resource">
+      <xs:extension base="tns:CoreResource">
         <xs:sequence>
-          <xs:element name="displayName" type="xs:string" minOccurs="0"
-                      maxOccurs="1"/>
-          <xs:element name="members" minOccurs="1"
-                      maxOccurs="1">
+          <xs:element name="displayName" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="members" minOccurs="0">
             <xs:complexType>
               <xs:sequence>
                 <xs:element name="member"
-                            type="tns:pluralAttribute"
-                            minOccurs="0"
-                            maxOccurs="unbounded"/>
-              </xs:sequence>
-            </xs:complexType>
+                  type="tns:pluralAttribute"
+                  minOccurs="0"
+                  maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
           </xs:element>
           <xs:any namespace="##other" minOccurs="0"/>
         </xs:sequence>
@@ -189,11 +191,22 @@
 
   <xs:complexType name="Resource">
     <xs:sequence>
-      <xs:element name="meta" type="tns:meta" minOccurs="0"
-                  maxOccurs="1"/>
-      <xs:element name="id" type="xs:string" minOccurs="0"
-                  maxOccurs="1"/>
+    <xs:element name="id" type="xs:string" minOccurs="0"
+                maxOccurs="1"/>
+    <xs:element name="meta" type="tns:meta" minOccurs="0"
+                maxOccurs="1"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CoreResource">
+    <xs:complexContent>
+      <xs:extension base="tns:Resource">
+        <xs:sequence>
+          <xs:element name="externalId" type="xs:string"
+                      minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="address">
@@ -206,7 +219,6 @@
       <xs:element name="country" type="xs:string" minOccurs="0"/>
       <xs:element name="primary" type="xs:boolean" minOccurs="0"/>
       <xs:element name="type" type="xs:string" minOccurs="0"/>
-      <xs:element name="delete" type="xs:boolean" minOccurs="0"/>
       <xs:element name="display" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
@@ -216,7 +228,7 @@
       <xs:element name="value" type="xs:string" minOccurs="0"/>
       <xs:element name="primary" type="xs:boolean" minOccurs="0"/>
       <xs:element name="type" type="xs:string" minOccurs="0"/>
-      <xs:element name="delete" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="operation" type="xs:string" minOccurs="0"/>
       <xs:element name="display" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
@@ -233,11 +245,153 @@
   </xs:complexType>
   <xs:complexType name="meta">
     <xs:sequence>
-      <xs:element name="lastModified" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="created" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="lastModified" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="location" type="xs:string" minOccurs="0"/>
       <xs:element name="version" type="xs:string" minOccurs="0"/>
-      <xs:element name="attributes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="attributes" type="xs:string" minOccurs="0"/>
+
     </xs:sequence>
+  </xs:complexType>
+
+   <xs:complexType name="SchemaAttribute">
+    <xs:complexContent>
+      <xs:extension base="tns:SchemaSubAttribute">
+        <xs:sequence>
+          <xs:element name="plural" type="xs:boolean" minOccurs="0"/>
+          <xs:element name="subAttributes" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="subAttribute"
+                            type="tns:SchemaSubAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="pluralTypes" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SchemaSubAttribute">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="schema" type="xs:string" minOccurs="0"/>
+      <xs:element name="readOnly" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="required" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="caseExact" type="xs:boolean" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Schema">
+    <xs:complexContent>
+      <xs:extension base="tns:Resource">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="description" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="schema" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="queryEndpoint" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="attributes" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="attribute" type="tns:SchemaAttribute" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="authenticationScheme">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="specUrl" type="xs:string" minOccurs="0"/>
+      <xs:element name="documentationUrl" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ServiceProviderConfig">
+    <xs:complexContent>
+      <xs:extension base="tns:Resource">
+        <xs:sequence>
+          <xs:element name="documentationUrl" type="xs:string"
+                      minOccurs="0"/>
+          <xs:element name="patch" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="bulk" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+                <xs:element name="maxOperations" type="xs:int"
+                            minOccurs="0"/>
+                <xs:element name="maxPayloadSize" type="xs:int"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="filter" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+                <xs:element name="maxResults" type="xs:int"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="changePassword" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="sort" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="etag" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="authenticationSchemes" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="authenticationScheme" type="tns:authenticationScheme"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:any namespace="##other" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 </xs:schema>
