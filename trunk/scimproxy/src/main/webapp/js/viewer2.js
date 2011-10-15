@@ -2,19 +2,24 @@
 
 $(document).ready(function () {
 	var handleResult = function (data) {
-		document.getElementById("result").innerHTML = "";
-		$('<pre>', {
-			class: 'prettyprint, full',
-		    text: data
-		}).appendTo('#result');
-
-		prettyPrint();
+			$("#result").hide("slow", function() {
+				document.getElementById("result").innerHTML = "";
+				
+				$('<pre>', {
+					class: 'prettyprint, full',
+					text: data
+				}).appendTo('#result');
+				
+				prettyPrint();
+				$("#result").show("slow");				
+			});
 		},
 		handleError = function () {
 			document.location = "/authenticate.html";
 		},
 		handleList = function (data) {
 			var i, current;
+			$("#result").hide("slow");
 			document.getElementById("result").innerHTML = "";
 			
 			data = JSON.parse(data);
@@ -36,18 +41,18 @@ $(document).ready(function () {
 	                				$('<td>').append(
 	                						$('<pre>', {class: 'prettyprint, table',text: JSON.stringify(current, null,"  "), id: current.id+"show"}),
 	                						$("<div>", {id: current.id + "edit"}).append(                								
-	            								$("<textarea>", {class: "table", text: JSON.stringify(current, null,"  ")}),
+	            								$("<textarea>", {class: "table", text: JSON.stringify(current, null,"  "), id : current.id+"EditData"}),
 	            								$("</br>"),
 	            								$("<button>", {text: "Cancle"}).click(function (editId) {
 	            									return function () {
-	            										$("#" + editId + "edit").hide();
-		                								$("#" + editId + "show").show();
+	            										$("#" + editId + "edit").hide("slow");
+		                								$("#" + editId + "show").show("slow");
 	            									};
 	            								}(current.id)),
 	            								$("<button>", {text: "update"}).click(function (editType, editData) {
 	            									return function () {
 	            										$.post("/Viewer2/Edit", 
-	            												{ type: editType, operation: "PUT", data: JSON.stringify(editData), id: editData.id, etag: editData.meta.version }, 
+	            												{ type: editType, operation: "PUT", data: $("#" + editData.id + "EditData").val(), id: editData.id, etag: editData.meta.version }, 
 	            												handleResult)
 	            												.error(handleError);	            										
 	            									};
@@ -69,7 +74,9 @@ $(document).ready(function () {
 	                							};
 	                						}(current.id)))));
 	            }
+	            
 	            $('#result').append($tbl);
+	            $('#result').show("slow");
 	             
 			} else {
 				$('<pre>', {
@@ -81,7 +88,7 @@ $(document).ready(function () {
 		};
 	var section = $.url(document.location).attr('anchor');
 	section = (section === "" ? "list" : section);
-	$("#" + section).show();
+	$("#" + section + "Section").show("slow");
 	
 	if (section === "configuration") {
 		$.post("/Viewer2/Configuration", handleResult).error(handleError);
@@ -90,9 +97,12 @@ $(document).ready(function () {
 	$("a").click(function () {
 		var section = $.url(document.location).attr('anchor');
 		section = (section === "" ? "list" : section);
-		$("#" + section).hide();
-		$(event.target.hash).show();
+		$("#" + section + "Section").hide("slow");
+		$(event.target.hash + "Section").show("slow");
+
+        $('#result').hide("slow");
 		document.getElementById("result").innerHTML = "";
+        $('#result').show();
 		if (event.target.hash === "#configuration") {
 			$.post("/Viewer2/Configuration", handleResult).error(handleError);
 		}

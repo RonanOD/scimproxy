@@ -4,14 +4,14 @@
 $(document).ready(function () {
 	var section = $.url(document.location).attr('anchor');
 	section = (section === "" ? "authenticate" : section);
-	$("#" + section).show();
+	$("#" + section).show("slow");
 
 	$("a").click(function () {
 		var section = $.url(document.location).attr('anchor');
 		section = (section === "" ? "authenticate" : section);
-		$("#" + section).hide();
+		$("#" + section).hide("slow");
 		var tmp = $(event.target.hash);
-		$(event.target.hash).show();
+		$(event.target.hash).show("slow");
 	});
 	
 	$("#authSelection").change(function (){
