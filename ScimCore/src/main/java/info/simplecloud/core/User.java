@@ -6,6 +6,7 @@ import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
+import info.simplecloud.core.handlers.BooleanHandler;
 import info.simplecloud.core.handlers.ComplexHandler;
 import info.simplecloud.core.handlers.PluralHandler;
 import info.simplecloud.core.handlers.StringHandler;
@@ -43,7 +44,6 @@ public class User extends Resource {
         }
     }
 
-    private String                    externalId;
     private String                    userName;
     private String                    displayName;
     private String                    nickName;
@@ -53,20 +53,24 @@ public class User extends Resource {
     private String                    preferredLanguage;
     private String                    locale;
     private String                    password;
+    private String                    timezone;
+    private boolean                   active;
     private Name                      name;
     private List<PluralType<String>>  phoneNumbers;
     private List<PluralType<String>>  emails;
     private List<PluralType<String>>  ims;
-    private List<PluralType<String>>  photoUrls;
-    private List<PluralType<String>>  memberOf;
+    private List<PluralType<String>>  photos;
+    private List<PluralType<String>>  groups;
     private List<PluralType<Address>> addresses;
-    private List<PluralType<String>> entitlements;
-    private List<PluralType<String>> roles;
+    private List<PluralType<String>>  entitlements;
+    private List<PluralType<String>>  roles;
+
+
 
     public User(String user, String encoding) throws UnknownEncoding, InvalidUser {
         super(user, encoding, extensionTypes);
     }
-    
+
     public User() {
         this("");
     }
@@ -116,11 +120,6 @@ public class User extends Resource {
         return super.equals(otherScimUser);
     }
 
-    @Attribute(name = "externalId", handler = StringHandler.class)
-    public String getExternalId() {
-        return this.externalId;
-    }
-
     @Attribute(name = "userName", handler = StringHandler.class)
     public String getUserName() {
         return this.userName;
@@ -166,6 +165,16 @@ public class User extends Resource {
         return this.password;
     }
 
+    @Attribute(name = "timezone", handler = StringHandler.class)
+    public String getTimezone() {
+        return timezone;
+    }
+    
+    @Attribute(name = "active", handler = BooleanHandler.class)
+    public boolean getActive() {
+        return active;
+    }
+
     @Attribute(name = "name", handler = ComplexHandler.class, type = Name.class)
     public Name getName() {
         return this.name;
@@ -186,14 +195,14 @@ public class User extends Resource {
         return this.ims;
     }
 
-    @Attribute(name = "photoUrls", handler = PluralHandler.class, internalName = "photoUrl", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getPhotoUrls() {
-        return this.photoUrls;
+    @Attribute(name = "photos", handler = PluralHandler.class, internalName = "photo", internalHandler = StringHandler.class)
+    public List<PluralType<String>> getPhotos() {
+        return this.photos;
     }
 
-    @Attribute(name = "memberOf", handler = PluralHandler.class, internalName = "memberOf", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getMemberOf() {
-        return this.memberOf;
+    @Attribute(name = "groups", handler = PluralHandler.class, internalName = "group", internalHandler = StringHandler.class)
+    public List<PluralType<String>> getGroups() {
+        return this.groups;
     }
 
     @Attribute(name = "addresses", handler = PluralHandler.class, internalName = "address", internalHandler = ComplexHandler.class, internalType = Address.class)
@@ -209,10 +218,6 @@ public class User extends Resource {
     @Attribute(name = "roles", handler = PluralHandler.class, internalName = "role", internalHandler = StringHandler.class)
     public List<PluralType<String>> getRoles() {
         return this.roles;
-    }
-
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
     }
 
     public void setUserName(String userName) {
@@ -251,6 +256,14 @@ public class User extends Resource {
         this.password = password;
     }
 
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public void setName(Name name) {
         this.name = name;
     }
@@ -267,12 +280,12 @@ public class User extends Resource {
         this.ims = ims;
     }
 
-    public void setPhotoUrls(List<PluralType<String>> photoUrls) {
-        this.photoUrls = photoUrls;
+    public void setPhotos(List<PluralType<String>> photos) {
+        this.photos = photos;
     }
 
-    public void setMemberOf(List<PluralType<String>> memberOf) {
-        this.memberOf = memberOf;
+    public void setGroups(List<PluralType<String>> groups) {
+        this.groups = groups;
     }
 
     public void setAddresses(List<PluralType<Address>> addresses) {
