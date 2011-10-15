@@ -206,8 +206,13 @@ public class HttpGenerator {
 	 * @return The content type to be set as http header.
 	 */
 	public static String getContentType(HttpServletRequest req) {
-		// TODO: get wanted content type from request
-		return "application/json; charset=UTF-8";
+		String enc = getEncoding(req);
+		if(Resource.ENCODING_XML.equals(enc)) {
+			return "application/xml; charset=UTF-8";
+		}
+		else {
+			return "application/json; charset=UTF-8";
+		}
 	}
 
 	public static String getLocation(Resource resource, String server) {
