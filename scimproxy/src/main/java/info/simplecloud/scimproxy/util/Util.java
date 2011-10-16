@@ -65,8 +65,22 @@ public class Util {
         // TODO: add more validation of input
         String s = "/v1/User/";
         String pw = "/password";
-        
+        String jsonExt = ".json";
+        String xmlExt = ".xml";
+
         if (query != null && query.length() > 0) {
+
+            // remove any extension if any
+            int indexOfJsonExt = query.indexOf(jsonExt);
+            int indexOfXmlExt = query.indexOf(xmlExt);
+            
+            if(indexOfJsonExt > -1) {
+            	query = query.substring(0, indexOfJsonExt) + query.substring(indexOfJsonExt+jsonExt.length());
+            }
+            if(indexOfXmlExt > -1) {
+            	query = query.substring(0, indexOfXmlExt) + query.substring(indexOfXmlExt+xmlExt.length());
+            }
+
             int indexOfUserId = query.indexOf(s) + s.length();
             int indexOfPw = query.indexOf(pw);
 

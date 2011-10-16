@@ -28,6 +28,8 @@ public class ScimGroupsServletTest {
         tester = new ServletTester();
         tester.addServlet(ScimGroupServlet.class, "/v1/Group/*");
         tester.addServlet(ScimGroupsServlet.class, "/v1/Groups");
+        tester.addServlet(ScimGroupsServlet.class, "/v1/Groups.xml");
+        tester.addServlet(ScimGroupsServlet.class, "/v1/Groups.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -77,5 +79,84 @@ public class ScimGroupsServletTest {
 
         Assert.assertTrue(aliceFound);
     }
+    /*
+    @Test
+    public void getAllGroupsXml() throws Exception {
 
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Groups.xml");
+        response.parse(tester.getResponses(request.generate()));
+
+        String groups = response.getContent();
+
+        List<Group> groupList = Group.getGroups(groups, User.ENCODING_XML);
+
+        boolean aliceFound = false;
+
+        for (Group scimGroup : groupList) {
+            if (managersId.equals(scimGroup.getId())) {
+                aliceFound = true;
+                Assert.assertEquals(scimGroup.getDisplayName(), "Managers");
+            }
+        }
+
+        Assert.assertTrue(aliceFound);
+    }  
+    */
+    @Test
+    public void getAllGroupsJson() throws Exception {
+
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Groups.json");
+        response.parse(tester.getResponses(request.generate()));
+
+        String groups = response.getContent();
+
+        List<Group> groupList = Group.getGroups(groups, User.ENCODING_JSON);
+
+        boolean aliceFound = false;
+
+        for (Group scimGroup : groupList) {
+            if (managersId.equals(scimGroup.getId())) {
+                aliceFound = true;
+                Assert.assertEquals(scimGroup.getDisplayName(), "Managers");
+            }
+        }
+
+        Assert.assertTrue(aliceFound);
+    }    
+    
+    
+
+    @Test
+    public void getAllGroupsJsonArgument() throws Exception {
+
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Groups.json?asdasdasd");
+        response.parse(tester.getResponses(request.generate()));
+
+        String groups = response.getContent();
+
+        List<Group> groupList = Group.getGroups(groups, User.ENCODING_JSON);
+
+        boolean aliceFound = false;
+
+        for (Group scimGroup : groupList) {
+            if (managersId.equals(scimGroup.getId())) {
+                aliceFound = true;
+                Assert.assertEquals(scimGroup.getDisplayName(), "Managers");
+            }
+        }
+
+        Assert.assertTrue(aliceFound);
+    }    
 }

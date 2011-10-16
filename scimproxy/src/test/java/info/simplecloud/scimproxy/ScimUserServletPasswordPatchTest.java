@@ -59,4 +59,38 @@ public class ScimUserServletPasswordPatchTest {
     }
    
 
+    @Test
+    public void patchPasswordXml() throws Exception {
+        // get resource to see if it's there
+        request.setMethod("PATCH");
+        request.setVersion("HTTP/1.0");
+        request.setURI("/v1/User/" + id + ".xml/password");
+        
+        String query = "{" +
+        					"\"schemas\":[\"urn:scim:schemas:core:1.0\"]," +
+        					"\"password\":\"t1meMa$heen\"" + 
+        				"}";
+        request.setContent(query);
+
+        response.parse(tester.getResponses(request.generate()));
+        Assert.assertEquals(204, response.getStatus());
+    }
+    
+    @Test
+    public void patchPasswordJson() throws Exception {
+        // get resource to see if it's there
+        request.setMethod("PATCH");
+        request.setVersion("HTTP/1.0");
+        request.setURI("/v1/User/" + id + ".json/password");
+        
+        String query = "{" +
+        					"\"schemas\":[\"urn:scim:schemas:core:1.0\"]," +
+        					"\"password\":\"t1meMa$heen\"" + 
+        				"}";
+        request.setContent(query);
+
+        response.parse(tester.getResponses(request.generate()));
+        Assert.assertEquals(204, response.getStatus());
+    }
+
 }

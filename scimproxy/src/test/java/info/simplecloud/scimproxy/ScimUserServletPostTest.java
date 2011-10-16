@@ -45,7 +45,7 @@ public class ScimUserServletPostTest {
     @Test
     public void createUserXml() throws Exception {
 
-        User scimUserXml = new User("ABC123xml");
+        User scimUserXml = new User();
         scimUserXml.setUserName("Bob");
 
         request.setMethod("POST");
