@@ -9,8 +9,6 @@
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 	
-	
-	
 	<servlet>
 		<servlet-name>User</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimUserServlet</servlet-class>
@@ -27,6 +25,14 @@
 	<servlet-mapping>
 		<servlet-name>Users</servlet-name>
 		<url-pattern>/v1/Users</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Users</servlet-name>
+		<url-pattern>/v1/Users.xml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Users</servlet-name>
+		<url-pattern>/v1/Users.json</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -46,6 +52,14 @@
 		<servlet-name>Groups</servlet-name>
 		<url-pattern>/v1/Groups</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Groups</servlet-name>
+		<url-pattern>/v1/Groups.xml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Groups</servlet-name>
+		<url-pattern>/v1/Groups.json</url-pattern>
+	</servlet-mapping>
 	
 	<servlet>
 		<servlet-name>Schema</servlet-name>
@@ -64,6 +78,14 @@
 		<servlet-name>Schemas</servlet-name>
 		<url-pattern>/v1/Schemas</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Schemas</servlet-name>
+		<url-pattern>/v1/Schemas.json</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Schemas</servlet-name>
+		<url-pattern>/v1/Schemas.xml</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>ServiceProviderConfig</servlet-name>
@@ -72,6 +94,14 @@
 	<servlet-mapping>
 		<servlet-name>ServiceProviderConfig</servlet-name>
 		<url-pattern>/v1/ServiceProviderConfig</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ServiceProviderConfig</servlet-name>
+		<url-pattern>/v1/ServiceProviderConfig.json</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ServiceProviderConfig</servlet-name>
+		<url-pattern>/v1/ServiceProviderConfig.xml</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -82,6 +112,13 @@
 		<servlet-name>Bulk</servlet-name>
 		<url-pattern>/v1/Bulk</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Bulk</servlet-name>
+		<url-pattern>/v1/Bulk.xml</url-pattern>
+	</servlet-mapping>
+
+
+
 	
 	<servlet>
 		<servlet-name>AuthorizationServer</servlet-name>

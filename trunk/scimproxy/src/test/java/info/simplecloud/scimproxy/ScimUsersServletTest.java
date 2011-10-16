@@ -1,8 +1,8 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
@@ -28,6 +28,8 @@ public class ScimUsersServletTest {
         tester = new ServletTester();
         tester.addServlet(ScimUserServlet.class, "/v1/User/*");
         tester.addServlet(ScimUsersServlet.class, "/v1/Users");
+        tester.addServlet(ScimUsersServlet.class, "/v1/Users.xml");
+        tester.addServlet(ScimUsersServlet.class, "/v1/Users.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -98,6 +100,67 @@ public class ScimUsersServletTest {
         Assert.assertTrue(aliceFound);
     }
 
+
+    @Test
+    public void getAllAndFindAliceAndBobJson() throws Exception {
+
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Users.json");
+        response.parse(tester.getResponses(request.generate()));
+
+        String users = response.getContent();
+
+        List<User> userList = User.getUsers(users, User.ENCODING_JSON);
+
+        boolean aliceFound = false;
+        boolean bobFound = false;
+
+        for (User scimUser : userList) {
+            if (bobId.equals(scimUser.getId())) {
+                bobFound = true;
+            }
+            if (aliceId.equals(scimUser.getId())) {
+                aliceFound = true;
+            }
+        }
+
+        Assert.assertTrue(bobFound);
+        Assert.assertTrue(aliceFound);
+    }
+    /*
+    @Test
+    public void getAllAndFindAliceAndBobXml() throws Exception {
+
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Users.xml");
+        response.parse(tester.getResponses(request.generate()));
+
+        String users = response.getContent();
+
+        List<User> userList = User.getUsers(users, Resource.ENCODING_XML);
+
+        boolean aliceFound = false;
+        boolean bobFound = false;
+
+        for (User scimUser : userList) {
+            if (bobId.equals(scimUser.getId())) {
+                bobFound = true;
+            }
+            if (aliceId.equals(scimUser.getId())) {
+                aliceFound = true;
+            }
+        }
+
+        Assert.assertTrue(bobFound);
+        Assert.assertTrue(aliceFound);
+    }    
+    */
     @Test
     public void sortUserNameAsc() throws Exception {
 
@@ -125,6 +188,32 @@ public class ScimUsersServletTest {
     }
 
     @Test
+    public void sortUserNameAscJson() throws Exception {
+
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Users.json?sortBy=userName&sortOrder=ascending");
+        response.parse(tester.getResponses(request.generate()));
+
+        String users = response.getContent();
+
+        List<User> userList = User.getUsers(users, User.ENCODING_JSON);
+
+        boolean aliceFoundFirst = false;
+
+        for (User scimUser : userList) {
+            if (bobId.equals(scimUser.getId())) {
+                Assert.assertEquals(true, aliceFoundFirst);
+            }
+            if (aliceId.equals(scimUser.getId())) {
+                aliceFoundFirst = true;
+            }
+        }
+    }
+/*
+    @Test
     public void sortUserNameDesc() throws Exception {
 
         request.setMethod("GET");
@@ -149,7 +238,7 @@ public class ScimUsersServletTest {
             }
         }
     }
-
+*/
     @Test
     public void sortNickDesc() throws Exception {
 

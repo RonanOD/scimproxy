@@ -58,6 +58,43 @@ public class ScimUserServletGetTest {
         Assert.assertEquals("Alice", scimUser.getUserName());
     }
 
+
+    @Test
+    public void getUserJson() throws Exception {
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/User/" + id + ".json");
+        response.parse(tester.getResponses(request.generate()));
+
+        Assert.assertEquals(200, response.getStatus());
+
+        User scimUser = new User(response.getContent(), User.ENCODING_JSON);
+
+        Assert.assertEquals(id, scimUser.getId());
+        Assert.assertEquals("Alice", scimUser.getUserName());
+    }
+
+
+    @Test
+    public void getUserXml() throws Exception {
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/User/" + id + ".xml");
+        response.parse(tester.getResponses(request.generate()));
+
+        Assert.assertEquals(200, response.getStatus());
+
+        User scimUser = new User(response.getContent(), User.ENCODING_XML);
+
+        Assert.assertEquals(id, scimUser.getId());
+        Assert.assertEquals("Alice", scimUser.getUserName());
+    }
+    
+    
     @Test
     public void missingUser() throws Exception {
         request.setMethod("GET");

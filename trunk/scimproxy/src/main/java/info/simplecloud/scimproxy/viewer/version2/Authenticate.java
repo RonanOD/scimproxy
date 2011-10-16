@@ -63,6 +63,9 @@ public class Authenticate extends HttpServlet {
         // basic creds or oauth2 url and
 
         String baseUrl = req.getParameter("BaseUrl");
+        if(!baseUrl.endsWith("/")) {
+        	baseUrl += "/";
+        }
         req.getSession().setAttribute("BaseUrl", baseUrl);
         System.out.println("baseUrl: " + baseUrl);
         String authSelection = req.getParameter("AuthSelection");
