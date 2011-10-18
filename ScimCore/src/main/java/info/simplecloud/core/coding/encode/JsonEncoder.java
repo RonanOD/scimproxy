@@ -65,8 +65,8 @@ public class JsonEncoder implements IUserEncoder {
             }
 
             result.put("totalResults", counter);
-
-            result.put("entry", users);
+            result.put("schemas", new JSONArray("[\"urn:scim:schemas:core:1.0\"]"));
+            result.put("Resources", users);
             // TODO: SPEC: REST: Return meta location. Should location be sent
             // to this method or always include it in storage for each user?
 

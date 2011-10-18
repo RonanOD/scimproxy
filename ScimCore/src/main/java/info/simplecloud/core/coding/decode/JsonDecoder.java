@@ -101,8 +101,8 @@ public class JsonDecoder implements IResourceDecoder {
             if (resourceListString != null && !"".equals(resourceListString)) {
 
                 JSONObject userListJson = new JSONObject(resourceListString);
-                if (userListJson.has("entry")) {
-                    JSONArray jsonUsers = userListJson.getJSONArray("entry");
+                if (userListJson.has("Resources")) {
+                    JSONArray jsonUsers = userListJson.getJSONArray("Resources");
                     for (int i = 0; i < jsonUsers.length(); i++) {
                         JSONObject jsonResource = jsonUsers.getJSONObject(i);
 
