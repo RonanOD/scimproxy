@@ -3,6 +3,7 @@ package info.simplecloud.scimproxy.config;
 import java.util.HashMap;
 
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -20,6 +21,8 @@ public class CSP {
 	private String password = "";
 	private String oAuth2AccessToken = "";
 	private String oAuth2AuthorizationServer = "";
+	private String oAuth2ClientId = "";
+	private String oAuth2ClientSecret = "";
 	private String preferedEncoding = "JSON";
 	private String version = "";
 	
@@ -110,6 +113,22 @@ public class CSP {
 		versionMapping.put(resourceId, version);
 	}
 
+	public void setoAuth2ClientId(String oAuth2ClientId) {
+		this.oAuth2ClientId = oAuth2ClientId;
+	}
+
+	public String getoAuth2ClientId() {
+		return oAuth2ClientId;
+	}
+
+	public void setoAuth2ClientSecret(String oAuth2ClientSecret) {
+		this.oAuth2ClientSecret = oAuth2ClientSecret;
+	}
+
+	public String getoAuth2ClientSecret() {
+		return oAuth2ClientSecret;
+	}	
+	
 	public String toString() {
 		// don't print password
 		return "url=" + url + ", auth=" + authentication;
@@ -142,6 +161,50 @@ public class CSP {
             throw new RuntimeException("Failed to read response from authorizationServer at " + this.getOAuthAuthorizationServer(), e);
 		}
     }
+    
 
+    public String getAccessTokenUserPass() {
+        if (this.oAuth2AccessToken != null) {
+            return this.oAuth2AccessToken;
+        }
+
+        try {
+            HttpClient client = new HttpClient();
+            client.getParams().setAuthenticationPreemptive(true);
+            
+            // gör en req mot auth servern
+            // få tillbaka acess token i headern, spara den
+            PostMethod method = new PostMethod(this.getOAuthAuthorizationServer());
+            
+            method.setRequestHeader(new Header("Content-type", "application/x-www-form-urlencoded"));
+
+            method.setRequestBody("grant_type=password&client_id=3MVG9QDx8IX8nP5Q3Qg39jXJDGh_SESgJ6BqovTyXh_UuSc5O0nUCqYS5nWwKF82nbYpejJXFr0H.nZGxV2Xl&client_secret=1981419349128675123&username=interop@simplecloud.info&password=simplecloud1");
+            int responseCode = client.executeMethod(method);
+            String responseBody = method.getResponseBodyAsString();
+            if (responseCode != 200) {
+            	
+                throw new RuntimeException("Failed to fetch access token form authorization server, " + this.getOAuthAuthorizationServer() + ", got response code "
+                        + responseCode);
+            }
+            
+            /*
+
+{
+    'issued_at': '1318837916531',
+    'access_token': '00DU0000000JMoL!AQoAQHtCRx95Ur8K01vmKMe1rl5w8hkH1TKi6J93Qx7a2FnSQE4iVKo_jOURN79z00MNZyCbUrskPyqRD48dkj6kFsGgqVWX',
+    'instance_url': 'https: //na12.salesforce.com',
+    'id': u'https: //login.salesforce.com/id/00DU0000000JMoLMAW/005U0000000EZIWIA4',
+    'signature': u'55oM8dz3jmZEXSSETLYEdjX4gR3CmzRDE6Fa/CPQXJk='
+}
+
+             */
+            
+            JSONObject accessResponse = new JSONObject(responseBody);
+            accessResponse.getString("access_token");
+            return (this.oAuth2AccessToken = accessResponse.getString("access_token"));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read response from authorizationServer at " + this.getOAuthAuthorizationServer(), e);
+		}
+    }
 
 }
