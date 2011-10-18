@@ -19,8 +19,10 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 
+import x0.scimSchemasCore1.ResourceDocument;
 import x0.scimSchemasCore1.Response;
 import x0.scimSchemasCore1.Response.Resources;
+import x0.scimSchemasCore1.ResponseDocument;
 
 public class XmlDecoder implements IResourceDecoder {
 
@@ -92,7 +94,8 @@ public class XmlDecoder implements IResourceDecoder {
     @Override
     public void decode(String resourcesListString, List<Resource> resources, Class<?> type) throws InvalidUser {
         try {
-            Response resp = Response.Factory.parse(resourcesListString);
+        	ResponseDocument doc = ResponseDocument.Factory.parse(resourcesListString);
+            Response resp = doc.getResponse();
             Resources xmlResources = resp.getResources();
 
             x0.scimSchemasCore1.Resource[] xmlResourceArray = xmlResources.getResourceArray();
