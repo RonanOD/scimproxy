@@ -54,7 +54,7 @@ public class User extends Resource {
     private String                    locale;
     private String                    password;
     private String                    timezone;
-    private boolean                   active;
+    private boolean                   active = true;
     private Name                      name;
     private List<PluralType<String>>  phoneNumbers;
     private List<PluralType<String>>  emails;
