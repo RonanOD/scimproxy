@@ -163,6 +163,8 @@ public class Config {
                     csp.setPassword(config.getString("down-stream.csp(" + i + ").auth.password"));
                     csp.setOAuth2AccessToken(config.getString("down-stream.csp(" + i + ").auth.accessToken"));
                     csp.setOAuth2AuthorizationServer(config.getString("down-stream.csp(" + i + ").auth.authorizationServer"));
+                    csp.setoAuth2ClientId(config.getString("down-stream.csp(" + i + ").auth.clientId"));
+                    csp.setoAuth2ClientSecret(config.getString("down-stream.csp(" + i + ").auth.clientSecret"));
 
                     downStreamCSP.add(csp);
                 }

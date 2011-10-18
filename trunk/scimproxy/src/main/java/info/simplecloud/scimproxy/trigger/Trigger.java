@@ -52,7 +52,6 @@ public class Trigger {
         ArrayList<CSP> servers = (ArrayList<CSP>) Config.getInstance().getDownStreamCSP();
         for (CSP csp : servers) {
 
-
             String resourceString = null;
             String id = null;
             String endpoint = null;
@@ -60,15 +59,20 @@ public class Trigger {
             PostMethod method = null;
             try {
             	if(resource instanceof User) {
-	        		User user = (User)resource;
+            		User tmp = (User)resource;
+            		String tmpUsr = tmp.getUser(Resource.ENCODING_JSON);
+	        		User user = new User(tmpUsr, Resource.ENCODING_JSON);
 	        		id = user.getId();
+	        		user.setId(null); // reset id for salesforce
 					resourceString = user.getUser(csp.getPreferedEncoding());
 	                endpoint = csp.getUrl() + getVersionPath(csp) + "/User";
 	        	}
 	        	else if(resource instanceof Group) {
-	        		Group group = (Group)resource;
-	        		id = null;
-	        		// TODO: Implement externalId on Resource!
+	        		Group tmp = (Group)resource;
+            		String tmpUsr = tmp.getGroup(Resource.ENCODING_JSON);
+	        		Group group = new Group(tmpUsr, Resource.ENCODING_JSON);
+	        		id = group.getId();
+	        		group.setId(null); // reset id for salesforce
 	        		resourceString = group.getGroup(csp.getPreferedEncoding());
 	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Group";
 	        	}
@@ -95,27 +99,34 @@ public class Trigger {
                 // Read the response body.
                 byte[] responseBody = method.getResponseBody();
 
-                String externalId = null;
-                String version = "";
-            	if(resource instanceof User) {
-                    User cspUser = new User(new String(responseBody), csp.getPreferedEncoding());
-                    externalId = cspUser.getId();
-                    version = cspUser.getMeta().getVersion();
-                    createdResourceEndpoint = cspUser.getMeta().getLocation();
-            	}
-            	else if(resource instanceof Group) {
-                    Group cspGroup = new Group(new String(responseBody), csp.getPreferedEncoding());
-                    externalId = cspGroup.getId();
-                    version = cspGroup.getMeta().getVersion();
-                    createdResourceEndpoint = cspGroup.getMeta().getLocation();
-            	}
+                String serverResp = new String(responseBody);
 
-                csp.setExternalIdForId(id, externalId);
-                csp.setVersionForId(id, version);
+                if(statusCode == 201) {
+                    String externalId = null;
+                    String version = "";
+                	if(resource instanceof User) {
+                        User cspUser = new User(serverResp, csp.getPreferedEncoding());
+                        externalId = cspUser.getId();
+                        version = cspUser.getMeta().getVersion();
+                        createdResourceEndpoint = cspUser.getMeta().getLocation();
+                	}
+                	else if(resource instanceof Group) {
+                        Group cspGroup = new Group(new String(responseBody), csp.getPreferedEncoding());
+                        externalId = cspGroup.getId();
+                        version = cspGroup.getMeta().getVersion();
+                        createdResourceEndpoint = cspGroup.getMeta().getLocation();
+                	}
 
-                log.debug("Response from " + csp.getUrl());
-                log.debug("- Code : " + Integer.toString(statusCode) + " - " + method.getStatusLine());
-                log.debug("- Content: \n" + new String(responseBody));
+                    csp.setExternalIdForId(id, externalId);
+                    csp.setVersionForId(id, version);
+
+                    log.info("Created resource " + resource.getId() + " downstreams at " + createdResourceEndpoint);
+                }
+                else {
+                    log.error("Failed to send resource " + id + " downstreams to " + csp.getUrl());
+                    log.error(serverResp);
+                }
+
 
             } catch (HttpException e) {
                 log.error("Fatal protocol violation: " + e.getMessage());
@@ -137,7 +148,6 @@ public class Trigger {
 				if(method != null) {
 	                method.releaseConnection();
 				}
-                log.info("Created resource " + resource.getId() + " downstreams at " + createdResourceEndpoint);
             }
         }
     }
@@ -274,37 +284,37 @@ public class Trigger {
 
                 // Execute the method.
                 int statusCode = client.executeMethod(method);
-
+                
                 // Read the response body.
                 byte[] responseBody = method.getResponseBody();
+                String respBody = new String(responseBody);
 
                 if (statusCode != 200) {
                     log.error("Failed to patch resource " + id + " downstreams at " + csp.getUrl());
                 }
-                
-                externalId = null;
-                version = "";
-            	if(resource instanceof User) {
-                    User cspUser = new User(new String(responseBody), csp.getPreferedEncoding());
-                    externalId = cspUser.getId();
-                    version = cspUser.getMeta().getVersion();
-                    createdResourceEndpoint = cspUser.getMeta().getLocation();
-            	}
-            	else if(resource instanceof Group) {
-                    Group cspGroup = new Group(new String(responseBody), csp.getPreferedEncoding());
-                    externalId = cspGroup.getId();
-                    version = cspGroup.getMeta().getVersion();
-                    createdResourceEndpoint = cspGroup.getMeta().getLocation();
-            	}
+                else {
+                    externalId = null;
+                    version = "";
+                	if(resource instanceof User) {
+                        User cspUser = new User(new String(responseBody), csp.getPreferedEncoding());
+                        externalId = cspUser.getId();
+                        version = cspUser.getMeta().getVersion();
+                        createdResourceEndpoint = cspUser.getMeta().getLocation();
+                	}
+                	else if(resource instanceof Group) {
+                        Group cspGroup = new Group(new String(responseBody), csp.getPreferedEncoding());
+                        externalId = cspGroup.getId();
+                        version = cspGroup.getMeta().getVersion();
+                        createdResourceEndpoint = cspGroup.getMeta().getLocation();
+                	}
 
-                csp.setExternalIdForId(id, externalId);
-                csp.setVersionForId(id, version);
-                
+                    csp.setExternalIdForId(id, externalId);
+                    csp.setVersionForId(id, version);
+                }
 
                 log.debug("Response from " + csp.getUrl());
                 log.debug("- Code : " + Integer.toString(statusCode) + " - " + method.getStatusLine());
                 log.debug("- Content: \n" + new String(responseBody));
-
             } catch (HttpException e) {
                 log.error("Fatal protocol violation: " + e.getMessage());
                 e.printStackTrace();
@@ -379,30 +389,31 @@ public class Trigger {
 
                 // Read the response body.
                 byte[] responseBody = method.getResponseBody();
-
+                String respBody = new String(responseBody);
+                
                 if (statusCode != 200) {
                     log.error("Failed to replace resource " + id + " downstreams at " + csp.getUrl());
+                } 
+                else {
+                    externalId = null;
+                    version = "";
+                	if(resource instanceof User) {
+                        User cspUser = new User(new String(responseBody), csp.getPreferedEncoding());
+                        externalId = cspUser.getId();
+                        version = cspUser.getMeta().getVersion();
+                        createdResourceEndpoint = cspUser.getMeta().getLocation();
+                	}
+                	else if(resource instanceof Group) {
+                        Group cspGroup = new Group(new String(responseBody), csp.getPreferedEncoding());
+                        externalId = cspGroup.getId();
+                        version = cspGroup.getMeta().getVersion();
+                        createdResourceEndpoint = cspGroup.getMeta().getLocation();
+                	}
+
+                    csp.setExternalIdForId(id, externalId);
+                    csp.setVersionForId(id, version);
                 }
                 
-                externalId = null;
-                version = "";
-            	if(resource instanceof User) {
-                    User cspUser = new User(new String(responseBody), csp.getPreferedEncoding());
-                    externalId = cspUser.getId();
-                    version = cspUser.getMeta().getVersion();
-                    createdResourceEndpoint = cspUser.getMeta().getLocation();
-            	}
-            	else if(resource instanceof Group) {
-                    Group cspGroup = new Group(new String(responseBody), csp.getPreferedEncoding());
-                    externalId = cspGroup.getId();
-                    version = cspGroup.getMeta().getVersion();
-                    createdResourceEndpoint = cspGroup.getMeta().getLocation();
-            	}
-
-                csp.setExternalIdForId(id, externalId);
-                csp.setVersionForId(id, version);
-                
-
                 log.debug("Response from " + csp.getUrl());
                 log.debug("- Code : " + Integer.toString(statusCode) + " - " + method.getStatusLine());
                 log.debug("- Content: \n" + new String(responseBody));
@@ -459,7 +470,7 @@ public class Trigger {
 
         if ("oauth2-v10".equalsIgnoreCase(csp.getAuthentication())) {
             client.getParams().setAuthenticationPreemptive(false);
-            method.setRequestHeader("Authorization", "OAuth " + csp.getAccessToken());
+            method.setRequestHeader("Authorization", "OAuth " + csp.getAccessTokenUserPass());
         }
 
         return client;

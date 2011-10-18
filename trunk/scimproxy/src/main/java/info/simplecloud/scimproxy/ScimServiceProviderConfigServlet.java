@@ -51,7 +51,21 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
         		      "\"specUrl\":\"http://www.ietf.org/rfc/rfc2617.txt\"," +
         		      "\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "\"," +
         		      "\"type\":\"HttpBasic\"" +
-        		     "}" +
+        		     "}," +
+         		    "{" +
+         		    	"\"name\": \"OAuth2\"," +
+         		    	"\"description\": \"OAuth2\"," +
+         		    	"\"specUrl\":\"http://tools.ietf.org/html/draft-ietf-oauth-v2-22\"," +
+         		    	"\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "\"," +
+         		    	"\"type\":\"OAuth2\"" +
+         		    "}," +
+         		    "{" +
+     		    	"\"name\": \"OAuth2-v10\"," +
+     		    	"\"description\": \"OAuth2 v10 \"," +
+     		    	"\"specUrl\":\"http://tools.ietf.org/html/draft-ietf-oauth-v2-10\"," +
+     		    	"\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "\"," +
+     		    	"\"type\":\"OAuth2-v10\"" +
+     		    "}" +
         		  "]" +
         		"}";
         	
