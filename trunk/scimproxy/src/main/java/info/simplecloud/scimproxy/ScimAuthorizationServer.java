@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,15 +26,14 @@ import org.json.JSONObject;
 public class ScimAuthorizationServer extends HttpServlet {
     private static Random random = new SecureRandom();
 
+    private Log log = LogFactory.getLog(ScimGroupServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("==== GET ====");
-        System.out.println(req);
         // Authorization Request
         // authorize?response_type=code&client_id=s6BhdRkqt3&state=xyz&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
 
         String basicAuth = req.getHeader("Authorization");
-        System.out.println("basicAuth: " + basicAuth);
         if (basicAuth == null) {
             resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
@@ -49,7 +50,6 @@ public class ScimAuthorizationServer extends HttpServlet {
         AuthenticateUser user = basic.getAuthUser();
         String redirect_uri = req.getParameter("redirect_uri");
         String state = req.getParameter("state");
-        System.out.println("redirect_uri: " + redirect_uri);
 
         // Authorization Response
         // 302 Found
@@ -58,7 +58,6 @@ public class ScimAuthorizationServer extends HttpServlet {
         byte[] codeBytes = new byte[20];
         random.nextBytes(codeBytes);
         String accessCode = new String(Hex.encodeHex(codeBytes));
-        System.out.println("accessCode: " + accessCode);
         user.setCode(accessCode);
 
         if (state != null) {
@@ -73,14 +72,11 @@ public class ScimAuthorizationServer extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("==== POST ====");
-        System.out.println(req);
         BufferedReader reader = req.getReader();
         String line;
         String all = "";
         while ((line = reader.readLine()) != null) {
             all += line;
-            System.out.println(line);
         }
         String[] parameters = all.split("&");
         String code = null;
@@ -95,21 +91,16 @@ public class ScimAuthorizationServer extends HttpServlet {
                 redirect_uri = URLDecoder.decode(parameter.split("=")[1]);
             }
         }
-        System.out.println("grant_type: " + grant_type);
-        System.out.println("redirect_uri: " + redirect_uri);
-        System.out.println("code: " + code);
         
         // Access Token Request
         // grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
 
         if (code == null) {
-            System.out.println("Missing code");
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         AuthenticateUser user = AuthenticationUsers.getInstance().getUserWithCode(code);
         if (user == null) {
-            System.out.println("Missing user");
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

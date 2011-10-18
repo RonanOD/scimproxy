@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy.config;
 
 import info.simplecloud.scimproxy.ScimUserServlet;
+import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.authentication.AuthenticationUsers;
 
 import java.io.IOException;
@@ -32,6 +33,10 @@ public class Config {
      * type="basic"> <username>usr</username> <password>pw</password> </auth>
      * </csp> </down-stream> </config>
      */
+	
+	public static final String	AUTH_BASIC = "BASIC";
+	public static final String	AUTH_OAUTH2 = "OAUTH2";
+	public static final String	AUTH_OAUTH2_V10 = "OAUTH2V10";
 
     // TODO: read config file location from somewhere in system (property?)
     private static String       CONFIG_FILE        = System.getProperty("info.simplecloud.scimproxy.config.Config.CONFIG_FILE",
@@ -41,21 +46,12 @@ public class Config {
     private static Config       INSTANCE           = null;
 
     private Log                 log                = LogFactory.getLog(ScimUserServlet.class);
+    
     private AuthenticationUsers authUsers          = AuthenticationUsers.getInstance();
 
-    private boolean             basicAuth          = false;
-    private boolean             noneAuth           = false;                                   // Public
-                                                                                               // to
-                                                                                               // all
-                                                                                               // Internet
-                                                                                               // users
-                                                                                               // in
-                                                                                               // the
-                                                                                               // world!
-    private String              basicAuthUsername  = "";
-    private String              basicAuthPassword  = "";
+    private ArrayList<String> 	authenticationMethods = new ArrayList<String>(); 
 
-    private int                 bulkMaxOperations  = 0;
+	private int                 bulkMaxOperations  = 0;
     private int                 bulkMaxPayloadSize = 0;
 
     private List<CSP>           downStreamCSP      = new ArrayList<CSP>();
@@ -116,22 +112,32 @@ public class Config {
                 }
             }
 
-            if ("basic".equals(config.getString("auth[@type]"))) {
-                setBasicAuth(true);
-                String[] userNames = config.getStringArray("auth.user.username");
-                String[] passwords = config.getStringArray("auth.user.password");
-                if (userNames.length != passwords.length) {
 
-                } else {
-                    for (int i = 0; i < userNames.length; i++) {
-                        authUsers.addUser(userNames[i], passwords[i]);
-                    }
+            // add all configured users in the system to the list of potential user to authenticate with
+            String[] userNames = config.getStringArray("users.user.username");
+            String[] passwords = config.getStringArray("users.user.password");
+            if (userNames.length == passwords.length) {
+                for (int i = 0; i < userNames.length; i++) {
+                    authUsers.addUser(userNames[i], passwords[i]);
                 }
+            }
 
+            List<String> methodList = config.getList("auth.method.type");
+            if (methodList != null) {
+                for (int i = 0; i < methodList.size(); i++) {
+                	String type = config.getString("auth.method(" + i + ").type");
+	                if ("basic".equalsIgnoreCase(type)) {
+	                	authenticationMethods.add(AUTH_BASIC);
+	                }
+	                if ("oauth2".equalsIgnoreCase(type)) {
+	                	authenticationMethods.add(AUTH_OAUTH2);
+	                }
+	                if ("oauth2v10".equalsIgnoreCase(type)) {
+	                	authenticationMethods.add(AUTH_OAUTH2_V10);
+	                }
+                }
             }
-            if ("none".equals(config.getString("auth[@type]"))) {
-                setNoneAuth(true);
-            }
+
 
             List<String> storagesList = config.getList("storages.storage.type");
             if (storagesList != null) {
@@ -152,11 +158,12 @@ public class Config {
                     csp.setPreferedEncoding(config.getString("down-stream.csp(" + i + ").preferedEncoding"));
                     csp.setVersion(config.getString("down-stream.csp(" + i + ").version"));
 
-                    if (CSP.AUTH_BASIC.equals(config.getString("down-stream.csp(" + i + ").auth[@type]"))) {
-                        csp.setAuthentication(CSP.AUTH_BASIC);
-                        csp.setBasicUsername(config.getString("down-stream.csp(" + i + ").auth.username"));
-                        csp.setBasicPassword(config.getString("down-stream.csp(" + i + ").auth.password"));
-                    }
+                    csp.setAuthentication(config.getString("down-stream.csp(" + i + ").auth[@type]"));
+                    csp.setUsername(config.getString("down-stream.csp(" + i + ").auth.username"));
+                    csp.setPassword(config.getString("down-stream.csp(" + i + ").auth.password"));
+                    csp.setOAuth2AccessToken(config.getString("down-stream.csp(" + i + ").auth.accessToken"));
+                    csp.setOAuth2AuthorizationServer(config.getString("down-stream.csp(" + i + ").auth.authorizationServer"));
+
                     downStreamCSP.add(csp);
                 }
             }
@@ -166,27 +173,6 @@ public class Config {
         }
     }
 
-    public void setBasicAuth(boolean b) {
-        this.basicAuth = true;
-
-    }
-
-    public boolean isBasicAuth() {
-        return basicAuth;
-    }
-
-    public boolean isOAuth2() {
-        // TODO read config value
-        return true;
-    }
-
-    public void setNoneAuth(boolean noneAuth) {
-        this.noneAuth = noneAuth;
-    }
-
-    public boolean isNoneAuth() {
-        return noneAuth;
-    }
 
     public void setDownStreamCSP(List<CSP> downStreamCSP) {
         this.downStreamCSP = downStreamCSP;
@@ -219,5 +205,13 @@ public class Config {
     public int getBulkMaxPayloadSize() {
         return bulkMaxPayloadSize;
     }
+
+    public ArrayList<String> getAuthenticationMethods() {
+		return authenticationMethods;
+	}
+
+	public void setAuthenticationMethods(ArrayList<String> authenticationMethods) {
+		this.authenticationMethods = authenticationMethods;
+	}
 
 }

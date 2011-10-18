@@ -25,7 +25,6 @@ public class Authenticate extends HttpServlet {
 
         String code = req.getParameter("code");
         if (code == null) {
-            System.out.println("Error, no code");
             resp.sendRedirect(getRequestedURL(req) + "authenticate.html#error1");
             return;
         }
@@ -42,16 +41,13 @@ public class Authenticate extends HttpServlet {
         HttpClient client = new HttpClient();
         int responseCode = client.executeMethod(method);
         if (responseCode != 200) {
-            System.out.println("Error, responseCode: " + responseCode);
             resp.sendRedirect(getRequestedURL(req) + "authenticate.html#error2");
             return;
         }
         String responseBody = method.getResponseBodyAsString();
-        System.out.println("body: " + responseBody);
         try {
             JSONObject accessResponse = new JSONObject(responseBody);
             req.getSession().setAttribute("Creds", "Bearer " + accessResponse.getString("access_token"));
-            System.out.println("Creds: " + req.getSession().getAttribute("Creds"));
             resp.sendRedirect(getRequestedURL(req) + "/viewer2.html");
         } catch (JSONException e) {
             throw new RuntimeException("failed to read responce form authorizationServer", e);
@@ -67,22 +63,17 @@ public class Authenticate extends HttpServlet {
         	baseUrl += "/";
         }
         req.getSession().setAttribute("BaseUrl", baseUrl);
-        System.out.println("baseUrl: " + baseUrl);
         String authSelection = req.getParameter("AuthSelection");
-        System.out.println("authSelection: " + authSelection);
         if ("Basic".equals(authSelection)) {
             String creds = req.getParameter("Username") + ":" + req.getParameter("Password");
             creds = "Basic " + new String(Base64.encodeBase64(creds.getBytes()));
             req.getSession().setAttribute("Creds", creds);
-            System.out.println("creds:" + creds);
-            System.out.println("getRequestedURL(req): " + getRequestedURL(req));
             resp.sendRedirect(getRequestedURL(req) + "/viewer2.html");
         } else {
             String authorizationServer = req.getParameter("AuthorizationServer");
             req.getSession().setAttribute("AuthorizationServer", authorizationServer);
             authorizationServer += "?response_type=code&client_id=scimproxyviewer&redirect_uri=";
             authorizationServer +=  getRequestedURL(req) + "/Viewer2/Authenticate/";
-            System.out.println("authorizationServer: " + authorizationServer);
             resp.sendRedirect(authorizationServer);
         }
     }

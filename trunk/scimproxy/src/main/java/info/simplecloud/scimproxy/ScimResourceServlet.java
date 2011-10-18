@@ -86,14 +86,10 @@ public class ScimResourceServlet extends RestServlet {
 
         scimUser.setMeta(meta);
         
-        // delete old user
-        UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
-
-        // add new user
-        UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
+        UserDelegator.getInstance(authUser.getSessionId()).replaceUser(resource.getId(), scimUser);
         
-        // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-        // TODO:   trigger.put(query, userId, etag);				
+        // replacing user in downstream CSP, any communication errors is handled in triggered and ignored here
+        trigger.put(scimUser);
 
         return scimUser;
     }
@@ -123,21 +119,16 @@ public class ScimResourceServlet extends RestServlet {
         if (meta == null) {
             meta = new Meta();
         }
-        // generate new version number
-//        UserDelegator.getInstance(authUser.getSessionId()).updateVersionNumber(scimUser);
+
         meta.setVersion(Util.generateVersionString());
     	meta.setLocation(HttpGenerator.getLocation(scimUser, server));
 
         scimUser.setMeta(meta);
         
-        // delete old user
-        UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
-
-        // add new user
-        UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
+        UserDelegator.getInstance(authUser.getSessionId()).replaceUser(resource.getId(), scimUser);
         
-        // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-        // TODO:   trigger.put(query, userId, etag);				
+        // editing user in downstream CSP, any communication errors is handled in triggered and ignored here
+        trigger.patch(new User(resource.getData(), encoding));
 
         return scimUser;
 	}
@@ -150,7 +141,7 @@ public class ScimResourceServlet extends RestServlet {
         if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
         	UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
             // deleting user in downstream CSP, any communication errors is handled in triggered and ignored here
-        	trigger.delete(scimUser);				
+        	trigger.delete(scimUser);
         }
         else {
         	throw new PreconditionException();
@@ -184,7 +175,8 @@ public class ScimResourceServlet extends RestServlet {
 		}
         UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
 
-        // TODO:   trigger.post(...);				
+        // creating group in downstream CSP, any communication errors is handled in triggered and ignored here
+        trigger.create(scimGroup);
 
         return scimGroup;
     }
@@ -215,14 +207,10 @@ public class ScimResourceServlet extends RestServlet {
 
     	scimGroup.setMeta(meta);
         
-        // delete old user
-        UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(resource.getId());
+        UserDelegator.getInstance(authUser.getSessionId()).replaceGroup(resource.getId(), scimGroup);
 
-        // add new user
-        UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
-        
-        // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-        // TODO:   trigger.put(query, userId, etag);				
+        // replacing group in downstream CSP, any communication errors is handled in triggered and ignored here
+        trigger.put(scimGroup);
 
         return scimGroup;
     }
@@ -258,15 +246,12 @@ public class ScimResourceServlet extends RestServlet {
     	meta.setLocation(HttpGenerator.getLocation(scimGroup, server));
 
     	scimGroup.setMeta(meta);
-        
-        // delete old user
-        UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(resource.getId());
 
-        // add new user
-        UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
+        UserDelegator.getInstance(authUser.getSessionId()).replaceGroup(resource.getId(), scimGroup);
+
         
-        // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-        // TODO:   trigger.put(query, userId, etag);				
+        // editing group in downstream CSP, any communication errors is handled in triggered and ignored here
+        trigger.patch(new Group(resource.getData(), encoding));
 
         return scimGroup;
 	}
@@ -277,9 +262,8 @@ public class ScimResourceServlet extends RestServlet {
         String version = scimGroup.getMeta().getVersion();
         if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
         	UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(resource.getId());
-            // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
-        	// TODO: trigger
-        	//trigger.delete(scimUser);				
+            // deleting group in downstream CSP, any communication errors is handled in triggered and ignored here
+        	trigger.delete(scimGroup);
         }
         else {
         	throw new PreconditionException();
@@ -289,9 +273,8 @@ public class ScimResourceServlet extends RestServlet {
     public void internalChangePasswordPatch(ResourceJob resource, String password, AuthenticateUser authUser) throws ResourceNotFoundException {
     	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
     	UserDelegator.getInstance(authUser.getSessionId()).setPassword(password, scimUser);
+        // deleting group in downstream CSP, any communication errors is handled in triggered and ignored here
+    	trigger.changePassword(scimUser, password);
     }
-
-    
-    
     
 }

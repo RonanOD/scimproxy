@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * A abstract REST servlet that extends HTTP with the PATCH method according to
  * RFC 5789. Class also makes sure that user is authenticated and provides a
- * valid OAUTH 2.0 bearer token.
+ * valid OAUTH 2.0 bearer token or BASIC auth token.
  */
 
 @SuppressWarnings("serial")
@@ -43,7 +43,6 @@ public abstract class RestServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String method = req.getMethod();
-		System.out.println("method: " + method);
 		String configStr = (String) req.getAttribute("info.simplecloud.scimproxy.config");
 		Config config = null;
 		if(configStr != null && !"".equalsIgnoreCase(configStr)) {

@@ -79,7 +79,7 @@ public class ScimGroupsServletTest {
 
         Assert.assertTrue(aliceFound);
     }
-    /*
+
     @Test
     public void getAllGroupsXml() throws Exception {
 
@@ -105,7 +105,7 @@ public class ScimGroupsServletTest {
 
         Assert.assertTrue(aliceFound);
     }  
-    */
+    
     @Test
     public void getAllGroupsJson() throws Exception {
 

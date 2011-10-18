@@ -70,4 +70,8 @@ public interface IStorage {
 
 	public void setPassword(String clearTextPassword, User user);
 
+	public void replaceUser(String id, User scimUser) throws ResourceNotFoundException;
+
+	public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException;
+
 }

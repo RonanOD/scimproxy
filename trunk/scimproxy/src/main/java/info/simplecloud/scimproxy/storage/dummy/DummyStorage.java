@@ -83,6 +83,15 @@ public class DummyStorage implements IStorage {
     }
 
     @Override
+    public void replaceUser(String id, User user) throws ResourceNotFoundException {
+    	// service provider always defines the id
+    	deleteUser(id);
+        users.add(user);
+    }
+    
+    
+    
+    @Override
     public void addList(List<User> upstreamUsers) {
         users.addAll(upstreamUsers);
     }
@@ -274,6 +283,12 @@ public class DummyStorage implements IStorage {
 	public void setPassword(String clearTextPassword, User user) {
 		// TODO: Implement change password!
         log.error("Implement change password! Set " + clearTextPassword + " on user " + user);
+	}
+
+	@Override
+	public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException {
+		deleteGroup(id);
+		groups.add(scimGroup);
 	}
 	
 }

@@ -171,6 +171,14 @@ public class UserDelegator {
 	public void deletetGroup(String groupId) throws ResourceNotFoundException {
 		storage.deleteGroup(groupId);
 	}
+
+	public void replaceUser(String id, User scimUser) throws ResourceNotFoundException {
+		storage.replaceUser(id, scimUser);
+	}
+
+	public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException {
+		storage.replaceGroup(id, scimGroup);
+	}
 	
 	
 }
