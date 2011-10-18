@@ -130,7 +130,7 @@ public class ScimUsersServletTest {
         Assert.assertTrue(bobFound);
         Assert.assertTrue(aliceFound);
     }
-    /*
+    
     @Test
     public void getAllAndFindAliceAndBobXml() throws Exception {
 
@@ -160,7 +160,7 @@ public class ScimUsersServletTest {
         Assert.assertTrue(bobFound);
         Assert.assertTrue(aliceFound);
     }    
-    */
+    
     @Test
     public void sortUserNameAsc() throws Exception {
 

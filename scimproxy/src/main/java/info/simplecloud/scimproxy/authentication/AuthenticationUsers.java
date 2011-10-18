@@ -19,13 +19,8 @@ public class AuthenticationUsers {
     }
 
     public String getPasswordForUser(String userName) {
-        System.out.println("nr users: " + users.size());
         for (String key : users.keySet()) {
             AuthenticateUser user = users.get(key);
-            System.out.println(key);
-            System.out.println(" " + user.getPassword());
-            System.out.println(" " + user.getSessionId());
-            System.out.println(" " + user.getUserName());
         }
         if (users.get(userName) == null) {
             return null;
@@ -73,9 +68,7 @@ public class AuthenticationUsers {
     }
 
     public AuthenticateUser getUserWithCode(String code) {
-        System.out.println("users.size()" + users.size());
         for (String key : users.keySet()) {
-            System.out.println("key: " + key);
             AuthenticateUser user = users.get(key);
             if (user.hasCode(code)) {
                 return user;

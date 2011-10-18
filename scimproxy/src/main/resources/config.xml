@@ -3,9 +3,10 @@
 	<server>
 		<url>http://localhost</url>
 		<port>8080</port>
-		<version></version>
+		<version>v1</version>
+		<preferedEncoding>JSON</preferedEncoding>
 	</server>
-	<auth type="basic">
+	<users>
 		<user>
 			<username>usr</username>
 			<password>pw</password>
@@ -14,6 +15,17 @@
 			<username>usr3</username>
 			<password>pw</password>
 		</user>
+	</users>
+	<auth>
+		<method>
+			<type>oauth2</type>
+		</method>
+		<method>
+			<type>oauth2v10</type>
+		</method>
+		<method>
+			<type>basic</type>
+		</method>
 	</auth>
 	<storages>
 		<storage>
@@ -22,7 +34,7 @@
 	</storages>
 	<bulk>
 		<maxOperations>1000</maxOperations>
-		<maxPayloadSize>10000000</maxPayloadSize>
+		<maxPayloadSize>1048576</maxPayloadSize>
 	</bulk>
 	<down-stream> 
 		<csp>
@@ -32,6 +44,23 @@
      		<auth type="basic">
 				<username>usr</username>
 				<password>pw</password>
+			</auth>
+		</csp>
+		<csp>
+     		<url>http://107.20.133.41:8080</url>
+     		<preferedEncoding>JSON</preferedEncoding> 
+     		<version>v1</version>
+     		<auth type="oauth2">
+				<accessToken>132123121212</accessToken>
+			</auth>
+		</csp>
+		<csp>
+     		<url>http://107.20.133.41:8080</url>
+     		<preferedEncoding>XML</preferedEncoding> 
+     		<version>v1</version>
+     		<auth type="oauth2-v10">
+				<username>erwah</username>
+				<password>qwerty</password>
 			</auth>
 		</csp>
 	</down-stream>

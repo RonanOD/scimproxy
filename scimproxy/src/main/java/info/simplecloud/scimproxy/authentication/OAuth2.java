@@ -6,9 +6,7 @@ public class OAuth2 implements IAuth {
 
     @Override
     public boolean authenticate(String token) {
-        String basicIdentifier = "Bearer ";
-        String encoded = token.substring(basicIdentifier.length());
-        this.user = AuthenticationUsers.getInstance().getUserFromToken(encoded);
+        this.user = AuthenticationUsers.getInstance().getUserFromToken(token);
         return this.user != null;
     }
 

@@ -26,15 +26,15 @@ $(document).ready(function () {
 			
 			var $tbl = $('<table>');
 
-			if(data.entry.length != 0) {
+			if(data.Resources && data.Resources.length != 0) {
 				$tbl.append(
 						$('<tr>').append(
 								$('<th>').text("Id"),
 								$('<th>').text("Resource"),
 								$('<th>')));
 				
-	            for (i = 0; i < data.entry.length; i++) {
-	            	current = data.entry[i];
+	            for (i = 0; i < data.Resources.length; i++) {
+	            	current = data.Resources[i];
 	                $tbl.append(
 	                		$('<tr>', {class: 'list'}).append(
 	                				$('<td>', {class: 'alignTop'}).text(current.id),
