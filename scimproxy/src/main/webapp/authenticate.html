@@ -21,15 +21,17 @@
 		<div id="content">
 			<div id="authenticate" class="section">
 				<h2>Service provider authentication</h2>
-				<form action="Viewer2/Authenticate/" method="post">
+				<form action="Viewer2/Authenticate/" method="post" id="authenticateForm">
 					<table>
 						<tr>
 							<td class="left"><label>Type:</label></td>
 							<td> 
-								<select id="authSelection" name="AuthSelection">
+								<select id="authSelection">
 									<option>OAuth2</option>
+									<option>OAuth2-v10</option>
 									<option>Basic</option>
 								</select>
+								<input type="hidden" name="AuthSelection" id="AuthSelectionId">
 							</td>
 						</tr>
 						<tr>
@@ -49,6 +51,14 @@
 						<tr id="oauthAuthorizationServer">
 							<td class="left"><label>Authorization Server URL:</label></td>
 							<td><input class="textInput" name="AuthorizationServer" type="text" /></td>
+						</tr>
+						<tr id="oauthClientId">
+							<td class="left"><label>Client id</label></td>
+							<td><input class="textInput" name="ClientId" type="text" value="scimproxyviewer"/></td>
+						</tr>
+						<tr id="oauthClientSecret">
+							<td class="left"><label>Client secret</label></td>
+							<td><input class="textInput" name="ClientSecret" type="password" value="abc123!"/></td>
 						</tr>
 						
 						<tr>

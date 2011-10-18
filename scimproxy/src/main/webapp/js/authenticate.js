@@ -15,27 +15,41 @@ $(document).ready(function () {
 	});
 	
 	$("#authSelection").change(function (){
-		if($("#authSelection").val() === "OAuth2"){
+		if ($("#authSelection").val() === "OAuth2-v10" || $("#authSelection").val() === "OAuth2") {
 			$("#basicUsername").hide();
 			$("#basicPassword").hide();
 			$("#oauthAuthorizationServer").show();
+			$("#oauthClientId").show();
+			$("#oauthClientSecret").show();
 		} else {
 			$("#basicUsername").show();
 			$("#basicPassword").show();
 			$("#oauthAuthorizationServer").hide();
+			$("#oauthClientId").hide();
+			$("#oauthClientSecret").hide();
 		}
 	});
 
 	$(document).ready(function () {
 		var authSelection = $("#authSelection").val();
-		if($("#authSelection").val() === "OAuth2"){
+		if ($("#authSelection").val() === "OAuth2-v10" || $("#authSelection").val() === "OAuth2") {
 			$("#basicUsername").hide();
 			$("#basicPassword").hide();
 			$("#oauthAuthorizationServer").show();
+			$("#oauthClientId").show();
+			$("#oauthClientSecret").show();
 		} else {
 			$("#basicUsername").show();
 			$("#basicPassword").show();
 			$("#oauthAuthorizationServer").hide();
+			$("#oauthClientId").hide();
+			$("#oauthClientSecret").hide();
 		}
 	});
+	
+	$("#authenticateForm").submit(function(){
+		var tmp = $("#authSelection").val();
+		$("#AuthSelectionId").val(tmp);
+		return true;
+	})
 });

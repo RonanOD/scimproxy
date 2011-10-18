@@ -36,32 +36,4 @@
 		<maxOperations>1000</maxOperations>
 		<maxPayloadSize>1048576</maxPayloadSize>
 	</bulk>
-	<down-stream> 
-		<csp>
-     		<url>http://107.20.133.41:8080</url>
-     		<preferedEncoding>JSON</preferedEncoding> 
-     		<version>v1</version>
-     		<auth type="basic">
-				<username>usr</username>
-				<password>pw</password>
-			</auth>
-		</csp>
-		<csp>
-     		<url>http://107.20.133.41:8080</url>
-     		<preferedEncoding>JSON</preferedEncoding> 
-     		<version>v1</version>
-     		<auth type="oauth2">
-				<accessToken>132123121212</accessToken>
-			</auth>
-		</csp>
-		<csp>
-     		<url>http://107.20.133.41:8080</url>
-     		<preferedEncoding>XML</preferedEncoding> 
-     		<version>v1</version>
-     		<auth type="oauth2-v10">
-				<username>erwah</username>
-				<password>qwerty</password>
-			</auth>
-		</csp>
-	</down-stream>
 </config>

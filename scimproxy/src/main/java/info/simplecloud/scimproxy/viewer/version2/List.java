@@ -10,10 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.mortbay.util.UrlEncoded;
 
 @SuppressWarnings("serial")
@@ -54,7 +52,6 @@ public class List extends HttpServlet {
         }
 
         GetMethod method = new GetMethod(baseUrl + "v1/" + indata.get("type") + "s");
-        System.out.println("query: " + query);
         method.setQueryString(query);
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setRequestHeader("Accept", "application/json");

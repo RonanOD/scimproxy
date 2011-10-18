@@ -95,11 +95,29 @@ public class ScimAuthorizationServer extends HttpServlet {
         // Access Token Request
         // grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
 
-        if (code == null) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+        AuthenticateUser user = null;
+        if (code != null) {
+            user = AuthenticationUsers.getInstance().getUserWithCode(code);
+        } else {
+            System.out.println("No code assuming basic credentials");
+            String basicAuth = req.getHeader("Authorization");
+            System.out.println("basicAuth: " + basicAuth);
+            if (basicAuth == null) {
+                resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
+                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
+                return;
+            }
+
+            Basic basic = new Basic();
+            if (!basic.authenticate(basicAuth)) {
+                resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
+                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
+                return;
+            }
+            
+            user = basic.getAuthUser();
         }
-        AuthenticateUser user = AuthenticationUsers.getInstance().getUserWithCode(code);
+        
         if (user == null) {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
@@ -122,6 +140,7 @@ public class ScimAuthorizationServer extends HttpServlet {
         try {
             JSONObject responce = new JSONObject();
             responce.put("access_token", accessToken);
+            responce.put("token_type", "dev");
             resp.getWriter().write(responce.toString(2));
         } catch (JSONException e) {
             throw new RuntimeException("access token error", e);

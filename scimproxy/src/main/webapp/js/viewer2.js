@@ -38,27 +38,59 @@ $(document).ready(function () {
 	                $tbl.append(
 	                		$('<tr>', {class: 'list'}).append(
 	                				$('<td>', {class: 'alignTop'}).text(current.id),
-	                				$('<td>').append(
+	                				$('<td>', {class: 'middle'}).append(
 	                						$('<pre>', {class: 'prettyprint, table',text: JSON.stringify(current, null,"  "), id: current.id+"show"}),
-	                						$("<div>", {id: current.id + "edit"}).append(                								
-	            								$("<textarea>", {class: "table", text: JSON.stringify(current, null,"  "), id : current.id+"EditData"}),
-	            								$("</br>"),
-	            								$("<button>", {text: "Cancle"}).click(function (editId) {
-	            									return function () {
-	            										$("#" + editId + "edit").hide("slow");
-		                								$("#" + editId + "show").show("slow");
-	            									};
-	            								}(current.id)),
-	            								$("<button>", {text: "update"}).click(function (editType, editData) {
-	            									return function () {
-	            										$.post("/Viewer2/Edit", 
-	            												{ type: editType, operation: "PUT", data: $("#" + editData.id + "EditData").val(), id: editData.id, etag: editData.meta.version }, 
-	            												handleResult)
-	            												.error(handleError);	            										
-	            									};
-	            								}($("#listType").val(), current))).hide()),
-	                				$('<td>').append(
-	                						$("<button>", {text: "delete", id: current.id}).click(function (deleteType, deleteId, deleteEtag) {
+            								$("<textarea>", {class: "table", text: JSON.stringify(current, null,"  "), id : current.id + "edit"}).hide(),
+            								$("<div>", {id: current.id + "editPassword"}).append(
+            									$("<label>", {text: "New password:"}),
+            									$("<input>", {type: "password", id: current.id + "password"})).hide()),
+	                				$('<td>', {class: 'buttonColumn'}).append(
+	                						$("<button>", {class: "list", text:"Edit", id: current.id + "editButton"}).click( function (editId) {
+	                							return function () {
+	                								// other
+	                								$("#" + editId + "show").hide();
+	                								$("#" + editId + "edit").show();
+	                								$("#" + editId + "editPassword").hide();
+	                								// Buttons
+	                								$("#" + editId + "editButton").hide();
+	                								$("#" + editId + "showPasswordGuiButton").hide();
+	                								$("#" + editId + "cancelButton").show();
+	                								$("#" + editId + "setPasswordButton").hide();
+	                								$("#" + editId + "updateButton").show();
+	                								$("#" + editId + "deleteButton").hide();
+	                							};
+	                						}(current.id)),
+	                						$("<button>", {class: "list", text:"Set password", id: current.id + "showPasswordGuiButton"}).click( function (editId) {
+	                							return function () {
+	                								// other
+	                								$("#" + editId + "show").hide();
+	                								$("#" + editId + "edit").hide();
+	                								$("#" + editId + "editPassword").show();
+	                								// Buttons
+	                								$("#" + editId + "editButton").hide();
+	                								$("#" + editId + "showPasswordGuiButton").hide();
+	                								$("#" + editId + "cancelButton").show();
+	                								$("#" + editId + "setPasswordButton").show();
+	                								$("#" + editId + "updateButton").hide();
+	                								$("#" + editId + "deleteButton").hide();
+	                							};
+	                						}(current.id)),
+	                						$("<button>", {class: "list", text: "Cancle", id: current.id + "cancelButton"}).click(function (editId) {
+            									return function () {
+	                								// other
+	                								$("#" + editId + "show").show();
+	                								$("#" + editId + "edit").hide();
+	                								$("#" + editId + "editPassword").hide();
+	                								// Buttons
+	                								$("#" + editId + "editButton").show();
+	                								$("#" + editId + "showPasswordGuiButton").show();
+	                								$("#" + editId + "cancelButton").hide();
+	                								$("#" + editId + "setPasswordButton").hide();
+	                								$("#" + editId + "updateButton").hide();
+	                								$("#" + editId + "deleteButton").show();
+            									};
+            								}(current.id)).hide(),
+            								$("<button>", {class: "list", text: "delete", id: current.id + "deleteButton"}).click(function (deleteType, deleteId, deleteEtag) {
 	                							return function() {
 	                								$.post("/Viewer2/Delete", 
 	                										{ type: deleteType, id: deleteId, etag: deleteEtag }, 
@@ -66,13 +98,22 @@ $(document).ready(function () {
 	                										.error(handleError);				
 	                							}
 	                						}($("#listType").val(), current.id, current.meta.version)),
-	                						$("</br>"),
-	                						$("<button>", {text:"Edit"}).click( function (editId) {
-	                							return function () {
-	                								$("#" + editId + "show").hide();
-	                								$("#" + editId + "edit").show();
-	                							};
-	                						}(current.id)))));
+            								$("<button>", {class: "list", text: "Save password", id: current.id + "setPasswordButton"}).click(function (editId) {
+        										return function () {
+            										$.post("/Viewer2/SetPassword", 
+            												{ password: $("#" + editData.id + "editPassword").val(), id: editData.id }, 
+            												handleResult)
+            												.error(handleError);	            										
+            									};
+            								} (current.id)).hide(),
+            								$("<button>", {class: "list", text: "Save resource", id: current.id + "updateButton"}).click(function (editType, editData) {
+            									return function () {
+            										$.post("/Viewer2/Edit", 
+            												{ type: editType, operation: "PUT", data: $("#" + editData.id + "edit").val(), id: editData.id, etag: editData.meta.version }, 
+            												handleResult)
+            												.error(handleError);	            										
+            									};
+            								}($("#listType").val(), current)).hide())));
 	            }
 	            
 	            $('#result').append($tbl);

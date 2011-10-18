@@ -89,7 +89,6 @@ public class ScimUserServlet extends ScimResourceServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String query = Util.getContent(req);
 
-        System.err.println("query: " + query);
         if (query != null && !"".equals(query)) {
             try {
                 String server = HttpGenerator.getServer(req);
@@ -100,7 +99,6 @@ public class ScimUserServlet extends ScimResourceServlet {
                 resource.setData(query);
                 
             	User scimUser = internalUserPost(resource, server, outEncoding, authUser);
-            	System.out.println("scimUser: " + scimUser);
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimUser.getMeta().getLocation());
                 resp.setHeader("ETag", scimUser.getMeta().getVersion());
