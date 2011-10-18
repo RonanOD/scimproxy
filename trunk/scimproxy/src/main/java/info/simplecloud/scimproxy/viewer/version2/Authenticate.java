@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -30,13 +29,18 @@ public class Authenticate extends HttpServlet {
         }
 
         String authorizationServer = (String) req.getSession().getAttribute("AuthorizationServer");
-        
+
         PostMethod method = new PostMethod(authorizationServer);
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setParameter("grant_type", "authorization_code");
         method.setParameter("code", code);
         method.setParameter("redirect_uri", getRequestedURL(req) + "/Viewer2/Authenticate/");
-        
+        String credsPrefix = "Bearer ";
+        System.out.println("authSelection step2: " + req.getSession().getAttribute("authSelection"));
+        if ("OAuth2-v10".equalsIgnoreCase((String) req.getSession().getAttribute("authSelection"))) {
+            method.setParameter("client_secret", (String) req.getSession().getAttribute("ClientSecret"));
+            credsPrefix = "OAuth ";
+        }
 
         HttpClient client = new HttpClient();
         int responseCode = client.executeMethod(method);
@@ -47,7 +51,8 @@ public class Authenticate extends HttpServlet {
         String responseBody = method.getResponseBodyAsString();
         try {
             JSONObject accessResponse = new JSONObject(responseBody);
-            req.getSession().setAttribute("Creds", "Bearer " + accessResponse.getString("access_token"));
+            req.getSession().setAttribute("Creds", credsPrefix + accessResponse.getString("access_token"));
+            System.out.println("credsPrefix: " + credsPrefix);
             resp.sendRedirect(getRequestedURL(req) + "/viewer2.html");
         } catch (JSONException e) {
             throw new RuntimeException("failed to read responce form authorizationServer", e);
@@ -70,14 +75,19 @@ public class Authenticate extends HttpServlet {
             req.getSession().setAttribute("Creds", creds);
             resp.sendRedirect(getRequestedURL(req) + "/viewer2.html");
         } else {
-            String authorizationServer = req.getParameter("AuthorizationServer");
-            req.getSession().setAttribute("AuthorizationServer", authorizationServer);
-            authorizationServer += "?response_type=code&client_id=scimproxyviewer&redirect_uri=";
-            authorizationServer +=  getRequestedURL(req) + "/Viewer2/Authenticate/";
-            resp.sendRedirect(authorizationServer);
+            StringBuilder authorizationServer = new StringBuilder(req.getParameter("AuthorizationServer"));
+            req.getSession().setAttribute("AuthorizationServer", authorizationServer.toString());
+            req.getSession().setAttribute("ClientId", req.getParameter("ClientId"));
+            req.getSession().setAttribute("ClientSecret", req.getParameter("ClientSecret"));
+            req.getSession().setAttribute("authSelection", authSelection);
+            authorizationServer.append("?");
+            authorizationServer.append("response_type=").append("code").append("&");
+            authorizationServer.append("client_id=").append(req.getParameter("ClientId")).append("&");
+            authorizationServer.append("redirect_uri=").append(getRequestedURL(req)).append("/Viewer2/Authenticate/");
+            resp.sendRedirect(authorizationServer.toString());
         }
     }
-    
+
     private String getRequestedURL(HttpServletRequest req) {
         StringBuffer full = req.getRequestURL();
         return full.substring(0, full.indexOf("/Viewer2/Authenticate"));

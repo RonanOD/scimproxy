@@ -53,7 +53,6 @@ public class Edit extends HttpServlet {
         method.setRequestHeader("ETag", indata.get("etag"));
         method.setRequestHeader("Authorization", creds);
         method.setRequestBody(indata.get("data"));
-
         int responseCode = client.executeMethod(method);
 
         if (responseCode == 200) {

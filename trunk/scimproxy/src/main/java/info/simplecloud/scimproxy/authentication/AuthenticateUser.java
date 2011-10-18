@@ -47,7 +47,6 @@ public class AuthenticateUser {
     }
 
     public boolean hasCode(String code) {
-        System.out.println("this.code: " + this.code);
         return code.equals(this.code);
     }
 

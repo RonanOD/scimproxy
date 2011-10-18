@@ -1,15 +1,12 @@
 package info.simplecloud.scimproxy.config;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CSP {

@@ -202,3 +202,20 @@ textarea.table
   border-right-color: #666;
   right: 0.25em;
 }
+
+button.list
+{
+	width: 150px;
+}
+
+td.middle
+{
+	min-width: 650px;
+}
+
+td.buttonColumn
+{
+	max-width: 160px;
+}
+ 
+ 
