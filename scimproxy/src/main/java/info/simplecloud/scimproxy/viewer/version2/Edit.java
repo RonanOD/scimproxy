@@ -14,7 +14,6 @@ import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang.StringEscapeUtils;
 
 @SuppressWarnings("serial")
 public class Edit extends HttpServlet {
@@ -39,8 +38,8 @@ public class Edit extends HttpServlet {
         client.getParams().setAuthenticationPreemptive(false);
 
         EntityEnclosingMethod method;
-        String url = baseUrl + "v1/" + indata.get("type") + "/" + indata.get("id");
-        
+        String url = baseUrl + indata.get("type") + "/" + indata.get("id");
+
         if ("PATCH".equals(indata.get("operation"))) {
             method = new PostMethod(url);
             method.setRequestHeader("X-HTTP-Method-Override", "PATCH");
@@ -50,6 +49,7 @@ public class Edit extends HttpServlet {
 
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setRequestHeader("Accept", "application/json");
+        method.setRequestHeader("Content-Type", "application/json");
         method.setRequestHeader("ETag", indata.get("etag"));
         method.setRequestHeader("Authorization", creds);
         method.setRequestBody(indata.get("data"));
@@ -58,7 +58,8 @@ public class Edit extends HttpServlet {
         if (responseCode == 200) {
             resp.getWriter().print(method.getResponseBodyAsString());
         } else {
-            resp.getWriter().print("Error, server returned " + responseCode);
+            resp.getWriter().print("Error, server returned " + responseCode + "\n");
+            resp.getWriter().print(method.getResponseBodyAsString());
         }
 
     }

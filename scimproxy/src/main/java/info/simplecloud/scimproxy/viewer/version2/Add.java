@@ -33,9 +33,10 @@ public class Add extends HttpServlet {
         HttpClient client = new HttpClient();
         client.getParams().setAuthenticationPreemptive(false);
 
-        PostMethod method = new PostMethod(baseUrl + "v1/" + indata.get("type"));
+        PostMethod method = new PostMethod(baseUrl + indata.get("type"));
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setRequestHeader("Accept", "application/json");
+        method.setRequestHeader("Content-Type", "application/json");
         method.setRequestHeader("Authorization", creds);
         method.setRequestBody(indata.get("data"));
 
@@ -43,7 +44,9 @@ public class Add extends HttpServlet {
         if (responseCode == 201) {
             resp.getWriter().print(method.getResponseBodyAsString());
         } else {
+            System.out.println();
             resp.getWriter().print("Error, server returned " + responseCode);
+            resp.getWriter().print(method.getResponseBodyAsString());
         }
     }
 }

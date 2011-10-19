@@ -15,9 +15,15 @@ $(document).ready(function () {
 	});
 	
 	$("#authSelection").change(function (){
-		if ($("#authSelection").val() === "OAuth2-v10" || $("#authSelection").val() === "OAuth2") {
+		if ($("#authSelection").val() === "OAuth2") {
 			$("#basicUsername").hide();
 			$("#basicPassword").hide();
+			$("#oauthAuthorizationServer").show();
+			$("#oauthClientId").show();
+			$("#oauthClientSecret").show();
+		} else if($("#authSelection").val() === "OAuth2-v10"){
+			$("#basicUsername").show();
+			$("#basicPassword").show();
 			$("#oauthAuthorizationServer").show();
 			$("#oauthClientId").show();
 			$("#oauthClientSecret").show();
@@ -32,9 +38,15 @@ $(document).ready(function () {
 
 	$(document).ready(function () {
 		var authSelection = $("#authSelection").val();
-		if ($("#authSelection").val() === "OAuth2-v10" || $("#authSelection").val() === "OAuth2") {
+		if ($("#authSelection").val() === "OAuth2") {
 			$("#basicUsername").hide();
 			$("#basicPassword").hide();
+			$("#oauthAuthorizationServer").show();
+			$("#oauthClientId").show();
+			$("#oauthClientSecret").show();
+		} else if($("#authSelection").val() === "OAuth2-v10"){
+			$("#basicUsername").show();
+			$("#basicPassword").show();
 			$("#oauthAuthorizationServer").show();
 			$("#oauthClientId").show();
 			$("#oauthClientSecret").show();
