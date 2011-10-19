@@ -63,6 +63,7 @@ public class Trigger {
             		String tmpUsr = tmp.getUser(Resource.ENCODING_JSON);
 	        		User user = new User(tmpUsr, Resource.ENCODING_JSON);
 	        		id = user.getId();
+	        		user.setActive(true);
 	        		user.setId(null); // reset id for salesforce
 					resourceString = user.getUser(csp.getPreferedEncoding());
 	                endpoint = csp.getUrl() + getVersionPath(csp) + "/User";
@@ -86,9 +87,11 @@ public class Trigger {
 
                 if("xml".equalsIgnoreCase(csp.getPreferedEncoding())) {
                     method.setRequestHeader(new Header("Accept", "application/xml"));
+                    method.setRequestHeader(new Header("Content-Type", "application/xml"));
                 }
                 else {
                     method.setRequestHeader(new Header("Accept", "application/json"));
+                    method.setRequestHeader(new Header("Content-Type", "application/json"));
                 }
 
                 method.setRequestBody(resourceString);
@@ -190,10 +193,12 @@ public class Trigger {
 	            method.setRequestHeader(new Header("ETag", version));
 	
 	            if("xml".equalsIgnoreCase(csp.getPreferedEncoding())) {
-	                method.setRequestHeader(new Header("Accept", "application/xml"));
+	//                method.setRequestHeader(new Header("Accept", "application/xml"));
+                    method.setRequestHeader(new Header("Content-Type", "application/xml"));
 	            }
 	            else {
-	                method.setRequestHeader(new Header("Accept", "application/json"));
+//	                method.setRequestHeader(new Header("Accept", "application/json"));
+                    method.setRequestHeader(new Header("Content-Type", "application/json"));
 	            }
 
                 // Execute the method.
@@ -275,9 +280,11 @@ public class Trigger {
 	            
 	            if("xml".equalsIgnoreCase(csp.getPreferedEncoding())) {
 	                method.setRequestHeader(new Header("Accept", "application/xml"));
+                    method.setRequestHeader(new Header("Content-Type", "application/xml"));
 	            }
 	            else {
 	                method.setRequestHeader(new Header("Accept", "application/json"));
+                    method.setRequestHeader(new Header("Content-Type", "application/json"));
 	            }
             	
 	            method.setRequestBody(resourceString);
@@ -377,9 +384,11 @@ public class Trigger {
 	            
 	            if("xml".equalsIgnoreCase(csp.getPreferedEncoding())) {
 	                method.setRequestHeader(new Header("Accept", "application/xml"));
+                    method.setRequestHeader(new Header("Content-Type", "application/xml"));
 	            }
 	            else {
 	                method.setRequestHeader(new Header("Accept", "application/json"));
+                    method.setRequestHeader(new Header("Content-Type", "application/json"));
 	            }
             	
 	            method.setRequestBody(resourceString);
