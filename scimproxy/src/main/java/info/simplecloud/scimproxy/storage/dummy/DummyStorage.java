@@ -5,9 +5,7 @@ import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.scimproxy.storage.IStorage;
-import info.simplecloud.scimproxy.user.UserDelegator;
 
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -24,20 +22,20 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DummyStorage implements IStorage {
 
-    private Log log = LogFactory.getLog(DummyStorage.class);
+    private Log                                        log               = LogFactory.getLog(DummyStorage.class);
 
     private static final HashMap<String, DummyStorage> STORAGE_INSTANCES = new HashMap<String, DummyStorage>();
 
     // TODO: synchronize users object
-    private ArrayList<User>           users    = new ArrayList<User>();
+    private ArrayList<User>                            users             = new ArrayList<User>();
 
-    private ArrayList<Group>           groups    = new ArrayList<Group>();
+    private ArrayList<Group>                           groups            = new ArrayList<Group>();
 
     /**
      * Constructor. Adds two users to storage.
      */
     private DummyStorage() {
-   
+
     }
 
     /**
@@ -45,10 +43,9 @@ public class DummyStorage implements IStorage {
      * 
      * @return
      */
-    public static DummyStorage getInstance( String sessionId) {
-        if(STORAGE_INSTANCES.get(sessionId) == null)
-        {
-        	STORAGE_INSTANCES.put(sessionId, new DummyStorage());
+    public static DummyStorage getInstance(String sessionId) {
+        if (STORAGE_INSTANCES.get(sessionId) == null) {
+            STORAGE_INSTANCES.put(sessionId, new DummyStorage());
         }
         return STORAGE_INSTANCES.get(sessionId);
     }
@@ -77,20 +74,18 @@ public class DummyStorage implements IStorage {
 
     @Override
     public void addUser(User user) {
-    	// service provider always defines the id
-    	user.setId(generateId());
+        // service provider always defines the id
+        user.setId(generateId());
         users.add(user);
     }
 
     @Override
     public void replaceUser(String id, User user) throws ResourceNotFoundException {
-    	// service provider always defines the id
-    	deleteUser(id);
+        // service provider always defines the id
+        deleteUser(id);
         users.add(user);
     }
-    
-    
-    
+
     @Override
     public void addList(List<User> upstreamUsers) {
         users.addAll(upstreamUsers);
@@ -132,80 +127,49 @@ public class DummyStorage implements IStorage {
         }
         Collections.sort(list, new ComplexTypeComparator(sortBy, sortOrder.equalsIgnoreCase("ascending")));
         return list;
-    }    
-    
+    }
+
     @Override
-    public ArrayList<User> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp) {
-        ArrayList<User> list = new ArrayList<User>();
-        for (User user : users) {
+    public ArrayList<User> getList(String sortBy, String sortOrder, String filter) {
+        try {
+            ArrayList<User> list = new ArrayList<User>();
+            for (User user : users) {
+                // TODO make it more error safe
+                // TODO handle more then one operation
+                // TODO handle other types than string
 
-            // TODO: Do a way better and nicer looking filtering function.
-            /*
-             * equals: the two values must be identical equalsIgnoreCase: the
-             * two values must be identical contains: the entire filterValue
-             * must be a substring of the attribute value. startswith: the
-             * entire filterValue must be a substring of the attribute value,
-             * starting at the beginning of the attribute value. This criterion
-             * is satisfied if the two strings are equal. present: if the
-             * attribute specified by filterBy has a non-empty value, or if it
-             * contains a non-empty node for complex attributes there is a
-             * match.
-             */
-            boolean add = false;
-            String value = null;
-            // TODO: add support for complex and plural types
-            String methodName = "get" + filterBy.substring(0, 1).toUpperCase() + filterBy.substring(1);
-            try {
-                // TODO this is not necessary use the getAttribute method
-                // instead
-                Method method = User.class.getMethod(methodName);
-                value = (String) method.invoke(user);
-            } catch (Exception e) {
-                break;
-            }
+                String attributeName = filter.split(" ")[0];
+                String operation = filter.split(" ")[1];
+                String filterValue = filter.split(" ")[2];
+                String actualValue = user.getAttribute(attributeName);
 
-            if (value == null) {
-                value = "";
-            }
+                actualValue = (actualValue == null ? "" : actualValue);
 
-            if ("equals".equals(filterOp)) {
-                if (value.equals(filterValue)) {
-                    add = true;
+                if ("eq".equalsIgnoreCase(operation) && filterValue.equalsIgnoreCase(actualValue)) {
+                    list.add(user);
+                } else if ("co".equalsIgnoreCase(operation) && actualValue.contains(filterValue)) {
+                    list.add(user);
+                } else if ("sw".equalsIgnoreCase(operation) && actualValue.startsWith(filterValue)) {
+                    list.add(user);
+                } else if ("pr".equalsIgnoreCase(operation) && user.getAttribute(filterValue) != null) {
+                    list.add(user);
+                } else if ("gt".equalsIgnoreCase(operation) && actualValue.compareToIgnoreCase(filterValue) < 0) {
+                    list.add(user);
+                } else if ("ge".equalsIgnoreCase(operation) && actualValue.compareToIgnoreCase(filterValue) <= 0) {
+                    list.add(user);
+                } else if ("lt".equalsIgnoreCase(operation) && actualValue.compareToIgnoreCase(filterValue) > 0) {
+                    list.add(user);
+                } else if ("le".equalsIgnoreCase(operation) && actualValue.compareToIgnoreCase(filterValue) >= 0) {
+                    list.add(user);
                 }
             }
 
-            if ("equalsIgnoreCase".equals(filterOp)) {
-                if (value.equalsIgnoreCase(filterValue)) {
-                    add = true;
-                }
-            }
+            Collections.sort(list, new ComplexTypeComparator(sortBy, sortOrder.equalsIgnoreCase("ascending")));
 
-            if ("contains".equals(filterOp)) {
-                if (value.indexOf(filterValue) > 0) {
-                    add = true;
-                }
-            }
-
-            if ("startsWith".equals(filterOp)) {
-                if (value.indexOf(filterValue) > -1) {
-                    add = true;
-                }
-            }
-
-            if ("present".equals(filterOp)) {
-                if (!"".equals(value)) {
-                    add = true;
-                }
-            }
-
-            if (add) {
-                list.add(user);
-            }
+            return list;
+        } catch (UnknownAttribute e) {
+            throw new RuntimeException("filter failed", e);
         }
-
-        Collections.sort(list, new ComplexTypeComparator(sortBy, sortOrder.equalsIgnoreCase("ascending")));
-
-        return list;
     }
 
     @Override
@@ -231,9 +195,9 @@ public class DummyStorage implements IStorage {
         return new BigInteger(130, random).toString(32);
     }
 
-	@Override
-	public Group getGroupForId(String groupId) throws ResourceNotFoundException {
-		Group scimGroup= null;
+    @Override
+    public Group getGroupForId(String groupId) throws ResourceNotFoundException {
+        Group scimGroup = null;
         if (groups != null && !"".equals(groupId)) {
             for (Group group : groups) {
                 try {
@@ -251,16 +215,16 @@ public class DummyStorage implements IStorage {
         }
         return scimGroup;
 
-	}
+    }
 
-	@Override
-	public void addGroup(Group group) {
-		// TODO: Verify that id is not already there.
+    @Override
+    public void addGroup(Group group) {
+        // TODO: Verify that id is not already there.
         if (group.getId() == null) {
-        	group.setId(generateId());
+            group.setId(generateId());
         }
         groups.add(group);
-	}
+    }
 
     @Override
     public void deleteGroup(String id) throws ResourceNotFoundException {
@@ -279,16 +243,16 @@ public class DummyStorage implements IStorage {
         }
     }
 
-	@Override
-	public void setPassword(String clearTextPassword, User user) {
-		// TODO: Implement change password!
+    @Override
+    public void setPassword(String clearTextPassword, User user) {
+        // TODO: Implement change password!
         log.error("Implement change password! Set " + clearTextPassword + " on user " + user);
-	}
+    }
 
-	@Override
-	public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException {
-		deleteGroup(id);
-		groups.add(scimGroup);
-	}
-	
+    @Override
+    public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException {
+        deleteGroup(id);
+        groups.add(scimGroup);
+    }
+
 }
