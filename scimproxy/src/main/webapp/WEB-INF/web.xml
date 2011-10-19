@@ -15,6 +15,10 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>User</servlet-name>
+		<url-pattern>/User/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>User</servlet-name>
 		<url-pattern>/v1/User/*</url-pattern>
 	</servlet-mapping>
 	
