@@ -61,7 +61,7 @@ $(document).ready(function () {
 	                								$("#" + editId + "updateButton").show();
 	                								$("#" + editId + "deleteButton").hide();
 	                							};
-	                						}(current.id)),
+	                						} (current.id)),
 	                						$("<button>", {class: "list", text:"Set password", id: current.id + "showPasswordGuiButton"}).click( function (editId) {
 	                							return function () {
 	                								// other
@@ -76,7 +76,7 @@ $(document).ready(function () {
 	                								$("#" + editId + "updateButton").hide();
 	                								$("#" + editId + "deleteButton").hide();
 	                							};
-	                						}(current.id)),
+	                						} (current.id)),
 	                						$("<button>", {class: "list", text: "Cancle", id: current.id + "cancelButton"}).click(function (editId) {
             									return function () {
 	                								// other
@@ -91,15 +91,16 @@ $(document).ready(function () {
 	                								$("#" + editId + "updateButton").hide();
 	                								$("#" + editId + "deleteButton").show();
             									};
-            								}(current.id)).hide(),
-            								$("<button>", {class: "list", text: "delete", id: current.id + "deleteButton"}).click(function (deleteType, deleteId, deleteEtag) {
+            								} (current.id)).hide(),
+            								$("<button>", {class: "list", text: "delete", id: current.id + "deleteButton"}).click(function (deleteType, deleteId, deleteObject) {
+            									var etag = ((deleteObject.meta && deleteObject.meta.version) ? deleteObject.meta.version : "");
 	                							return function() {
 	                								$.post("/Viewer2/Delete", 
-	                										{ type: deleteType, id: deleteId, etag: deleteEtag }, 
+	                										{ type: deleteType, id: deleteId, etag: etag }, 
 	                										handleResult)
 	                										.error(handleError);				
 	                							}
-	                						}($("#listType").val(), current.id, current.meta.version)),
+	                						} ($("#listType").val(), current.id, current)),
             								$("<button>", {class: "list", text: "Save password", id: current.id + "setPasswordButton"}).click(function (editId) {
         										return function () {
             										$.post("/Viewer2/SetPassword", 
@@ -110,12 +111,13 @@ $(document).ready(function () {
             								} (current.id)).hide(),
             								$("<button>", {class: "list", text: "Save resource", id: current.id + "updateButton"}).click(function (editType, editData) {
             									return function () {
+            										var etag = ((editData.meta && editData.meta.version) ? editData.meta.version : "");
             										$.post("/Viewer2/Edit", 
-            												{ type: editType, operation: "PUT", data: $("#" + editData.id + "edit").val(), id: editData.id, etag: editData.meta.version }, 
+            												{ type: editType, operation: "PUT", data: $("#" + editData.id + "edit").val(), id: editData.id, etag: etag }, 
             												handleResult)
             												.error(handleError);	            										
             									};
-            								}($("#listType").val(), current)).hide())));
+            								} ($("#listType").val(), current)).hide())));
 	            }
 	            
 	            $('#result').append($tbl);

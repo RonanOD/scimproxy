@@ -26,11 +26,11 @@ import org.apache.commons.logging.LogFactory;
 
 public class ScimUsersServlet extends RestServlet {
 
-	private static final long serialVersionUID = 3404477020945307825L;
+    private static final long serialVersionUID = 3404477020945307825L;
 
-	private Log               log              = LogFactory.getLog(ScimUsersServlet.class);
+    private Log               log              = LogFactory.getLog(ScimUsersServlet.class);
 
-    private Trigger trigger = new Trigger();
+    private Trigger           trigger          = new Trigger();
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
@@ -55,12 +55,10 @@ public class ScimUsersServlet extends RestServlet {
         DummyStorage storage = DummyStorage.getInstance(authUser.getSessionId());
         List users = null;
 
-        String filterBy = req.getParameter("filterBy");
-        String filterValue = req.getParameter("filterValue");
-        String filterOp = req.getParameter("filterOp");
-        
-        if (filterBy != null && !"".equals(filterBy)) {
-            users = storage.getList(sortBy, sortOrder, filterBy, filterValue, filterOp);
+        String filter = req.getParameter("filter");
+
+        if (filter != null && !filter.isEmpty()) {
+            users = storage.getList(sortBy, sortOrder, filter);
         } else {
             users = storage.getUserList(sortBy, sortOrder);
         }
@@ -88,7 +86,7 @@ public class ScimUsersServlet extends RestServlet {
         if (index > users.size()) {
             index = users.size();
         }
-        
+
         try {
             users = users.subList(index, max);
         } catch (IndexOutOfBoundsException e) {

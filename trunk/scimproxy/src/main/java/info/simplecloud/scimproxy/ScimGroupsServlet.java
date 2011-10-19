@@ -42,12 +42,10 @@ public class ScimGroupsServlet extends RestServlet {
         @SuppressWarnings("rawtypes")
 		List groups = null;
 
-        String filterBy = req.getParameter("filterBy");
-        String filterValue = req.getParameter("filterValue");
-        String filterOp = req.getParameter("filterOp");
+        String filter = req.getParameter("filter");
         
-        if (filterBy != null && !"".equals(filterBy)) {
-        	groups = storage.getList(sortBy, sortOrder, filterBy, filterValue, filterOp);
+        if (filter != null && !"".equals(filter)) {
+        	groups = storage.getList(sortBy, sortOrder, filter);
         } else {
         	groups = storage.getGroupList(sortBy, sortOrder);
         }

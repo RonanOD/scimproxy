@@ -54,7 +54,7 @@ public interface IStorage {
 
 	
 	
-	ArrayList<User> getList(String sortBy, String sortOrder, String filterBy, String filterValue, String filterOp);
+	ArrayList<User> getList(String sortBy, String sortOrder, String filter);
 
 	void addList(List<User> upstreamUsers);
 
