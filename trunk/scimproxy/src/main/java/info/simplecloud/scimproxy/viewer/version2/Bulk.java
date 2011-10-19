@@ -33,7 +33,7 @@ public class Bulk extends HttpServlet {
         HttpClient client = new HttpClient();
         client.getParams().setAuthenticationPreemptive(false);
 
-        PostMethod method = new PostMethod(baseUrl + "v1/Bulk");
+        PostMethod method = new PostMethod(baseUrl + "Bulk");
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setRequestHeader("Accept", "application/json");
         method.setRequestHeader("Authorization", creds);
@@ -44,6 +44,7 @@ public class Bulk extends HttpServlet {
             resp.getWriter().print(method.getResponseBodyAsString());
         } else {
             resp.getWriter().print("Error, server returned " + responseCode);
+            resp.getWriter().print(method.getResponseBodyAsString());
         }
     }
 }

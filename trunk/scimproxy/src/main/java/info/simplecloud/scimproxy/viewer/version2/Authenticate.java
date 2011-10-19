@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.json.JSONException;
@@ -62,18 +63,49 @@ public class Authenticate extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // basic creds or oauth2 url and
-
+System.out.println("==== POST");
         String baseUrl = req.getParameter("BaseUrl");
-        if(!baseUrl.endsWith("/")) {
-        	baseUrl += "/";
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
         }
         req.getSession().setAttribute("BaseUrl", baseUrl);
         String authSelection = req.getParameter("AuthSelection");
+        System.out.println(authSelection);
         if ("Basic".equals(authSelection)) {
             String creds = req.getParameter("Username") + ":" + req.getParameter("Password");
             creds = "Basic " + new String(Base64.encodeBase64(creds.getBytes()));
             req.getSession().setAttribute("Creds", creds);
             resp.sendRedirect(getRequestedURL(req) + "/viewer2.html");
+        } else if ("OAuth2-v10".equals(authSelection)) {
+            try {
+                HttpClient client = new HttpClient();
+                client.getParams().setAuthenticationPreemptive(false);
+                PostMethod method = new PostMethod(req.getParameter("AuthorizationServer"));
+                
+                NameValuePair[] body = new NameValuePair[] { 
+                        new NameValuePair("username", req.getParameter("Username")),
+                        new NameValuePair("password", req.getParameter("Password")), 
+                        new NameValuePair("client_id", req.getParameter("ClientId")),
+                        new NameValuePair("client_secret", req.getParameter("ClientSecret")),
+                        new NameValuePair("grant_type", "password")};
+                method.setRequestBody(body);
+                
+                method.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                int responseCode = client.executeMethod(method);
+
+                String responseBody = method.getResponseBodyAsString();
+                System.out.println(responseBody);
+                if (responseCode != 200) {
+                    throw new RuntimeException("Failed to fetch access token form authorization server, , got response code " + responseCode);
+                }
+                JSONObject accessResponse = new JSONObject(responseBody);
+
+                req.getSession().setAttribute("Creds", "OAuth " + accessResponse.getString("access_token"));
+                resp.sendRedirect(getRequestedURL(req) + "/viewer2.html");
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to read response from authorizationServer at", e);
+            }
         } else {
             StringBuilder authorizationServer = new StringBuilder(req.getParameter("AuthorizationServer"));
             req.getSession().setAttribute("AuthorizationServer", authorizationServer.toString());

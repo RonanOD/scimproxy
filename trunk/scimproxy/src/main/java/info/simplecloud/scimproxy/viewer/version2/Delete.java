@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 public class Delete extends HttpServlet {
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	    System.out.println("Delete");
         String creds = (String) req.getSession().getAttribute("Creds");
         if (creds == null) {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
@@ -34,10 +35,13 @@ public class Delete extends HttpServlet {
         HttpClient client = new HttpClient();
         client.getParams().setAuthenticationPreemptive(false);
         
-        DeleteMethod method = new DeleteMethod(baseUrl+ "v1/" + indata.get("type") + "/" + indata.get("id"));
+        DeleteMethod method = new DeleteMethod(baseUrl + indata.get("type") + "/" + indata.get("id"));
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));        
-        method.setRequestHeader("Accept", "application/json");
-        method.setRequestHeader("ETag", indata.get("etag"));
+        
+        method.setRequestHeader("Content-Type", "application/json");
+        if(indata.get("etag") != null) {
+            method.setRequestHeader("ETag", indata.get("etag"));
+        }
         method.setRequestHeader("Authorization", creds);
             
         int responseCode = client.executeMethod(method);
@@ -47,6 +51,7 @@ public class Delete extends HttpServlet {
             resp.getWriter().print(indata.get("type") + " not found");
         } else {
             resp.getWriter().print("Error, server returned " + responseCode);
+            resp.getWriter().print(method.getResponseBodyAsString());
         }
     }
 }

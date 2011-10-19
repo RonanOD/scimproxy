@@ -25,7 +25,9 @@ $(document).ready(function () {
 			data = JSON.parse(data);
 			
 			var $tbl = $('<table>');
-
+			$('#result').append(
+					$("<p>",{text: "Got " + data.totalResults + " " + $("#listType").val() + "(s)."}));
+			
 			if(data.Resources && data.Resources.length != 0) {
 				$tbl.append(
 						$('<tr>').append(
@@ -124,6 +126,7 @@ $(document).ready(function () {
 					class: 'prettyprint, full',
 				    text: "No resources found."
 				}).appendTo('#result');
+	            $('#result').show("slow");
             }
 			prettyPrint();
 		};
