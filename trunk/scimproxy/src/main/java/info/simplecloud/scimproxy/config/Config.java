@@ -167,8 +167,12 @@ public class Config {
                     csp.setoAuth2ClientSecret(config.getString("down-stream.csp(" + i + ").auth.clientSecret"));
 
                     downStreamCSP.add(csp);
+
+                    log.info("All resources will be sent downstreams to: " + csp);
                 }
             }
+
+            log.info("Configuration loaded successfully.");
 
         } catch (ConfigurationException cex) {
             log.error("Could not find configuration file. " + cex.toString());
