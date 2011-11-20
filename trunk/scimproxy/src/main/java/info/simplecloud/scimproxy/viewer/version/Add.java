@@ -44,7 +44,6 @@ public class Add extends HttpServlet {
         if (responseCode == 201) {
             resp.getWriter().print(method.getResponseBodyAsString());
         } else {
-            System.out.println();
             resp.getWriter().print("Error, server returned " + responseCode);
             resp.getWriter().print(method.getResponseBodyAsString());
         }

@@ -15,7 +15,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>User</servlet-name>
-		<url-pattern>/v1/User*</url-pattern>
+		<url-pattern>/v1/User</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -24,7 +24,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Group</servlet-name>
-		<url-pattern>/v1/Group*</url-pattern>
+		<url-pattern>/v1/Group</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
@@ -83,8 +83,6 @@
 		<url-pattern>/v1/Bulk.xml</url-pattern>
 	</servlet-mapping>
 
-
-
 	
 	<servlet>
 		<servlet-name>AuthorizationServer</servlet-name>
@@ -95,7 +93,7 @@
 		<url-pattern>/AuthorizationServer/*</url-pattern>
 	</servlet-mapping>
 	
-	<servlet>
+<!-- 	<servlet>
 		<servlet-name>AddUser</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.viewer.AddUser</servlet-class>
 	</servlet>
@@ -103,7 +101,7 @@
 		<servlet-name>AddUser</servlet-name>
 		<url-pattern>/AddUser</url-pattern>
 	</servlet-mapping>
-	
+	-->
 	<filter>
 		<filter-name>MethodOverrideFilter</filter-name>
 		<filter-class>info.simplecloud.scimproxy.filter.MethodOverrideFilter</filter-class>
