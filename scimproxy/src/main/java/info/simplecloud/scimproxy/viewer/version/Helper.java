@@ -1,4 +1,4 @@
-package info.simplecloud.scimproxy.viewer.version2;
+package info.simplecloud.scimproxy.viewer.version;
 
 import java.io.BufferedReader;
 import java.io.IOException;

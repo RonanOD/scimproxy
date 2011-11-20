@@ -1,4 +1,4 @@
-package info.simplecloud.scimproxy.viewer.version2;
+package info.simplecloud.scimproxy.viewer.version;
 
 import java.io.IOException;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class List extends HttpServlet {
             query = query.substring(0, query.length() - 1);
         }
 
-        GetMethod method = new GetMethod(baseUrl + indata.get("type") + "s");
+        GetMethod method = new GetMethod(baseUrl + indata.get("type"));
         method.setQueryString(query);
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setRequestHeader("Accept", "application/json");
