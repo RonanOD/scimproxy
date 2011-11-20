@@ -32,7 +32,7 @@ public class ScimSchemaServlet extends HttpServlet {
 				  "\"name\":\"User\"," +
 				  "\"description\":\"Core User\"," +
 				  "\"schema\":\"urn:scim:schemas:core:1.0\"," +
-				  "\"queryEndpoint\":\"/Users\"," +
+				  "\"queryEndpoint\":\"/User\"," +
 				  "\"attributes\":[" +
 				    "{" +
 				      "\"name\":\"id\"," +
@@ -219,7 +219,7 @@ public class ScimSchemaServlet extends HttpServlet {
 					  "\"name\":\"Group\"," +
 					  "\"description\":\"Core Group\"," +
 					  "\"schema\":\"urn:scim:schemas:core:1.0\"," +
-					  "\"queryEndpoint\":\"/Groups\"," +
+					  "\"queryEndpoint\":\"/Group\"," +
 					  "\"attributes\":[" +
 					    "{" +
 					      "\"name\":\"id\"," +

@@ -1,16 +1,21 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.User;
+import info.simplecloud.core.coding.encode.JsonEncoder;
+import info.simplecloud.core.coding.encode.XmlEncoder;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
+import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
 import info.simplecloud.scimproxy.user.UserDelegator;
 import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,31 +54,107 @@ public class ScimUserServlet extends ScimResourceServlet {
         String userId = Util.getUserIdFromUri(req.getRequestURI());
         AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
 
-        try {
-        	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(userId);
-            String userStr = null;
+        if(!"".equals(userId)) {
+            try {
+            	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(userId);
+                String userStr = null;
 
-            if (req.getParameter("attributes") != null) {
-                userStr = scimUser.getUser(HttpGenerator.getEncoding(req), Util.getAttributeStringFromRequest(req));
-            } else {
-                userStr = scimUser.getUser(HttpGenerator.getEncoding(req));
+                if (req.getParameter("attributes") != null) {
+                    userStr = scimUser.getUser(HttpGenerator.getEncoding(req), Util.getAttributeStringFromRequest(req));
+                } else {
+                    userStr = scimUser.getUser(HttpGenerator.getEncoding(req));
+                }
+
+                if (userStr == null) {
+                    HttpGenerator.badRequest(resp);
+                } else {
+                    resp.setContentType(HttpGenerator.getContentType(req));
+                    resp.setHeader("ETag", scimUser.getMeta().getVersion());
+
+                    HttpGenerator.ok(resp, userStr);
+                    log.info("Returning user " + scimUser.getId());
+                }
+
+            } catch (UnknownEncoding e) {
+                HttpGenerator.serverError(resp);
+            } catch (ResourceNotFoundException e) {
+                HttpGenerator.notFound(resp);
             }
-
-            if (userStr == null) {
-                HttpGenerator.badRequest(resp);
-            } else {
-                resp.setContentType(HttpGenerator.getContentType(req));
-                resp.setHeader("ETag", scimUser.getMeta().getVersion());
-
-                HttpGenerator.ok(resp, userStr);
-                log.info("Returning user " + scimUser.getId());
-            }
-
-        } catch (UnknownEncoding e) {
-            HttpGenerator.serverError(resp);
-        } catch (ResourceNotFoundException e) {
-            HttpGenerator.notFound(resp);
         }
+        else {
+
+            String attributesString = req.getParameter("attributes") == null ? "" : req.getParameter("attributes");
+            List<String> attributesList = new ArrayList<String>();
+            if (attributesString != null && !"".equals(attributesString)) {
+                for (String attribute : attributesString.split(",")) {
+                    attributesList.add(attribute.trim());
+                }
+            }
+
+            // TODO: SPEC: REST: what is major
+            String sortBy = req.getParameter("sortBy") == null ? "userName" : req.getParameter("sortBy");
+            String sortOrder = req.getParameter("sortOrder") == null ? "ascending" : req.getParameter("sortOrder");
+            if (!sortOrder.equalsIgnoreCase("ascending") && !sortOrder.equalsIgnoreCase("descending")) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().print("Sort order must be 'ascending' or 'descending'");
+                return;
+            }
+
+            DummyStorage storage = DummyStorage.getInstance(authUser.getSessionId());
+            List users = null;
+
+            String filter = req.getParameter("filter");
+
+            if (filter != null && !filter.isEmpty()) {
+                users = storage.getList(sortBy, sortOrder, filter);
+            } else {
+                users = storage.getUserList(sortBy, sortOrder);
+            }
+
+            int index = 0;
+            int count = 0;
+
+            String startIndexStr = req.getParameter("startIndex"); // must be
+                                                                   // absolut and
+                                                                   // defaults to 0
+            String countStr = req.getParameter("count"); // must be absolut and
+                                                         // defaults to 0
+            if (startIndexStr != null && !"".equals(startIndexStr)) {
+                index = Integer.parseInt(startIndexStr);
+            }
+            if (countStr != null && !"".equals(countStr)) {
+                count = Integer.parseInt(countStr);
+            }
+
+            int max = index + count;
+            if (max > users.size() || max == 0) {
+                max = users.size();
+            }
+
+            if (index > users.size()) {
+                index = users.size();
+            }
+
+            try {
+                users = users.subList(index, max);
+            } catch (IndexOutOfBoundsException e) {
+                users = new ArrayList<User>();
+            }
+
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setContentType(HttpGenerator.getContentType(req));
+
+            String response = "";
+            if (User.ENCODING_JSON.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
+                response = new JsonEncoder().encode(users, attributesList);
+            }
+            if (User.ENCODING_XML.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
+                response = new XmlEncoder().encode(users, attributesList);
+            }
+
+            resp.getWriter().print(response);
+        }
+
     }
 
     /**

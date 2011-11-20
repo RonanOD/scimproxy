@@ -27,9 +27,9 @@ public class ScimGroupsServletTest {
     public static void setUp() throws Exception {
         tester = new ServletTester();
         tester.addServlet(ScimGroupServlet.class, "/v1/Group/*");
-        tester.addServlet(ScimGroupsServlet.class, "/v1/Groups");
-        tester.addServlet(ScimGroupsServlet.class, "/v1/Groups.xml");
-        tester.addServlet(ScimGroupsServlet.class, "/v1/Groups.json");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Group");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Group.xml");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Group.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -61,7 +61,7 @@ public class ScimGroupsServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Groups");
+        request.setURI("/v1/Group");
         response.parse(tester.getResponses(request.generate()));
 
         String groups = response.getContent();
@@ -87,7 +87,7 @@ public class ScimGroupsServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Groups.xml");
+        request.setURI("/v1/Group.xml");
         response.parse(tester.getResponses(request.generate()));
 
         String groups = response.getContent();
@@ -113,7 +113,7 @@ public class ScimGroupsServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Groups.json");
+        request.setURI("/v1/Group.json");
         response.parse(tester.getResponses(request.generate()));
 
         String groups = response.getContent();
@@ -141,7 +141,7 @@ public class ScimGroupsServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Groups.json?asdasdasd");
+        request.setURI("/v1/Group.json?asdasdasd");
         response.parse(tester.getResponses(request.generate()));
 
         String groups = response.getContent();

@@ -8,7 +8,7 @@ import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.HttpGenerator;
 import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.config.Config;
-import info.simplecloud.scimproxy.viewer.version2.Helper;
+import info.simplecloud.scimproxy.viewer.version.Helper;
 
 import java.io.IOException;
 import java.util.ArrayList;

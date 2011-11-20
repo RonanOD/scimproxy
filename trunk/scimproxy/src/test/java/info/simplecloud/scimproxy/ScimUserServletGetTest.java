@@ -41,6 +41,7 @@ public class ScimUserServletGetTest {
         id = tmp.getId();
     }
 
+    
     @Test
     public void getUser() throws Exception {
         request.setMethod("GET");

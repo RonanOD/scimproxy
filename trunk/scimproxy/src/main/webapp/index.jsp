@@ -8,9 +8,11 @@
 			<p>
 				Read more about scimproxy project at <a href="http://code.google.com/p/scimproxy/" target="blank_">here</a>.
 			</p>
-			
 			<p>
-				 To create a user (and a SCIM storage for that user) and then authenticate for CRUD operations,<a href="/Viewer/Add">Viewer</a> or <a href="/authenticate.html">Viewer2</a>.
+				 Test the SCIM protocol by creating an account and use our <a href="/authenticate.html">Viewer</a> to connect to that account.
+			</p>
+			<p>
+				 Use <a href="/authenticate.html">Viewer</a> to connect to this and other SCIM providers.
 			</p>
 			<p>
 				The SCIM specification can be found <a href="http://www.simplecloud.info/" target="blank_">here</a>.

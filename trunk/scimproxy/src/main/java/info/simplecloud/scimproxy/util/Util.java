@@ -83,16 +83,15 @@ public class Util {
 
             int indexOfUserId = query.indexOf(s) + s.length();
             int indexOfPw = query.indexOf(pw);
-
-            if(indexOfPw > -1) {
-            	id = query.substring(indexOfUserId, indexOfPw);
-            }
-            else {
-            	id = query.substring(indexOfUserId);
-            }
             try {
+	            if(indexOfPw > -1) {
+	            	id = query.substring(indexOfUserId, indexOfPw);
+	            }
+	            else {
+	            	id = query.substring(indexOfUserId);
+	            }
                 id = URLDecoder.decode(id, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 // just return empty id
             }
         }
@@ -121,11 +120,26 @@ public class Util {
         String id = "";
         // TODO: add more validation of input
         String s = "/v1/Group/";
+        String jsonExt = ".json";
+        String xmlExt = ".xml";
+
         if (query != null && query.length() > 0) {
+            // remove any extension if any
+            int indexOfJsonExt = query.indexOf(jsonExt);
+            int indexOfXmlExt = query.indexOf(xmlExt);
+            
+            if(indexOfJsonExt > -1) {
+            	query = query.substring(0, indexOfJsonExt) + query.substring(indexOfJsonExt+jsonExt.length());
+            }
+            if(indexOfXmlExt > -1) {
+            	query = query.substring(0, indexOfXmlExt) + query.substring(indexOfXmlExt+xmlExt.length());
+            }
+
+
             int indexOfUserId = query.indexOf(s) + s.length();
 
-            id = query.substring(indexOfUserId);
             try {
+            	id = query.substring(indexOfUserId);
                 id = URLDecoder.decode(id, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 // just return empty id
