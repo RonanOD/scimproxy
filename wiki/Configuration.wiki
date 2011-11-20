@@ -16,11 +16,9 @@ The auth node defines what type of authentication that the API requires. Only BA
 
 The storages nodes contains all storages used. Right now only dummy storage is supported. It stores users in memory. Other storages will later on be added.
 
-The up-streams node defines up stream SCIM servers. When user is not found in the local storage the up-stream servers will be searched. If user is found the user is added to local storage.
-
 The down-stream node defines down stream SCIM servers. All changes made to the local SCIM server will also be sent down to the configured server.
 
-Both the down and up-stream server nodes defines what type of authentication that is uses. You can also define primary encoding (JSON or XML) then the version that the server uses. The version is added to the url of the server.
+The down-stream server nodes defines what type of authentication that is uses. You can also define primary encoding (JSON or XML) then the version that the server uses. The version is added to the url of the server.
 
 = Examples =
 
@@ -54,17 +52,6 @@ Both the down and up-stream server nodes defines what type of authentication tha
 			<type>dummy</type>
 		</storage>
 	</storages>
-	<up-stream>
-		<csp>
-			<url>http://192.168.10.146:8080</url>
-			<preferedEncoding>JSON</preferedEncoding>
-			<version>v1</version>
-			<auth type="basic">
-				<username>usr</username>
-				<password>pw</password>
-			</auth>
-		</csp>
-	</up-stream>
 	<down-stream>
 		<csp>
 			<url>http://192.168.10.141:8080</url>
