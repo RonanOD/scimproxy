@@ -168,7 +168,8 @@ public class DummyStorage implements IStorage {
 
             return list;
         } catch (UnknownAttribute e) {
-            throw new RuntimeException("filter failed", e);
+            return new ArrayList<User>();
+            //throw new RuntimeException("filter failed", e);
         }
     }
 
