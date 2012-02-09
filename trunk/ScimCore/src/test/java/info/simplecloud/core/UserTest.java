@@ -7,12 +7,14 @@ import info.simplecloud.core.extensions.EnterpriseAttributes;
 import info.simplecloud.core.extensions.types.Manager;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.Name;
-import info.simplecloud.core.types.PluralType;
+import info.simplecloud.core.types.MultiValuedType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xmlbeans.impl.util.Base64;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,6 +24,18 @@ public class UserTest {
     @BeforeClass
     public static void setUp() {
         User.registerExtension(EnterpriseAttributes.class);
+    }
+    
+    @Test
+    public void tmp() throws JSONException {
+        JSONObject tmp = new JSONObject();
+        
+        tmp.put("version", "W/\"4weymrEsh5O6cAEK\"");
+        tmp.put("version", "W/'4weymrEsh5O6cAEK'");
+        tmp.put("weakETag", true);
+        
+        System.out.println(tmp.toString(2));
+        
     }
     
     @Test
@@ -92,9 +106,9 @@ public class UserTest {
         ea.setDivision("Test division");
         ea.setManager(new Manager("MI-123ABC", "Hugo Boss"));
 
-        List<PluralType<String>> emails = new ArrayList<PluralType<String>>();
-        emails.add(new PluralType<String>("karl@andersson.se", "home", false, false));
-        emails.add(new PluralType<String>("karl.andersson@work.com", "work", true, false));
+        List<MultiValuedType<String>> emails = new ArrayList<MultiValuedType<String>>();
+        emails.add(new MultiValuedType<String>("karl@andersson.se", "home", false, false));
+        emails.add(new MultiValuedType<String>("karl.andersson@work.com", "work", true, false));
         user.setAttribute("emails", emails);
 
         user.getUser(Resource.ENCODING_JSON);
@@ -122,9 +136,9 @@ public class UserTest {
         user.setAttribute("locale", "sv");
         user.setAttribute("password", "kan123!");
 
-        List<PluralType<String>> emails = new ArrayList<PluralType<String>>();
-        emails.add(new PluralType<String>("karl@andersson.se", "home", false, false));
-        emails.add(new PluralType<String>("karl.andersson@work.com", "work", true, false));
+        List<MultiValuedType<String>> emails = new ArrayList<MultiValuedType<String>>();
+        emails.add(new MultiValuedType<String>("karl@andersson.se", "home", false, false));
+        emails.add(new MultiValuedType<String>("karl.andersson@work.com", "work", true, false));
         user.setAttribute("emails", emails);
 
         List<String> includeAttributes = new ArrayList<String>();
@@ -155,9 +169,9 @@ public class UserTest {
         user.setAttribute("locale", "sv");
         user.setAttribute("password", "kan123!");
 
-        List<PluralType<String>> emails = new ArrayList<PluralType<String>>();
-        emails.add(new PluralType<String>("karl@andersson.se", "home", false, false));
-        emails.add(new PluralType<String>("karl.andersson@work.com", "work", true, false));
+        List<MultiValuedType<String>> emails = new ArrayList<MultiValuedType<String>>();
+        emails.add(new MultiValuedType<String>("karl@andersson.se", "home", false, false));
+        emails.add(new MultiValuedType<String>("karl.andersson@work.com", "work", true, false));
         user.setAttribute("emails", emails);
 
         List<String> includeAttributes = new ArrayList<String>();
@@ -245,17 +259,17 @@ public class UserTest {
         Assert.assertEquals(user1noteq4, user1);
         Assert.assertEquals(user1noteq5, user1);
 
-        List<PluralType<String>> l1 = new ArrayList<PluralType<String>>();
-        l1.add(new PluralType<String>("String1", "type1", true, false));
+        List<MultiValuedType<String>> l1 = new ArrayList<MultiValuedType<String>>();
+        l1.add(new MultiValuedType<String>("String1", "type1", true, false));
         user1.setGroups(l1);
-        List<PluralType<String>> l2 = new ArrayList<PluralType<String>>();
-        l2.add(new PluralType<String>("String1", "type1", true, false));
+        List<MultiValuedType<String>> l2 = new ArrayList<MultiValuedType<String>>();
+        l2.add(new MultiValuedType<String>("String1", "type1", true, false));
         user1eq1.setGroups(l2);
-        List<PluralType<String>> l3 = new ArrayList<PluralType<String>>();
-        l3.add(new PluralType<String>("not equal", "type1", true, false));
+        List<MultiValuedType<String>> l3 = new ArrayList<MultiValuedType<String>>();
+        l3.add(new MultiValuedType<String>("not equal", "type1", true, false));
         user1noteq4.setGroups(l3);
-        List<PluralType<String>> l4 = new ArrayList<PluralType<String>>();
-        l4.add(new PluralType<String>("String1", "type1", true, false));
+        List<MultiValuedType<String>> l4 = new ArrayList<MultiValuedType<String>>();
+        l4.add(new MultiValuedType<String>("String1", "type1", true, false));
         user1noteq5.setGroups(l4);
 
         Assert.assertEquals(user1eq1, user1);
@@ -269,25 +283,25 @@ public class UserTest {
         Assert.assertFalse(user1noteq4.equals(user1));
         Assert.assertEquals(user1noteq5, user1);
 
-        List<PluralType<Address>> plural1 = new ArrayList<PluralType<Address>>();
+        List<MultiValuedType<Address>> plural1 = new ArrayList<MultiValuedType<Address>>();
         Address workAddress = new Address();
         workAddress.setCountry("Sweden");
         workAddress.setRegion("Stockholm");
-        plural1.add(new PluralType<Address>(workAddress, "work", true, false));
+        plural1.add(new MultiValuedType<Address>(workAddress, "work", true, false));
         user1.setAddresses(plural1);
 
-        List<PluralType<Address>> plural2 = new ArrayList<PluralType<Address>>();
+        List<MultiValuedType<Address>> plural2 = new ArrayList<MultiValuedType<Address>>();
         Address workAddress2 = new Address();
         workAddress2.setCountry("Sweden");
         workAddress2.setRegion("Stockholm");
-        plural2.add(new PluralType<Address>(workAddress2, "work", true, false));
+        plural2.add(new MultiValuedType<Address>(workAddress2, "work", true, false));
         user1eq1.setAddresses(plural2);
 
-        List<PluralType<Address>> plural3 = new ArrayList<PluralType<Address>>();
+        List<MultiValuedType<Address>> plural3 = new ArrayList<MultiValuedType<Address>>();
         Address workAddress3 = new Address();
         workAddress3.setCountry("Sweden");
         workAddress3.setRegion("not equal");
-        plural3.add(new PluralType<Address>(workAddress3, "work", true, false));
+        plural3.add(new MultiValuedType<Address>(workAddress3, "work", true, false));
         user1noteq1.setAddresses(plural3);
 
         Assert.assertEquals(user1eq1, user1);

@@ -3,7 +3,7 @@ package info.simplecloud.core;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
-import info.simplecloud.core.types.PluralType;
+import info.simplecloud.core.types.MultiValuedType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,32 +19,32 @@ public class GroupTest {
         Group group = new Group("ABC123");
         group.setId("123ABC");
         group.setDisplayName("Super group");
-        List<PluralType<String>> members = new ArrayList<PluralType<String>>();
-        members.add(new PluralType<String>("User1", null, false, false));
-        members.add(new PluralType<String>("User2", null, false, false));
-        members.add(new PluralType<String>("User3", null, false, false));
+        List<MultiValuedType<String>> members = new ArrayList<MultiValuedType<String>>();
+        members.add(new MultiValuedType<String>("User1", null, false, false));
+        members.add(new MultiValuedType<String>("User2", null, false, false));
+        members.add(new MultiValuedType<String>("User3", null, false, false));
         group.setMembers(members);
 
         Assert.assertEquals("123ABC", group.getId());
         Assert.assertEquals("Super group", group.getDisplayName());
-        Assert.assertTrue(group.getMembers().contains(new PluralType<String>("User1", null, false, false)));
-        Assert.assertTrue(group.getMembers().contains(new PluralType<String>("User2", null, false, false)));
-        Assert.assertTrue(group.getMembers().contains(new PluralType<String>("User3", null, false, false)));
+        Assert.assertTrue(group.getMembers().contains(new MultiValuedType<String>("User1", null, false, false)));
+        Assert.assertTrue(group.getMembers().contains(new MultiValuedType<String>("User2", null, false, false)));
+        Assert.assertTrue(group.getMembers().contains(new MultiValuedType<String>("User3", null, false, false)));
 
         group.setAttribute("id", "DEF456");
         group.setAttribute("displayName", "Super Mega Group");
-        members = new ArrayList<PluralType<String>>();
-        members.add(new PluralType<String>("User4", null, false, false));
-        members.add(new PluralType<String>("User5", null, false, false));
-        members.add(new PluralType<String>("User6", null, false, false));
+        members = new ArrayList<MultiValuedType<String>>();
+        members.add(new MultiValuedType<String>("User4", null, false, false));
+        members.add(new MultiValuedType<String>("User5", null, false, false));
+        members.add(new MultiValuedType<String>("User6", null, false, false));
         group.setAttribute("members", members);
 
         Assert.assertEquals("DEF456", group.getAttribute("id"));
         Assert.assertEquals("Super Mega Group", group.getAttribute("displayName"));
         members = group.getAttribute("members");
-        Assert.assertTrue(members.contains(new PluralType<String>("User4", null, false, false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("User5", null, false, false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("User6", null, false, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User4", null, false, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User5", null, false, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User6", null, false, false)));
 
         group.toString();
     }
@@ -54,10 +54,10 @@ public class GroupTest {
         Group group = new Group("ABC123");
         group.setId("123ABC");
         group.setDisplayName("Super group");
-        List<PluralType<String>> members = new ArrayList<PluralType<String>>();
-        members.add(new PluralType<String>("User1", null, false, false));
-        members.add(new PluralType<String>("User2", null, false, false));
-        members.add(new PluralType<String>("User3", null, false, false));
+        List<MultiValuedType<String>> members = new ArrayList<MultiValuedType<String>>();
+        members.add(new MultiValuedType<String>("User1", null, false, false));
+        members.add(new MultiValuedType<String>("User2", null, false, false));
+        members.add(new MultiValuedType<String>("User3", null, false, false));
         group.setMembers(members);
 
         String json = group.getGroup(Resource.ENCODING_JSON);
@@ -81,10 +81,10 @@ public class GroupTest {
         Group group = new Group("ABC123");
         group.setId("123ABC");
         group.setDisplayName("Super group");
-        List<PluralType<String>> members = new ArrayList<PluralType<String>>();
-        members.add(new PluralType<String>("User1", null, false, false));
-        members.add(new PluralType<String>("User2", null, false, false));
-        members.add(new PluralType<String>("User3", null, false, false));
+        List<MultiValuedType<String>> members = new ArrayList<MultiValuedType<String>>();
+        members.add(new MultiValuedType<String>("User1", null, false, false));
+        members.add(new MultiValuedType<String>("User2", null, false, false));
+        members.add(new MultiValuedType<String>("User3", null, false, false));
         group.setMembers(members);
 
         List<String> includeAttributes = new ArrayList<String>();
@@ -112,10 +112,10 @@ public class GroupTest {
 
         Assert.assertEquals("123ABC", group.getAttribute("id"));
         Assert.assertEquals("Super group", group.getAttribute("displayName"));
-        List<PluralType<String>> members = group.getAttribute("members");
-        Assert.assertTrue(members.contains(new PluralType<String>("User1", null, false, false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("User2", null, false, false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("User3", null, false, false)));
+        List<MultiValuedType<String>> members = group.getAttribute("members");
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User1", null, false, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User2", null, false, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User3", null, false, false)));
     }
 
     @Test
@@ -125,10 +125,10 @@ public class GroupTest {
 
         Assert.assertEquals("123ABC", group.getAttribute("id"));
         Assert.assertEquals("Super group", group.getAttribute("displayName"));
-        List<PluralType<String>> members = group.getAttribute("members");
-        Assert.assertTrue(members.contains(new PluralType<String>("User1", null, false, false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("User2", null, false, false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("User3", null, false, false)));
+        List<MultiValuedType<String>> members = group.getAttribute("members");
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User1", null, false, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User2", null, false, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("User3", null, false, false)));
     }
 
     @Test
@@ -144,10 +144,10 @@ public class GroupTest {
         group.patch(patch, Resource.ENCODING_JSON);
         Assert.assertNull(group.getDisplayName());
         // delete members
-        List<PluralType<String>> members = new ArrayList<PluralType<String>>();
-        members.add(new PluralType<String>("user1", "user", "Adam", false));
-        members.add(new PluralType<String>("user2", "user", "Bertil", false));
-        members.add(new PluralType<String>("user3", "user", "Cesar", false));
+        List<MultiValuedType<String>> members = new ArrayList<MultiValuedType<String>>();
+        members.add(new MultiValuedType<String>("user1", "user", "Adam", false));
+        members.add(new MultiValuedType<String>("user2", "user", "Bertil", false));
+        members.add(new MultiValuedType<String>("user3", "user", "Cesar", false));
         group.setMembers(members);
         patch = "{\"meta\":{\"attributes\":[\"members\"]}}";
         group.patch(patch, Resource.ENCODING_JSON);
@@ -157,17 +157,17 @@ public class GroupTest {
         patch = "{\"members\":[{\"value\":\"user1\", \"operation\":\"delete\"}]}";
         group.patch(patch, Resource.ENCODING_JSON);
         members = group.getMembers();
-        Assert.assertFalse(members.contains(new PluralType<String>("user1", "user", "Adam", false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user2", "user", "Bertil", false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user3", "user", "Cesar", false)));
+        Assert.assertFalse(members.contains(new MultiValuedType<String>("user1", "user", "Adam", false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user2", "user", "Bertil", false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user3", "user", "Cesar", false)));
         // add primary
         patch = "{\"members\":[{\"value\":\"user1\", \"primary\":true, \"type\":\"user\"}]}";
         group.patch(patch, Resource.ENCODING_JSON);
         members = group.getMembers();
-        Assert.assertTrue(members.contains(new PluralType<String>("user1", "user", "Adam", false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user2", "user", "Bertil", false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user3", "user", "Cesar", false)));
-        for(PluralType<String> singular: members){
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user1", "user", "Adam", false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user2", "user", "Bertil", false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user3", "user", "Cesar", false)));
+        for(MultiValuedType<String> singular: members){
             if("user1".equals(singular.getValue())){
                 Assert.assertTrue(singular.isPrimary());
             } else {
@@ -178,10 +178,10 @@ public class GroupTest {
         patch = "{\"members\":[{\"value\":\"user2\", \"primary\":true}]}";
         group.patch(patch, Resource.ENCODING_JSON);
         members = group.getMembers();
-        Assert.assertTrue(members.contains(new PluralType<String>("user1", "user", "Adam", false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user2", "user", "Bertil", false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user3", "user", "Cesar", false)));
-        for(PluralType<String> singular: members){
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user1", "user", "Adam", false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user2", "user", "Bertil", false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user3", "user", "Cesar", false)));
+        for(MultiValuedType<String> singular: members){
             if("user2".equals(singular.getValue())){
                 Assert.assertTrue(singular.isPrimary());
             } else {
@@ -192,10 +192,10 @@ public class GroupTest {
         patch = "{\"members\":[{\"value\":\"user2\", \"type\":\"Super User\"}]}";
         group.patch(patch, Resource.ENCODING_JSON);
         members = group.getMembers();
-        Assert.assertTrue(members.contains(new PluralType<String>("user1", "user", "Adam", false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user2", "Super User", "Bertil", false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user3", "user", "Cesar", false)));
-        for(PluralType<String> singular: members){
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user1", "user", "Adam", false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user2", "Super User", "Bertil", false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user3", "user", "Cesar", false)));
+        for(MultiValuedType<String> singular: members){
             if("user2".equals(singular.getValue())){
                 Assert.assertEquals("Super User", singular.getType());
             } else {
@@ -206,9 +206,9 @@ public class GroupTest {
         patch = "{\"members\":[{\"value\":\"user4\"},{\"value\":\"user5\"},{\"value\":\"user6\"}], \"meta\":{\"attributes\":[\"members\"]}}";
         group.patch(patch, Resource.ENCODING_JSON);
         members = group.getMembers();
-        Assert.assertTrue(members.contains(new PluralType<String>("user4", null, null, false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user5", null, null, false)));
-        Assert.assertTrue(members.contains(new PluralType<String>("user6", null, null, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user4", null, null, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user5", null, null, false)));
+        Assert.assertTrue(members.contains(new MultiValuedType<String>("user6", null, null, false)));
     }
 
     @Test
