@@ -6,9 +6,9 @@ import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
-import info.simplecloud.core.handlers.PluralHandler;
+import info.simplecloud.core.handlers.MultiValueHandler;
 import info.simplecloud.core.handlers.StringHandler;
-import info.simplecloud.core.types.PluralType;
+import info.simplecloud.core.types.MultiValuedType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class Group extends Resource {
         }
     }
 
-    private List<PluralType<String>> members;
+    private List<MultiValuedType<String>> members;
     private String                   displayName;
 
     public Group(String group, String encoding) throws UnknownEncoding, InvalidUser {
@@ -95,8 +95,8 @@ public class Group extends Resource {
         return resultlist;
 	}
 
-    @Attribute(name = "members", handler = PluralHandler.class, internalName = "member", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getMembers() {
+    @Attribute(name = "members", handler = MultiValueHandler.class, internalName = "member", internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getMembers() {
         return this.members;
     }
 
@@ -109,7 +109,7 @@ public class Group extends Resource {
         this.displayName = displayName;
     }
 
-    public void setMembers(List<PluralType<String>> members) {
+    public void setMembers(List<MultiValuedType<String>> members) {
         this.members = members;
     }
 }
