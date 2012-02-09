@@ -6,24 +6,25 @@ import info.simplecloud.core.coding.decode.IDecodeHandler;
 import info.simplecloud.core.coding.encode.IEncodeHandler;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.merging.IMerger;
-import info.simplecloud.core.types.PluralType;
+import info.simplecloud.core.types.MultiValuedType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.xmlbeans.XmlObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
+public class MultiValueHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object decode(Object jsonData, Object me, MetaData internalMetaData) throws InvalidUser {
         try {
             JSONArray jsonArray = (JSONArray) jsonData;
-            List<PluralType> result = new ArrayList<PluralType>();
+            List<MultiValuedType> result = new ArrayList<MultiValuedType>();
             int nrPrimary = 0;
 
             IDecodeHandler decoder = internalMetaData.getDecoder();
@@ -44,7 +45,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
                 nrPrimary += (primary ? 1 : 0);
 
-                result.add(new PluralType(decodedValue, type, display, primary, operation));
+                result.add(new MultiValuedType(decodedValue, type, display, primary, operation));
             }
 
             if (nrPrimary > 1) {
@@ -60,7 +61,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object decodeXml(Object value, Object me, MetaData internalMetaData) throws InvalidUser {
-        List<PluralType> result = new ArrayList<PluralType>();
+        List<MultiValuedType> result = new ArrayList<MultiValuedType>();
 
         String name = internalMetaData.getName();
         String getterName = "get";
@@ -74,18 +75,9 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
             int nrPrimary = 0;
 
             for (Object obj : array) {
-                Object internalValue = null;
-                try {
-                    // Look and see if this is a simple or complex plural
-                    Method getValueMethod = obj.getClass().getMethod("getValue");
-                    internalValue = getValueMethod.invoke(obj);
-                } catch (NoSuchMethodException e) {
-                    // This is okay, we have a plural complex
-
-                    IDecodeHandler decoder = internalMetaData.getDecoder();
-                    internalValue = decoder.decodeXml(obj, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
-                }
-
+                IDecodeHandler decoder = internalMetaData.getDecoder();
+                Object internalValue = decoder.decodeXml(obj, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
+                
                 String type = (String) this.readXml(obj, "getType");
                 String display = (String) this.readXml(obj, "getDisplay");
                 Boolean primary = (Boolean) this.readXml(obj, "getPrimary");
@@ -93,7 +85,7 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
                 String operation = (String) this.readXml(obj, "getOperation");
 
                 nrPrimary += (primary ? 1 : 0);
-                result.add(new PluralType(internalValue, type, display, primary, operation));
+                result.add(new MultiValuedType(internalValue, type, display, primary, operation));
             }
 
             if (nrPrimary > 1) {
@@ -116,9 +108,9 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
-        List<PluralType> plural = (List<PluralType>) me;
+        List<MultiValuedType> plural = (List<MultiValuedType>) me;
         JSONArray result = new JSONArray();
-        for (PluralType singular : plural) {
+        for (MultiValuedType singular : plural) {
             JSONObject jsonObject = new JSONObject();
 
             IEncodeHandler encoder = internalMetaData.getEncoder();
@@ -146,22 +138,16 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
-        List<PluralType> plural = (List<PluralType>) me;
+        List<MultiValuedType> plural = (List<MultiValuedType>) me;
 
         try {
-            for (PluralType singular : plural) {
+            for (MultiValuedType singular : plural) {
                 Object value = singular.getValue();
                 IEncodeHandler encoder = internalMetaData.getEncoder();
-                Object internalXmlObject;
-                internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, internalMetaData.getName());
-
-                Object encodedValue = encoder.encodeXml(value, includeAttributes, internalMetaData, internalXmlObject);
-                try {
-                    Method setValueMethod = internalXmlObject.getClass().getMethod("setValue", String.class);
-                    setValueMethod.invoke(internalXmlObject, encodedValue);
-                } catch (NoSuchMethodException e) {
-                    // This is okay, value has been assigned internally
-                }
+                Object internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, internalMetaData.getName());
+                
+                encoder.encodeXml(value, includeAttributes, internalMetaData, internalXmlObject);
+                
                 this.writeXml(internalXmlObject, singular.getType(), "setType");
                 this.writeXml(internalXmlObject, singular.getDisplay(), "setDisplay");
                 if (singular.isPrimary()) {
@@ -187,10 +173,10 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object merge(Object from, Object to) {
-        List<PluralType> toList = (List<PluralType>) to;
-        List<PluralType> fromList = (List<PluralType>) from;
+        List<MultiValuedType> toList = (List<MultiValuedType>) to;
+        List<MultiValuedType> fromList = (List<MultiValuedType>) from;
 
-        for (PluralType singular : fromList) {
+        for (MultiValuedType singular : fromList) {
             if (singular.isDelete()) {
                 toList.remove(singular);
             } else if (singular.isPrimary()) {
@@ -207,8 +193,8 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
         return to;
     }
 
-    private void clearPrimary(List<PluralType> list) {
-        for (PluralType singular : list) {
+    private void clearPrimary(List<MultiValuedType> list) {
+        for (MultiValuedType singular : list) {
             singular.setPrimary(false);
         }
     }
@@ -229,8 +215,8 @@ public class PluralHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     private void writeXml(Object internalXmlObject, Object obj, String methodName) throws SecurityException, NoSuchMethodException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        Method getType = ReflectionHelper.getMethod(methodName, internalXmlObject.getClass());
-        getType.invoke(internalXmlObject, obj);
+        Method method = ReflectionHelper.getMethod(methodName, internalXmlObject.getClass());
+        method.invoke(internalXmlObject, obj);
     }
 
 }
