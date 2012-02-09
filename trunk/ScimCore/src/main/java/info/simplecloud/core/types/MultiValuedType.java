@@ -1,21 +1,21 @@
 package info.simplecloud.core.types;
 
-public class PluralType<T> implements Comparable<PluralType<?>> {
+public class MultiValuedType<T> implements Comparable<MultiValuedType<?>> {
     private T       value;
     private String  type;
     private boolean primary;
     private String  operation;
     private String  display;
 
-    public PluralType(T value, String type, String display, boolean primary) {
+    public MultiValuedType(T value, String type, String display, boolean primary) {
         this(value, type, display, primary, null);
     }
 
-    public PluralType(T value, String type, boolean primary, boolean delete) {
+    public MultiValuedType(T value, String type, boolean primary, boolean delete) {
         this(value, type, null, primary, (delete ? "delete" : null));
     }
 
-    public PluralType(T value, String type, String display, boolean primary, String operation) {
+    public MultiValuedType(T value, String type, String display, boolean primary, String operation) {
         if (value == null) {
             throw new IllegalArgumentException("Cannot create plural object without value");
         }
@@ -28,10 +28,10 @@ public class PluralType<T> implements Comparable<PluralType<?>> {
 
     @Override
     public boolean equals(Object otherObj) {
-        if (!(otherObj instanceof PluralType)) {
+        if (!(otherObj instanceof MultiValuedType)) {
             return false;
         }
-        PluralType otherPlural = (PluralType) otherObj;
+        MultiValuedType otherPlural = (MultiValuedType) otherObj;
 
         return this.value.equals(otherPlural.value);
     }
@@ -42,7 +42,7 @@ public class PluralType<T> implements Comparable<PluralType<?>> {
     }
 
     @Override
-    public int compareTo(PluralType<?> other) {
+    public int compareTo(MultiValuedType<?> other) {
         if (this.getValue() instanceof Comparable) {
             Comparable value = (Comparable) this.getValue();
             return value.compareTo(other.getValue());
