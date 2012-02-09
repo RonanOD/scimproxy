@@ -6,7 +6,7 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.ComplexType;
 import info.simplecloud.core.types.Name;
-import info.simplecloud.core.types.PluralType;
+import info.simplecloud.core.types.MultiValuedType;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -125,15 +125,15 @@ public class JsonEncoderTest {
         scimUser.setAttribute("name",
                 new Name().setAttribute("givenName", name).setAttribute("honorificSuffix", "mr."));
 
-        List<PluralType<String>> emails = new LinkedList<PluralType<String>>();
-        emails.add(new PluralType<String>(email1, "private", true, false));
-        emails.add(new PluralType<String>(email2, "work", false, false));
+        List<MultiValuedType<String>> emails = new LinkedList<MultiValuedType<String>>();
+        emails.add(new MultiValuedType<String>(email1, "private", true, false));
+        emails.add(new MultiValuedType<String>(email2, "work", false, false));
         scimUser.setAttribute("emails", emails);
 
-        List<PluralType<ComplexType>> addresses = new LinkedList<PluralType<ComplexType>>();
-        addresses.add(new PluralType<ComplexType>(new Address().setAttribute("country", "Sweeden").setAttribute(
+        List<MultiValuedType<ComplexType>> addresses = new LinkedList<MultiValuedType<ComplexType>>();
+        addresses.add(new MultiValuedType<ComplexType>(new Address().setAttribute("country", "Sweeden").setAttribute(
                 "postalCode", postcode1), "home", true, false));
-        addresses.add(new PluralType<ComplexType>(new Address().setAttribute("country", "England").setAttribute(
+        addresses.add(new MultiValuedType<ComplexType>(new Address().setAttribute("country", "England").setAttribute(
                 "postalCode", postcode2), "work", false, false));
 
         scimUser.setAttribute("addresses", addresses);

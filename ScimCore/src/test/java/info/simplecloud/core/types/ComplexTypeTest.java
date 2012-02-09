@@ -3,7 +3,7 @@ package info.simplecloud.core.types;
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.handlers.ComplexHandler;
-import info.simplecloud.core.handlers.PluralHandler;
+import info.simplecloud.core.handlers.MultiValueHandler;
 import info.simplecloud.core.handlers.StringHandler;
 
 import java.util.ArrayList;
@@ -15,13 +15,13 @@ import org.junit.Test;
 public class ComplexTypeTest {
 
     private class ComplexTestType extends ComplexType {
-        private List<PluralType<String>> pluralAttribute;
+        private List<MultiValuedType<String>> pluralAttribute;
         private ComplexTestType          complexAttribute;
         private String                   simpleAttribute;
         private String                   simpleAttribute2;
 
         @SuppressWarnings("unused")
-        public void setPluralAttribute(List<PluralType<String>> pluralAttribute) {
+        public void setPluralAttribute(List<MultiValuedType<String>> pluralAttribute) {
             this.pluralAttribute = pluralAttribute;
         }
 
@@ -59,8 +59,8 @@ public class ComplexTypeTest {
         }
 
         @SuppressWarnings("unused")
-        @Attribute(name = "pluralAttribute", handler = PluralHandler.class, internalHandler = ComplexHandler.class)
-        public List<PluralType<String>> getPluralAttribute() {
+        @Attribute(name = "pluralAttribute", handler = MultiValueHandler.class, internalHandler = ComplexHandler.class)
+        public List<MultiValuedType<String>> getPluralAttribute() {
             return this.pluralAttribute;
         }
     }
@@ -120,21 +120,21 @@ public class ComplexTypeTest {
         Assert.assertEquals(
                 ((ComplexType) to.getAttribute("complexAttribute")).getAttribute("simpleAttribute"), "World");
 
-        List<PluralType<String>> pluralList = new ArrayList<PluralType<String>>();
-        pluralList.add(new PluralType<String>("nisse@kalle.com", "work", true, false));
+        List<MultiValuedType<String>> pluralList = new ArrayList<MultiValuedType<String>>();
+        pluralList.add(new MultiValuedType<String>("nisse@kalle.com", "work", true, false));
 
         from = new ComplexTestType().setAttribute("pluralAttribute", pluralList);
-        List<PluralType<String>> pluralListExpected = new ArrayList<PluralType<String>>();
-        pluralListExpected.add(new PluralType<String>("nisse@kalle.com", "work", true, false));
+        List<MultiValuedType<String>> pluralListExpected = new ArrayList<MultiValuedType<String>>();
+        pluralListExpected.add(new MultiValuedType<String>("nisse@kalle.com", "work", true, false));
 
         to = (ComplexType) new ComplexHandler().merge(from, to);
         Assert.assertEquals(to.getAttribute("pluralAttribute"), pluralListExpected);
 
-        List<PluralType<String>> pluralList2 = new ArrayList<PluralType<String>>();
-        pluralList2.add(new PluralType<String>("arne@kalle.com", "home", true, false));
+        List<MultiValuedType<String>> pluralList2 = new ArrayList<MultiValuedType<String>>();
+        pluralList2.add(new MultiValuedType<String>("arne@kalle.com", "home", true, false));
         from = new ComplexTestType().setAttribute("pluralAttribute", pluralList2);
 
-        pluralListExpected.add(new PluralType<String>("arne@kalle.com", "home", true, false));
+        pluralListExpected.add(new MultiValuedType<String>("arne@kalle.com", "home", true, false));
 
         to = (ComplexType) new ComplexHandler().merge(from, to);
         Assert.assertEquals(pluralListExpected, to.getAttribute("pluralAttribute"));
