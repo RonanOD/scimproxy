@@ -8,11 +8,11 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.core.handlers.BooleanHandler;
 import info.simplecloud.core.handlers.ComplexHandler;
-import info.simplecloud.core.handlers.PluralHandler;
+import info.simplecloud.core.handlers.MultiValueHandler;
 import info.simplecloud.core.handlers.StringHandler;
 import info.simplecloud.core.types.Address;
 import info.simplecloud.core.types.Name;
-import info.simplecloud.core.types.PluralType;
+import info.simplecloud.core.types.MultiValuedType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,14 +56,14 @@ public class User extends Resource {
     private String                    timezone;
     private boolean                   active = true;
     private Name                      name;
-    private List<PluralType<String>>  phoneNumbers;
-    private List<PluralType<String>>  emails;
-    private List<PluralType<String>>  ims;
-    private List<PluralType<String>>  photos;
-    private List<PluralType<String>>  groups;
-    private List<PluralType<Address>> addresses;
-    private List<PluralType<String>>  entitlements;
-    private List<PluralType<String>>  roles;
+    private List<MultiValuedType<String>>  phoneNumbers;
+    private List<MultiValuedType<String>>  emails;
+    private List<MultiValuedType<String>>  ims;
+    private List<MultiValuedType<String>>  photos;
+    private List<MultiValuedType<String>>  groups;
+    private List<MultiValuedType<Address>> addresses;
+    private List<MultiValuedType<String>>  entitlements;
+    private List<MultiValuedType<String>>  roles;
 
 
 
@@ -180,43 +180,43 @@ public class User extends Resource {
         return this.name;
     }
 
-    @Attribute(name = "phoneNumbers", handler = PluralHandler.class, internalName = "phoneNumber", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getPhoneNumbers() {
+    @Attribute(name = "phoneNumbers", handler = MultiValueHandler.class, internalName = "phoneNumber", internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getPhoneNumbers() {
         return this.phoneNumbers;
     }
 
-    @Attribute(name = "emails", handler = PluralHandler.class, internalName = "email", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getEmails() {
+    @Attribute(name = "emails", handler = MultiValueHandler.class, internalName = "email", internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getEmails() {
         return this.emails;
     }
 
-    @Attribute(name = "ims", handler = PluralHandler.class, internalName = "im", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getIms() {
+    @Attribute(name = "ims", handler = MultiValueHandler.class, internalName = "im", internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getIms() {
         return this.ims;
     }
 
-    @Attribute(name = "photos", handler = PluralHandler.class, internalName = "photo", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getPhotos() {
+    @Attribute(name = "photos", handler = MultiValueHandler.class, internalName = "photo", internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getPhotos() {
         return this.photos;
     }
 
-    @Attribute(name = "groups", handler = PluralHandler.class, internalName = "group", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getGroups() {
+    @Attribute(name = "groups", handler = MultiValueHandler.class, internalName = "group", internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getGroups() {
         return this.groups;
     }
 
-    @Attribute(name = "addresses", handler = PluralHandler.class, internalName = "address", internalHandler = ComplexHandler.class, internalType = Address.class)
-    public List<PluralType<Address>> getAddresses() {
+    @Attribute(name = "addresses", handler = MultiValueHandler.class, internalName = "address", internalHandler = ComplexHandler.class, internalType = Address.class)
+    public List<MultiValuedType<Address>> getAddresses() {
         return this.addresses;
     }
 
-    @Attribute(name = "entitlements", handler = PluralHandler.class, internalName = "entitlement", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getEntitlements() {
+    @Attribute(name = "entitlements", handler = MultiValueHandler.class, internalName = "entitlement", internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getEntitlements() {
         return this.entitlements;
     }
 
-    @Attribute(name = "roles", handler = PluralHandler.class, internalName = "role", internalHandler = StringHandler.class)
-    public List<PluralType<String>> getRoles() {
+    @Attribute(name = "roles", handler = MultiValueHandler.class, internalName = "role", internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getRoles() {
         return this.roles;
     }
 
@@ -268,35 +268,35 @@ public class User extends Resource {
         this.name = name;
     }
 
-    public void setPhoneNumbers(List<PluralType<String>> phoneNumbers) {
+    public void setPhoneNumbers(List<MultiValuedType<String>> phoneNumbers) {
         this.phoneNumbers = phoneNumbers;
     }
 
-    public void setEmails(List<PluralType<String>> emails) {
+    public void setEmails(List<MultiValuedType<String>> emails) {
         this.emails = emails;
     }
 
-    public void setIms(List<PluralType<String>> ims) {
+    public void setIms(List<MultiValuedType<String>> ims) {
         this.ims = ims;
     }
 
-    public void setPhotos(List<PluralType<String>> photos) {
+    public void setPhotos(List<MultiValuedType<String>> photos) {
         this.photos = photos;
     }
 
-    public void setGroups(List<PluralType<String>> groups) {
+    public void setGroups(List<MultiValuedType<String>> groups) {
         this.groups = groups;
     }
 
-    public void setAddresses(List<PluralType<Address>> addresses) {
+    public void setAddresses(List<MultiValuedType<Address>> addresses) {
         this.addresses = addresses;
     }
 
-    public void setEntitlements(List<PluralType<String>> entitlements) {
+    public void setEntitlements(List<MultiValuedType<String>> entitlements) {
         this.entitlements = entitlements;
     }
 
-    public void setRoles(List<PluralType<String>> roles) {
+    public void setRoles(List<MultiValuedType<String>> roles) {
         this.roles = roles;
     }
 

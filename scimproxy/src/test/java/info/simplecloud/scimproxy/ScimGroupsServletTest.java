@@ -2,7 +2,7 @@ package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
-import info.simplecloud.core.types.PluralType;
+import info.simplecloud.core.types.MultiValuedType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +34,8 @@ public class ScimGroupsServletTest {
         tester.start();
 
         managers.setDisplayName("Managers");
-        List<PluralType<String>> members = new ArrayList<PluralType<String>>();
-        members.add(new PluralType<String>("User1", null, false, false));
+        List<MultiValuedType<String>> members = new ArrayList<MultiValuedType<String>>();
+        members.add(new MultiValuedType<String>("User1", null, false, false));
         managers.setMembers(members);
         
         HttpTester aliceRequest = new HttpTester();
