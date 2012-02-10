@@ -6,15 +6,13 @@ import info.simplecloud.core.exceptions.UnknownExtension;
 import info.simplecloud.core.extensions.EnterpriseAttributes;
 import info.simplecloud.core.extensions.types.Manager;
 import info.simplecloud.core.types.Address;
-import info.simplecloud.core.types.Name;
 import info.simplecloud.core.types.MultiValuedType;
+import info.simplecloud.core.types.Name;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xmlbeans.impl.util.Base64;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,34 +23,65 @@ public class UserTest {
     public static void setUp() {
         User.registerExtension(EnterpriseAttributes.class);
     }
-    
-    @Test
-    public void tmp() throws JSONException {
-        JSONObject tmp = new JSONObject();
-        
-        tmp.put("version", "W/\"4weymrEsh5O6cAEK\"");
-        tmp.put("version", "W/'4weymrEsh5O6cAEK'");
-        tmp.put("weakETag", true);
-        
-        System.out.println(tmp.toString(2));
-        
-    }
-    
+
     @Test
     public void parse() throws UnknownEncoding, InvalidUser {
         String base64User = "ew0KCSJzY2hlbWFzIjogWyJ1cm46c2NpbTpzY2hlbWFzOmNvcmU6MS4wIl0sDQoJImlkIjogIjAwNUQwMDAwMDAxQXoxdSIsDQoJImV4dGVybmFsSWQiOiAiNzAxOTg0IiwNCgkidXNlck5hbWUiOiAiYmplbnNlbkBleGFtcGxlLmNvbSIsDQoJIm5hbWUiOiB7DQoJCSJmb3JtYXR0ZWQiOiAiTXMuIEJhcmJhcmEgSiBKZW5zZW4gSUlJIiwNCgkJImZhbWlseU5hbWUiOiAiSmVuc2VuIiwNCgkJImdpdmVuTmFtZSI6ICJCYXJiYXJhIiwNCgkJIm1pZGRsZU5hbWUiOiAiSmFuZSIsDQoJCSJob25vcmlmaWNQcmVmaXgiOiAiTXMuIiwNCgkJImhvbm9yaWZpY1N1ZmZpeCI6ICJJSUkiDQoJfSwNCgkiZGlzcGxheU5hbWUiOiAiQmFicyBKZW5zZW4iLA0KCSJuaWNrTmFtZSI6ICJCYWJzIiwNCgkicHJvZmlsZVVybCI6ICJodHRwczovL2xvZ2luLmV4YW1wbGUuY29tL2JqZW5zZW4iLA0KCSJlbWFpbHMiOiBbDQoJCXsNCgkJICAidmFsdWUiOiAiYmplbnNlbkBleGFtcGxlLmNvbSIsDQoJCSAgInR5cGUiOiAid29yayIsDQoJCSAgInByaW1hcnkiOiB0cnVlDQoJCX0sDQoJCXsNCgkJICAidmFsdWUiOiAiYmFic0BqZW5zZW4ub3JnIiwNCgkJICAidHlwZSI6ICJob21lIg0KCQl9DQoJXSwNCgkiYWRkcmVzc2VzIjogWw0KCQl7DQoJCSAgInR5cGUiOiAid29yayIsDQoJCSAgInN0cmVldEFkZHJlc3MiOiAiMTAwIFVuaXZlcnNhbCBDaXR5IFBsYXphIiwNCgkJICAibG9jYWxpdHkiOiAiSG9sbHl3b29kIiwNCgkJICAicmVnaW9uIjogIkNBIiwNCgkJICAicG9zdGFsQ29kZSI6ICI5MTYwOCIsDQoJCSAgImNvdW50cnkiOiAiVVNBIiwNCgkJICAiZm9ybWF0dGVkIjogIjEwMCBVbml2ZXJzYWwgQ2l0eSBQbGF6YVxuSG9sbHl3b29kLCBDQSA5MTYwOCBVU0EiLA0KCQkgICJwcmltYXJ5IjogdHJ1ZQ0KCQl9LA0KCQl7DQoJCSAgInR5cGUiOiAiaG9tZSIsDQoJCSAgInN0cmVldEFkZHJlc3MiOiAiNDU2IEhvbGx5d29vZCBCbHZkIiwNCgkJICAibG9jYWxpdHkiOiAiSG9sbHl3b29kIiwNCgkJICAicmVnaW9uIjogIkNBIiwNCgkJICAicG9zdGFsQ29kZSI6ICI5MTYwOCIsDQoJCSAgImNvdW50cnkiOiAiVVNBIiwNCgkJICAiZm9ybWF0dGVkIjogIjQ1NiBIb2xseXdvb2QgQmx2ZFxuSG9sbHl3b29kLCBDQSA5MTYwOCBVU0EiDQoJCX0NCgldLA0KCSJwaG9uZU51bWJlcnMiOiBbDQoJCXsNCgkJICAidmFsdWUiOiAiODAwLTg2NC04Mzc3IiwNCgkJICAidHlwZSI6ICJ3b3JrIg0KCQl9LA0KCQl7DQoJCSAgInZhbHVlIjogIjgxOC0xMjMtNDU2NyIsDQoJCSAgInR5cGUiOiAibW9iaWxlIg0KCQl9DQoJXSwNCgkiaW1zIjogWw0KCQl7DQoJCSAgInZhbHVlIjogInNvbWVhaW1oYW5kbGUiLA0KCQkgICJ0eXBlIjogImFpbSINCgkJfQ0KCV0sDQoJInBob3RvcyI6IFsNCgkJew0KCQkgICJ2YWx1ZSI6ICJodHRwczovL3Bob3Rvcy5leGFtcGxlLmNvbS9wcm9maWxlcGhvdG8vNzI5MzAwMDAwMDBDY25lL0YiLA0KCQkgICJ0eXBlIjogInBob3RvIg0KCQl9LA0KCQl7DQoJCSAgInZhbHVlIjogImh0dHBzOi8vcGhvdG9zLmV4YW1wbGUuY29tL3Byb2ZpbGVwaG90by83MjkzMDAwMDAwMENjbmUvVCIsDQoJCSAgInR5cGUiOiAidGh1bWJuYWlsIg0KCQl9DQoJXSwNCgkidXNlclR5cGUiOiAiRW1wbG95ZWUiLA0KCSJ0aXRsZSI6ICJUb3VyIEd1aWRlIiwNCgkicHJlZmVycmVkTGFuZ3VhZ2UiOiAiZW5fVVMiLA0KCSJsb2NhbGUiOiAiZW5fVVMiLA0KCSJ0aW1lem9uZSI6ICJBbWVyaWNhL0RlbnZlciIsDQoJIm1lbWJlck9mIjogWw0KCQl7DQoJCSAgImRpc3BsYXkiOiAiVG91ciBHdWlkZXMiLA0KCQkgICJ2YWx1ZSI6ICIwMDMwMDAwMDAwNU4yWTZBQSIsDQoJCSAgInByaW1hcnkiOiB0cnVlDQoJCX0sDQoJCXsNCgkJICAiZGlzcGxheSI6ICJFbXBsb3llZXMiLA0KCQkgICJ2YWx1ZSI6ICIwMDMwMDAwMDAwNU4zNEg3OCINCgkJfSwNCgkJew0KCQkgICJkaXNwbGF5IjogIlVTIEVtcGxveWVlcyIsDQoJCSAgInZhbHVlIjogIjAwMzAwMDAwMDA1Tjk4WVQxIg0KCQl9DQoJXSwNCgkibWV0YSI6IHsNCgkJImNyZWF0ZWQiOiAiMjAxMC0wMS0yM1QwNDo1NjoyMloiLA0KCQkibGFzdE1vZGlmaWVkIjogIjIwMTEtMDUtMTNUMDQ6NDI6MzRaIg0KCX0NCn0=";
         String stringUser = new String(Base64.decode(base64User.getBytes()));
-        new User(stringUser, Resource.ENCODING_JSON);
-        
+        User user = new User(stringUser, Resource.ENCODING_JSON);
+
+        Assert.assertEquals("005D0000001Az1u", user.getId());
+        Assert.assertEquals("701984", user.getExternalId());
+        Assert.assertEquals("bjensen@example.com", user.getUserName());
+        Assert.assertEquals("Ms. Barbara J Jensen III", user.getName().getFormatted());
+        Assert.assertEquals("Jensen", user.getName().getFamilyName());
+        Assert.assertEquals("Barbara", user.getName().getGivenName());
+        Assert.assertEquals("Jane", user.getName().getMiddleName());
+        Assert.assertEquals("Ms.", user.getName().getHonorificPrefix());
+        Assert.assertEquals("III", user.getName().getHonorificSuffix());
+        Assert.assertEquals("Babs Jensen", user.getDisplayName());
+        Assert.assertEquals("Babs", user.getNickName());
+        Assert.assertEquals("https://login.example.com/bjensen", user.getProfileUrl());
+
+        {
+            List<MultiValuedType<String>> emails = user.getEmails();
+            Assert.assertEquals(2, emails.size());
+            for (MultiValuedType<String> email : emails) {
+                if (!("bjensen@example.com".equals(email.getValue()) && "work".equals(email.getType()) && email.isPrimary())
+                        && !("babs@jensen.org".equals(email.getValue()) && "home".equals(email.getType()) && !email.isPrimary())) {
+                    Assert.fail("email not matching");
+                }
+            }
+        }
+
+        List<MultiValuedType<String>> phoneNumbers = user.getPhoneNumbers();
+        for (MultiValuedType<String> phonenumber : phoneNumbers) {
+            if (!("800-864-8377".equals(phonenumber.getValue()) && "work".equals(phonenumber.getType()) && !phonenumber.isPrimary())
+                    && !("818-123-4567".equals(phonenumber.getValue()) && "mobile".equals(phonenumber.getType()) && !phonenumber
+                            .isPrimary())) {
+                Assert.fail("email not matching");
+            }
+        }
+        Assert.assertEquals("Employee", user.getUserType());
+        Assert.assertEquals("Tour Guide", user.getTitle());
+        Assert.assertEquals("en_US", user.getPreferredLanguage());
+        Assert.assertEquals("en_US", user.getLocale());
+        Assert.assertEquals("America/Denver", user.getTimezone());
+
+        // Assert.assertEquals(new GregorianCalendar(arg0, arg1, arg2, arg3,
+        // arg4, arg5), user.getMeta().getCreated());
+        // Assert.assertEquals(new GregorianCalendar(arg0, arg1, arg2, arg3,
+        // arg4, arg5), user.getMeta().getCreated());
+
         // TODO validate result
     }
-    
+
     @Test
     public void parseEnterpriseUser() throws UnknownEncoding, InvalidUser {
         String base64User = "ew0KCSJzY2hlbWFzIjogWyJ1cm46c2NpbTpzY2hlbWFzOmNvcmU6MS4wIiwgInVybjpzY2ltOnNjaGVtYXM6ZXh0ZW5zaW9uOmVudGVycHJpc2U6MS4wIl0sDQoJImlkIjogIjAwNUQwMDAwMDAxQXoxdSIsDQoJImV4dGVybmFsSWQiOiAiNzAxOTg0IiwNCgkidXNlck5hbWUiOiAiYmplbnNlbkBleGFtcGxlLmNvbSIsDQoJIm5hbWUiOiB7DQoJCSJmb3JtYXR0ZWQiOiAiTXMuIEJhcmJhcmEgSiBKZW5zZW4gSUlJIiwNCgkJImZhbWlseU5hbWUiOiAiSmVuc2VuIiwNCgkJImdpdmVuTmFtZSI6ICJCYXJiYXJhIiwNCgkJIm1pZGRsZU5hbWUiOiAiSmFuZSIsDQoJCSJob25vcmlmaWNQcmVmaXgiOiAiTXMuIiwNCgkJImhvbm9yaWZpY1N1ZmZpeCI6ICJJSUkiDQoJfSwNCgkiZGlzcGxheU5hbWUiOiAiQmFicyBKZW5zZW4iLA0KCSJuaWNrTmFtZSI6ICJCYWJzIiwNCgkicHJvZmlsZVVybCI6ICJodHRwczovL2xvZ2luLmV4YW1wbGUuY29tL2JqZW5zZW4iLA0KCSJlbWFpbHMiOiBbDQoJCXsNCgkJICAidmFsdWUiOiAiYmplbnNlbkBleGFtcGxlLmNvbSIsDQoJCSAgInR5cGUiOiAid29yayIsDQoJCSAgInByaW1hcnkiOiB0cnVlDQoJCX0sDQoJCXsNCgkJICAidmFsdWUiOiAiYmFic0BqZW5zZW4ub3JnIiwNCgkJICAidHlwZSI6ICJob21lIg0KCQl9DQoJXSwNCgkiYWRkcmVzc2VzIjogWw0KCQl7DQoJCSAgInR5cGUiOiAid29yayIsDQoJCSAgInN0cmVldEFkZHJlc3MiOiAiMTAwIFVuaXZlcnNhbCBDaXR5IFBsYXphIiwNCgkJICAibG9jYWxpdHkiOiAiSG9sbHl3b29kIiwNCgkJICAicmVnaW9uIjogIkNBIiwNCgkJICAicG9zdGFsQ29kZSI6ICI5MTYwOCIsDQoJCSAgImNvdW50cnkiOiAiVVNBIiwNCgkJICAiZm9ybWF0dGVkIjogIjEwMCBVbml2ZXJzYWwgQ2l0eSBQbGF6YVxuSG9sbHl3b29kLCBDQSA5MTYwOCBVU0EiLA0KCQkgICJwcmltYXJ5IjogdHJ1ZQ0KCQl9LA0KCQl7DQoJCSAgInR5cGUiOiAiaG9tZSIsDQoJCSAgInN0cmVldEFkZHJlc3MiOiAiNDU2IEhvbGx5d29vZCBCbHZkIiwNCgkJICAibG9jYWxpdHkiOiAiSG9sbHl3b29kIiwNCgkJICAicmVnaW9uIjogIkNBIiwNCgkJICAicG9zdGFsQ29kZSI6ICI5MTYwOCIsDQoJCSAgImNvdW50cnkiOiAiVVNBIiwNCgkJICAiZm9ybWF0dGVkIjogIjQ1NiBIb2xseXdvb2QgQmx2ZFxuSG9sbHl3b29kLCBDQSA5MTYwOCBVU0EiDQoJCX0NCgldLA0KCSJwaG9uZU51bWJlcnMiOiBbDQoJCXsNCgkJICAidmFsdWUiOiAiODAwLTg2NC04Mzc3IiwNCgkJICAidHlwZSI6ICJ3b3JrIg0KCQl9LA0KCQl7DQoJCSAgInZhbHVlIjogIjgxOC0xMjMtNDU2NyIsDQoJCSAgInR5cGUiOiAibW9iaWxlIg0KCQl9DQoJXSwNCgkiaW1zIjogWw0KCQl7DQoJCSAgInZhbHVlIjogInNvbWVhaW1oYW5kbGUiLA0KCQkgICJ0eXBlIjogImFpbSINCgkJfQ0KCV0sDQoJInBob3RvcyI6IFsNCgkJew0KCQkgICJ2YWx1ZSI6ICJodHRwczovL3Bob3Rvcy5leGFtcGxlLmNvbS9wcm9maWxlcGhvdG8vNzI5MzAwMDAwMDBDY25lL0YiLA0KCQkgICJ0eXBlIjogInBob3RvIg0KCQl9LA0KCQl7DQoJCSAgInZhbHVlIjogImh0dHBzOi8vcGhvdG9zLmV4YW1wbGUuY29tL3Byb2ZpbGVwaG90by83MjkzMDAwMDAwMENjbmUvVCIsDQoJCSAgInR5cGUiOiAidGh1bWJuYWlsIg0KCQl9DQoJXSwNCgkidXNlclR5cGUiOiAiRW1wbG95ZWUiLA0KCSJ0aXRsZSI6ICJUb3VyIEd1aWRlIiwNCgkibWFuYWdlciI6IHsNCgkJImRpc3BsYXlOYW1lIjogIk1hbmR5IFBlcHBlcmlkZ2UiDQoJfSwNCgkicHJlZmVycmVkTGFuZ3VhZ2UiOiAiZW5fVVMiLA0KCSJsb2NhbGUiOiAiZW5fVVMiLA0KCSJ0aW1lem9uZSI6ICJBbWVyaWNhL0RlbnZlciIsDQoJIm1lbWJlck9mIjogWw0KCQl7DQoJCSAgImRpc3BsYXkiOiAiVG91ciBHdWlkZXMiLA0KCQkgICJ2YWx1ZSI6ICIwMDMwMDAwMDAwNU4yWTZBQSIsDQoJCSAgInByaW1hcnkiOiB0cnVlDQoJCX0sDQoJCXsNCgkJICAiZGlzcGxheSI6ICJFbXBsb3llZXMiLA0KCQkgICJ2YWx1ZSI6ICIwMDMwMDAwMDAwNU4zNEg3OCINCgkJfSwNCgkJew0KCQkgICJkaXNwbGF5IjogIlVTIEVtcGxveWVlcyIsDQoJCSAgInZhbHVlIjogIjAwMzAwMDAwMDA1Tjk4WVQxIg0KCQl9DQoJXSwNCgkidXJuOnNjaW06c2NoZW1hczpleHRlbnNpb246ZW50ZXJwcmlzZToxLjAiOiB7DQoJCSJlbXBsb3llZU51bWJlciI6ICI3MDE5ODQiLA0KCQkiY29zdENlbnRlciI6ICI0MTMwIiwNCgkJIm9yZ2FuaXphdGlvbiI6ICJVbml2ZXJzYWwgU3R1ZGlvcyIsDQoJCSJkaXZpc2lvbiI6ICJUaGVtZSBQYXJrIiwNCgkJImRlcGFydG1lbnQiOiAiVG91ciBPcGVyYXRpb25zIiwNCgkJIm1hbmFnZXIiOiB7DQoJCQkJIm1hbmFnZXJJZCI6ICIwMDVEMDAwMDAwMUFRUkUiLA0KCQkJCSJkaXNwbGF5TmFtZSI6ICJKb2huIFNtaXRoIg0KCQl9DQoJfSwNCgkibWV0YSI6IHsNCgkJImNyZWF0ZWQiOiAiMjAxMC0wMS0yM1QwNDo1NjoyMloiLA0KCQkibGFzdE1vZGlmaWVkIjogIjIwMTEtMDUtMTNUMDQ6NDI6MzRaIg0KCX0NCn0=";
         String stringUser = new String(Base64.decode(base64User.getBytes()));
         new User(stringUser, Resource.ENCODING_JSON);
-        
+
         // TODO validate result
     }
 
@@ -202,7 +231,7 @@ public class UserTest {
     public void sort() {
         // TODO implement test
     }
-    
+
     @Test
     public void equals() throws UnknownExtension {
         User user1 = new User("id-123");
@@ -212,7 +241,6 @@ public class UserTest {
         User user1noteq3 = new User("id-123");
         User user1noteq4 = new User("id-123");
         User user1noteq5 = new User("id-123");
-
 
         Assert.assertEquals(user1eq1, user1);
         Assert.assertFalse(user1.equals(user1noteq1));
