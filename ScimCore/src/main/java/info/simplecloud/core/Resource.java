@@ -15,10 +15,11 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.core.exceptions.UnknownExtension;
 import info.simplecloud.core.handlers.ComplexHandler;
-import info.simplecloud.core.handlers.ListHandler;
+import info.simplecloud.core.handlers.MultiValueHandler;
 import info.simplecloud.core.handlers.StringHandler;
 import info.simplecloud.core.types.ComplexType;
 import info.simplecloud.core.types.Meta;
+import info.simplecloud.core.types.MultiValuedType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -102,10 +103,10 @@ public abstract class Resource extends ComplexType {
 
         Meta meta = patch.getMeta();
         if (meta != null) {
-            List<String> attributesToDelete = meta.getAttributes();
+            List<MultiValuedType<String>> attributesToDelete = meta.getAttributes();
             if (attributesToDelete != null) {
-                for (String id : attributesToDelete) {
-                    super.removeAttribute(id);
+                for (MultiValuedType<String> id : attributesToDelete) {
+                    super.removeAttribute(id.getValue());
                 }
             }
         }
@@ -276,21 +277,21 @@ public abstract class Resource extends ComplexType {
         return this.id;
     }
 
-    @Attribute(name = "schemas", handler = ListHandler.class)
-    public List<String> getSchemas() {
-        List<String> schemas = new ArrayList<String>();
+    @Attribute(name = "schemas", handler = MultiValueHandler.class, internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getSchemas() {
+        List<MultiValuedType<String>> schemas = new ArrayList<MultiValuedType<String>>();
         if (!this.getClass().isAnnotationPresent(Extension.class)) {
             throw new RuntimeException("Extension class '" + this.getClass().getName() + "' is missing annotation");
         }
         Extension metaData = this.getClass().getAnnotation(Extension.class);
-        schemas.add(metaData.schema());
+        schemas.add(new MultiValuedType<String>(metaData.schema(), null, false, false));
 
         for (Object extension : this.extensions) {
             if (!extension.getClass().isAnnotationPresent(Extension.class)) {
                 throw new RuntimeException("Extension class '" + extension.getClass().getName() + "' is missing annotation");
             }
             metaData = extension.getClass().getAnnotation(Extension.class);
-            schemas.add(metaData.schema());
+            schemas.add(new MultiValuedType<String>(metaData.schema(), null, false, false));
         }
 
         return schemas;

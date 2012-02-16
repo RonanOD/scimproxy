@@ -3,7 +3,7 @@ package info.simplecloud.core.types;
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Complex;
 import info.simplecloud.core.handlers.CalendarHandler;
-import info.simplecloud.core.handlers.ListHandler;
+import info.simplecloud.core.handlers.MultiValueHandler;
 import info.simplecloud.core.handlers.StringHandler;
 
 import java.util.Calendar;
@@ -12,11 +12,11 @@ import java.util.List;
 @Complex(xmlType = x0.scimSchemasCore1.Meta.class)
 public class Meta extends ComplexType {
 
-    private Calendar     created;
-    private Calendar     lastModified;
-    private String       version;
-    private String       location;
-    private List<String> attributes;
+    private Calendar                      created;
+    private Calendar                      lastModified;
+    private String                        version;
+    private String                        location;
+    private List<MultiValuedType<String>> attributes;
 
     @Attribute(name = "created", handler = CalendarHandler.class)
     public Calendar getCreated() {
@@ -38,8 +38,8 @@ public class Meta extends ComplexType {
         return this.location;
     }
 
-    @Attribute(name = "attributes", handler = ListHandler.class)
-    public List<String> getAttributes() {
+    @Attribute(name = "attributes", handler = MultiValueHandler.class, internalHandler = StringHandler.class)
+    public List<MultiValuedType<String>> getAttributes() {
         return this.attributes;
     }
 
@@ -59,7 +59,7 @@ public class Meta extends ComplexType {
         this.location = location;
     }
 
-    public void setAttributes(List<String> attributes) {
+    public void setAttributes(List<MultiValuedType<String>> attributes) {
         this.attributes = attributes;
     }
 
