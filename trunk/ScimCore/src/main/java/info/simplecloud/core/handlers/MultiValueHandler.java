@@ -13,7 +13,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.xmlbeans.XmlObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,41 +21,39 @@ public class MultiValueHandler implements IDecodeHandler, IEncodeHandler, IMerge
 
     @Override
     public Object decode(Object jsonData, Object me, MetaData internalMetaData) throws InvalidUser {
-        try {
-            JSONArray jsonArray = (JSONArray) jsonData;
-            List<MultiValuedType> result = new ArrayList<MultiValuedType>();
-            int nrPrimary = 0;
 
-            IDecodeHandler decoder = internalMetaData.getDecoder();
-            Object value = null;
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject internalObj = jsonArray.getJSONObject(i);
-                try {
-                    value = internalObj.get("value");
-                } catch (JSONException e) {
-                    value = internalObj;
-                }
-                Object decodedValue = decoder.decode(value, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
-                String type = (String) getOptional(internalObj, "type");
-                String display = (String) getOptional(internalObj, "display");
-                Boolean primary = (Boolean) getOptional(internalObj, "primary");
-                primary = (primary == null ? false : primary);
-                String operation = (String) getOptional(internalObj, "operation");
+        JSONArray jsonArray = (JSONArray) jsonData;
+        List<MultiValuedType> result = new ArrayList<MultiValuedType>();
+        int nrPrimary = 0;
 
+        IDecodeHandler decoder = internalMetaData.getDecoder();
+        Object value = null;
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject internalObj = jsonArray.optJSONObject(i);
+
+            if (internalObj != null) {
+                value = internalObj.opt("value");
+                Object decodedValue = decoder.decode(value == null ? internalObj : value, internalMetaData.newInstance(),
+                        internalMetaData.getInternalMetaData());
+                String type = internalObj.optString("type");
+                String display = internalObj.optString("display");
+                String operation = internalObj.optString("operation");
+                Boolean primary = internalObj.optBoolean("primary");
                 nrPrimary += (primary ? 1 : 0);
-
                 result.add(new MultiValuedType(decodedValue, type, display, primary, operation));
+            } else {
+                value = jsonArray.opt(i);
+                Object decodedValue = decoder.decode(value, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
+                result.add(new MultiValuedType(decodedValue, null, false, false));
             }
 
-            if (nrPrimary > 1) {
-                throw new InvalidUser("Only one primary value is allowed");
-            }
-
-            return result;
-
-        } catch (JSONException e) {
-            throw new RuntimeException("Invalid user object", e);
         }
+
+        if (nrPrimary > 1) {
+            throw new InvalidUser("Only one primary value is allowed");
+        }
+
+        return result;
     }
 
     @Override
@@ -77,7 +74,7 @@ public class MultiValueHandler implements IDecodeHandler, IEncodeHandler, IMerge
             for (Object obj : array) {
                 IDecodeHandler decoder = internalMetaData.getDecoder();
                 Object internalValue = decoder.decodeXml(obj, internalMetaData.newInstance(), internalMetaData.getInternalMetaData());
-                
+
                 String type = (String) this.readXml(obj, "getType");
                 String display = (String) this.readXml(obj, "getDisplay");
                 Boolean primary = (Boolean) this.readXml(obj, "getPrimary");
@@ -110,27 +107,32 @@ public class MultiValueHandler implements IDecodeHandler, IEncodeHandler, IMerge
     public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
         List<MultiValuedType> plural = (List<MultiValuedType>) me;
         JSONArray result = new JSONArray();
-        for (MultiValuedType singular : plural) {
+        for (MultiValuedType<?> singular : plural) {
             JSONObject jsonObject = new JSONObject();
 
             IEncodeHandler encoder = internalMetaData.getEncoder();
             Object value = encoder.encode(singular.getValue(), includeAttributes, null);
 
-            try {
-                jsonObject.put("value", value);
-                jsonObject.put("type", singular.getType());
-                jsonObject.put("display", singular.getDisplay());
-                if (singular.isPrimary()) {
-                    jsonObject.put("primary", singular.isPrimary());
-                }
-                if (singular.isDelete()) {
-                    jsonObject.put("operation", "delete");
-                }
+            if (singular.isSimple()) {
+                result.put(singular.getValue());
+            } else {
+                try {
+                    jsonObject.put("value", value);
+                    jsonObject.put("type", singular.getType());
+                    jsonObject.put("display", singular.getDisplay());
+                    if (singular.isPrimary()) {
+                        jsonObject.put("primary", singular.isPrimary());
+                    }
+                    if (singular.isDelete()) {
+                        jsonObject.put("operation", "delete");
+                    }
 
-                result.put(jsonObject);
-            } catch (JSONException e) {
-                throw new RuntimeException("Internal error, encoding plural type", e);
+                    result.put(jsonObject);
+                } catch (JSONException e) {
+                    throw new RuntimeException("Internal error, encoding plural type", e);
+                }
             }
+
         }
 
         return result;
@@ -145,9 +147,9 @@ public class MultiValueHandler implements IDecodeHandler, IEncodeHandler, IMerge
                 Object value = singular.getValue();
                 IEncodeHandler encoder = internalMetaData.getEncoder();
                 Object internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, internalMetaData.getName());
-                
+
                 encoder.encodeXml(value, includeAttributes, internalMetaData, internalXmlObject);
-                
+
                 this.writeXml(internalXmlObject, singular.getType(), "setType");
                 this.writeXml(internalXmlObject, singular.getDisplay(), "setDisplay");
                 if (singular.isPrimary()) {

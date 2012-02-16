@@ -78,4 +78,8 @@ public class MultiValuedType<T> implements Comparable<MultiValuedType<?>> {
     public void setDelete(boolean delete) {
         this.operation = (delete ? "delete" : null);
     }
+
+    public boolean isSimple() {
+        return this.operation == null && !this.primary && this.display == null && this.type == null;
+    }
 }
