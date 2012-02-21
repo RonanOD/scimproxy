@@ -6,6 +6,7 @@ import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
+import info.simplecloud.core.handlers.Base64BinaryHandler;
 import info.simplecloud.core.handlers.BooleanHandler;
 import info.simplecloud.core.handlers.ComplexHandler;
 import info.simplecloud.core.handlers.MultiValueHandler;
@@ -44,18 +45,18 @@ public class User extends Resource {
         }
     }
 
-    private String                    userName;
-    private String                    displayName;
-    private String                    nickName;
-    private String                    profileUrl;
-    private String                    userType;
-    private String                    title;
-    private String                    preferredLanguage;
-    private String                    locale;
-    private String                    password;
-    private String                    timezone;
-    private boolean                   active = true;
-    private Name                      name;
+    private String                         userName;
+    private String                         displayName;
+    private String                         nickName;
+    private String                         profileUrl;
+    private String                         userType;
+    private String                         title;
+    private String                         preferredLanguage;
+    private String                         locale;
+    private String                         password;
+    private String                         timezone;
+    private boolean                        active = true;
+    private Name                           name;
     private List<MultiValuedType<String>>  phoneNumbers;
     private List<MultiValuedType<String>>  emails;
     private List<MultiValuedType<String>>  ims;
@@ -64,8 +65,7 @@ public class User extends Resource {
     private List<MultiValuedType<Address>> addresses;
     private List<MultiValuedType<String>>  entitlements;
     private List<MultiValuedType<String>>  roles;
-
-
+    private List<MultiValuedType<String>>  x509Certificates;
 
     public User(String user, String encoding) throws UnknownEncoding, InvalidUser {
         super(user, encoding, extensionTypes);
@@ -169,7 +169,7 @@ public class User extends Resource {
     public String getTimezone() {
         return timezone;
     }
-    
+
     @Attribute(name = "active", handler = BooleanHandler.class)
     public boolean getActive() {
         return active;
@@ -218,6 +218,11 @@ public class User extends Resource {
     @Attribute(name = "roles", handler = MultiValueHandler.class, internalName = "role", internalHandler = StringHandler.class)
     public List<MultiValuedType<String>> getRoles() {
         return this.roles;
+    }
+
+    @Attribute(name = "roles", handler = MultiValueHandler.class, internalName = "x509Certificate", internalHandler = Base64BinaryHandler.class)
+    public List<MultiValuedType<String>> getX509Certificates() {
+        return this.x509Certificates;
     }
 
     public void setUserName(String userName) {
@@ -298,6 +303,10 @@ public class User extends Resource {
 
     public void setRoles(List<MultiValuedType<String>> roles) {
         this.roles = roles;
+    }
+
+    public void setX509Certificates(List<MultiValuedType<String>> x509Certificates) {
+        this.x509Certificates = x509Certificates;
     }
 
 }

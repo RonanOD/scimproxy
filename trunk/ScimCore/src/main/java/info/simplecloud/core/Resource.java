@@ -179,19 +179,19 @@ public abstract class Resource extends ComplexType {
                 continue;
             }
             if (name.startsWith(schema)) {
-                String methodName = name.substring(schema.length());
+                String methodName = name.substring(schema.length() + 1);
                 if (methodName.contains(".")) {
-                    String localName = name.substring(0, methodName.indexOf("."));
-                    String nextName = name.substring(methodName.indexOf(".") + 1, methodName.length());
+                    String localName = methodName.substring(0, methodName.indexOf("."));
+                    String nextName = methodName.substring(methodName.indexOf(".") + 1, methodName.length());
                     Method method = findAttributeMethodOnExtension(localName, extension);
-                    ComplexType next = (ComplexType) invokeMethod(method, localName);
+                    ComplexType next = (ComplexType) invokeMethod(method, localName, extension);
                     if (next == null) {
                         return null;
                     }
                     return next.getAttribute(nextName);
                 } else {
                     Method method = findAttributeMethodOnExtension(methodName, extension);
-                    return (T) invokeMethod(method, name);
+                    return (T) invokeMethod(method, name, extension);
                 }
             }
 
@@ -215,7 +215,7 @@ public abstract class Resource extends ComplexType {
 
     public ComplexType setAttribute(String name, Object attribute) throws UnknownAttribute {
         if (name == null) {
-            throw new IllegalArgumentException("The name argument cannot be null");
+            throw new IllegalArgumentException("The attribute name cannot be null");
         }
         for (Object extension : extensions) {
             Extension extensionAttribute = extension.getClass().getAnnotation(Extension.class);
@@ -227,20 +227,37 @@ public abstract class Resource extends ComplexType {
                 continue;
             }
             if (name.startsWith(schema)) {
-                String methodName = name.substring(schema.length());
+                String methodName = name.substring(schema.length() + 1);
                 if (methodName.contains(".")) {
-                    String localName = name.substring(0, methodName.indexOf("."));
-                    String nextName = name.substring(methodName.indexOf(".") + 1, methodName.length());
+                    String localName = methodName.substring(0, methodName.indexOf("."));
+                    String nextName = methodName.substring(methodName.indexOf(".") + 1, methodName.length());
                     Method method = findAttributeMethodOnExtension(localName, extension);
-                    ComplexType next = (ComplexType) invokeMethod(method, localName);
+                    ComplexType next = (ComplexType) invokeMethod(method, localName, extension);
                     if (next == null) {
-                        next = this.getMetaData(localName).newInstance();
-                        this.setAttribute(localName, next);
+                        next = this.getMetaData(localName, extension).newInstance();
+                        String setter = "s" + method.getName().substring(1);
+                        Method setMethod = null;
+                        try {
+                            setMethod = ReflectionHelper.getMethod(setter, extension.getClass());
+                            setMethod.invoke(extension, next);
+                        } catch (IllegalArgumentException e) {
+                            throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
+                                    + "' to set attribute '" + name + "'", e);
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
+                                    + "' to set attribute '" + name + "'", e);
+                        } catch (InvocationTargetException e) {
+                            throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
+                                    + "' to set attribute '" + name + "'", e);
+                        } catch (NoSuchMethodException e) {
+                            throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
+                                    + "' to set attribute '" + name + "'", e);
+                        }
                     }
                     next.setAttribute(nextName, attribute);
                     return this;
                 } else {
-                    Method method = findAttributeMethodOnExtension(name, extension);
+                    Method method = findAttributeMethodOnExtension(methodName, extension);
                     if (method == null) {
                         throw new UnknownAttribute("Has no method for attribute '" + name + "'");
                     }
@@ -248,8 +265,8 @@ public abstract class Resource extends ComplexType {
                     String setter = "s" + method.getName().substring(1);
                     Method setMethod = null;
                     try {
-                        setMethod = ReflectionHelper.getMethod(setter, this.getClass());
-                        setMethod.invoke(this, attribute);
+                        setMethod = ReflectionHelper.getMethod(setter, extension.getClass());
+                        setMethod.invoke(extension, attribute);
                     } catch (IllegalArgumentException e) {
                         throw new RuntimeException("Failed to call setter '" + setter + "' on '" + setMethod.getDeclaringClass().getName()
                                 + "' to set attribute '" + name + "'", e);
@@ -376,12 +393,12 @@ public abstract class Resource extends ComplexType {
         return super.equals(otherObj);
     }
 
-    private Object invokeMethod(Method method, String name) throws UnknownAttribute {
+    private Object invokeMethod(Method method, String name, Object extension) throws UnknownAttribute {
         try {
             if (method == null) {
                 throw new UnknownAttribute("Could not find attribute '" + name + "'");
             }
-            return method.invoke(this, new Object[] {});
+            return method.invoke(extension, new Object[] {});
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Failed to read value for attribute '" + name + "'", e);
         } catch (IllegalAccessException e) {

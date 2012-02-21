@@ -65,7 +65,7 @@ public class JsonDecoder implements IResourceDecoder {
                             continue;
                         }
 
-                        Object value = userJson.get(metaData.getName());
+                        Object value = extensionJson.get(metaData.getName());
                         IDecodeHandler decoder = metaData.getDecoder();
                         Object type = metaData.newInstance();
 
@@ -77,7 +77,7 @@ public class JsonDecoder implements IResourceDecoder {
 
                     }
                 } catch (JSONException e) {
-                    // No attribute by this name, no big deal take text
+                    // No attribute by this name, no big deal take next
                 }
             }
 
