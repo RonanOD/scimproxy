@@ -1,9 +1,11 @@
 package info.simplecloud.core.handlers;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.xmlbeans.impl.util.Base64;
 import org.apache.xmlbeans.impl.values.XmlObjectBase;
 
 import info.simplecloud.core.MetaData;
@@ -11,72 +13,77 @@ import info.simplecloud.core.coding.decode.IDecodeHandler;
 import info.simplecloud.core.coding.encode.IEncodeHandler;
 import info.simplecloud.core.merging.IMerger;
 
-public class IntegerHandler implements IDecodeHandler, IEncodeHandler, IMerger {
+public class Base64BinaryHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object decode(Object value, Object instance, MetaData internalMetaData) {
-        if (value instanceof String) {
-            return Integer.parseInt((String) value);
+        try {
+            String tmpValue = (String) value;
+            return Base64.decode(tmpValue.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to decode Base64Binary data", e);
         }
-        return HandlerHelper.typeCheck(value, Integer.class);
     }
 
     @Override
     public Object decodeXml(Object value, Object newInstance, MetaData internalMetaData) {
-        if (value instanceof String) {
-            return Integer.parseInt((String) value);
-        }
-
         try {
             Method getValueMethod = value.getClass().getMethod("getValue");
             XmlObjectBase internalValue = (XmlObjectBase) getValueMethod.invoke(value);
             String tmpValue = internalValue.getStringValue();
-            return Integer.parseInt(tmpValue);
+            return Base64.decode(tmpValue.getBytes("UTF-8"));
         } catch (SecurityException e) {
-            throw new RuntimeException("Failed to decode xml to integer", e);
+            throw new RuntimeException("Failed to decode xml to Base64Binary", e);
         } catch (NoSuchMethodException e) {
-            return HandlerHelper.typeCheck(value, Integer.class);
+            return decode(value, newInstance, internalMetaData);
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Failed to decode xml to integer", e);
+            throw new RuntimeException("Failed to decode xml to Base64Binary", e);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to decode xml to integer", e);
+            throw new RuntimeException("Failed to decode xml to Base64Binary", e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException("Failed to decode xml to integer", e);
+            throw new RuntimeException("Failed to decode xml to Base64Binary", e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to decode xml to Base64Binary", e);
         }
-
     }
 
     @Override
     public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
-        return HandlerHelper.typeCheck(me, Integer.class);
+        try {
+            return new String(Base64.encode((byte[]) me), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to encode Base64Binary into xml", e);
+        }
     }
 
     @Override
     public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
         if (xmlObject == null) {
-            return HandlerHelper.typeCheck(me, Integer.class);
+            return encode(me, includeAttributes, internalMetaData);
         }
 
         Object internalXmlObject;
         try {
             internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, "Value");
             if (internalXmlObject == null) {
-                throw new RuntimeException("Faield to encode integer '" + me + "', could not create anytype node");
+                throw new RuntimeException("Faield to encode string '" + me + "', could not create anytype node");
             }
-            String tmpValue = Integer.toString((Integer) me);
+            String tmpValue = new String(Base64.encode((byte[]) me), "UTF-8");
             ((XmlObjectBase) internalXmlObject).setStringValue(tmpValue);
             return internalXmlObject;
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Failed to encode integer '" + me + "' into xml", e);
+            throw new RuntimeException("Failed to encode Base64Binary into xml", e);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to encode integer '" + me + "' into xml", e);
+            throw new RuntimeException("Failed to encode Base64Binary into xml", e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException("Failed to encode integer '" + me + "' into xml", e);
+            throw new RuntimeException("Failed to encode Base64Binary into xml", e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to encode Base64Binary into xml", e);
         }
     }
 
     @Override
     public Object merge(Object from, Object to) {
-        return HandlerHelper.typeCheck(from, Integer.class);
+        return from;
     }
 }

@@ -198,7 +198,11 @@ public abstract class ComplexType {
     }
 
     public MetaData getMetaData(String name) throws UnknownAttribute {
-        for (Method method : this.getClass().getMethods()) {
+        return this.getMetaData(name, this);
+    }
+    
+    public MetaData getMetaData(String name, Object on) throws UnknownAttribute {
+        for (Method method : on.getClass().getMethods()) {
             if (!method.isAnnotationPresent(Attribute.class)) {
                 // Not an attribute method, continue with next
                 continue;

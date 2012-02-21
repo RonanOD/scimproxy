@@ -44,17 +44,17 @@ public class StringHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
     public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
-        if(xmlObject == null) {            
+        if (xmlObject == null) {
             return HandlerHelper.typeCheck(me, String.class);
         }
-        
+
         Object internalXmlObject;
         try {
             internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, "Value");
-            if(internalXmlObject == null) {
-                throw new RuntimeException("Faield to encode string '" + me +"', could not create anytype node");
+            if (internalXmlObject == null) {
+                throw new RuntimeException("Faield to encode string '" + me + "', could not create anytype node");
             }
-            ((XmlObjectBase)internalXmlObject).setStringValue((String)me);
+            ((XmlObjectBase) internalXmlObject).setStringValue((String) me);
             return internalXmlObject;
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Failed to encode string '" + me + "' into xml", e);
