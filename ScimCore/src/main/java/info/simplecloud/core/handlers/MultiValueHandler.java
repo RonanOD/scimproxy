@@ -104,20 +104,22 @@ public class MultiValueHandler implements IDecodeHandler, IEncodeHandler, IMerge
     }
 
     @Override
-    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData, JSONObject internalJsonObject) {
         List<MultiValuedType> plural = (List<MultiValuedType>) me;
         JSONArray result = new JSONArray();
         for (MultiValuedType<?> singular : plural) {
             JSONObject jsonObject = new JSONObject();
 
             IEncodeHandler encoder = internalMetaData.getEncoder();
-            Object value = encoder.encode(singular.getValue(), includeAttributes, null);
+            Object value = encoder.encode(singular.getValue(), includeAttributes, null, jsonObject);
 
-            if (singular.isSimple()) {
-                result.put(singular.getValue());
+            if (singular.isSimple() && !(value instanceof JSONObject)) {
+                result.put(value);
             } else {
                 try {
-                    jsonObject.put("value", value);
+                    if(!(value instanceof JSONObject)) {
+                        jsonObject.put("value", value);
+                    }
                     jsonObject.put("type", singular.getType());
                     jsonObject.put("display", singular.getDisplay());
                     if (singular.isPrimary()) {
@@ -129,7 +131,7 @@ public class MultiValueHandler implements IDecodeHandler, IEncodeHandler, IMerge
 
                     result.put(jsonObject);
                 } catch (JSONException e) {
-                    throw new RuntimeException("Internal error, encoding plural type", e);
+                    throw new RuntimeException("Internal error, encoding multivalued type", e);
                 }
             }
 

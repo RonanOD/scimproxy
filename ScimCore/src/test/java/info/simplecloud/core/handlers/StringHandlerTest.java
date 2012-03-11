@@ -27,7 +27,7 @@ public class StringHandlerTest {
 
     @Test
     public void encode() {
-        Assert.assertEquals("indata3", sh.encode("indata3", null, null));
+        Assert.assertEquals("indata3", sh.encode("indata3", null, null, null));
         Assert.assertEquals("indata4", sh.encodeXml("indata4", null, null, null));
     }
 

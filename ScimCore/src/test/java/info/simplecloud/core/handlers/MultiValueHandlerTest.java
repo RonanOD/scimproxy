@@ -74,7 +74,7 @@ public class MultiValueHandlerTest {
         indata.add(new MultiValuedType<String>("item2", "home", false, false));
         indata.add(new MultiValuedType<String>("item3", "bonus", false, false));
 
-        JSONArray result = (JSONArray) ph.encode(indata, null, new MetaData(StringHandler.class, DummyType.class, "email"));
+        JSONArray result = (JSONArray) ph.encode(indata, null, new MetaData(StringHandler.class, DummyType.class, "email"), null);
 
         for (int i = 0; i < result.length(); i++) {
             String value = result.getJSONObject(i).getString("value");

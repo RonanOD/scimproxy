@@ -70,7 +70,7 @@ public class ComplexHandlerTest {
         indata.setSimpleAttribute("simple 1");
         indata.setSimpleAttribute2("simple 2");
 
-        JSONObject jsonObject = (JSONObject) ch.encode(indata, null, null);
+        JSONObject jsonObject = (JSONObject) ch.encode(indata, null, null, null);
 
         Assert.assertEquals("simple 1", jsonObject.getString("simpleAttribute"));
         Assert.assertEquals("simple 2", jsonObject.getString("simpleAttribute2"));
@@ -84,7 +84,7 @@ public class ComplexHandlerTest {
         List<String> attributes = new ArrayList<String>();
         attributes.add("simpleAttribute");
 
-        JSONObject jsonObject = (JSONObject) ch.encode(indata, attributes, null);
+        JSONObject jsonObject = (JSONObject) ch.encode(indata, attributes, null, null);
 
         Assert.assertEquals("simple 1", jsonObject.getString("simpleAttribute"));
         try {
@@ -104,7 +104,7 @@ public class ComplexHandlerTest {
         indata.setSimpleAttribute2("simple 4");
         indata.setComplexAttribute(indatasub);
 
-        JSONObject jsonObject = (JSONObject) ch.encode(indata, null, null);
+        JSONObject jsonObject = (JSONObject) ch.encode(indata, null, null, null);
 
         Assert.assertEquals("simple 3", jsonObject.getString("simpleAttribute"));
         Assert.assertEquals("simple 4", jsonObject.getString("simpleAttribute2"));
@@ -127,7 +127,7 @@ public class ComplexHandlerTest {
         attributes.add("simpleAttribute");
         attributes.add("complexAttribute.simpleAttribute");
 
-        JSONObject jsonObject = (JSONObject) ch.encode(indata, attributes, null);
+        JSONObject jsonObject = (JSONObject) ch.encode(indata, attributes, null, null);
 
         Assert.assertEquals("simple 3", jsonObject.getString("simpleAttribute"));
         JSONObject jsonObjectSub = jsonObject.getJSONObject("complexAttribute");

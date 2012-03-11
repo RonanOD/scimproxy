@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.xmlbeans.impl.values.XmlObjectBase;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import info.simplecloud.core.MetaData;
 import info.simplecloud.core.coding.decode.IDecodeHandler;
@@ -47,7 +49,7 @@ public class IntegerHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
-    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData, JSONObject internalJsonObject) {
         return HandlerHelper.typeCheck(me, Integer.class);
     }
 
