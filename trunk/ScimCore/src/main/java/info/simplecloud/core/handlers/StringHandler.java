@@ -10,6 +10,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.xmlbeans.impl.values.XmlObjectBase;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class StringHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
@@ -38,7 +40,7 @@ public class StringHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
-    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData, JSONObject internalJsonObject) {
         return HandlerHelper.typeCheck(me, String.class);
     }
 

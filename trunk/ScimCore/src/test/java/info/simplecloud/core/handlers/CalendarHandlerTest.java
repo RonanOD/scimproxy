@@ -22,7 +22,7 @@ public class CalendarHandlerTest {
         TimeZone tz = TimeZone.getTimeZone("GMT+00:00");
         Calendar cal = Calendar.getInstance(tz);
         cal.setTime(new Date(System.currentTimeMillis()));
-        ch.encode(cal, null, null);
+        ch.encode(cal, null, null, null);
 
         // TODO check answer
     }

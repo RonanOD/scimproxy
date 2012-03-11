@@ -31,7 +31,7 @@ public class Base64BinaryHandlerTest {
 
     @Test
     public void encode() {
-        Assert.assertEquals(encoded, bh.encode(decoded, null, null));
+        Assert.assertEquals(encoded, bh.encode(decoded, null, null, null));
         Assert.assertEquals(encoded, bh.encodeXml(decoded, null, null, null));
     }
 

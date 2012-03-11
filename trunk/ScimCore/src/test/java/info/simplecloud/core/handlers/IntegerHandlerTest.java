@@ -30,8 +30,8 @@ public class IntegerHandlerTest {
 
     @Test
     public void encode() {
-        Assert.assertEquals(11, ih.encode(11, null, null));
-        Assert.assertEquals(6, ih.encode(6, null, null));
+        Assert.assertEquals(11, ih.encode(11, null, null, null));
+        Assert.assertEquals(6, ih.encode(6, null, null, null));
         Assert.assertEquals(12, ih.encodeXml(12, null, null, null));
         Assert.assertEquals(8, ih.encodeXml(8, null, null, null));
     }

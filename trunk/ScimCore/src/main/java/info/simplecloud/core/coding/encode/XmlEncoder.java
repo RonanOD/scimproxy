@@ -4,6 +4,7 @@ import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.annotations.Attribute;
 import info.simplecloud.core.annotations.Complex;
+import info.simplecloud.core.annotations.Extension;
 import info.simplecloud.core.coding.ReflectionHelper;
 import info.simplecloud.core.exceptions.FactoryNotFoundException;
 import info.simplecloud.core.handlers.ComplexHandler;
@@ -20,7 +21,8 @@ import x0.scimSchemasCore1.Response.Resources;
 import x0.scimSchemasCore1.ResponseDocument;
 
 public class XmlEncoder implements IUserEncoder {
-    private static final boolean PRETTY_PRINT = Boolean.parseBoolean(System.getProperty(JsonEncoder.class.getName() + ".PRETTY_PRINT", "true"));
+    private static final boolean PRETTY_PRINT = Boolean.parseBoolean(System.getProperty(JsonEncoder.class.getName() + ".PRETTY_PRINT",
+                                                      "true"));
 
     @Override
     public String encode(Resource resource) {
@@ -84,7 +86,7 @@ public class XmlEncoder implements IUserEncoder {
             if (!resource.getClass().isAnnotationPresent(Complex.class)) {
                 throw new RuntimeException("Missing annotation complex on, '" + resource.getClass().getName() + "'");
             }
-            
+
             Complex complexMetadata = resource.getClass().getAnnotation(Complex.class);
             Class<?> factory = ReflectionHelper.getFactory(complexMetadata.xmlType());
             Method parse = factory.getMethod("newInstance");
@@ -113,6 +115,13 @@ public class XmlEncoder implements IUserEncoder {
             // TODO check include attributes for extensions too
             List<Object> extensions = resource.getExtensions();
             for (Object extension : extensions) {
+                if (!extension.getClass().isAnnotationPresent(Extension.class)) {
+                    throw new RuntimeException("The extension '" + extension.getClass().getName()
+                            + "' has no namespace, try to add Extension annotation to class");
+                }
+
+                Extension extensionMetaData = extension.getClass().getAnnotation(Extension.class);
+
                 for (Method method : extension.getClass().getMethods()) {
                     if (!method.isAnnotationPresent(Attribute.class)) {
                         continue;
@@ -124,8 +133,8 @@ public class XmlEncoder implements IUserEncoder {
                     }
 
                     MetaData metaData = new MetaData(method.getAnnotation(Attribute.class));
-
-                    if (attributesList != null && !attributesList.contains(metaData.getName())) {
+                    String attributeName = extensionMetaData.schema() + "." + metaData.getName();
+                    if (attributesList != null && !attributesList.contains(attributeName)) {
                         continue;
                     }
 

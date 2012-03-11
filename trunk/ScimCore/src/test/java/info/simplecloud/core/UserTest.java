@@ -65,28 +65,28 @@ public class UserTest {
         emails.add(new MultiValuedType<String>("bjensen@example.com", "work", true, false));
         emails.add(new MultiValuedType<String>("babs@jensen.org", "home", false, false));
         user.setEmails(emails);
-        
+
         List<MultiValuedType<Address>> addresses = new ArrayList<MultiValuedType<Address>>();
         addresses.add(new MultiValuedType<Address>(new Address("100 Universal City Plaza\nHollywood, CA 91608 USA",
                 "100 Universal City Plaza", "Hollywood", "CA", "91608", "USA"), "work", true, false));
         addresses.add(new MultiValuedType<Address>(new Address("456 Hollywood Blvd\nHollywood, CA 91608 USA", "456 Hollywood Blvd",
                 "Hollywood", "CA", "91608", "USA"), "home", false, false));
         user.setAddresses(addresses);
-        
+
         List<MultiValuedType<String>> phoneNumbers = new ArrayList<MultiValuedType<String>>();
         phoneNumbers.add(new MultiValuedType<String>("800-864-8377", "work", false, false));
         phoneNumbers.add(new MultiValuedType<String>("818-123-4567", "mobile", false, false));
         user.setPhoneNumbers(phoneNumbers);
-        
+
         List<MultiValuedType<String>> ims = new ArrayList<MultiValuedType<String>>();
         ims.add(new MultiValuedType<String>("someaimhandle", "aim", false, false));
         user.setIms(ims);
-        
+
         List<MultiValuedType<String>> photos = new ArrayList<MultiValuedType<String>>();
         photos.add(new MultiValuedType<String>("https://photos.example.com/profilephoto/72930000000Ccne/F", "photo", false, false));
         photos.add(new MultiValuedType<String>("https://photos.example.com/profilephoto/72930000000Ccne/T", "thumbnail", false, false));
         user.setPhotos(photos);
-        
+
         user.setAttribute("userType", "Employee");
         user.setAttribute("title", "Tour Guide");
         user.setAttribute("preferredLanguage", "en_US");
@@ -98,7 +98,7 @@ public class UserTest {
         groups.add(new MultiValuedType<String>("00300000005N34H78", null, "Employees", false));
         groups.add(new MultiValuedType<String>("00300000005N98YT1", null, "US Employees", false));
         user.setGroups(groups);
-        
+
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.employeeNumber", "701984");
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.costCenter", "4130");
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.organization", "Universal Studios");
@@ -106,8 +106,8 @@ public class UserTest {
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.department", "Tour Operations");
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.manager.managerId", "005D0000001AQRE");
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.manager.displayName", "John Smith");
-        //user.setAttribute("meta.created", "2010-01-23T04:56:22Z");
-        //user.setAttribute("meta.lastModified", "2011-05-13T04:42:34Z");
+        // user.setAttribute("meta.created", "2010-01-23T04:56:22Z");
+        // user.setAttribute("meta.lastModified", "2011-05-13T04:42:34Z");
 
         validateCoreUser(user);
         validateEnterpriseAttributes(user);
@@ -115,50 +115,36 @@ public class UserTest {
 
     @Test
     public void encode() throws Exception {
-        User user = new User("ABCDE-12345-EFGHI-78910");
+        User user = new User("005D0000001Az1u");
 
         setAttributesOnUser(user);
 
-        user.getUser(Resource.ENCODING_JSON);
-        user.getUser(Resource.ENCODING_XML);
+        String jsonUser = user.getUser(Resource.ENCODING_JSON);
+        String xmlUser = user.getUser(Resource.ENCODING_XML);
 
-        // TODO validate result
+        containsCheck(jsonUser);
+        containsCheck(xmlUser);
 
     }
 
-    
-
     @Test
     public void encodePartial() throws Exception {
-        User user = new User("ABCDE-12345-EFGHI-78910");
+        User user = new User("005D0000001Az1u");
 
-        user.setAttribute("userName", "kaan");
-        user.setAttribute("externalId", "djfkhasdjkfha");
-        user.setAttribute("name", new Name());
-        user.setAttribute("name.givenName", "Karl");
-        user.setAttribute("name.familyName", "Andersson");
-        user.setAttribute("displayName", "Kalle");
-        user.setAttribute("nickName", "Kalle Anka");
-        user.setAttribute("profileUrl", "https://example.com");
-        user.setAttribute("title", "master");
-        user.setAttribute("userType", "super");
-        user.setAttribute("preferredLanguage", "swedish");
-        user.setAttribute("locale", "sv");
-        user.setAttribute("password", "kan123!");
-
-        List<MultiValuedType<String>> emails = new ArrayList<MultiValuedType<String>>();
-        emails.add(new MultiValuedType<String>("karl@andersson.se", "home", false, false));
-        emails.add(new MultiValuedType<String>("karl.andersson@work.com", "work", true, false));
-        user.setAttribute("emails", emails);
+        setAttributesOnUser(user);
 
         List<String> includeAttributes = new ArrayList<String>();
         includeAttributes.add("userName");
-        includeAttributes.add("title");
+        includeAttributes.add("name.givenName");
+        includeAttributes.add("addresses.streetAddress");
+        includeAttributes.add("urn:scim:schemas:extension:enterprise:1.0.employeeNumber");
+        includeAttributes.add("urn:scim:schemas:extension:enterprise:1.0.manager.displayName");
 
-        user.getUser(Resource.ENCODING_JSON, includeAttributes);
-        user.getUser(Resource.ENCODING_XML, includeAttributes);
+        String jsonUser = user.getUser(Resource.ENCODING_JSON, includeAttributes);
+        String xmlUser = user.getUser(Resource.ENCODING_XML, includeAttributes);
 
-        // TODO validate result
+        partialContainsCheck(jsonUser);
+        partialContainsCheck(xmlUser);
     }
 
     @Test
@@ -429,8 +415,7 @@ public class UserTest {
         Assert.assertEquals("John Smith", enterpriseAttributes.getManager().getDisplayName());
         Assert.assertEquals("005D0000001AQRE", enterpriseAttributes.getManager().getManagerId());
         Assert.assertEquals("Universal Studios", enterpriseAttributes.getOrganization());
-        
-        
+
         Assert.assertEquals("4130", user.getAttribute("urn:scim:schemas:extension:enterprise:1.0.costCenter"));
         Assert.assertEquals("Tour Operations", user.getAttribute("urn:scim:schemas:extension:enterprise:1.0.department"));
         Assert.assertEquals("Theme Park", user.getAttribute("urn:scim:schemas:extension:enterprise:1.0.division"));
@@ -439,7 +424,7 @@ public class UserTest {
         Assert.assertEquals("005D0000001AQRE", user.getAttribute("urn:scim:schemas:extension:enterprise:1.0.manager.managerId"));
         Assert.assertEquals("Universal Studios", user.getAttribute("urn:scim:schemas:extension:enterprise:1.0.organization"));
     }
-    
+
     private void setAttributesOnUser(User user) throws UnknownAttribute {
         user.setAttribute("externalId", "701984");
         user.setAttribute("userName", "bjensen@example.com");
@@ -456,28 +441,28 @@ public class UserTest {
         emails.add(new MultiValuedType<String>("bjensen@example.com", "work", true, false));
         emails.add(new MultiValuedType<String>("babs@jensen.org", "home", false, false));
         user.setEmails(emails);
-        
+
         List<MultiValuedType<Address>> addresses = new ArrayList<MultiValuedType<Address>>();
         addresses.add(new MultiValuedType<Address>(new Address("100 Universal City Plaza\nHollywood, CA 91608 USA",
                 "100 Universal City Plaza", "Hollywood", "CA", "91608", "USA"), "work", true, false));
         addresses.add(new MultiValuedType<Address>(new Address("456 Hollywood Blvd\nHollywood, CA 91608 USA", "456 Hollywood Blvd",
                 "Hollywood", "CA", "91608", "USA"), "home", false, false));
         user.setAddresses(addresses);
-        
+
         List<MultiValuedType<String>> phoneNumbers = new ArrayList<MultiValuedType<String>>();
         phoneNumbers.add(new MultiValuedType<String>("800-864-8377", "work", false, false));
         phoneNumbers.add(new MultiValuedType<String>("818-123-4567", "mobile", false, false));
         user.setPhoneNumbers(phoneNumbers);
-        
+
         List<MultiValuedType<String>> ims = new ArrayList<MultiValuedType<String>>();
         ims.add(new MultiValuedType<String>("someaimhandle", "aim", false, false));
         user.setIms(ims);
-        
+
         List<MultiValuedType<String>> photos = new ArrayList<MultiValuedType<String>>();
         photos.add(new MultiValuedType<String>("https://photos.example.com/profilephoto/72930000000Ccne/F", "photo", false, false));
         photos.add(new MultiValuedType<String>("https://photos.example.com/profilephoto/72930000000Ccne/T", "thumbnail", false, false));
         user.setPhotos(photos);
-        
+
         user.setAttribute("userType", "Employee");
         user.setAttribute("title", "Tour Guide");
         user.setAttribute("preferredLanguage", "en_US");
@@ -489,7 +474,7 @@ public class UserTest {
         groups.add(new MultiValuedType<String>("00300000005N34H78", null, "Employees", false));
         groups.add(new MultiValuedType<String>("00300000005N98YT1", null, "US Employees", false));
         user.setGroups(groups);
-        
+
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.employeeNumber", "701984");
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.costCenter", "4130");
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.organization", "Universal Studios");
@@ -497,6 +482,138 @@ public class UserTest {
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.department", "Tour Operations");
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.manager.managerId", "005D0000001AQRE");
         user.setAttribute("urn:scim:schemas:extension:enterprise:1.0.manager.displayName", "John Smith");
+    }
+
+    private void containsCheck(String stringUser) {
+
+        Assert.assertTrue(stringUser.contains("urn:scim:schemas:core:1.0"));
+        Assert.assertTrue(stringUser.contains("urn:scim:schemas:extension:enterprise:1.0"));
+        Assert.assertTrue(stringUser.contains("005D0000001Az1u"));
+        Assert.assertTrue(stringUser.contains("701984"));
+        Assert.assertTrue(stringUser.contains("bjensen@example.com"));
+        Assert.assertTrue(stringUser.contains("Jensen"));
+        Assert.assertTrue(stringUser.contains("Barbara"));
+        Assert.assertTrue(stringUser.contains("Jane"));
+        Assert.assertTrue(stringUser.contains("Ms."));
+        Assert.assertTrue(stringUser.contains("III"));
+        Assert.assertTrue(stringUser.contains("Ms. Barbara J Jensen III"));
+        Assert.assertTrue(stringUser.contains("Babs Jensen"));
+        Assert.assertTrue(stringUser.contains("Babs"));
+        Assert.assertTrue(stringUser.contains("https://login.example.com/bjensen"));
+        Assert.assertTrue(stringUser.contains("bjensen@example.com"));
+        Assert.assertTrue(stringUser.contains("work"));
+        Assert.assertTrue(stringUser.contains("babs@jensen.org"));
+        Assert.assertTrue(stringUser.contains("home"));
+        Assert.assertTrue(stringUser.contains("work"));
+        Assert.assertTrue(stringUser.contains("100 Universal City Plaza"));
+        Assert.assertTrue(stringUser.contains("Hollywood"));
+        Assert.assertTrue(stringUser.contains("CA"));
+        Assert.assertTrue(stringUser.contains("91608"));
+        Assert.assertTrue(stringUser.contains("USA"));
+        Assert.assertTrue(stringUser.contains("home"));
+        Assert.assertTrue(stringUser.contains("456 Hollywood Blvd"));
+        Assert.assertTrue(stringUser.contains("Hollywood"));
+        Assert.assertTrue(stringUser.contains("CA"));
+        Assert.assertTrue(stringUser.contains("91608"));
+        Assert.assertTrue(stringUser.contains("USA"));
+        Assert.assertTrue(stringUser.contains("800-864-8377"));
+        Assert.assertTrue(stringUser.contains("work"));
+        Assert.assertTrue(stringUser.contains("818-123-4567"));
+        Assert.assertTrue(stringUser.contains("mobile"));
+        Assert.assertTrue(stringUser.contains("someaimhandle"));
+        Assert.assertTrue(stringUser.contains("aim"));
+        Assert.assertTrue(stringUser.contains("https://photos.example.com/profilephoto/72930000000Ccne/F"));
+        Assert.assertTrue(stringUser.contains("photo"));
+        Assert.assertTrue(stringUser.contains("https://photos.example.com/profilephoto/72930000000Ccne/T"));
+        Assert.assertTrue(stringUser.contains("thumbnail"));
+        Assert.assertTrue(stringUser.contains("Employee"));
+        Assert.assertTrue(stringUser.contains("Tour Guide"));
+        Assert.assertTrue(stringUser.contains("en_US"));
+        Assert.assertTrue(stringUser.contains("America/Denver"));
+        Assert.assertTrue(stringUser.contains("Tour Guides"));
+        Assert.assertTrue(stringUser.contains("00300000005N2Y6AA"));
+        Assert.assertTrue(stringUser.contains("true"));
+        Assert.assertTrue(stringUser.contains("Employees"));
+        Assert.assertTrue(stringUser.contains("00300000005N34H78"));
+        Assert.assertTrue(stringUser.contains("US Employees"));
+        Assert.assertTrue(stringUser.contains("00300000005N98YT1"));
+        Assert.assertTrue(stringUser.contains("701984"));
+        Assert.assertTrue(stringUser.contains("4130"));
+        Assert.assertTrue(stringUser.contains("Universal Studios"));
+        Assert.assertTrue(stringUser.contains("Theme Park"));
+        Assert.assertTrue(stringUser.contains("Tour Operations"));
+        Assert.assertTrue(stringUser.contains("005D0000001AQRE"));
+        Assert.assertTrue(stringUser.contains("John Smith"));
+
+        // TODO validate date
+        // Assert.assertTrue(stringUser.contains("2010-01-23T04:56:22Z"));
+        // Assert.assertTrue(stringUser.contains("2011-05-13T04:42:34Z"));
+
+        Assert.assertTrue(stringUser.contains("456 Hollywood Blvd"));
+        Assert.assertTrue(stringUser.contains("Hollywood, CA 91608 USA"));
+        Assert.assertTrue(stringUser.contains("100 Universal City Plaza"));
+        Assert.assertTrue(stringUser.contains("Hollywood, CA 91608 USA"));
+
+    }
+
+    private void partialContainsCheck(String stringUser) {
+
+        Assert.assertTrue(stringUser.contains("urn:scim:schemas:core:1.0"));
+        Assert.assertTrue(stringUser.contains("005D0000001Az1u"));
+        Assert.assertTrue(stringUser.contains("bjensen@example.com"));
+        Assert.assertTrue(stringUser.contains("100 Universal City Plaza"));
+
+        Assert.assertTrue(stringUser.contains("456 Hollywood Blvd"));
+        Assert.assertTrue(stringUser.contains("Barbara"));
+        Assert.assertTrue(stringUser.contains("701984"));
+        Assert.assertTrue(stringUser.contains("urn:scim:schemas:extension:enterprise:1.0"));
+
+        Assert.assertFalse(stringUser.contains("Jensen"));
+        Assert.assertFalse(stringUser.contains("Jane"));
+        Assert.assertFalse(stringUser.contains("Ms."));
+        Assert.assertFalse(stringUser.contains("III"));
+        Assert.assertFalse(stringUser.contains("Ms. Barbara J Jensen III"));
+        Assert.assertFalse(stringUser.contains("Babs Jensen"));
+        Assert.assertFalse(stringUser.contains("Babs"));
+        Assert.assertFalse(stringUser.contains("https://login.example.com/bjensen"));
+        Assert.assertFalse(stringUser.contains("babs@jensen.org"));
+
+        Assert.assertFalse(stringUser.contains("CA"));
+        Assert.assertFalse(stringUser.contains("91608"));
+        Assert.assertFalse(stringUser.contains("USA"));
+
+        Assert.assertFalse(stringUser.contains("91608"));
+        Assert.assertFalse(stringUser.contains("USA"));
+        Assert.assertFalse(stringUser.contains("800-864-8377"));
+
+        Assert.assertFalse(stringUser.contains("818-123-4567"));
+        Assert.assertFalse(stringUser.contains("mobile"));
+        Assert.assertFalse(stringUser.contains("someaimhandle"));
+        Assert.assertFalse(stringUser.contains("aim"));
+        Assert.assertFalse(stringUser.contains("https://photos.example.com/profilephoto/72930000000Ccne/F"));
+        Assert.assertFalse(stringUser.contains("photo"));
+        Assert.assertFalse(stringUser.contains("https://photos.example.com/profilephoto/72930000000Ccne/T"));
+        Assert.assertFalse(stringUser.contains("thumbnail"));
+        Assert.assertFalse(stringUser.contains("Employee"));
+        Assert.assertFalse(stringUser.contains("Tour Guide"));
+        Assert.assertFalse(stringUser.contains("en_US"));
+        Assert.assertFalse(stringUser.contains("America/Denver"));
+        Assert.assertFalse(stringUser.contains("Tour Guides"));
+        Assert.assertFalse(stringUser.contains("00300000005N2Y6AA"));
+
+        Assert.assertFalse(stringUser.contains("Employees"));
+        Assert.assertFalse(stringUser.contains("00300000005N34H78"));
+        Assert.assertFalse(stringUser.contains("US Employees"));
+        Assert.assertFalse(stringUser.contains("00300000005N98YT1"));
+
+        Assert.assertFalse(stringUser.contains("4130"));
+        Assert.assertFalse(stringUser.contains("Universal Studios"));
+        Assert.assertFalse(stringUser.contains("Theme Park"));
+        Assert.assertFalse(stringUser.contains("Tour Operations"));
+        Assert.assertFalse(stringUser.contains("005D0000001AQRE"));
+        Assert.assertFalse(stringUser.contains("John Smith"));
+        Assert.assertFalse(stringUser.contains("2010-01-23T04:56:22Z"));
+        Assert.assertFalse(stringUser.contains("2011-05-13T04:42:34Z"));
     }
 
 }

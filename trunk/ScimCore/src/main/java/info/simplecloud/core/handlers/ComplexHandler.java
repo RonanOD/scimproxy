@@ -97,12 +97,13 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
     }
 
     @Override
-    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData, JSONObject internalJsonObject) {
         ComplexType complexObject = (ComplexType) me;
-        JSONObject result = new JSONObject();
+
+        JSONObject result = internalJsonObject == null ? new JSONObject() : internalJsonObject;
 
         for (String name : complexObject.getNames()) {
-            if (includeAttributes != null && !includeAttributes.isEmpty() && !includeAttributes.contains(name)) {
+            if ((includeAttributes != null && !includeAttributes.isEmpty()) && !beginsWith(name, includeAttributes)) {
                 // We have a list of attributes and this one is not in it.
                 continue;
             }
@@ -113,7 +114,7 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
                 if (value != null) {
                     IEncodeHandler encoder = metaData.getEncoder();
-                    Object encodedValue = encoder.encode(value, stripLevel(includeAttributes), metaData.getInternalMetaData());
+                    Object encodedValue = encoder.encode(value, stripLevel(includeAttributes, name), metaData.getInternalMetaData(), null);
                     result.put(name, encodedValue);
                 }
             } catch (JSONException e) {
@@ -132,8 +133,7 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
         try {
             for (String name : complex.getNames()) {
-                if ("schemas".equals(name) || includeAttributes != null && !includeAttributes.isEmpty()
-                        && !includeAttributes.contains(name)) {
+                if ("schemas".equals(name) || (includeAttributes != null && !includeAttributes.isEmpty()) && !beginsWith(name, includeAttributes)) {
                     // We have a list of attributes and this one is not in it.
                     continue;
                 }
@@ -147,14 +147,14 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
                 Object internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, name);
 
-                Object encodedValue = encoder.encodeXml(value, includeAttributes, metaData.getInternalMetaData(), internalXmlObject);
+                Object encodedValue = encoder.encodeXml(value, stripLevel(includeAttributes, name), metaData.getInternalMetaData(), internalXmlObject);
                 String setterName = "set";
                 setterName += name.substring(0, 1).toUpperCase();
                 setterName += name.substring(1);
                 Method setter = null;
                 try {
                     setter = ReflectionHelper.getMethod(setterName, xmlObject.getClass());
-                }  catch (NoSuchMethodException e) {
+                } catch (NoSuchMethodException e) {
                     setterName += "Array";
                     setter = ReflectionHelper.getMethod(setterName, xmlObject.getClass());
                 }
@@ -205,15 +205,15 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
         return to;
     }
 
-    private List<String> stripLevel(List<String> includeAttributes) {
+    private List<String> stripLevel(List<String> includeAttributes, String levelName) {
         if (includeAttributes == null || includeAttributes.isEmpty()) {
             return null;
         }
 
         List<String> result = new ArrayList<String>();
         for (String attribute : includeAttributes) {
-            if (attribute.contains(".")) {
-                attribute = attribute.substring(attribute.indexOf("."), attribute.length());
+            if (attribute.startsWith(levelName) && attribute.contains(".")) {
+                attribute = attribute.substring(attribute.indexOf(".") + 1, attribute.length());
                 if (!attribute.isEmpty()) {
                     result.add(attribute);
                 }
@@ -221,6 +221,15 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
         }
 
         return (result.isEmpty() ? null : result);
+    }
+
+    private static boolean beginsWith(String name, List<String> includeAttributes) {
+        for (String include : includeAttributes) {
+            if (include.startsWith(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

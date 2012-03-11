@@ -10,6 +10,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class CalendarHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
     @Override
@@ -27,7 +30,7 @@ public class CalendarHandler implements IDecodeHandler, IEncodeHandler, IMerger 
     }
 
     @Override
-    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData, JSONObject internalJsonObject) {
         Calendar cal = (Calendar) me;
         return this.getDateTime(cal);
     }

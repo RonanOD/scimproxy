@@ -30,8 +30,8 @@ public class BooleanHandlerTest {
 
     @Test
     public void encode() {
-        Assert.assertEquals(true, bh.encode(true, null, null));
-        Assert.assertEquals(false, bh.encode(false, null, null));
+        Assert.assertEquals(true, bh.encode(true, null, null, null));
+        Assert.assertEquals(false, bh.encode(false, null, null, null));
         Assert.assertEquals(true, bh.encodeXml(true, null, null, null));
         Assert.assertEquals(false, bh.encodeXml(false, null, null, null));
     }

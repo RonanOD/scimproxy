@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.apache.xmlbeans.impl.util.Base64;
 import org.apache.xmlbeans.impl.values.XmlObjectBase;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import info.simplecloud.core.MetaData;
 import info.simplecloud.core.coding.decode.IDecodeHandler;
@@ -48,7 +50,7 @@ public class Base64BinaryHandler implements IDecodeHandler, IEncodeHandler, IMer
     }
 
     @Override
-    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData) {
+    public Object encode(Object me, List<String> includeAttributes, MetaData internalMetaData, JSONObject internalJsonObject) {
         try {
             return new String(Base64.encode((byte[]) me), "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -59,7 +61,7 @@ public class Base64BinaryHandler implements IDecodeHandler, IEncodeHandler, IMer
     @Override
     public Object encodeXml(Object me, List<String> includeAttributes, MetaData internalMetaData, Object xmlObject) {
         if (xmlObject == null) {
-            return encode(me, includeAttributes, internalMetaData);
+            return encode(me, includeAttributes, internalMetaData, null);
         }
 
         Object internalXmlObject;

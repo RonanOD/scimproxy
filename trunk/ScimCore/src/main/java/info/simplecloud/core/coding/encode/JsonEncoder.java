@@ -77,7 +77,7 @@ public class JsonEncoder implements IUserEncoder {
     }
 
     private JSONObject internalEncode(Resource resource, List<String> includeAttributes) throws JSONException {
-        JSONObject result = (JSONObject) new ComplexHandler().encode(resource, includeAttributes, null);
+        JSONObject result = (JSONObject) new ComplexHandler().encode(resource, includeAttributes, null, null);
 
         for (Object extension : resource.getExtensions()) {
 
@@ -96,17 +96,17 @@ public class JsonEncoder implements IUserEncoder {
                 }
 
                 MetaData metaData = new MetaData(method.getAnnotation(Attribute.class));
-                if (includeAttributes != null && !includeAttributes.contains(metaData.getName())) {
+                String attributeName = extensionMetaData.schema() + "." + metaData.getName();
+                if (includeAttributes != null && !includeAttributes.contains(attributeName)) {
                     continue;
                 }
-                
 
                 IEncodeHandler encoder = metaData.getEncoder();
 
                 try {
                     Object value = method.invoke(extension);
                     if (value != null) {
-                        Object encodedValue = encoder.encode(value, includeAttributes, metaData.getInternalMetaData());
+                        Object encodedValue = encoder.encode(value, includeAttributes, metaData.getInternalMetaData(), null);
                         extensionJson.put(metaData.getName(), encodedValue);
                     }
                 } catch (IllegalAccessException e) {
@@ -118,7 +118,7 @@ public class JsonEncoder implements IUserEncoder {
                 }
 
             }
-            
+
             result.put(extensionMetaData.schema(), extensionJson);
         }
 
