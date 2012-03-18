@@ -5,7 +5,7 @@
     "Operations": [
         {
             "method": "POST",
-            "path": "/v1/User",
+            "path": "/v1/Users",
             "bulkId": "alicebulkId",
             "data": {
                 "schemas": [

@@ -18,7 +18,7 @@ public class ScimUserServletPostTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimUserServlet.class, "/v1/Users/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
     }
@@ -33,7 +33,7 @@ public class ScimUserServletPostTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User");
+        request.setURI("/v1/Users");
         request.setHeader("Content-Length", Integer.toString(scimUserJson.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimUserJson.getUser(User.ENCODING_JSON));
@@ -52,7 +52,7 @@ public class ScimUserServletPostTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User");
+        request.setURI("/v1/Users");
         request.setHeader("Content-Length", Integer.toString(scimUserXml.getUser(User.ENCODING_XML).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setHeader("Accept", "application/xml");

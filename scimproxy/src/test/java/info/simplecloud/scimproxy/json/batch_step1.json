@@ -5,7 +5,7 @@
     "Operations": [
         {
             "method": "POST",
-            "path": "/v1/Group",
+            "path": "/v1/Groups",
             "bulkId": "tourguidesbulkId",
             "data": {
                 "schemas": [
@@ -26,7 +26,7 @@
         },
         {
             "method": "POST",
-            "path": "/v1/User",
+            "path": "/v1/Users",
             "bulkId": "alicebulkId",
             "data": {
                 "schemas": [
@@ -42,7 +42,7 @@
         },
         {
             "method": "POST",
-            "path": "/v1/User",
+            "path": "/v1/Users",
             "bulkId": "bobbulkId",
             "data": {
                 "schemas": [
@@ -58,7 +58,7 @@
         },
         {
             "method": "POST",
-            "path": "/v1/User",
+            "path": "/v1/Users",
             "bulkId": "charliebulkId",
             "data": {
                 "schemas": [
@@ -74,7 +74,7 @@
         },
         {
             "method": "POST",
-            "path": "/v1/User",
+            "path": "/v1/Users",
             "bulkId": "davebulkId",
             "data": {
                 "schemas": [

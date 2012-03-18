@@ -54,16 +54,16 @@ public class Util {
     }
 
     /**
-     * Gets an user id from a request. /User/myuserid will return myuserid.
+     * Gets an user id from a request. /Users/myuserid will return myuserid.
      * 
      * @param query
-     *            A URI, for example /User/myuserid.
+     *            A URI, for example /Users/myuserid.
      * @return A scim user id.
      */
     public static String getUserIdFromUri(String query) {
         String id = "";
         // TODO: add more validation of input
-        String s = "/v1/User/";
+        String s = "/v1/Users/";
         String pw = "/password";
         String jsonExt = ".json";
         String xmlExt = ".xml";
@@ -110,16 +110,16 @@ public class Util {
     }
 
     /**
-     * Gets an group id from a request. /Group/myGroupId will return myGroupId.
+     * Gets an group id from a request. /Groups/myGroupId will return myGroupId.
      * 
      * @param query
-     *            A URI, for example /Group/myuserid.
+     *            A URI, for example /Groups/myuserid.
      * @return A scim group id.
      */
     public static String getGroupIdFromUri(String query) {
         String id = "";
         // TODO: add more validation of input
-        String s = "/v1/Group/";
+        String s = "/v1/Groups/";
         String jsonExt = ".json";
         String xmlExt = ".xml";
 

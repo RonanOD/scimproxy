@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 /**
  * To retrieve a known Resource, clients send GET requests to the Resource end
- * point; e.g., /Users/{id}. This servlet is the /User end point.
+ * point; e.g., /Users/{id}. This servlet is the /Users end point.
  */
 
 public class ScimUserServlet extends ScimResourceServlet {

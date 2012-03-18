@@ -21,7 +21,7 @@ public class ScimUserServletPutTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimUserServlet.class, "/v1/Users/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -32,7 +32,7 @@ public class ScimUserServletPutTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User");
+        request.setURI("/v1/Users");
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimUser.getUser(User.ENCODING_JSON));
@@ -52,7 +52,7 @@ public class ScimUserServletPutTest {
         request.setMethod("PUT");
         request.setVersion("HTTP/1.0");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
 
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -73,7 +73,7 @@ public class ScimUserServletPutTest {
         request.setMethod("PUT");
         request.setVersion("HTTP/1.0");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
 
         request.setHeader("Content-Length", Integer.toString("very invalid user".length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");

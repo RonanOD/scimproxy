@@ -20,7 +20,7 @@ public class ScimUserServletAuthTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimUserServlet.class, "/v1/Users/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -30,7 +30,7 @@ public class ScimUserServletAuthTest {
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User");
+        request.setURI("/v1/Users");
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setHeader("Authorization", "Basic dXNyOnB3");
@@ -47,7 +47,7 @@ public class ScimUserServletAuthTest {
         request.setVersion("HTTP/1.0");
         request.removeHeader("Authorization");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
 
         response.parse(tester.getResponses(request.generate()));
 
@@ -61,7 +61,7 @@ public class ScimUserServletAuthTest {
         request.removeHeader("Authorization");
         request.setHeader("Authorizationsasdasd", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
 
         response.parse(tester.getResponses(request.generate()));
 
@@ -74,7 +74,7 @@ public class ScimUserServletAuthTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "dXNyOnB3");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
 
         response.parse(tester.getResponses(request.generate()));
 
@@ -87,7 +87,7 @@ public class ScimUserServletAuthTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic asdXNyOnB3");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
 
         response.parse(tester.getResponses(request.generate()));
 

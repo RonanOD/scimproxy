@@ -21,7 +21,7 @@ public class ScimGroupServletDeleteTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimGroupServlet.class, "/v1/Group/*");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Groups/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -31,7 +31,7 @@ public class ScimGroupServletDeleteTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Group");
+        request.setURI("/v1/Groups");
         request.setHeader("Content-Length", Integer.toString(scimGroup.getGroup(Group.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimGroup.getGroup(Group.ENCODING_JSON));
@@ -48,7 +48,7 @@ public class ScimGroupServletDeleteTest {
         request.setVersion("HTTP/1.0");
 
         // get resource to see if it's there
-        request.setURI("/v1/Group/" + id);
+        request.setURI("/v1/Groups/" + id);
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
@@ -82,7 +82,7 @@ public class ScimGroupServletDeleteTest {
         request.setVersion("HTTP/1.0");
 
         // get resource to see if it's there
-        request.setURI("/v1/Group/jsjsjsjsjsjs");
+        request.setURI("/v1/Groups/jsjsjsjsjsjs");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(404, response.getStatus());

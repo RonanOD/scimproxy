@@ -14,8 +14,8 @@
 		<servlet-class>info.simplecloud.scimproxy.ScimUserServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>User</servlet-name>
-		<url-pattern>/v1/User</url-pattern>
+		<servlet-name>Users</servlet-name>
+		<url-pattern>/v1/Users</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -23,8 +23,8 @@
 		<servlet-class>info.simplecloud.scimproxy.ScimGroupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Group</servlet-name>
-		<url-pattern>/v1/Group</url-pattern>
+		<servlet-name>Groups</servlet-name>
+		<url-pattern>/v1/Groups</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
@@ -33,7 +33,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Schema</servlet-name>
-		<url-pattern>/v1/Schema/*</url-pattern>
+		<url-pattern>/v1/Schemas/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
@@ -59,15 +59,15 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ServiceProviderConfig</servlet-name>
-		<url-pattern>/v1/ServiceProviderConfig</url-pattern>
+		<url-pattern>/v1/ServiceProviderConfigs</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ServiceProviderConfig</servlet-name>
-		<url-pattern>/v1/ServiceProviderConfig.json</url-pattern>
+		<url-pattern>/v1/ServiceProviderConfigs.json</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ServiceProviderConfig</servlet-name>
-		<url-pattern>/v1/ServiceProviderConfig.xml</url-pattern>
+		<url-pattern>/v1/ServiceProviderConfigs.xml</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
