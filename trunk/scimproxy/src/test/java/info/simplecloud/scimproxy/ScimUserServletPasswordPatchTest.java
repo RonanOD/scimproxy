@@ -20,7 +20,7 @@ public class ScimUserServletPasswordPatchTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimUserServlet.class, "/v1/Users/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -31,7 +31,7 @@ public class ScimUserServletPasswordPatchTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User");
+        request.setURI("/v1/Users");
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimUser.getUser(User.ENCODING_JSON));
@@ -46,7 +46,7 @@ public class ScimUserServletPasswordPatchTest {
         // get resource to see if it's there
         request.setMethod("PATCH");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User/" + id + "/password");
+        request.setURI("/v1/Users/" + id + "/password");
         
         String query = "{" +
         					"\"schemas\":[\"urn:scim:schemas:core:1.0\"]," +
@@ -64,7 +64,7 @@ public class ScimUserServletPasswordPatchTest {
         // get resource to see if it's there
         request.setMethod("PATCH");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User/" + id + "/password");
+        request.setURI("/v1/Users/" + id + "/password");
         
         String query = "{" +
         					"\"schemas\":[\"urn:scim:schemas:core:1.0\"]," +
@@ -81,7 +81,7 @@ public class ScimUserServletPasswordPatchTest {
         // get resource to see if it's there
         request.setMethod("PATCH");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User/" + id + "/password");
+        request.setURI("/v1/Users/" + id + "/password");
         
         String query = "{" +
         					"\"schemas\":[\"urn:scim:schemas:core:1.0\"]," +

@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * To retrieve a known Resource, clients send GET requests to the Resource end
- * point; e.g., /User/{id}. This servlet is the /User end point.
+ * point; e.g., /Users/{id}. This servlet is the /Users end point.
  */
 
 public class ScimResourceServlet extends RestServlet {

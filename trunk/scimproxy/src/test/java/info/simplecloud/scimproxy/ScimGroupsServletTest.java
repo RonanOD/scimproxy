@@ -26,10 +26,10 @@ public class ScimGroupsServletTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimGroupServlet.class, "/v1/Group/*");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Group");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Group.xml");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Group.json");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Groups/*");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Groups");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Groups.xml");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Groups.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -44,7 +44,7 @@ public class ScimGroupsServletTest {
         aliceRequest.setVersion("HTTP/1.0");
         aliceRequest.setHeader("Authorization", "Basic dXNyOnB3");
 
-        aliceRequest.setURI("/v1/Group");
+        aliceRequest.setURI("/v1/Groups");
         aliceRequest.setHeader("Content-Length", Integer.toString(managers.getGroup(Group.ENCODING_JSON).length()));
         aliceRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
         aliceRequest.setContent(managers.getGroup(Group.ENCODING_JSON));
@@ -61,7 +61,7 @@ public class ScimGroupsServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Group");
+        request.setURI("/v1/Groups");
         response.parse(tester.getResponses(request.generate()));
 
         String groups = response.getContent();
@@ -87,7 +87,7 @@ public class ScimGroupsServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Group.xml");
+        request.setURI("/v1/Groups.xml");
         response.parse(tester.getResponses(request.generate()));
 
         String groups = response.getContent();
@@ -113,7 +113,7 @@ public class ScimGroupsServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Group.json");
+        request.setURI("/v1/Groups.json");
         response.parse(tester.getResponses(request.generate()));
 
         String groups = response.getContent();
@@ -141,7 +141,7 @@ public class ScimGroupsServletTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Group.json?asdasdasd");
+        request.setURI("/v1/Groups.json?asdasdasd");
         response.parse(tester.getResponses(request.generate()));
 
         String groups = response.getContent();

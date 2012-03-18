@@ -58,7 +58,7 @@ public class Trigger {
 	        		user.setActive(true);
 	        		user.setId(null); // reset id for salesforce
 					resourceString = user.getUser(csp.getPreferedEncoding());
-	                endpoint = csp.getUrl() + getVersionPath(csp) + "/User";
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Users";
 	        	}
 	        	else if(resource instanceof Group) {
 	        		Group tmp = (Group)resource;
@@ -67,7 +67,7 @@ public class Trigger {
 	        		id = group.getId();
 	        		group.setId(null); // reset id for salesforce
 	        		resourceString = group.getGroup(csp.getPreferedEncoding());
-	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Group";
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Groups";
 	        	}
 
                 method = new PostMethod(endpoint);
@@ -164,13 +164,13 @@ public class Trigger {
 	        	if(resource instanceof User) {
 	        		User user = (User)resource;
 	        		id = user.getId();
-	                endpoint = csp.getUrl() + getVersionPath(csp) + "/User/";
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Users/";
 	        	}
 	        	else if(resource instanceof Group) {
 	        		Group group = (Group)resource;
 	        		id = null;
 	        		// TODO: Implement externalId on Resource!
-	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Group/";
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Groups/";
 	        	}
 	        	
 	        	String externalId = csp.getExternalIdForId(id);
@@ -248,13 +248,13 @@ public class Trigger {
 	        	if(resource instanceof User) {
 	        		User user = (User)resource;
 	        		id = user.getId();
-	                endpoint = csp.getUrl() + getVersionPath(csp) + "/User/";
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Users/";
 					resourceString = user.getUser(csp.getPreferedEncoding());
 	        	}
 	        	else if(resource instanceof Group) {
 	        		Group group = (Group)resource;
 	        		id = group.getId();
-	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Group/";
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Groups/";
 					resourceString = group.getGroup(csp.getPreferedEncoding());
 	        	}
 	        	
@@ -353,13 +353,13 @@ public class Trigger {
 	        	if(resource instanceof User) {
 	        		User user = (User)resource;
 	        		id = user.getId();
-	                endpoint = csp.getUrl() + getVersionPath(csp) + "/User/";
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Users/";
 					resourceString = user.getUser(csp.getPreferedEncoding());
 	        	}
 	        	else if(resource instanceof Group) {
 	        		Group group = (Group)resource;
 	        		id = group.getId();
-	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Group/";
+	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Groups/";
 					resourceString = group.getGroup(csp.getPreferedEncoding());
 	        	}
 	        	

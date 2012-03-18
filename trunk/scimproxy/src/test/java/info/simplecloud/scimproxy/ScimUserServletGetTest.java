@@ -20,7 +20,7 @@ public class ScimUserServletGetTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimUserServlet.class, "/v1/Users/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -30,7 +30,7 @@ public class ScimUserServletGetTest {
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User");
+        request.setURI("/v1/Users");
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setHeader("Authorization", "Basic dXNyOnB3");
@@ -48,7 +48,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
@@ -66,7 +66,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/" + id + ".json");
+        request.setURI("/v1/Users/" + id + ".json");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
@@ -84,7 +84,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/" + id + ".xml");
+        request.setURI("/v1/Users/" + id + ".xml");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
@@ -102,7 +102,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/asdasdasdasd");
+        request.setURI("/v1/Users/asdasdasdasd");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(404, response.getStatus());
@@ -114,7 +114,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/asdasdasdasd");
+        request.setURI("/v1/Users/asdasdasdasd");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(404, response.getStatus());
@@ -126,7 +126,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsd");
+        request.setURI("/v1/Users/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsd");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(404, response.getStatus());
@@ -138,7 +138,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        String longUrl = "/v1/User/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsd";
+        String longUrl = "/v1/Users/as+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsdas+da+sd%20as%20da{}0w92827:;pi9u3jwpsd";
         request.setURI(longUrl);
         response.parse(tester.getResponses(request.generate()));
 
@@ -151,7 +151,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/" + id + "?attributes=");
+        request.setURI("/v1/Users/" + id + "?attributes=");
 
         response.parse(tester.getResponses(request.generate()));
 
@@ -168,7 +168,7 @@ public class ScimUserServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User/" + id + "?attributes=nickName");
+        request.setURI("/v1/Users/" + id + "?attributes=nickName");
 
         response.parse(tester.getResponses(request.generate()));
 

@@ -32,10 +32,10 @@ public class ResourceJob {
 		this.path = path;
 
 		// if type is not sent it's in the resource value, extract it.
-		if(path != null && path.indexOf("/v1/User") > -1) {
+		if(path != null && path.indexOf("/v1/Users") > -1) {
 			this.type = TYPE_USER;
 		}
-		if(path != null && path.indexOf("/v1/Group") > -1) {
+		if(path != null && path.indexOf("/v1/Groups") > -1) {
 			this.type = TYPE_GROUP;
 		}
 		

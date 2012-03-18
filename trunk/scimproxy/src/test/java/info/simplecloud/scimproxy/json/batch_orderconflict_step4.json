@@ -5,7 +5,7 @@
     "Operations": [
         {
             "method": "POST",
-            "path": "/v1/User",
+            "path": "/v1/Users",
             "bulkId": "bobbulkId",
             "data": {
                 "schemas": [
@@ -21,7 +21,7 @@
         },
         {
             "method": "POST",
-            "path": "/v1/Group",
+            "path": "/v1/Groups",
             "bulkId": "groupbulkId1",
             "data": {
                 "schemas": [
@@ -42,7 +42,7 @@
         },
         {
             "method": "POST",
-            "path": "/v1/Group",
+            "path": "/v1/Groups",
             "bulkId": "groupbulkId2",
             "data": {
                 "schemas": [

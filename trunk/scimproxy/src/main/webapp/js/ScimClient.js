@@ -17,7 +17,7 @@ var ScimClient = {
 	},
 	
 	get : function(parameters, callback) {
-		var url = baseUrl + "/User",
+		var url = baseUrl + "/Users",
 			query = "?";
 			xmlhttp = new XMLHttpRequest(),
 			i;

@@ -5,7 +5,7 @@
     "Operations": [
         {
             "method": "PUT",
-            "path": "/v1/Group/udsafdu52b8jqoi5db4peu2qt8",
+            "path": "/v1/Groups/udsafdu52b8jqoi5db4peu2qt8",
             "etag": "todgi6cp4cje5es186joqk16f81317394287715",
             "data": {
                 "schemas": [
@@ -31,7 +31,7 @@
         },
         {
             "method": "DELETE",
-            "path": "/v1/Group/q9gibelel562kpjpos7ui6i4ul",
+            "path": "/v1/Groups/q9gibelel562kpjpos7ui6i4ul",
             "etag": "tfm9ra2s2l1p1h0vk923nu6paq1317394288805"
         }
     ]

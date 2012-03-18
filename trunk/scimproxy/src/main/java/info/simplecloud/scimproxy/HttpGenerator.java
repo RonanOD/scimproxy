@@ -218,10 +218,10 @@ public class HttpGenerator {
 	public static String getLocation(Resource resource, String server) {
 		String path = "";
 		if(resource instanceof User) {
-			path = "User";
+			path = "Users";
 		}
 		else {
-			path = "Group";
+			path = "Groups";
 		}
 		
 		if(resource.getId() != null) {
@@ -237,10 +237,10 @@ public class HttpGenerator {
 	public static String getLocation(String id, String type, String server) {
 		String path = "";
 		if("user".equals(type)) {
-			path = "User";
+			path = "Users";
 		}
 		else {
-			path = "Group";
+			path = "Groups";
 		}
 		return server + "/v1/" + path + "/" + id;
 	}
@@ -251,10 +251,10 @@ public class HttpGenerator {
 		}
 		String type = "";
 		if(resource instanceof User) {
-			type = "User";
+			type = "Users";
 		}
 		else {
-			type = "Group";
+			type = "Groups";
 		}
 		return "/v1/" + type+ "/" + resource.getId();
 	}
@@ -287,10 +287,10 @@ public class HttpGenerator {
 	public static String getLocation(Resource resource, HttpServletRequest req) {
 		String path = "";
 		if(resource instanceof User) {
-			path = "User";
+			path = "Users";
 		}
 		else {
-			path = "Group";
+			path = "Groups";
 		}
 		return getInternalLocation("/v1/" + path + "/" + resource.getId(), req);
 	}

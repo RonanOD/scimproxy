@@ -32,7 +32,7 @@ public class ScimSchemaServlet extends HttpServlet {
 				  "\"name\":\"User\"," +
 				  "\"description\":\"Core User\"," +
 				  "\"schema\":\"urn:scim:schemas:core:1.0\"," +
-				  "\"queryEndpoint\":\"/User\"," +
+				  "\"queryEndpoint\":\"/Users\"," +
 				  "\"attributes\":[" +
 				    "{" +
 				      "\"name\":\"id\"," +
@@ -201,7 +201,7 @@ public class ScimSchemaServlet extends HttpServlet {
 				   "]" +
 				"}";
 
-		        resp.setHeader("Location", HttpGenerator.getServer(req) + "/v1/Schema/User");
+		        resp.setHeader("Location", HttpGenerator.getServer(req) + "/v1/Schema/Users");
 		        resp.setStatus(HttpServletResponse.SC_OK);
 		        resp.setContentType(HttpGenerator.getContentType(req));
 				response = Util.formatJsonPretty(response);
@@ -219,7 +219,7 @@ public class ScimSchemaServlet extends HttpServlet {
 					  "\"name\":\"Group\"," +
 					  "\"description\":\"Core Group\"," +
 					  "\"schema\":\"urn:scim:schemas:core:1.0\"," +
-					  "\"queryEndpoint\":\"/Group\"," +
+					  "\"queryEndpoint\":\"/Groups\"," +
 					  "\"attributes\":[" +
 					    "{" +
 					      "\"name\":\"id\"," +
@@ -233,7 +233,7 @@ public class ScimSchemaServlet extends HttpServlet {
 					    "}," +
 					  "]" +
 					"}";
-		        resp.setHeader("Location", HttpGenerator.getServer(req) + "/v1/Schema/Group");
+		        resp.setHeader("Location", HttpGenerator.getServer(req) + "/v1/Schema/Groups");
 		        resp.setStatus(HttpServletResponse.SC_OK);
 		        resp.setContentType(HttpGenerator.getContentType(req));
 				response = Util.formatJsonPretty(response);

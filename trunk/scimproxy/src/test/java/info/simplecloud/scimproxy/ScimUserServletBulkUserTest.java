@@ -19,8 +19,8 @@ public class ScimUserServletBulkUserTest {
     public static void setUp() throws Exception {
         tester = new ServletTester();
         tester.addServlet(ScimBulkServlet.class, "/v1/Bulk");
-        tester.addServlet(ScimGroupServlet.class, "/v1/User/*");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Group/*");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Users/*");
+        tester.addServlet(ScimGroupServlet.class, "/v1/Groups/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
     }
@@ -30,7 +30,7 @@ public class ScimUserServletBulkUserTest {
 	  "\"Operations\":[" + 
 	    "{" + 
 	      "\"method\":\"POST\"," + 
-	      "\"path\":\"/User\"," + 
+	      "\"path\":\"/Users\"," + 
 	      "\"bulkId\":\"qwerty\"," + 
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," + 
@@ -50,7 +50,7 @@ public class ScimUserServletBulkUserTest {
 	  "\"Operations\":[" + 
 	    "{" + 
 	      "\"method\":\"PUT\"," + 
-	      "\"path\":\"/User/IDPLACEHOLDER\"," + 
+	      "\"path\":\"/Users/IDPLACEHOLDER\"," + 
 	      "\"version\":\"ETAGPLACEHOLDER\"," +
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," +
@@ -72,7 +72,7 @@ public class ScimUserServletBulkUserTest {
 	  "\"Operations\":[" + 
 	    "{" + 
 	      "\"method\":\"DELETE\"," + 
-	      "\"path\":\"/User/IDPLACEHOLDER\"," + 
+	      "\"path\":\"/Users/IDPLACEHOLDER\"," + 
 	      "\"version\":\"ETAGPLACEHOLDER\"" +
 	    "}" + 
 	  "]" + 
@@ -84,7 +84,7 @@ public class ScimUserServletBulkUserTest {
 	  "\"Operations\":[" + 
 	    "{" + 
 	      "\"method\":\"PATCH\"," +
-	      "\"path\":\"/User/IDPLACEHOLDER\"," + 
+	      "\"path\":\"/Users/IDPLACEHOLDER\"," + 
 	      "\"version\":\"ETAGPLACEHOLDER\"," +
 	      "\"data\":{" + 
 	        "\"schemas\": [\"urn:scim:schemas:core:1.0\"]," +
@@ -145,7 +145,7 @@ public class ScimUserServletBulkUserTest {
 		    JSONObject entity = entities.getJSONObject(i);
 		    
 		    String location = entity.getString("location");
-		    aliceId = location.substring(location.indexOf("/v1/User/") + "/v1/User/".length());
+		    aliceId = location.substring(location.indexOf("/v1/Users/") + "/v1/Users/".length());
 		    aliceEtag = entity.getString("version");
 		}
         
@@ -192,7 +192,7 @@ public class ScimUserServletBulkUserTest {
 		    JSONObject entity = entities.getJSONObject(i);
 		    
 		    String location = entity.getString("location");
-		    aliceId = location.substring(location.indexOf("/v1/User/") + "/v1/User/".length());
+		    aliceId = location.substring(location.indexOf("/v1/Users/") + "/v1/Users/".length());
 		    aliceEtag = entity.getString("version");
 		}
         
@@ -237,7 +237,7 @@ public class ScimUserServletBulkUserTest {
 		    JSONObject entity = entities.getJSONObject(i);
 		    
 		    String location = entity.getString("location");
-		    aliceId = location.substring(location.indexOf("/v1/User/") + "/v1/User/".length());
+		    aliceId = location.substring(location.indexOf("/v1/Users/") + "/v1/Users/".length());
 		    aliceEtag = entity.getString("version");
 		}
         

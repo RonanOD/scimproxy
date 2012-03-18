@@ -20,7 +20,7 @@ public class ScimUserServletPatchTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/User/*");
+        tester.addServlet(ScimUserServlet.class, "/v1/Users/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
@@ -31,7 +31,7 @@ public class ScimUserServletPatchTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/User");
+        request.setURI("/v1/Users");
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimUser.getUser(User.ENCODING_JSON));
@@ -51,7 +51,7 @@ public class ScimUserServletPatchTest {
         // get resource to see if it's there
         request.setMethod("GET");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
         response.parse(tester.getResponses(request.generate()));
         Assert.assertEquals(200, response.getStatus());
 
@@ -67,7 +67,7 @@ public class ScimUserServletPatchTest {
         request2.setVersion("HTTP/1.0");
         request2.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request2.setURI("/v1/User/" + id);
+        request2.setURI("/v1/Users/" + id);
         request2.setContent(scimUser.getUser(User.ENCODING_JSON));
         request2.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request2.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -82,7 +82,7 @@ public class ScimUserServletPatchTest {
         request3.setMethod("GET");
         request3.setVersion("HTTP/1.0");
         request3.setHeader("Authorization", "Basic dXNyOnB3");
-        request3.setURI("/v1/User/" + id);
+        request3.setURI("/v1/Users/" + id);
         response3.parse(tester.getResponses(request3.generate()));
 
         String r = response3.getContent();
@@ -93,7 +93,7 @@ public class ScimUserServletPatchTest {
     public void patchUserMissingContent() throws Exception {
         request.setMethod("PATCH");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(400, response.getStatus());
@@ -103,7 +103,7 @@ public class ScimUserServletPatchTest {
     public void testPatchUserMissingContentZeroLength() throws Exception {
         request.setMethod("PATCH");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
         request.setHeader("Content-Length", "0");
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
@@ -122,7 +122,7 @@ public class ScimUserServletPatchTest {
         // get resource to see if it's there
         request.setMethod("GET");
         request.setVersion("HTTP/1.0");
-        request.setURI("/v1/User/" + id);
+        request.setURI("/v1/Users/" + id);
         response.parse(tester.getResponses(request.generate()));
         Assert.assertEquals(200, response.getStatus());
 
@@ -137,7 +137,7 @@ public class ScimUserServletPatchTest {
         request2.setVersion("HTTP/1.0");
         request2.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request2.setURI("/v1/User/" + id);
+        request2.setURI("/v1/Users/" + id);
         request2.setContent(scimUser.getUser(User.ENCODING_JSON));
         request2.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request2.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -167,11 +167,11 @@ public class ScimUserServletPatchTest {
     public void patchUserRemoveAttribs() throws Exception {
         /*
          * tester = new ServletTester();
-         * tester.addServlet(ScimUserServlet.class, "/User/*");
+         * tester.addServlet(ScimUserServlet.class, "/Users/*");
          * tester.addServlet(DefaultServlet.class, "/"); tester.start();
          * 
          * // get resource to see if it's there request.setMethod("GET");
-         * request.setVersion("HTTP/1.0"); request.setURI("/User/" + id);
+         * request.setVersion("HTTP/1.0"); request.setURI("/Users/" + id);
          * response.parse(tester.getResponses(request.generate()));
          * 
          * assertEquals(200, response.getStatus());
@@ -185,7 +185,7 @@ public class ScimUserServletPatchTest {
          * 
          * HttpTester request2 = new HttpTester(); HttpTester response2 = new
          * HttpTester(); request2.setMethod("PATCH");
-         * request2.setVersion("HTTP/1.0"); request2.setURI("/User/" + id);
+         * request2.setVersion("HTTP/1.0"); request2.setURI("/Users/" + id);
          * request2.setContent(scimUser.getUser(User.ENCODING_JSON));
          * request2.setHeader("Content-Length",
          * Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
@@ -198,7 +198,7 @@ public class ScimUserServletPatchTest {
          * 
          * // next request should be have displayName but no email addresses
          * HttpTester request3 = new HttpTester(); HttpTester response3 = new
-         * HttpTester(); request3.setURI("/User/" + id);
+         * HttpTester(); request3.setURI("/Users/" + id);
          * response3.parse(tester.getResponses(request2.generate()));
          * 
          * ScimUser scimUser2 = new ScimUser(response3.getContent(), User.ENCODING_JSON);
