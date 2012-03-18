@@ -5,10 +5,12 @@ import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.storage.IStorage;
+import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
-import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
+import info.simplecloud.scimproxy.storage.mongodb.MongoDBStorage;
 import info.simplecloud.scimproxy.util.Util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
@@ -34,6 +36,10 @@ public class UserDelegator {
 		if("dummy".equalsIgnoreCase(Config.getInstance().getStorageType())) {
 			storage = DummyStorage.getInstance(sessionId);
 			log.info("Dummy storage configured.");
+		}
+		else if("mongodb".equalsIgnoreCase(Config.getInstance().getStorageType())) {
+			storage = MongoDBStorage.getInstance(sessionId);
+			log.info("MongoDB storage configured.");
 		}
 		else {
 			log.fatal("No storage configured.");
@@ -135,6 +141,23 @@ public class UserDelegator {
 	public Group getGroup(String groupId) throws ResourceNotFoundException {
 		return storage.getGroupForId(groupId);
 	}
+	
+	
+	public ArrayList<User> getList(String sortBy, String sortOrder, String filter) throws ResourceNotFoundException {
+		return storage.getList(sortBy, sortOrder, filter);
+	}
+
+	public ArrayList<Group> getGroupList() throws ResourceNotFoundException {
+		return storage.getGroupList();
+	}
+
+	public ArrayList<Group> getGroupList(String sortBy, String sortOrder) throws ResourceNotFoundException {
+		return storage.getGroupList(sortBy, sortOrder);
+	}
+
+	public ArrayList<User> getUserList(String sortBy, String sortOrder) throws ResourceNotFoundException {
+		return storage.getUserList(sortBy, sortOrder);
+	}
 
 	/**
 	 * Creates a new group in the configured user storage.
@@ -179,6 +202,7 @@ public class UserDelegator {
 	public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException {
 		storage.replaceGroup(id, scimGroup);
 	}
-	
+
+
 	
 }

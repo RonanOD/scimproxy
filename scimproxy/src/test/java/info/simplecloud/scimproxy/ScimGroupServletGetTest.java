@@ -24,7 +24,7 @@ public class ScimGroupServletGetTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        Group scimGroup = new Group("ABC123-get");
+        Group scimGroup = new Group();
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");

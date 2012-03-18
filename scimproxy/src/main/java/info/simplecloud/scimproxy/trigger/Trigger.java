@@ -5,16 +5,11 @@ import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownEncoding;
-import info.simplecloud.scimproxy.HttpGenerator;
 import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.config.Config;
-import info.simplecloud.scimproxy.viewer.version.Helper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
@@ -26,14 +21,11 @@ import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mortbay.util.UrlEncoded;
 
 /**
  * Trigger handles all communication to other server, usually down stream

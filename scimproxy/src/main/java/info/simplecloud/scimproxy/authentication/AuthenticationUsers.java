@@ -1,12 +1,14 @@
 package info.simplecloud.scimproxy.authentication;
 
-import java.rmi.server.ObjID;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.HashMap;
 
 public class AuthenticationUsers {
 
     private static HashMap<String, AuthenticateUser> users;
     private static AuthenticationUsers               instance;
+    private SecureRandom random = new SecureRandom();
 
     private AuthenticationUsers() {
         users = new HashMap<String, AuthenticateUser>();
@@ -14,7 +16,8 @@ public class AuthenticationUsers {
 
     public void addUser(String userName, String password) {
         AuthenticateUser user = new AuthenticateUser(userName, password);
-        user.setSessionId(new ObjID().toString());
+
+        user.setSessionId(new BigInteger(130, random).toString(32));
         users.put(userName, user);
     }
 

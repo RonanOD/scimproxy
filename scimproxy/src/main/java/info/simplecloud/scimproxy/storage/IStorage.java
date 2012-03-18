@@ -2,7 +2,6 @@ package info.simplecloud.scimproxy.storage;
 
 import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
-import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +37,9 @@ public interface IStorage {
 	 * 
 	 * @return All users. ArrayList with size 0 if empty.
 	 */
-	public List<User> getUserList();
+	public ArrayList<User> getUserList();
 
-	public List<User> getUserList(String sortBy, String sortOrder);
+	public ArrayList<User> getUserList(String sortBy, String sortOrder);
 
 	/**
 	 * Deletes a SCIM user from storage.

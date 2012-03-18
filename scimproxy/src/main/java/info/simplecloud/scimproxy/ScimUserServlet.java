@@ -8,8 +8,8 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
+import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
-import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
 import info.simplecloud.scimproxy.user.UserDelegator;
 import info.simplecloud.scimproxy.util.Util;
 
@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 /**
  * To retrieve a known Resource, clients send GET requests to the Resource end
- * point; e.g., /User/{id}. This servlet is the /User end point.
+ * point; e.g., /Users/{id}. This servlet is the /User end point.
  */
 
 public class ScimUserServlet extends ScimResourceServlet {
@@ -77,7 +77,7 @@ public class ScimUserServlet extends ScimResourceServlet {
 
             } catch (UnknownEncoding e) {
                 HttpGenerator.serverError(resp);
-            } catch (ResourceNotFoundException e) {
+            } catch (Exception e) {
                 HttpGenerator.notFound(resp);
             }
         }
@@ -100,15 +100,25 @@ public class ScimUserServlet extends ScimResourceServlet {
                 return;
             }
 
-            DummyStorage storage = DummyStorage.getInstance(authUser.getSessionId());
             List users = null;
 
             String filter = req.getParameter("filter");
 
             if (filter != null && !filter.isEmpty()) {
-                users = storage.getList(sortBy, sortOrder, filter);
+            	// TODO: Same is used for Group and User!
+                try {
+					users = UserDelegator.getInstance(authUser.getSessionId()).getList(sortBy, sortOrder, filter);
+				} catch (ResourceNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             } else {
-                users = storage.getUserList(sortBy, sortOrder);
+                try {
+					users = UserDelegator.getInstance(authUser.getSessionId()).getUserList(sortBy, sortOrder);
+				} catch (ResourceNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
 
             int index = 0;
@@ -358,7 +368,6 @@ public class ScimUserServlet extends ScimResourceServlet {
 				internalUserDelete(resource, server, outEncoding, authUser);
                 HttpGenerator.ok(resp);
                 log.info("Deleating user " + userId + ".");
-
             } catch (ResourceNotFoundException e) {
                 HttpGenerator.notFound(resp);
                 log.trace("User " + userId + " is not found.");

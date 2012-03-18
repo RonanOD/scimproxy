@@ -1,8 +1,10 @@
 package info.simplecloud.scimproxy.config;
 
 import info.simplecloud.scimproxy.ScimUserServlet;
-import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.authentication.AuthenticationUsers;
+import info.simplecloud.scimproxy.storage.IStorage;
+import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
+import info.simplecloud.scimproxy.storage.mongodb.MongoDBStorage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,9 +58,7 @@ public class Config {
 
     private List<CSP>           downStreamCSP      = new ArrayList<CSP>();
 
-    // only have support for dummy storage at the moment so it's just a string
-    // at the moment
-    private String              storageType        = "";
+    private String storageType = "";
 
     /**
      * Private constructor that creates the singleton instance.
@@ -142,8 +142,8 @@ public class Config {
             List<String> storagesList = config.getList("storages.storage.type");
             if (storagesList != null) {
                 for (int i = 0; i < storagesList.size(); i++) {
-                    // only have dummy support at the moment
-                    setStorageType(config.getString("storages.storage(" + i + ").type"));
+                	String type = config.getString("storages.storage(" + i + ").type");
+                	setStorageType(type);
                 }
             }
 
@@ -180,7 +180,15 @@ public class Config {
     }
 
 
-    public void setDownStreamCSP(List<CSP> downStreamCSP) {
+    public void setStorageType(String type) {
+		this.storageType = type;		
+	}
+
+    public String getStorageType() {
+		return this.storageType;		
+	}
+
+	public void setDownStreamCSP(List<CSP> downStreamCSP) {
         this.downStreamCSP = downStreamCSP;
     }
 
@@ -188,13 +196,6 @@ public class Config {
         return downStreamCSP;
     }
 
-    public void setStorageType(String storageType) {
-        this.storageType = storageType;
-    }
-
-    public String getStorageType() {
-        return storageType;
-    }
 
     public int getBulkMaxOperations() {
         return bulkMaxOperations;

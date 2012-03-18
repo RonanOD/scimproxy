@@ -8,7 +8,7 @@ import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
-import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
+import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.trigger.Trigger;
 import info.simplecloud.scimproxy.user.UserDelegator;
 import info.simplecloud.scimproxy.util.Util;
@@ -42,18 +42,6 @@ public class ScimResourceServlet extends RestServlet {
 
         // add user to set ID
 		UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
-
-        // set location to object
-        scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, server));
-
-        // TODO: this is really not a nice way to get the Location into the meta data
-        try {
-        	UserDelegator.getInstance(authUser.getSessionId()).deletetUser(scimUser.getId());
-		} catch (ResourceNotFoundException e) {
-			// do nothing
-		}
-		
-		UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
         
         // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.create(scimUser);
@@ -65,7 +53,13 @@ public class ScimResourceServlet extends RestServlet {
 
         User scimUser = new User(resource.getData().toString(), encoding);
         // verify that user have not been changed since latest get and this operation
-        User oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+        User oldUser = null;
+		try {
+			oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
@@ -100,7 +94,13 @@ public class ScimResourceServlet extends RestServlet {
         User scimUser = new User(resource.getData(), encoding);
         
         // verify that user have not been changed since latest get and this operation
-        User oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+        User oldUser = null;
+		try {
+			oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldUser != null) {
@@ -135,7 +135,12 @@ public class ScimResourceServlet extends RestServlet {
 
 
     public void internalUserDelete(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws ResourceNotFoundException, PreconditionException {
-    	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+    	User scimUser = null;
+		try {
+			scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+		} catch (Exception e) {
+			throw new ResourceNotFoundException();
+		}
 
         String version = scimUser.getMeta().getVersion();
         if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
@@ -161,18 +166,6 @@ public class ScimResourceServlet extends RestServlet {
         scimGroup.getMeta().setLocation(HttpGenerator.getLocation(scimGroup, server));
 
         // add group to set ID
-        UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
-
-        // set location to object
-        scimGroup.getMeta().setLocation(HttpGenerator.getLocation(scimGroup, server));
-
-        // TODO: this is really not a nice way to get the Location into the meta data
-        try {
-			UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(scimGroup);
-			
-		} catch (ResourceNotFoundException e) {
-			// do nothing
-		}
         UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
 
         // creating group in downstream CSP, any communication errors is handled in triggered and ignored here
@@ -271,7 +264,13 @@ public class ScimResourceServlet extends RestServlet {
     }
 
     public void internalChangePasswordPatch(ResourceJob resource, String password, AuthenticateUser authUser) throws ResourceNotFoundException {
-    	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+    	User scimUser = null;
+		try {
+			scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	UserDelegator.getInstance(authUser.getSessionId()).setPassword(password, scimUser);
         // deleting group in downstream CSP, any communication errors is handled in triggered and ignored here
     	trigger.changePassword(scimUser, password);

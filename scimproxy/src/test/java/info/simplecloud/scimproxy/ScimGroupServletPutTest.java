@@ -1,7 +1,6 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.Group;
-import info.simplecloud.core.User;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -26,7 +25,8 @@ public class ScimGroupServletPutTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        Group scimGroup = new Group("ABC123-put");
+        Group scimGroup = new Group();
+        scimGroup.setDisplayName("tmp displayname");
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
@@ -45,7 +45,7 @@ public class ScimGroupServletPutTest {
 
     @Test
     public void putGroup() throws Exception {
-    	Group scimGroup = new Group("ABC123-put");
+    	Group scimGroup = new Group();
         scimGroup.setId(id);
 
         request.setMethod("PUT");
