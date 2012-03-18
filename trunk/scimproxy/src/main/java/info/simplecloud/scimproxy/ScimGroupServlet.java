@@ -8,8 +8,7 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
-import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
-import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
+import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.user.UserDelegator;
 import info.simplecloud.scimproxy.util.Util;
 
@@ -33,7 +32,6 @@ public class ScimGroupServlet extends ScimResourceServlet {
         AuthenticateUser authUser = (AuthenticateUser) req.getAttribute("AuthUser");
 
         if(!"".equals(groupId)) {
-
             try {
                 Group scimGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(groupId);
                 String groupStr = null;
@@ -78,16 +76,23 @@ public class ScimGroupServlet extends ScimResourceServlet {
                 return;
             }
 
-            DummyStorage storage = DummyStorage.getInstance(authUser.getSessionId());
             @SuppressWarnings("rawtypes")
     		List groups = null;
 
             String filter = req.getParameter("filter");
             
             if (filter != null && !"".equals(filter)) {
-            	groups = storage.getList(sortBy, sortOrder, filter);
+                try {
+					groups = UserDelegator.getInstance(authUser.getSessionId()).getList(sortBy, sortOrder, filter);
+				} catch (ResourceNotFoundException e) {
+					e.printStackTrace();
+				}
             } else {
-            	groups = storage.getGroupList(sortBy, sortOrder);
+                try {
+					groups = UserDelegator.getInstance(authUser.getSessionId()).getGroupList(sortBy, sortOrder);
+				} catch (ResourceNotFoundException e) {
+					e.printStackTrace();
+				}
             }
 
             int index = 0;
@@ -141,7 +146,6 @@ public class ScimGroupServlet extends ScimResourceServlet {
 
         if (query != null && !"".equals(query)) {
             try {
-            	
                 String server = HttpGenerator.getServer(req);
                 String outEncoding = HttpGenerator.getEncoding(req);
                 AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
@@ -149,8 +153,7 @@ public class ScimGroupServlet extends ScimResourceServlet {
                 ResourceJob resource = new ResourceJob();
                 resource.setData(query);
 
-            	Group scimGroup = internalGroupPost(resource, server, outEncoding, authUser);
-            	
+            	Group scimGroup = internalGroupPost(resource, server, outEncoding, authUser);            	
                 resp.setContentType(HttpGenerator.getContentType(req));
                 resp.setHeader("Location", scimGroup.getMeta().getLocation());
                 resp.setHeader("ETag", scimGroup.getMeta().getVersion());

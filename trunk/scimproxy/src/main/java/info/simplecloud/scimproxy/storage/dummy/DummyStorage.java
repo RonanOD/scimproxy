@@ -5,6 +5,7 @@ import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.scimproxy.storage.IStorage;
+import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -75,7 +76,11 @@ public class DummyStorage implements IStorage {
     @Override
     public void addUser(User user) {
         // service provider always defines the id
-        user.setId(generateId());
+    	if(user.getId() == null || "".equals(user.getId().trim())) {
+            user.setId(generateId());
+    		user.getMeta().setLocation(user.getMeta().getLocation() + user.getId());
+    	}
+        
         users.add(user);
     }
 
@@ -221,8 +226,9 @@ public class DummyStorage implements IStorage {
     @Override
     public void addGroup(Group group) {
         // TODO: Verify that id is not already there.
-        if (group.getId() == null) {
+        if (group.getId() == null || "".equals(group.getId().trim())) {
             group.setId(generateId());
+    		group.getMeta().setLocation(group.getMeta().getLocation() + group.getId());
         }
         groups.add(group);
     }

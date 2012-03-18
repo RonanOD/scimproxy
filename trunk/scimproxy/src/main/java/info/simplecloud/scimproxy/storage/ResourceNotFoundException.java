@@ -1,4 +1,4 @@
-package info.simplecloud.scimproxy.storage.dummy;
+package info.simplecloud.scimproxy.storage;
 
 public class ResourceNotFoundException extends Exception {
 

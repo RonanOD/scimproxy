@@ -25,7 +25,7 @@ public class ScimGroupServletDeleteTest {
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
-        Group scimGroup = new Group("ABC123-deleteed");
+        Group scimGroup = new Group();
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");

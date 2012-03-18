@@ -4,7 +4,7 @@ import info.simplecloud.core.Resource;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.exception.PreconditionException;
-import info.simplecloud.scimproxy.storage.dummy.ResourceNotFoundException;
+import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;

@@ -223,7 +223,14 @@ public class HttpGenerator {
 		else {
 			path = "Group";
 		}
-		return server + "/v1/" + path + "/" + resource.getId();
+		
+		if(resource.getId() != null) {
+			return server + "/v1/" + path + "/" + resource.getId();
+		}
+		else {
+			return server + "/v1/" + path + "/";
+		}
+		
 	}
 
 
