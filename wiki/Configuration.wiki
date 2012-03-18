@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Config file can configure authentication, upstreams and downstream SCIM servers.
+Config file can configure authentication, storage and downstream SCIM servers.
 
 = Location =
 
@@ -14,7 +14,7 @@ File must be saved as UTF-8.
 = Details =
 The auth node defines what type of authentication that the API requires. Only BASIC auth is currently supported. Attributes are username and password.
 
-The storages nodes contains all storages used. Right now only dummy storage is supported. It stores users in memory. Other storages will later on be added.
+The storages nodes contains the storages used. You can choose between a dummy storage that stores users in memory and a local MongoDB installation (listening at localhost and port 27017.
 
 The down-stream node defines down stream SCIM servers. All changes made to the local SCIM server will also be sent down to the configured server.
 
@@ -32,13 +32,13 @@ The down-stream server nodes defines what type of authentication that is uses. Y
 	</auth>
 	<storages>
 		<storage>
-			<type>dummy</type>
+			<type>mongodb</type>
 		</storage>
 	</storages>
 </config>
 }}}
 
-== With up and down stream servers ==
+== With down stream servers ==
 
 {{{
 <?xml version="1.0" encoding="UTF-8" ?>
