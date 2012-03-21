@@ -180,6 +180,7 @@ public class ScimUsersServletTest {
         for (User scimUser : userList) {
             if (bobId.equals(scimUser.getId())) {
                 Assert.assertEquals(true, aliceFoundFirst);
+                break;
             }
             if (aliceId.equals(scimUser.getId())) {
                 aliceFoundFirst = true;
