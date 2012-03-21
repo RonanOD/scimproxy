@@ -155,11 +155,13 @@ public class MongoDBStorage implements IStorage {
 	@Override
 	public ArrayList<User> getUserList(String sortBy, String sortOrder, int index, int count) {
 		ArrayList<User> list = new ArrayList<User>();
-		int order = 1;
-		if("ascending".equals(sortOrder)) {
+		int  order = 1;
+		if("descending".equals(sortOrder)) {
 			order = -1;
 		}
-        DBCursor cur = getUserCollection().find().sort(new BasicDBObject( sortBy, order ) );
+		sortBy = "User." + sortBy;
+		
+        DBCursor cur = getUserCollection().find().sort(new BasicDBObject( sortBy, order ) ).skip((index-1)*count).limit(count);
 
         while(cur.hasNext()) {
         	String json = JSON.serialize(cur.next().get("User"));
@@ -199,9 +201,12 @@ public class MongoDBStorage implements IStorage {
 	public ArrayList<Group> getGroupList(String sortBy, String sortOrder, int index, int count) {
 		ArrayList<Group> list = new ArrayList<Group>();
 		int order = 1;
-		if("ascending".equals(sortOrder)) {
+		if("descending".equals(sortOrder)) {
 			order = -1;
 		}
+		
+		sortBy = "Group." + sortBy;
+		
         DBCursor cur = getGroupCollection().find().sort(new BasicDBObject( sortBy, order ) );
 
         while(cur.hasNext()) {
