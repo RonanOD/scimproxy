@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +25,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import com.mongodb.QueryBuilder;
 import com.mongodb.util.JSON;
 
 /**
@@ -224,60 +226,55 @@ public class MongoDBStorage implements IStorage {
 	}
 
 	@Override
-	public ArrayList<User> getUserList(String sortBy, String sortOrder, String filter, int index, int count) {
-		return new ArrayList<User>();
-/*		try {
-			ArrayList<User> list = new ArrayList<User>();
-			for (User user : users) {
-				// TODO make it more error safe
-				// TODO handle more then one operation
-				// TODO handle other types than string
-
-				String attributeName = filter.split(" ")[0];
-				String operation = filter.split(" ")[1];
-				String filterValue = filter.split(" ")[2];
-				String actualValue = user.getAttribute(attributeName);
-
-				actualValue = (actualValue == null ? "" : actualValue);
-
-				if ("eq".equalsIgnoreCase(operation)
-						&& filterValue.equalsIgnoreCase(actualValue)) {
-					list.add(user);
-				} else if ("co".equalsIgnoreCase(operation)
-						&& actualValue.contains(filterValue)) {
-					list.add(user);
-				} else if ("sw".equalsIgnoreCase(operation)
-						&& actualValue.startsWith(filterValue)) {
-					list.add(user);
-				} else if ("pr".equalsIgnoreCase(operation)
-						&& user.getAttribute(filterValue) != null) {
-					list.add(user);
-				} else if ("gt".equalsIgnoreCase(operation)
-						&& actualValue.compareToIgnoreCase(filterValue) < 0) {
-					list.add(user);
-				} else if ("ge".equalsIgnoreCase(operation)
-						&& actualValue.compareToIgnoreCase(filterValue) <= 0) {
-					list.add(user);
-				} else if ("lt".equalsIgnoreCase(operation)
-						&& actualValue.compareToIgnoreCase(filterValue) > 0) {
-					list.add(user);
-				} else if ("le".equalsIgnoreCase(operation)
-						&& actualValue.compareToIgnoreCase(filterValue) >= 0) {
-					list.add(user);
-				}
-			}
-
-			Collections.sort(
-					list,
-					new ComplexTypeComparator(sortBy, sortOrder
-							.equalsIgnoreCase("ascending")));
-
-			return list;
-		} catch (UnknownAttribute e) {
-			return new ArrayList<User>();
-			// throw new RuntimeException("filter failed", e);
+	public ArrayList<User> getUserList(String sortBy, String sortOrder, String filterString, int index, int count) {
+		ArrayList<User> list = new ArrayList<User>();
+		int  order = 1;
+		if("descending".equals(sortOrder)) {
+			order = -1;
 		}
-*/
+		sortBy = "User." + sortBy;
+		
+		String attributeName = "User." + filterString.split(" ")[0];
+		String operation = filterString.split(" ")[1];
+		String filterValue = filterString.split(" ")[2];
+
+		DBObject filter = new BasicDBObject();
+
+		if ("eq".equalsIgnoreCase(operation)) {
+			filter = new BasicDBObject(attributeName, filterValue);
+		} else if ("co".equalsIgnoreCase(operation)) {
+			Pattern pattern = Pattern.compile(".*" + filterValue + ".*");
+			filter = QueryBuilder.start(attributeName).regex(pattern).get();
+		} else if ("sw".equalsIgnoreCase(operation)) {
+			Pattern pattern = Pattern.compile("^" + filterValue);
+			filter = QueryBuilder.start(attributeName).regex(pattern).get();
+		} else if ("pr".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).notEquals(null).get();
+		} else if ("gr".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).greaterThan(filterValue).get();
+		} else if ("ge".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).greaterThanEquals(filterValue).get();
+		} else if ("lt".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).lessThan(filterValue).get();
+		} else if ("le".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).lessThanEquals(filterValue).get();
+		}
+		
+        DBCursor cur = getUserCollection().find(filter).sort(new BasicDBObject( sortBy, order ) ).skip((index-1)*count).limit(count);
+
+        while(cur.hasNext()) {
+        	String json = JSON.serialize(cur.next().get("User"));
+            User scimUser = null;
+			try {
+				scimUser = new User(json, User.ENCODING_JSON);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+            list.add(scimUser);
+        }
+
+        
+        return list;
 	}
 	
     @Override
