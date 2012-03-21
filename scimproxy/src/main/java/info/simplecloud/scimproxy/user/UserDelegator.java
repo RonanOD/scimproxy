@@ -143,20 +143,24 @@ public class UserDelegator {
 	}
 	
 	
-	public ArrayList<User> getList(String sortBy, String sortOrder, String filter) throws ResourceNotFoundException {
-		return storage.getList(sortBy, sortOrder, filter);
+	public ArrayList<User> getUserList(String sortBy, String sortOrder, String filter, int index, int count) throws ResourceNotFoundException {
+		return storage.getUserList(sortBy, sortOrder, filter, index, count);
+	}
+
+	public ArrayList<Group> getGroupList(String sortBy, String sortOrder, String filter, int index, int count) throws ResourceNotFoundException {
+		return storage.getGroupList(sortBy, sortOrder, filter, index, count);
 	}
 
 	public ArrayList<Group> getGroupList() throws ResourceNotFoundException {
 		return storage.getGroupList();
 	}
 
-	public ArrayList<Group> getGroupList(String sortBy, String sortOrder) throws ResourceNotFoundException {
-		return storage.getGroupList(sortBy, sortOrder);
+	public ArrayList<Group> getGroupList(String sortBy, String sortOrder, int index, int count) throws ResourceNotFoundException {
+		return storage.getGroupList(sortBy, sortOrder, index, count);
 	}
 
-	public ArrayList<User> getUserList(String sortBy, String sortOrder) throws ResourceNotFoundException {
-		return storage.getUserList(sortBy, sortOrder);
+	public ArrayList<User> getUserList(String sortBy, String sortOrder, int index, int count) throws ResourceNotFoundException {
+		return storage.getUserList(sortBy, sortOrder, index, count);
 	}
 
 	/**

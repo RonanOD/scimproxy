@@ -100,27 +100,6 @@ public class ScimUserServlet extends ScimResourceServlet {
                 return;
             }
 
-            List users = null;
-
-            String filter = req.getParameter("filter");
-
-            if (filter != null && !filter.isEmpty()) {
-            	// TODO: Same is used for Group and User!
-                try {
-					users = UserDelegator.getInstance(authUser.getSessionId()).getList(sortBy, sortOrder, filter);
-				} catch (ResourceNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            } else {
-                try {
-					users = UserDelegator.getInstance(authUser.getSessionId()).getUserList(sortBy, sortOrder);
-				} catch (ResourceNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            }
-
             int index = 0;
             int count = 0;
 
@@ -129,26 +108,35 @@ public class ScimUserServlet extends ScimResourceServlet {
                                                                    // defaults to 0
             String countStr = req.getParameter("count"); // must be absolut and
                                                          // defaults to 0
+
+
             if (startIndexStr != null && !"".equals(startIndexStr)) {
                 index = Integer.parseInt(startIndexStr);
             }
             if (countStr != null && !"".equals(countStr)) {
                 count = Integer.parseInt(countStr);
             }
+            
+            List users = null;
 
-            int max = index + count;
-            if (max > users.size() || max == 0) {
-                max = users.size();
-            }
+            String filter = req.getParameter("filter");
 
-            if (index > users.size()) {
-                index = users.size();
-            }
-
-            try {
-                users = users.subList(index, max);
-            } catch (IndexOutOfBoundsException e) {
-                users = new ArrayList<User>();
+            
+            if (filter != null && !filter.isEmpty()) {
+            	// TODO: Same is used for Group and User!
+                try {
+					users = UserDelegator.getInstance(authUser.getSessionId()).getUserList(sortBy, sortOrder, filter, index, count);
+				} catch (ResourceNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            } else {
+                try {
+					users = UserDelegator.getInstance(authUser.getSessionId()).getUserList(sortBy, sortOrder, index, count);
+				} catch (ResourceNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
 
             resp.setStatus(HttpServletResponse.SC_OK);

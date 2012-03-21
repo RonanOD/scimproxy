@@ -39,7 +39,7 @@ public interface IStorage {
 	 */
 	public ArrayList<User> getUserList();
 
-	public ArrayList<User> getUserList(String sortBy, String sortOrder);
+	public ArrayList<User> getUserList(String sortBy, String sortOrder, int index, int count);
 
 	/**
 	 * Deletes a SCIM user from storage.
@@ -53,7 +53,8 @@ public interface IStorage {
 
 	
 	
-	ArrayList<User> getList(String sortBy, String sortOrder, String filter);
+	ArrayList<User> getUserList(String sortBy, String sortOrder, String filter, int index, int count);
+	ArrayList<Group> getGroupList(String sortBy, String sortOrder, String filter, int index, int count);
 
 	void addList(List<User> upstreamUsers);
 
@@ -65,7 +66,7 @@ public interface IStorage {
 
 	ArrayList<Group> getGroupList();
 
-	ArrayList<Group> getGroupList(String sortBy, String sortOrder);
+	ArrayList<Group> getGroupList(String sortBy, String sortOrder, int index, int count);
 
 	public void setPassword(String clearTextPassword, User user);
 

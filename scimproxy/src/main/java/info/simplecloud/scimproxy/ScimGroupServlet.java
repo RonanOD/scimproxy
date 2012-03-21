@@ -76,25 +76,6 @@ public class ScimGroupServlet extends ScimResourceServlet {
                 return;
             }
 
-            @SuppressWarnings("rawtypes")
-    		List groups = null;
-
-            String filter = req.getParameter("filter");
-            
-            if (filter != null && !"".equals(filter)) {
-                try {
-					groups = UserDelegator.getInstance(authUser.getSessionId()).getList(sortBy, sortOrder, filter);
-				} catch (ResourceNotFoundException e) {
-					e.printStackTrace();
-				}
-            } else {
-                try {
-					groups = UserDelegator.getInstance(authUser.getSessionId()).getGroupList(sortBy, sortOrder);
-				} catch (ResourceNotFoundException e) {
-					e.printStackTrace();
-				}
-            }
-
             int index = 0;
             int count = 0;
 
@@ -110,19 +91,23 @@ public class ScimGroupServlet extends ScimResourceServlet {
                 count = Integer.parseInt(countStr);
             }
 
-            int max = index + count;
-            if (max > groups.size() || max == 0) {
-                max = groups.size();
-            }
+            @SuppressWarnings("rawtypes")
+    		List groups = null;
 
-            if (index > groups.size()) {
-                index = groups.size();
-            }
-
-            try {
-            	groups = groups.subList(index, max);
-            } catch (IndexOutOfBoundsException e) {
-            	groups = new ArrayList<Group>();
+            String filter = req.getParameter("filter");
+            
+            if (filter != null && !"".equals(filter)) {
+                try {
+					groups = UserDelegator.getInstance(authUser.getSessionId()).getGroupList(sortBy, sortOrder, filter, index, count);
+				} catch (ResourceNotFoundException e) {
+					e.printStackTrace();
+				}
+            } else {
+                try {
+					groups = UserDelegator.getInstance(authUser.getSessionId()).getGroupList(sortBy, sortOrder, index, count);
+				} catch (ResourceNotFoundException e) {
+					e.printStackTrace();
+				}
             }
 
             resp.setStatus(HttpServletResponse.SC_OK);
