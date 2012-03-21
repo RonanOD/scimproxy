@@ -106,12 +106,28 @@ public class DummyStorage implements IStorage {
     }
 
     @Override
-    public ArrayList<User> getUserList(String sortBy, String sortOrder) {
+    public ArrayList<User> getUserList(String sortBy, String sortOrder, int index, int count) {
         ArrayList<User> list = new ArrayList<User>();
         for (User user : users) {
             list.add(user);
         }
         Collections.sort(list, new ComplexTypeComparator(sortBy, sortOrder.equalsIgnoreCase("ascending")));
+        
+        int max = index + count;
+        if (max > list.size() || max == 0) {
+            max = list.size();
+        }
+
+        if (index > list.size()) {
+            index = list.size();
+        }
+
+        try {
+        	list = new ArrayList<User>(list.subList(index, max));
+        } catch (IndexOutOfBoundsException e) {
+        	list = new ArrayList<User>();
+        }
+        
         return list;
     }
 
@@ -121,21 +137,38 @@ public class DummyStorage implements IStorage {
         for (Group group : groups) {
             list.add(group);
         }
+
         return list;
     }
 
     @Override
-    public ArrayList<Group> getGroupList(String sortBy, String sortOrder) {
+    public ArrayList<Group> getGroupList(String sortBy, String sortOrder, int index, int count) {
         ArrayList<Group> list = new ArrayList<Group>();
         for (Group group : groups) {
             list.add(group);
         }
         Collections.sort(list, new ComplexTypeComparator(sortBy, sortOrder.equalsIgnoreCase("ascending")));
+        
+        int max = index + count;
+        if (max > list.size() || max == 0) {
+            max = list.size();
+        }
+
+        if (index > list.size()) {
+            index = list.size();
+        }
+
+        try {
+        	list = new ArrayList<Group>(list.subList(index, max));
+        } catch (IndexOutOfBoundsException e) {
+        	list = new ArrayList<Group>();
+        }
+        
         return list;
     }
 
     @Override
-    public ArrayList<User> getList(String sortBy, String sortOrder, String filter) {
+    public ArrayList<User> getUserList(String sortBy, String sortOrder, String filter, int index, int count) {
         try {
             ArrayList<User> list = new ArrayList<User>();
             for (User user : users) {
@@ -171,6 +204,22 @@ public class DummyStorage implements IStorage {
 
             Collections.sort(list, new ComplexTypeComparator(sortBy, sortOrder.equalsIgnoreCase("ascending")));
 
+
+            int max = index + count;
+            if (max > list.size() || max == 0) {
+                max = list.size();
+            }
+
+            if (index > list.size()) {
+                index = list.size();
+            }
+
+            try {
+            	list = new ArrayList<User>(list.subList(index, max));
+            } catch (IndexOutOfBoundsException e) {
+            	list = new ArrayList<User>();
+            }
+
             return list;
         } catch (UnknownAttribute e) {
             return new ArrayList<User>();
@@ -178,6 +227,13 @@ public class DummyStorage implements IStorage {
         }
     }
 
+    @Override
+    public ArrayList<Group> getGroupList(String sortBy, String sortOrder, String filter, int index, int count) {
+    	
+    	log.error("getGroupList is not implemented!");
+        return new ArrayList<Group>();
+    }
+    
     @Override
     public void deleteUser(String id) throws ResourceNotFoundException {
         boolean found = false;

@@ -153,7 +153,7 @@ public class MongoDBStorage implements IStorage {
 	}
 
 	@Override
-	public ArrayList<User> getUserList(String sortBy, String sortOrder) {
+	public ArrayList<User> getUserList(String sortBy, String sortOrder, int index, int count) {
 		ArrayList<User> list = new ArrayList<User>();
 		int order = 1;
 		if("ascending".equals(sortOrder)) {
@@ -196,7 +196,7 @@ public class MongoDBStorage implements IStorage {
 	}
 
 	@Override
-	public ArrayList<Group> getGroupList(String sortBy, String sortOrder) {
+	public ArrayList<Group> getGroupList(String sortBy, String sortOrder, int index, int count) {
 		ArrayList<Group> list = new ArrayList<Group>();
 		int order = 1;
 		if("ascending".equals(sortOrder)) {
@@ -219,7 +219,7 @@ public class MongoDBStorage implements IStorage {
 	}
 
 	@Override
-	public ArrayList<User> getList(String sortBy, String sortOrder, String filter) {
+	public ArrayList<User> getUserList(String sortBy, String sortOrder, String filter, int index, int count) {
 		return new ArrayList<User>();
 /*		try {
 			ArrayList<User> list = new ArrayList<User>();
@@ -274,6 +274,13 @@ public class MongoDBStorage implements IStorage {
 		}
 */
 	}
+	
+    @Override
+    public ArrayList<Group> getGroupList(String sortBy, String sortOrder, String filter, int index, int count) {
+    	
+    	log.error("getGroupList is not implemented!");
+        return new ArrayList<Group>();
+    }
 
 	@Override
 	public void deleteUser(String id) throws ResourceNotFoundException {

@@ -29,7 +29,7 @@
 	</auth>
 	<storages>
 		<storage>
-			<type>mongodb</type>
+			<type>dummy</type>
 		</storage>
 	</storages>
 	<bulk>
