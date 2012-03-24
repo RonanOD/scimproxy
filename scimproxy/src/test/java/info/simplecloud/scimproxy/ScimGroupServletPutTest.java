@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.Group;
+import info.simplecloud.scimproxy.test.ScimGroupServletTest;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -21,7 +22,7 @@ public class ScimGroupServletPutTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimGroupServlet.class, "/v1/Groups/*");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 

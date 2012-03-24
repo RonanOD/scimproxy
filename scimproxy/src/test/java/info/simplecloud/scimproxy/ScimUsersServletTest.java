@@ -2,6 +2,7 @@ package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
+import info.simplecloud.scimproxy.test.ScimUserServletTest;
 
 import java.util.List;
 
@@ -27,10 +28,10 @@ public class ScimUsersServletTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/Users/*");
-        tester.addServlet(ScimUserServlet.class, "/v1/Users");
-        tester.addServlet(ScimUserServlet.class, "/v1/Users.xml");
-        tester.addServlet(ScimUserServlet.class, "/v1/Users.json");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users/*");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users.xml");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 

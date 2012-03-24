@@ -9,8 +9,7 @@ import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
-import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
-import info.simplecloud.scimproxy.user.UserDelegator;
+import info.simplecloud.scimproxy.storage.StorageDelegator;
 import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;
@@ -56,7 +55,7 @@ public class ScimUserServlet extends ScimResourceServlet {
 
         if(!"".equals(userId)) {
             try {
-            	User scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(userId);
+            	User scimUser = getUserDelegator(authUser.getSessionId()).getUser(userId);
                 String userStr = null;
 
                 if (req.getParameter("attributes") != null) {
@@ -125,14 +124,14 @@ public class ScimUserServlet extends ScimResourceServlet {
             if (filter != null && !filter.isEmpty()) {
             	// TODO: Same is used for Group and User!
                 try {
-					users = UserDelegator.getInstance(authUser.getSessionId()).getUserList(sortBy, sortOrder, filter, index, count);
+					users = getUserDelegator(authUser.getSessionId()).getUserList(sortBy, sortOrder, filter, index, count);
 				} catch (ResourceNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             } else {
                 try {
-					users = UserDelegator.getInstance(authUser.getSessionId()).getUserList(sortBy, sortOrder, index, count);
+					users = getUserDelegator(authUser.getSessionId()).getUserList(sortBy, sortOrder, index, count);
 				} catch (ResourceNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

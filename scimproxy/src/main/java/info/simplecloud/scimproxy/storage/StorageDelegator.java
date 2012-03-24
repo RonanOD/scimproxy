@@ -1,11 +1,9 @@
-package info.simplecloud.scimproxy.user;
+package info.simplecloud.scimproxy.storage;
 
 import info.simplecloud.core.Group;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.config.Config;
-import info.simplecloud.scimproxy.storage.IStorage;
-import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 import info.simplecloud.scimproxy.storage.mongodb.MongoDBStorage;
 import info.simplecloud.scimproxy.util.Util;
@@ -22,16 +20,16 @@ import org.apache.commons.logging.LogFactory;
  * This class can also in the future include caching, load balancing, and
  * pooling against different storages.
  */
-public class UserDelegator {
+public class StorageDelegator {
 
-    private static final HashMap<String, UserDelegator> USER_INSTANCES = new HashMap<String, UserDelegator>();
+    private static final HashMap<String, StorageDelegator> USER_INSTANCES = new HashMap<String, StorageDelegator>();
 
 	private static IStorage storage = null;
 	
-    private Log log = LogFactory.getLog(UserDelegator.class);
+    private Log log = LogFactory.getLog(StorageDelegator.class);
 
     
-	private UserDelegator(String sessionId) {
+	private StorageDelegator(String sessionId) {
 		// read storage type from config
 		if("dummy".equalsIgnoreCase(Config.getInstance().getStorageType())) {
 			storage = DummyStorage.getInstance(sessionId);
@@ -46,14 +44,38 @@ public class UserDelegator {
 		}
 	}
 	
+	/*
+	 * Used for unit tests to force dummy storage.
+	 */
+	private StorageDelegator(String sessionId, String test) {
+		if("dummy".equalsIgnoreCase(test)) {
+			storage = DummyStorage.getInstance(sessionId);
+			log.info("Dummy storage configured. Ignoring configuration and forcing dummy storage.");
+		}
+		else if("mongodb".equalsIgnoreCase(test)) {
+			storage = MongoDBStorage.getInstance(sessionId);
+			log.info("MongoDB storage configured. Ignoring configuration and forcing MongoDB storage.");
+		}
+		else {
+			log.fatal("No storage configured.");
+		}
+	}	
+	
 	/**
 	 * Returns singleton value for the config.
 	 * 
 	 * @return
 	 */
-	public static UserDelegator getInstance(String sessionId) {
+	public static StorageDelegator getInstance(String sessionId) {
 		if(USER_INSTANCES.get(sessionId) == null) {
-			USER_INSTANCES.put(sessionId, new UserDelegator(sessionId));
+			USER_INSTANCES.put(sessionId, new StorageDelegator(sessionId));
+        }
+        return USER_INSTANCES.get(sessionId);
+	}
+
+	public static StorageDelegator getInstance(String sessionId, String test) {
+		if(USER_INSTANCES.get(sessionId) == null) {
+			USER_INSTANCES.put(sessionId, new StorageDelegator(sessionId, test));
         }
         return USER_INSTANCES.get(sessionId);
 	}

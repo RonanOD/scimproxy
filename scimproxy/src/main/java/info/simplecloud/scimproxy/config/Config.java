@@ -39,6 +39,7 @@ public class Config {
 	public static final String	AUTH_BASIC = "BASIC";
 	public static final String	AUTH_OAUTH2 = "OAUTH2";
 	public static final String	AUTH_OAUTH2_V10 = "OAUTH2V10";
+    public static final String UNIT_TEST_STORAGE_TYPE = "dummy";
 
     // TODO: read config file location from somewhere in system (property?)
     private static String       CONFIG_FILE        = System.getProperty("info.simplecloud.scimproxy.config.Config.CONFIG_FILE",
@@ -59,6 +60,7 @@ public class Config {
     private List<CSP>           downStreamCSP      = new ArrayList<CSP>();
 
     private String storageType = "";
+
 
     /**
      * Private constructor that creates the singleton instance.
@@ -163,9 +165,11 @@ public class Config {
                     csp.setPassword(config.getString("down-stream.csp(" + i + ").auth.password"));
                     csp.setOAuth2AccessToken(config.getString("down-stream.csp(" + i + ").auth.accessToken"));
                     csp.setOAuth2AuthorizationServer(config.getString("down-stream.csp(" + i + ").auth.authorizationServer"));
+
+                    csp.setoAuth2GrantType(config.getString("down-stream.csp(" + i + ").auth.grantType"));
                     csp.setoAuth2ClientId(config.getString("down-stream.csp(" + i + ").auth.clientId"));
                     csp.setoAuth2ClientSecret(config.getString("down-stream.csp(" + i + ").auth.clientSecret"));
-
+                    
                     downStreamCSP.add(csp);
 
                     log.info("All resources will be sent downstreams to: " + csp);

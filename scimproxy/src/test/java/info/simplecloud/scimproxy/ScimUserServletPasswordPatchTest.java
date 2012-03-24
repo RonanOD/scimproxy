@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.User;
+import info.simplecloud.scimproxy.test.ScimUserServletTest;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,7 +21,7 @@ public class ScimUserServletPasswordPatchTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimUserServlet.class, "/v1/Users/*");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
