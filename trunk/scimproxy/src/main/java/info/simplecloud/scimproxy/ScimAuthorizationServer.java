@@ -3,6 +3,7 @@ package info.simplecloud.scimproxy;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.authentication.AuthenticationUsers;
 import info.simplecloud.scimproxy.authentication.Basic;
+import info.simplecloud.scimproxy.config.Config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class ScimAuthorizationServer extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
             return;
         }
-
+        Config.getInstance();
         Basic basic = new Basic();
         if (!basic.authenticate(basicAuth)) {
             resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
@@ -59,7 +60,6 @@ public class ScimAuthorizationServer extends HttpServlet {
             redirect_uri += "?state=" + state + "&code=" + accessCode;
         } else {
             redirect_uri += "?code=" + accessCode;
-
         }
 
         resp.sendRedirect(redirect_uri);

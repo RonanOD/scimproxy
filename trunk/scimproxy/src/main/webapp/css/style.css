@@ -1,221 +1,241 @@
-#httpHeaders
-{
-	visibility:hidden;
+#httpHeaders {
+	visibility: hidden;
 }
 
-#container
-{
+#container {
 	margin: 0 auto;
 	width: 1000px;
-	background:#fff;
+	background: #fff;
 }
 
-#header
-{
-	background:#ccc;
+#header {
 	padding: 20px;
 }
 
-#header h1 
-{ 
-	margin: 0; 
+#header h1 {
+	margin: 0;
 }
 
-#navigation
-{
+#navigation {
 	float: left;
 	width: 1000px;
-	background:#333;
+	background: #333;
 }
 
-#navigation ul
-{
+#navigation ul {
 	margin: 0;
 	padding: 0;
 }
 
-#navigation ul li
-{
+#navigation ul li {
 	list-style-type: none;
 	display: inline;
 }
 
-#navigation li a
-{
+#navigation li a {
 	display: block;
 	float: left;
 	padding: 5px 10px;
-	color:#fff;
+	color: #fff;
 	text-decoration: none;
-	border-right: 1px solid#fff;
+	border-right: 1px solid #fff;
 }
 
-#navigation li a:hover { background:#383; }
+#navigation li a:hover {
+	background: #383;
+}
 
-#content
-{
+#content {
 	clear: left;
 	padding: 20px;
 	width: 1000px;
 }
 
-#content h2
-{
-	color:#000;
+#content h2 {
+	color: #000;
 	font-size: 160%;
 	margin: 0 0 .5em;
 }
 
-#footer
-{
-	background:#ccc;
+#footer {
 	text-align: right;
 	padding: 20px;
 	height: 1%;
 }
 
-
-table
-{
-	border-collapse:collapse;
+table {
+	border-collapse: collapse;
 }
 
-table.list th, table.list td 
-{
-	font-size : small;
+table.list th,table.list td {
+	font-size: small;
 	border: 1px solid black;
-	vertical-align:top;
+	vertical-align: top;
 }
 
-div.section
-{
+div.section {
 	display: none;
 }
 
-input.textInput
-{
+input.textInput {
 	width: 200px;
 }
 
-td.left 
-{
+td.left {
 	width: 180px;
 	vertical-align: top;
 }
-td.bottomRight
-{
+
+td.bottomRight {
 	text-align: right;
 }
 
-select
-{
-	width: 200px;	
+select {
+	width: 200px;
 }
 
-pre.full
-{
-	width: 800px;
+pre.full {
+	width: 100%;
 	border-style: dashed;
 	border-width: 1px;
 }
 
-pre.table
-{
+
+pre.table {
 	width: 650px;
 	border-style: dashed;
 	border-width: 1px;
 }
 
-td.alignTop
-{
+td.alignTop {
 	vertical-align: top;
 	padding: 15px;
 }
 
-td.alignTop
-{
+td.alignTop {
 	vertical-align: top;
 	padding: 15px;
 }
 
-tr.list
-{
+tr.list {
 	border-top-style: solid;
 	border-top-width: 2px;
 }
 
-textarea.table
-{
+textarea.table {
 	width: 650px;
 	min-height: 200px;
 }
 
-.arrow-n,
-.arrow-e,
-.arrow-s,
-.arrow-w {
-  /*
+.arrow-n,.arrow-e,.arrow-s,.arrow-w { /*
    * In Internet Explorer, The"border-style: dashed" will never be
    * rendered unless "(width * 5) >= border-width" is true.
    * Since "width" is set to "0", the "dashed-border" remains
    * invisible to the user, which renders the border just like how
    * "border-color: transparent" renders.
    */
-  border-style: dashed;
-  border-color: transparent;
-  border-width: 0.53em;
-  display: -moz-inline-box;
-  display: inline-block;
-  /* Use font-size to control the size of the arrow. */
-  font-size: 100px;
-  height: 0;
-  line-height: 0;
-  position: relative;
-  vertical-align: middle;
-  width: 0;
+	border-style: dashed;
+	border-color: transparent;
+	border-width: 0.53em;
+	display: -moz-inline-box;
+	display: inline-block;
+	/* Use font-size to control the size of the arrow. */
+	font-size: 100px;
+	height: 0;
+	line-height: 0;
+	position: relative;
+	vertical-align: middle;
+	width: 0;
 }
 
 .arrow-n {
-  border-bottom-width: 1em;
-  border-bottom-style: solid;
-  border-bottom-color: #666;
-  bottom: 0.25em;
+	border-bottom-width: 1em;
+	border-bottom-style: solid;
+	border-bottom-color: #666;
+	bottom: 0.25em;
 }
 
 .arrow-e {
-  border-left-width: 1em;
-  border-left-style: solid;
-  border-left-color: #666;
-  left: 0.25em;
+	border-left-width: 1em;
+	border-left-style: solid;
+	border-left-color: #666;
+	left: 0.25em;
 }
-                    
+
 .arrow-s {
-  border-top-width: 1em;
-  border-top-style: solid;
-  border-top-color: #666;
-  top: 0.25em;
+	border-top-width: 1em;
+	border-top-style: solid;
+	border-top-color: #666;
+	top: 0.25em;
 }
 
 .arrow-w {
-  border-right-width: 1em;
-  border-right-style: solid;
-  border-right-color: #666;
-  right: 0.25em;
+	border-right-width: 1em;
+	border-right-style: solid;
+	border-right-color: #666;
+	right: 0.25em;
 }
 
-button.list
-{
+button.list {
 	width: 150px;
 }
 
-td.middle
-{
+td.middle {
 	min-width: 650px;
 }
 
-td.buttonColumn
-{
+td.buttonColumn {
 	max-width: 160px;
 }
- 
- 
+
+.truncate {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 300px;
+	color: #888888;
+}
+
+.truncateOff {
+	color: #888888;
+}
+
+select.availableAttributes {
+	
+}
+
+img.addRemoveIcon {
+	height: 24px;
+	width: 24px;
+	margin: 2px;
+	opacity: 0.7;
+}
+
+img.addRemoveIcon:HOVER {
+	opacity: 1;
+	cursor: pointer;
+}
+
+img.addRemoveIconSmall {
+	height: 15px;
+	width: 15px;
+	margin: 1px;
+	opacity: 0.7;
+}
+
+img.addRemoveIconSmall:HOVER {
+	opacity: 1;
+	cursor: pointer;
+}
+
+img.actionIcon {
+	width: 50px;
+	height: 50px;
+	opacity: 0.7;
+	margin: 5px;
+}
+
+img.actionIcon:hover {
+	opacity: 1;
+	cursor: pointer;
+}
