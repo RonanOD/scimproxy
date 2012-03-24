@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.Group;
+import info.simplecloud.scimproxy.test.ScimGroupServletTest;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,11 +21,15 @@ public class ScimGroupServletGetTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimGroupServlet.class, "/v1/Groups/*");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups/*");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups.xml");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
         Group scimGroup = new Group();
+        scimGroup.setDisplayName("mygroup");
 
         request.setMethod("POST");
         request.setVersion("HTTP/1.0");
@@ -54,6 +59,43 @@ public class ScimGroupServletGetTest {
 
         Assert.assertEquals(id, scimGroup.getId());
     }
+    
+    
+    @Test
+    public void getGroupJson() throws Exception {
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Groups/" + id + ".json");
+        response.parse(tester.getResponses(request.generate()));
+
+        Assert.assertEquals(200, response.getStatus());
+
+        Group scimGroup = new Group(response.getContent(), Group.ENCODING_JSON);
+
+        Assert.assertEquals(id, scimGroup.getId());
+        Assert.assertEquals("mygroup", scimGroup.getDisplayName());
+    }
+
+/*
+    @Test
+    public void getGroupXml() throws Exception {
+        request.setMethod("GET");
+        request.setVersion("HTTP/1.0");
+        request.setHeader("Authorization", "Basic dXNyOnB3");
+
+        request.setURI("/v1/Groups/" + id + ".json");
+        response.parse(tester.getResponses(request.generate()));
+
+        Assert.assertEquals(200, response.getStatus());
+
+        Group scimGroup = new Group(response.getContent(), Group.ENCODING_XML);
+
+        Assert.assertEquals(id, scimGroup.getId());
+        Assert.assertEquals("mygroup", scimGroup.getDisplayName());
+    }
+    */
 
     @Test
     public void missingGroup() throws Exception {

@@ -9,8 +9,8 @@ import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
+import info.simplecloud.scimproxy.storage.StorageDelegator;
 import info.simplecloud.scimproxy.trigger.Trigger;
-import info.simplecloud.scimproxy.user.UserDelegator;
 import info.simplecloud.scimproxy.util.Util;
 
 import org.apache.commons.logging.Log;
@@ -29,6 +29,11 @@ public class ScimResourceServlet extends RestServlet {
     
     private Log               log              = LogFactory.getLog(ScimResourceServlet.class);
 
+    
+    protected StorageDelegator getUserDelegator(String session) {
+    	return StorageDelegator.getInstance(session);
+    }
+
     protected User internalUserPost(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser {
         User scimUser = new User(resource.getData(), encoding);
         
@@ -41,11 +46,12 @@ public class ScimResourceServlet extends RestServlet {
         scimUser.getMeta().setLocation(HttpGenerator.getLocation(scimUser, server));
 
         // add user to set ID
-		UserDelegator.getInstance(authUser.getSessionId()).addUser(scimUser);
+		getUserDelegator(authUser.getSessionId()).addUser(scimUser);
         
         // creating user in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.create(scimUser);
 
+        log.trace("Created user " + scimUser);
         return scimUser;
     }
 
@@ -55,7 +61,7 @@ public class ScimResourceServlet extends RestServlet {
         // verify that user have not been changed since latest get and this operation
         User oldUser = null;
 		try {
-			oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+			oldUser = getUserDelegator(authUser.getSessionId()).getUser(resource.getId());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,10 +86,12 @@ public class ScimResourceServlet extends RestServlet {
 
         scimUser.setMeta(meta);
         
-        UserDelegator.getInstance(authUser.getSessionId()).replaceUser(resource.getId(), scimUser);
+        getUserDelegator(authUser.getSessionId()).replaceUser(resource.getId(), scimUser);
         
         // replacing user in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.put(scimUser);
+
+        log.trace("Replaced user " + scimUser);
 
         return scimUser;
     }
@@ -96,7 +104,7 @@ public class ScimResourceServlet extends RestServlet {
         // verify that user have not been changed since latest get and this operation
         User oldUser = null;
 		try {
-			oldUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+			oldUser = getUserDelegator(authUser.getSessionId()).getUser(resource.getId());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -125,10 +133,12 @@ public class ScimResourceServlet extends RestServlet {
 
         scimUser.setMeta(meta);
         
-        UserDelegator.getInstance(authUser.getSessionId()).replaceUser(resource.getId(), scimUser);
+        getUserDelegator(authUser.getSessionId()).replaceUser(resource.getId(), scimUser);
         
         // editing user in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.patch(new User(resource.getData(), encoding));
+
+        log.trace("Updated user " + scimUser);
 
         return scimUser;
 	}
@@ -137,20 +147,23 @@ public class ScimResourceServlet extends RestServlet {
     public void internalUserDelete(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws ResourceNotFoundException, PreconditionException {
     	User scimUser = null;
 		try {
-			scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+			scimUser = getUserDelegator(authUser.getSessionId()).getUser(resource.getId());
 		} catch (Exception e) {
 			throw new ResourceNotFoundException();
 		}
 
         String version = scimUser.getMeta().getVersion();
         if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
-        	UserDelegator.getInstance(authUser.getSessionId()).deletetUser(resource.getId());
+        	getUserDelegator(authUser.getSessionId()).deletetUser(resource.getId());
             // deleting user in downstream CSP, any communication errors is handled in triggered and ignored here
         	trigger.delete(scimUser);
         }
         else {
         	throw new PreconditionException();
         }
+        
+        log.trace("Deleted user " + scimUser);
+
     }
 
 
@@ -166,10 +179,12 @@ public class ScimResourceServlet extends RestServlet {
         scimGroup.getMeta().setLocation(HttpGenerator.getLocation(scimGroup, server));
 
         // add group to set ID
-        UserDelegator.getInstance(authUser.getSessionId()).addGroup(scimGroup);
+        getUserDelegator(authUser.getSessionId()).addGroup(scimGroup);
 
         // creating group in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.create(scimGroup);
+
+        log.trace("Created group " + scimGroup);
 
         return scimGroup;
     }
@@ -179,7 +194,7 @@ public class ScimResourceServlet extends RestServlet {
         Group scimGroup = new Group(resource.getData().toString(), encoding);
 
         // verify that group have not been changed since latest get and this operation
-        Group oldGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(resource.getId());
+        Group oldGroup = getUserDelegator(authUser.getSessionId()).getGroup(resource.getId());
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldGroup != null) {
@@ -200,10 +215,12 @@ public class ScimResourceServlet extends RestServlet {
 
     	scimGroup.setMeta(meta);
         
-        UserDelegator.getInstance(authUser.getSessionId()).replaceGroup(resource.getId(), scimGroup);
+    	getUserDelegator(authUser.getSessionId()).replaceGroup(resource.getId(), scimGroup);
 
         // replacing group in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.put(scimGroup);
+
+        log.trace("Replace group " + scimGroup);
 
         return scimGroup;
     }
@@ -213,7 +230,7 @@ public class ScimResourceServlet extends RestServlet {
         Group scimGroup = new Group(resource.getData(), encoding);
 
         // verify that group have not been changed since latest get and this operation
-        Group oldGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(resource.getId());
+        Group oldGroup = getUserDelegator(authUser.getSessionId()).getGroup(resource.getId());
         
         // TODO: should return precondition exception if oldUser is not found or don't have a version.
         if(oldGroup != null) {
@@ -227,7 +244,7 @@ public class ScimResourceServlet extends RestServlet {
         // patch group
         scimGroup.patch(resource.getData(), encoding);
         // generate new version number
-        UserDelegator.getInstance(authUser.getSessionId()).updateVersionNumber(scimGroup);
+        getUserDelegator(authUser.getSessionId()).updateVersionNumber(scimGroup);
 
         
         // set a new version number on the user that we are about to change
@@ -240,40 +257,47 @@ public class ScimResourceServlet extends RestServlet {
 
     	scimGroup.setMeta(meta);
 
-        UserDelegator.getInstance(authUser.getSessionId()).replaceGroup(resource.getId(), scimGroup);
+    	getUserDelegator(authUser.getSessionId()).replaceGroup(resource.getId(), scimGroup);
 
         
         // editing group in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.patch(new Group(resource.getData(), encoding));
+
+        log.trace("Update group " + scimGroup);
 
         return scimGroup;
 	}
 
     public void internalGroupDelete(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws ResourceNotFoundException, PreconditionException {
 
-    	Group scimGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(resource.getId());
+    	Group scimGroup = getUserDelegator(authUser.getSessionId()).getGroup(resource.getId());
         String version = scimGroup.getMeta().getVersion();
         if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
-        	UserDelegator.getInstance(authUser.getSessionId()).deletetGroup(resource.getId());
+        	getUserDelegator(authUser.getSessionId()).deletetGroup(resource.getId());
             // deleting group in downstream CSP, any communication errors is handled in triggered and ignored here
         	trigger.delete(scimGroup);
         }
         else {
         	throw new PreconditionException();
         }
+        
+        log.trace("Removed group " + scimGroup);
     }
 
     public void internalChangePasswordPatch(ResourceJob resource, String password, AuthenticateUser authUser) throws ResourceNotFoundException {
     	User scimUser = null;
 		try {
-			scimUser = UserDelegator.getInstance(authUser.getSessionId()).getUser(resource.getId());
+			scimUser = getUserDelegator(authUser.getSessionId()).getUser(resource.getId());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	UserDelegator.getInstance(authUser.getSessionId()).setPassword(password, scimUser);
+		getUserDelegator(authUser.getSessionId()).setPassword(password, scimUser);
         // deleting group in downstream CSP, any communication errors is handled in triggered and ignored here
     	trigger.changePassword(scimUser, password);
+    	
+        log.trace("Changed password for user " + scimUser);
+
     }
     
 }

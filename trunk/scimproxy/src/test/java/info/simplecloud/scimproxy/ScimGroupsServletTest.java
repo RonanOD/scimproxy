@@ -3,6 +3,7 @@ package info.simplecloud.scimproxy;
 import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 import info.simplecloud.core.types.MultiValuedType;
+import info.simplecloud.scimproxy.test.ScimGroupServletTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,10 @@ public class ScimGroupsServletTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimGroupServlet.class, "/v1/Groups/*");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Groups");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Groups.xml");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Groups.json");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups/*");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups.xml");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 

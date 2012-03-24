@@ -1,5 +1,9 @@
 package info.simplecloud.scimproxy;
 
+import info.simplecloud.scimproxy.test.ScimBulkServletTest;
+import info.simplecloud.scimproxy.test.ScimGroupServletTest;
+import info.simplecloud.scimproxy.test.ScimUserServletTest;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -18,9 +22,9 @@ public class ScimUserServletBulkUserTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimBulkServlet.class, "/v1/Bulk");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Users/*");
-        tester.addServlet(ScimGroupServlet.class, "/v1/Groups/*");
+        tester.addServlet(ScimBulkServletTest.class, "/v1/Bulk");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users/*");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
     }

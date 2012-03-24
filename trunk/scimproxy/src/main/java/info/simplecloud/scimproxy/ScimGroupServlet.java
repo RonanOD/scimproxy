@@ -9,7 +9,7 @@ import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
-import info.simplecloud.scimproxy.user.UserDelegator;
+import info.simplecloud.scimproxy.storage.StorageDelegator;
 import info.simplecloud.scimproxy.util.Util;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class ScimGroupServlet extends ScimResourceServlet {
 
         if(!"".equals(groupId)) {
             try {
-                Group scimGroup = UserDelegator.getInstance(authUser.getSessionId()).getGroup(groupId);
+                Group scimGroup = StorageDelegator.getInstance(authUser.getSessionId()).getGroup(groupId);
                 String groupStr = null;
 
                 if (req.getParameter("attributes") != null) {
@@ -98,13 +98,13 @@ public class ScimGroupServlet extends ScimResourceServlet {
             
             if (filter != null && !"".equals(filter)) {
                 try {
-					groups = UserDelegator.getInstance(authUser.getSessionId()).getGroupList(sortBy, sortOrder, filter, index, count);
+					groups = StorageDelegator.getInstance(authUser.getSessionId()).getGroupList(sortBy, sortOrder, filter, index, count);
 				} catch (ResourceNotFoundException e) {
 					e.printStackTrace();
 				}
             } else {
                 try {
-					groups = UserDelegator.getInstance(authUser.getSessionId()).getGroupList(sortBy, sortOrder, index, count);
+					groups = StorageDelegator.getInstance(authUser.getSessionId()).getGroupList(sortBy, sortOrder, index, count);
 				} catch (ResourceNotFoundException e) {
 					e.printStackTrace();
 				}
