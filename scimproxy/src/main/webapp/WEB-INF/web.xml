@@ -10,21 +10,29 @@
 	</welcome-file-list>
 	
 	<servlet>
-		<servlet-name>User</servlet-name>
+		<servlet-name>Users</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimUserServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Users</servlet-name>
 		<url-pattern>/v1/Users</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Users</servlet-name>
+		<url-pattern>/v1/Users/*</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>Group</servlet-name>
+		<servlet-name>Groups</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimGroupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Groups</servlet-name>
 		<url-pattern>/v1/Groups</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Groups</servlet-name>
+		<url-pattern>/v1/Groups/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
@@ -82,6 +90,10 @@
 		<servlet-name>Bulk</servlet-name>
 		<url-pattern>/v1/Bulk.xml</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Bulk</servlet-name>
+		<url-pattern>/v1/Bulk.json</url-pattern>
+	</servlet-mapping>
 
 	
 	<servlet>
@@ -92,16 +104,7 @@
 		<servlet-name>AuthorizationServer</servlet-name>
 		<url-pattern>/AuthorizationServer/*</url-pattern>
 	</servlet-mapping>
-	
-<!-- 	<servlet>
-		<servlet-name>AddUser</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.viewer.AddUser</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AddUser</servlet-name>
-		<url-pattern>/AddUser</url-pattern>
-	</servlet-mapping>
-	-->
+
 	<filter>
 		<filter-name>MethodOverrideFilter</filter-name>
 		<filter-class>info.simplecloud.scimproxy.filter.MethodOverrideFilter</filter-class>

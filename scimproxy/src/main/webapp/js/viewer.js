@@ -2,29 +2,28 @@
 
 $(document).ready(function () {
 	var handleResult = function (data) {
-			$("#result").hide("slow", function() {
-				document.getElementById("result").innerHTML = "";
-				
-				$('<pre>', {
-					class: 'prettyprint, full',
-					text: data
-				}).appendTo('#result');
-				
-				prettyPrint();
-				$("#result").show("slow");				
-			});
+			//document.getElementById("result").innerHTML = "";
+			$('#result').text("");
+			
+			$('<pre>', {
+				class: 'prettyprint, full',
+				text: data
+			}).appendTo('#result');
+			
+			prettyPrint();	
 		},
 		handleError = function () {
+			// TODO pass error to authenticate page
 			document.location = "/authenticate.html";
 		},
 		handleList = function (data) {
-			var i, current;
-			$("#result").hide("slow");
-			document.getElementById("result").innerHTML = "";
+			var i, 
+				current,
+				data = JSON.parse(data),
+				$tbl = $('<table>');
+			//document.getElementById("result").innerHTML = "";
+			$('#result').text("");
 			
-			data = JSON.parse(data);
-			
-			var $tbl = $('<table>');
 			$('#result').append(
 					$("<p>",{text: "Got " + data.totalResults + " " + $("#listType").val() + "(s)."}));
 			
@@ -121,20 +120,20 @@ $(document).ready(function () {
 	            }
 	            
 	            $('#result').append($tbl);
-	            $('#result').show("slow");
 	             
 			} else {
 				$('<pre>', {
 					class: 'prettyprint, full',
 				    text: "No resources found."
 				}).appendTo('#result');
-	            $('#result').show("slow");
             }
 			prettyPrint();
 		};
+		
+		
 	var section = $.url(document.location).attr('anchor');
 	section = (section === "" ? "list" : section);
-	$("#" + section + "Section").show("slow");
+	$("#" + section + "Section").show();
 	
 	if (section === "configuration") {
 		$.post("/Viewer/Configuration", handleResult).error(handleError);
@@ -143,13 +142,13 @@ $(document).ready(function () {
 	$("a").click(function () {
 		var section = $.url(document.location).attr('anchor');
 		section = (section === "" ? "list" : section);
-		$("#" + section + "Section").hide("slow");
-		$(event.target.hash + "Section").show("slow");
+		$("#" + section + "Section").hide();
+		$(event.target.hash + "Section").show();
 
-        $('#result').hide("slow");
-		document.getElementById("result").innerHTML = "";
-        $('#result').show();
-		if (event.target.hash === "#configuration") {
+		//document.getElementById("result").innerHTML = "";
+        $('#result').text("");
+		
+        if (event.target.hash === "#configuration") {
 			$.post("/Viewer/Configuration", handleResult).error(handleError);
 		}
 	});

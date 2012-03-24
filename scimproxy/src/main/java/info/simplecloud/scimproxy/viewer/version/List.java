@@ -44,7 +44,7 @@ public class List extends HttpServlet {
         if (indata.get("filter") != null) {
             query += "filter=" + UrlEncoded.encodeString(indata.get("filter")) + "&";
         }
-        if (indata.get("attributes") != null) {
+        if (indata.get("attributes") != null && !indata.get("attributes").isEmpty()) {
             query += "attributes=" + UrlEncoded.encodeString(indata.get("attributes"));
         }
         if (query.endsWith("&")) {

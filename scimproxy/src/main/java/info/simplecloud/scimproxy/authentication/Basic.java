@@ -15,6 +15,7 @@ public class Basic implements IAuth {
 		try {
 			UsernamePasswordCredentials cred = parseBasicString(token);
 	        String correctPassword = AuthenticationUsers.getInstance().getPasswordForUser(cred.getUserName());
+	        System.out.println("");
 	        if(correctPassword != null && correctPassword.equals(cred.getPassword())) {
 	        	this.authUser = AuthenticationUsers.getInstance().getAuthenticateUserWithUserName(cred.getUserName());
 	        	authStatus = true;

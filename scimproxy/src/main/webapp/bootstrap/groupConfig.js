@@ -1,0 +1,83 @@
+/**
+ * 
+ */
+
+var groupConfig = { 
+   "id":"urn:scim:schemas:core:1.0:Group", 
+   "name":"Group", 
+   "description":"Core Group", 
+   "schema":"urn:scim:schemas:core:1.0", 
+   "queryEndpoint":"/Groups", 
+   "attributes":[ 
+    {
+       "name":"id", 
+       "type":"string", 
+       "plural":false, 
+       "description":"Unique identifier for the SCIM resource as defined by the Service Provider. Each representation of the resource MUST include a non-empty id value. This identifier MUST be unique across the Service Provider's entire set of resources. It MUST be a stable, non-reassignable identifier that does not change when the same resource is returned in subsequent requests. The value of the id attribute is always issued by the Service Provider and MUST never be specified by the Service Consumer. REQUIRED.", 
+       "schema":"urn:scim:schemas:core:1.0", 
+       "readOnly":true, 
+       "required":true, 
+       "caseExact":false 
+    }, 
+    {
+      "name":"displayName",
+      "type":"string",
+      "multiValued":false,
+      "description":"The name of the User, suitable for display to end-users. Each User returned MAY include a non-empty displayName value. The name SHOULD be the full name of the User being described if known (e.g. Babs Jensen or Ms. Barbara J Jensen, III), but MAY be a username or handle, if that is all that is available (e.g. bjensen). The value provided SHOULD be the primary textual label by which this User is normally displayed by the Service Provider when presenting it to end-users.",
+      "schema":"urn:scim:schemas:core:1.0",
+      "readOnly":false,
+      "required":false,
+      "caseExact":false
+    },
+    {
+      "name":"members",
+      "type":"complex",
+      "multiValued":true,
+      "multiValuedAttributeChildName":"member",
+      "description":"A list of members of the Group. Canonical Types \"User\" and \"Group\" are READ-ONLY. The value must be the \"id\" of a SCIM resource, either a User, or a Group. The intention of the Group type is to allow the Service Provider to support nested Groups. REQUIRED.",
+      "schema":"urn:scim:schemas:core:1.0",
+      "readOnly":false,
+      "required":false,
+      "caseExact":false,
+      "subAttributes":[
+        {
+          "name":"value",
+          "type":"string",
+          "multiValued":false,
+          "description":"A list of members of the Group. Canonical Types \"User\" and \"Group\" are READ-ONLY. The value must be the \"id\" of a SCIM resource, either a User, or a Group. The intention of the Group type is to allow the Service Provider to support nested Groups. REQUIRED.",
+          "readOnly":false,
+          "required":true,
+          "caseExact":false
+        },
+        {
+          "name":"display",
+          "type":"string",
+          "multiValued":false,
+          "description":"A human readable name, primarily used for display purposes. READ-ONLY.",
+          "readOnly":true,
+          "required":false,
+          "caseExact":false
+        },
+        {
+          "name":"type",
+          "type":"string",
+          "multiValued":false,
+          "description":"A label indicating the attribute's function.",
+          "readOnly":false,
+          "required":false,
+          "caseExact":false,
+          "canonicalValues":["User", "Group"]
+        },
+        {
+          "name":"primary",
+          "type":"boolean",
+          "multiValued":false,
+          "description":"A Boolean value indicating the 'primary' or preferred attribute value for this attribute",
+          "readOnly":false,
+          "required":false,
+          "caseExact":false
+        }
+      ]
+    },
+  ] 
+}

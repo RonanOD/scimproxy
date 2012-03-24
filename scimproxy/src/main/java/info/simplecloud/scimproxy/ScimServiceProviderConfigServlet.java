@@ -56,14 +56,14 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
          		    	"\"name\": \"OAuth2\"," +
          		    	"\"description\": \"OAuth2\"," +
          		    	"\"specUrl\":\"http://tools.ietf.org/html/draft-ietf-oauth-v2-22\"," +
-         		    	"\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "\"," +
+         		    	"\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "/AuthorizationServer/\"," +
          		    	"\"type\":\"OAuth2\"" +
          		    "}," +
          		    "{" +
      		    	"\"name\": \"OAuth2-v10\"," +
      		    	"\"description\": \"OAuth2 v10 \"," +
      		    	"\"specUrl\":\"http://tools.ietf.org/html/draft-ietf-oauth-v2-10\"," +
-     		    	"\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "\"," +
+     		    	"\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "/AuthorizationServer/\"," +
      		    	"\"type\":\"OAuth2-v10\"" +
      		    "}" +
         		  "]" +

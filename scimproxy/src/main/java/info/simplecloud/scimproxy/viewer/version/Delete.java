@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -36,14 +37,16 @@ public class Delete extends HttpServlet {
         client.getParams().setAuthenticationPreemptive(false);
         
         DeleteMethod method = new DeleteMethod(baseUrl + indata.get("type") + "/" + indata.get("id"));
+        
+        //PostMethod method = new PostMethod(baseUrl + indata.get("type") + "/" + indata.get("id"));
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));        
         
-        method.setRequestHeader("Content-Type", "application/json");
+        //method.setRequestHeader("X-HTTP-Method-Override", "Delete");
         if(indata.get("etag") != null) {
             method.setRequestHeader("ETag", indata.get("etag"));
         }
         method.setRequestHeader("Authorization", creds);
-            
+
         int responseCode = client.executeMethod(method);
         if(responseCode == 200) {            
             resp.getWriter().print(indata.get("type") + " deleted");
