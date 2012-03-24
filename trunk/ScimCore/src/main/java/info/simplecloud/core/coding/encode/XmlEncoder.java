@@ -72,6 +72,7 @@ public class XmlEncoder implements IUserEncoder {
         x0.scimSchemasCore1.Resource[] xmlResourceArray = new x0.scimSchemasCore1.Resource[resources.size()];
 
         for (int i = 0; i < resources.size(); i++) {
+            includeAttributes = Resource.addMandatoryAttributes(includeAttributes);
             xmlResourceArray[i] = this.internalEncode(resources.get(i), includeAttributes);
         }
         xmlResources.setResourceArray(xmlResourceArray);

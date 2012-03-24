@@ -57,6 +57,7 @@ public class JsonEncoder implements IUserEncoder {
             JSONArray users = new JSONArray();
             int counter = 0;
             for (Resource scimUser : resources) {
+                includeAttributes = Resource.addMandatoryAttributes(includeAttributes);
                 JSONObject o = internalEncode(scimUser, includeAttributes);
                 if (o != null) {
                     users.put(o);
