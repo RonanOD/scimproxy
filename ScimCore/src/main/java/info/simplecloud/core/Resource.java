@@ -43,7 +43,7 @@ public abstract class Resource extends ComplexType {
         decoders.put(ENCODING_JSON, new JsonDecoder());
     }
 
-    private static String[]                      mandatoryAttributes = new String[] { "id", "schemas" };
+    private static String[]                      mandatoryAttributes = new String[] { "id", "schemas", "meta" };
 
     private List<Object>                         extensions          = new ArrayList<Object>();
     private String                               id;
@@ -66,6 +66,18 @@ public abstract class Resource extends ComplexType {
 
         this.setId(id);
     }
+    
+    public static List<String> addMandatoryAttributes(List<String> attributes) {
+        if (attributes != null && !attributes.isEmpty()) {
+            for (String mandatory : mandatoryAttributes) {
+                if (!attributes.contains(mandatory)) {
+                    attributes.add(mandatory);
+                }
+            }
+        }
+        
+        return attributes;
+    }
 
     public String getResource(String encoding, List<String> attributes) throws UnknownEncoding {
         IUserEncoder encoder = encoders.get(encoding.toLowerCase());
@@ -73,13 +85,7 @@ public abstract class Resource extends ComplexType {
             throw new UnknownEncoding(encoding);
         }
 
-        if (attributes != null) {
-            for (String mandatory : mandatoryAttributes) {
-                if (!attributes.contains(mandatory)) {
-                    attributes.add(mandatory);
-                }
-            }
-        }
+        addMandatoryAttributes(attributes);
         // TODO check if resource has mandatory data
 
         return encoder.encode(this, attributes);
