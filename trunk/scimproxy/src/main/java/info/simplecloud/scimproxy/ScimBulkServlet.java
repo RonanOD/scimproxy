@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.Resource;
+import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
 import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.exception.PreconditionException;
@@ -24,6 +25,7 @@ public class ScimBulkServlet extends ScimResourceServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+    	
     	ArrayList<ResourceJob> resources = new ArrayList<ResourceJob>();
     	ArrayList<ResourceJob> notProcessed = new ArrayList<ResourceJob>();
     	
@@ -32,100 +34,131 @@ public class ScimBulkServlet extends ScimResourceServlet {
         
         String server = HttpGenerator.getServer(req);
         String outEncoding = HttpGenerator.getEncoding(req);
-        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
+        
+		if(Resource.ENCODING_XML.equalsIgnoreCase(outEncoding)) {
+			// TODO: implement XML version of bulk!
+	        resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+		}
+		else {
+	        AuthenticateUser authUser = (AuthenticateUser)req.getAttribute("AuthUser");
 
-        String response = "{\n" + 
-        					"\t\"schemas\": [\"urn:scim:schemas:core:1.0\"],\n" + 
-        					"\t\"Operations\":[\n";
-        
-        JSONArray operations = null;
-        boolean validRequest = false;
-        
-        if (query != null && !"".equals(query)) {
-        	try {
-            	JSONObject jsonObj = new JSONObject(query);
-    			// TODO: parse and handle job as file stream to support larger files
-    			operations = jsonObj.getJSONArray("Operations");
-    			if(operations.length() > Config.getInstance().getBulkMaxOperations() || query.length() > Config.getInstance().getBulkMaxPayloadSize()) {
-    				HttpGenerator.requestEntityToLarge(resp, Config.getInstance().getBulkMaxOperations(), Config.getInstance().getBulkMaxPayloadSize());
-    			}
-    			else {
-    				validRequest = true;
-    			}
-        	}
-        	catch (JSONException e) {
-            	HttpGenerator.badRequest(resp, "Malformed bulk request.");
-        	}
-	    } 
-        else {
-        	HttpGenerator.badRequest(resp);
-        }
-        
-        if(validRequest) {
-			try {
-				
-				for (int i = 0; i < operations.length(); ++i) {
-				    JSONObject op = operations.getJSONObject(i);
-
-				    String method = op.getString("method");
-				    String bulkId = "";
-				    if(!op.isNull("bulkId")) {
-				    	bulkId = op.getString("bulkId");
-				    }
-				    String path = "";
-				    if(!op.isNull("path")) {
-				    	path = "/v1" + op.getString("path");
-				    }
-				    String version = "";
-				    if(!op.isNull("version")) {
-				    	version = op.getString("version");
-				    }
-				    String data = null;
-				    if(!op.isNull("data")) {
-				    	data = op.getJSONObject("data").toString();
-				    }
-				    
-				    resources.add(new ResourceJob(method, bulkId, path, version, data));
-				}
-				
-				
-				// execute all operations in bulk job 
-				boolean firstItem = true;
-				boolean done = false;
-				int counter = 0;
-				
-				while(!done) {
+	        String response = "{\n" + 
+	        					"\t\"schemas\": [\"urn:scim:schemas:core:1.0\"],\n" + 
+	        					"\t\"Operations\":[\n";
+	        
+	        JSONArray operations = null;
+	        boolean validRequest = false;
+	        
+	        if (query != null && !"".equals(query)) {
+	        	try {
+	            	JSONObject jsonObj = new JSONObject(query);
+	    			// TODO: parse and handle job as file stream to support larger files
+	    			operations = jsonObj.getJSONArray("Operations");
+	    			if(operations.length() > Config.getInstance().getBulkMaxOperations() || query.length() > Config.getInstance().getBulkMaxPayloadSize()) {
+	    				HttpGenerator.requestEntityToLarge(resp, Config.getInstance().getBulkMaxOperations(), Config.getInstance().getBulkMaxPayloadSize());
+	    			}
+	    			else {
+	    				validRequest = true;
+	    			}
+	        	}
+	        	catch (JSONException e) {
+	            	HttpGenerator.badRequest(resp, "Malformed bulk request.");
+	        	}
+		    } 
+	        else {
+	        	HttpGenerator.badRequest(resp);
+	        }
+	        
+	        if(validRequest) {
+				try {
 					
-					for (ResourceJob bulkResource : resources) {
-						boolean success = true;
-						
-					    if(firstItem) {
-					    	firstItem = false;
-					    }
-					    else {
-					    	response += "\t\t,\n";
-					    }
+					for (int i = 0; i < operations.length(); ++i) {
+					    JSONObject op = operations.getJSONObject(i);
 
+					    String method = op.getString("method");
+					    String bulkId = "";
+					    if(!op.isNull("bulkId")) {
+					    	bulkId = op.getString("bulkId");
+					    }
+					    String path = "";
+					    if(!op.isNull("path")) {
+					    	path = "/v1" + op.getString("path");
+					    }
+					    String version = "";
+					    if(!op.isNull("version")) {
+					    	version = op.getString("version");
+					    }
+					    String data = null;
+					    if(!op.isNull("data")) {
+					    	data = op.getJSONObject("data").toString();
+					    }
+					    
+					    resources.add(new ResourceJob(method, bulkId, path, version, data));
+					}
+					
+					
+					// execute all operations in bulk job 
+					boolean firstItem = true;
+					boolean done = false;
+					int counter = 0;
+					
+					while(!done) {
 						
-						// TODO: Add support for extensions
+						for (ResourceJob bulkResource : resources) {
+							boolean success = true;
+							
+						    if(firstItem) {
+						    	firstItem = false;
+						    }
+						    else {
+						    	response += "\t\t,\n";
+						    }
 
-					    if(ResourceJob.TYPE_GROUP.equalsIgnoreCase(bulkResource.getType())) {
-					    	
-							try {
-							    // search for bulkid:s and replace them with already created resource id
-							    String data = bulkResource.getData();
-								JSONObject dataObj = new JSONObject(data);
-								
-								JSONArray members = dataObj.getJSONArray("members");
-								for (int i = 0; i < members.length(); ++i) {
-								    JSONObject entity = members.getJSONObject(i);
-								    String value = entity.getString("value");
-								    if(value.indexOf("bulkId:") != -1) {
+							
+							// TODO: Add support for extensions
+
+						    if(ResourceJob.TYPE_GROUP.equalsIgnoreCase(bulkResource.getType())) {
+						    	
+								try {
+								    // search for bulkid:s and replace them with already created resource id
+								    String data = bulkResource.getData();
+									JSONObject dataObj = new JSONObject(data);
+									
+									JSONArray members = dataObj.getJSONArray("members");
+									for (int i = 0; i < members.length(); ++i) {
+									    JSONObject entity = members.getJSONObject(i);
+									    String value = entity.getString("value");
+									    if(value.indexOf("bulkId:") != -1) {
+									    	for (ResourceJob resourceJob : resources) {
+												if(resourceJob.getBulkId().equals(value.substring("bulkId:".length()))) {
+													if(resourceJob.getId() != null && !"".equals(resourceJob.getId())) {
+														// resource is processed, replacing bulkId with the id
+														bulkResource.setData(bulkResource.getData().replaceFirst(value, resourceJob.getId()));
+													}
+													else {
+														success = false;
+													}
+												}
+											}
+									    }
+									}
+								}
+								catch (Exception e) {
+									// do nothing
+								}
+						    }
+						    else if(ResourceJob.TYPE_USER.equalsIgnoreCase(bulkResource.getType())) {
+
+						    	// a change password path can have bulkId
+						        if(Util.isChangePassword(bulkResource.getPath())) {
+								    if(bulkResource.getPath().indexOf("bulkId:") != -1) {
 								    	for (ResourceJob resourceJob : resources) {
-											if(resourceJob.getBulkId().equals(value.substring("bulkId:".length()))) {
+								    		String path = bulkResource.getPath(); 
+								    		String r = path.substring(path.indexOf("bulkId:")+7, path.indexOf("/password"));
+											if(resourceJob.getBulkId().equals(r)) {
 												if(resourceJob.getId() != null && !"".equals(resourceJob.getId())) {
 													// resource is processed, replacing bulkId with the id
-													bulkResource.setData(bulkResource.getData().replaceFirst(value, resourceJob.getId()));
+													bulkResource.setPath(bulkResource.getPath().replaceFirst("bulkId:" + r, resourceJob.getId()));
 												}
 												else {
 													success = false;
@@ -133,71 +166,47 @@ public class ScimBulkServlet extends ScimResourceServlet {
 											}
 										}
 								    }
-								}
-							}
-							catch (Exception e) {
-								// do nothing
-							}
-					    }
-					    else if(ResourceJob.TYPE_USER.equalsIgnoreCase(bulkResource.getType())) {
+						        }
 
-					    	// a change password path can have bulkId
-					        if(Util.isChangePassword(bulkResource.getPath())) {
-							    if(bulkResource.getPath().indexOf("bulkId:") != -1) {
-							    	for (ResourceJob resourceJob : resources) {
-							    		String path = bulkResource.getPath(); 
-							    		String r = path.substring(path.indexOf("bulkId:")+7, path.indexOf("/password"));
-										if(resourceJob.getBulkId().equals(r)) {
-											if(resourceJob.getId() != null && !"".equals(resourceJob.getId())) {
-												// resource is processed, replacing bulkId with the id
-												bulkResource.setPath(bulkResource.getPath().replaceFirst("bulkId:" + r, resourceJob.getId()));
-											}
-											else {
-												success = false;
-											}
-										}
-									}
-							    }
-					        }
+						    }					    
 
-					    }					    
+						    response += parseResource(bulkResource, server, outEncoding, authUser);
 
-					    response += parseResource(bulkResource, server, outEncoding, authUser);
+						    if(!success) {
+						    	notProcessed.add(bulkResource);
+						    }
+						    
+						}
 
-					    if(!success) {
-					    	notProcessed.add(bulkResource);
-					    }
-					    
+					    counter++;
+						if(counter == 3 || notProcessed.size() == 0) {
+							done = true;
+						}
+
+						resources = notProcessed;
 					}
 
-				    counter++;
-					if(counter == 3 || notProcessed.size() == 0) {
-						done = true;
-					}
+					response += "\t\t]\n" +
+								"}\n";
+					
+					response = Util.formatJsonPretty(response);
 
-					resources = notProcessed;
+					resp.setHeader("Location", bulkLocation);
+					HttpGenerator.ok(resp, response);
 				}
+				catch (JSONException e) {
+	            	HttpGenerator.badRequest(resp, "Malformed bulk request.");
+				}
+	        }
+		}
+        
 
-				response += "\t\t]\n" +
-							"}\n";
-				
-				response = Util.formatJsonPretty(response);
-
-				resp.setHeader("Location", bulkLocation);
-				HttpGenerator.ok(resp, response);
-			}
-			catch (JSONException e) {
-            	HttpGenerator.badRequest(resp, "Malformed bulk request.");
-			}
-        }
     }
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     	doPost(req, resp);
     }
 	
-	
-    
     private String handleExceptions(Exception e, String id) {
     	e.printStackTrace();
     	String response = "";
