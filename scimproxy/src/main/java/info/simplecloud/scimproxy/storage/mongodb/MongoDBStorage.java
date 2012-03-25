@@ -236,7 +236,10 @@ public class MongoDBStorage implements IStorage {
 		
 		String attributeName = "User." + filterString.split(" ")[0];
 		String operation = filterString.split(" ")[1];
-		String filterValue = filterString.split(" ")[2];
+		String filterValue = "";
+		if(!"pr".equalsIgnoreCase(operation)) {
+			filterValue = filterString.split(" ")[2];
+		}
 
 		DBObject filter = new BasicDBObject();
 
@@ -249,7 +252,7 @@ public class MongoDBStorage implements IStorage {
 			Pattern pattern = Pattern.compile("^" + filterValue);
 			filter = QueryBuilder.start(attributeName).regex(pattern).get();
 		} else if ("pr".equalsIgnoreCase(operation)) {
-			filter = QueryBuilder.start(attributeName).notEquals(null).get();
+			filter = QueryBuilder.start(attributeName).exists(true).get();
 		} else if ("gr".equalsIgnoreCase(operation)) {
 			filter = QueryBuilder.start(attributeName).greaterThan(filterValue).get();
 		} else if ("ge".equalsIgnoreCase(operation)) {
