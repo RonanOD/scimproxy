@@ -32,7 +32,7 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
         		    "\"maxPayloadSize\":" + Config.getInstance().getBulkMaxPayloadSize() +
         		  "}," +
         		  "\"filter\": {" +
-        		    "\"supported\":false," +
+        		    "\"supported\":true," +
         		    "\"maxResults\": 200" +
         		  "}," +
         		  "\"changePassword\" : {" +
@@ -73,7 +73,8 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
 
         }
         if (User.ENCODING_XML.equalsIgnoreCase(HttpGenerator.getEncoding(req))) {
-            response = "NOT IMPLEMENTED";
+        	// TODO: implement XML support
+	        resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
 
         resp.getWriter().print(response);	
