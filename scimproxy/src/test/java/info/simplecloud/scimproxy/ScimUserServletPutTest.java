@@ -23,6 +23,9 @@ public class ScimUserServletPutTest {
     public static void setUp() throws Exception {
         tester = new ServletTester();
         tester.addServlet(ScimUserServletTest.class, "/v1/Users/*");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users.xml");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Users.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 

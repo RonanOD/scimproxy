@@ -23,6 +23,8 @@ public class ScimUserServletBulkUserTest {
     public static void setUp() throws Exception {
         tester = new ServletTester();
         tester.addServlet(ScimBulkServletTest.class, "/v1/Bulk");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Bulk.xml");
+        tester.addServlet(ScimUserServletTest.class, "/v1/Bulk.json");
         tester.addServlet(ScimUserServletTest.class, "/v1/Users/*");
         tester.addServlet(ScimGroupServletTest.class, "/v1/Groups/*");
         tester.addServlet(DefaultServlet.class, "/");

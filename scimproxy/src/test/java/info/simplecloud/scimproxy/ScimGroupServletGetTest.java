@@ -78,14 +78,13 @@ public class ScimGroupServletGetTest {
         Assert.assertEquals("mygroup", scimGroup.getDisplayName());
     }
 
-/*
     @Test
     public void getGroupXml() throws Exception {
         request.setMethod("GET");
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Groups/" + id + ".json");
+        request.setURI("/v1/Groups/" + id + ".xml");
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertEquals(200, response.getStatus());
@@ -95,7 +94,6 @@ public class ScimGroupServletGetTest {
         Assert.assertEquals(id, scimGroup.getId());
         Assert.assertEquals("mygroup", scimGroup.getDisplayName());
     }
-    */
 
     @Test
     public void missingGroup() throws Exception {

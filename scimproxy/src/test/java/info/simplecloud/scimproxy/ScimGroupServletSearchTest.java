@@ -15,7 +15,7 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.testing.HttpTester;
 import org.mortbay.jetty.testing.ServletTester;
 
-public class ScimGroupsServletTest {
+public class ScimGroupServletSearchTest {
 
     private static ServletTester tester   = new ServletTester();
     private static HttpTester    request  = new HttpTester();
