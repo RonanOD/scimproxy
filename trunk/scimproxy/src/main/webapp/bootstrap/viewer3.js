@@ -355,7 +355,7 @@ $(document).ready(
         var listType = $("#listType").val();
         var theFilter = "";
         
-        if ($("#filter-attribute").val() !== "" && $("#filter-attribute-value").val() !== "") {
+        if ($("#filter-attribute").val() !== "" && $("#filter-attribute-value").val() !== "" ||  ($("#filter-attribute").val() !== "" && $("#filter-operation").val() == "pr")) {
           theFilter += $("#filter-attribute").val() + " ";
           theFilter += $("#filter-operation").val() + " ";
           theFilter += $("#filter-attribute-value").val();
