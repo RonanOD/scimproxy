@@ -281,10 +281,57 @@ public class MongoDBStorage implements IStorage {
 	}
 	
     @Override
-    public ArrayList<Group> getGroupList(String sortBy, String sortOrder, String filter, int index, int count) {
-    	
-    	log.error("getGroupList is not implemented!");
-        return new ArrayList<Group>();
+    public ArrayList<Group> getGroupList(String sortBy, String sortOrder, String filterString, int index, int count) {
+		ArrayList<Group> list = new ArrayList<Group>();
+		int  order = 1;
+		if("descending".equals(sortOrder)) {
+			order = -1;
+		}
+		sortBy = "Group." + sortBy;
+		
+		String attributeName = "Group." + filterString.split(" ")[0];
+		String operation = filterString.split(" ")[1];
+		String filterValue = "";
+		if(!"pr".equalsIgnoreCase(operation)) {
+			filterValue = filterString.split(" ")[2];
+		}
+
+		DBObject filter = new BasicDBObject();
+
+		if ("eq".equalsIgnoreCase(operation)) {
+			filter = new BasicDBObject(attributeName, filterValue);
+		} else if ("co".equalsIgnoreCase(operation)) {
+			Pattern pattern = Pattern.compile(".*" + filterValue + ".*");
+			filter = QueryBuilder.start(attributeName).regex(pattern).get();
+		} else if ("sw".equalsIgnoreCase(operation)) {
+			Pattern pattern = Pattern.compile("^" + filterValue);
+			filter = QueryBuilder.start(attributeName).regex(pattern).get();
+		} else if ("pr".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).exists(true).get();
+		} else if ("gr".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).greaterThan(filterValue).get();
+		} else if ("ge".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).greaterThanEquals(filterValue).get();
+		} else if ("lt".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).lessThan(filterValue).get();
+		} else if ("le".equalsIgnoreCase(operation)) {
+			filter = QueryBuilder.start(attributeName).lessThanEquals(filterValue).get();
+		}
+		
+        DBCursor cur = getGroupCollection().find(filter).sort(new BasicDBObject( sortBy, order ) ).skip((index-1)*count).limit(count);
+
+        while(cur.hasNext()) {
+        	String json = JSON.serialize(cur.next().get("Group"));
+            Group scimGroup = null;
+			try {
+				scimGroup = new Group(json, Group.ENCODING_JSON);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+            list.add(scimGroup);
+        }
+
+        return list;    
     }
 
 	@Override
