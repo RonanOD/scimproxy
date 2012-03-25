@@ -22,6 +22,9 @@ public class ScimGroupServletDeleteTest {
     public static void setUp() throws Exception {
         tester = new ServletTester();
         tester.addServlet(ScimGroupServletTest.class, "/v1/Groups/*");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups.xml");
+        tester.addServlet(ScimGroupServletTest.class, "/v1/Groups.json");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
 
