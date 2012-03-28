@@ -20,17 +20,20 @@
             <li class="divider-vertical"></li>
             <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">List</a>
               <ul class="dropdown-menu">
-                <li><a href="#1" data-toggle="tab" id="listUsers">Users</a></li>
-                <li><a href="#1" data-toggle="tab" id="listGroups">Groups</a></li>
-              </ul>
-            </li>
+                <li><a href="#1" data-toggle="tab" id="listUsers">Users</a>
+                </li>
+                <li><a href="#1" data-toggle="tab" id="listGroups">Groups</a>
+                </li>
+              </ul></li>
             <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Add</a>
               <ul class="dropdown-menu">
-                <li><a href="#2" data-toggle="tab" id="createUser">User</a></li>
-                <li><a href="#2" data-toggle="tab" id="createGroup">Group</a></li>
-              </ul>
+                <li><a href="#2" data-toggle="tab" id="createUser">User</a>
+                </li>
+                <li><a href="#2" data-toggle="tab" id="createGroup">Group</a>
+                </li>
+              </ul></li>
+            <li><a href="#3" data-toggle="tab" id="bulk">Bulk</a>
             </li>
-            <li><a href="#4" data-toggle="tab" id="bulk">Bulk</a></li>
           </ul>
         </div>
       </div>
@@ -137,12 +140,33 @@
               <button type="submit" class="btn btn-primary" id="createResource">Create</button>
             </div>
           </div>
-          <div class="well" >
-            <pre class="prettyprint full" id="create-result">
+          <div class="well">
+            <pre class="prettyprint, full" style="display: none;" id="create-result">
             </pre>
           </div>
         </div>
-        <div class="tab-pane" id="3"></div>
+        <div class="tab-pane" id="3">
+          <div class="well">
+            <label class="control-label" for="bulkEncoding">Encoding</label>
+            <div class="controls">
+              <select id="bulkEncoding">
+                <option>json</option>
+              </select>
+            </div>
+            <label class="control-label" for="">Data</label>
+            <div class="controls">
+              <textarea id="bulkData" rows="15" style="width:99%"></textarea>
+            </div>
+            <div class="form-actions" style="text-align: right;"">
+              <button class="btn" id="resetBulk">Reset</button>
+              <button type="submit" class="btn btn-primary" id="sendBulk">Send</button>
+            </div>
+          </div>
+          <div class="well">
+            <pre class="prettyprint, full" style="display: none;" id="bulk-result">
+            </pre>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -153,10 +177,12 @@
     </div>
     <div class="modal-body">
       <div id="editContent"></div>
-      <select id="editSelect"></select>
+      <select id="editSelect"></select><img id="addEditAttribute" src="/images/Add-icon.png" align="top" class="addRemoveIcon" />
     </div>
     <div class="modal-footer">
-      <a href="#" data-dismiss="modal" class="btn">Close</a> <a href="#" class="btn btn-primary">Save changes</a>
+      <a href="#" data-dismiss="modal" class="btn">Close</a> 
+      <a href="#" class="btn btn-primary" id="replace">Replace</a>
+      <a href="#" class="btn btn-primary" id="update">Update</a>
     </div>
   </div>
 </body>
@@ -168,8 +194,5 @@
 <script type="text/javascript" src="/bootstrap/js/bootstrap-tab.js"></script>
 <script type="text/javascript" src="/bootstrap/userConfig.js"></script>
 <script type="text/javascript" src="/bootstrap/groupConfig.js"></script>
-<!-- 
- <script type="text/javascript" src="/Viewer/Configuration"></script>
- -->
 <script type="text/javascript" src="/bootstrap/viewer3.js"></script>
 </html>

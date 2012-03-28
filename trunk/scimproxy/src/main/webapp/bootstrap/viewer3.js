@@ -11,7 +11,7 @@ $(document).ready(
           
           $("#currentAttributes").empty();
           $("#newAttributes").empty();
-          drawComplex(config.attributes, $("#newAttributes"), $("#currentAttributes"), "");
+          drawComplex(config.attributes, $("#newAttributes"), $("#currentAttributes"));
           //$("#newAttributes").removeOption("");
           $('#create-result').hide();
           $('#addAttribute').unbind('click');
@@ -40,7 +40,7 @@ $(document).ready(
       $("#createGroup").click(setCurrentType("Groups", groupConfig, "Add Group"));
       $("#listUsers").click(setCurrentType("Users", userConfig, "List Users"));
       $("#listGroups").click(setCurrentType("Groups", groupConfig, "List Groups"));
-      $("#bulk").click(setCurrentType("Bulk", groupConfig, ""));
+      $("#bulk").click(setCurrentType("Bulk", groupConfig, "Bulk"));
       
       //
       // ADD
@@ -64,6 +64,7 @@ $(document).ready(
         };
       };
 
+      
       var addClicked = function(select, attributes, current) {
         return function() {
           var attribute = find(select.val(), attributes);
@@ -112,7 +113,6 @@ $(document).ready(
               "class" : "truncate",
               "id" : random
             }).click(toggleTruncate()));
-
           }
           if (attribute.multiValued !== undefined && !attribute.multiValued) {
             select.removeOption(attribute.name);
@@ -134,45 +134,71 @@ $(document).ready(
         }
       }
 
+      
       var drawComplex = function(attributes, selection, current, resource) {
         for ( var i = 0; i < attributes.length; i++) {
           if (attributes[i].readOnly !== undefined) {
             if ((attributes[i].required && !attributes[i].readOnly) || 
-                (resource !== undefined && resource[attributes[i].name] !== undefined)) {
-              if (attributes[i].subAttributes
-                  && attributes[i].subAttributes.length !== 0) {
-                var fieldSet = $("<fieldset></fieldset>", {name: attributes[i].name});
-                var nextSelect = $("<select></select>", {
-                  style : "float:left"
-                });
-                fieldSet.append($("<legend></legend>", {
-                  text : attributes[i].name
-                }));
-                var fieldContainer = $("<div></div>");
-                fieldSet.append(fieldContainer);
-                current.append(fieldSet);
-
-                drawComplex(attributes[i].subAttributes, nextSelect,
-                    fieldContainer, (resource ? resource[attributes[i].name] : undefined));
-
-                fieldSet.append(nextSelect).append(
-                    $("<img></img>", {
-                      "src" : "/images/Add-icon.png",
-                      "class" : "addRemoveIcon",
-                      "align" : "top"
-                    }).click(addClicked(nextSelect, attributes[i].subAttributes, fieldContainer)));
+                (resource && resource[attributes[i].name])) {
+              
+              if (attributes[i].type === "complex") {
+                var getNext = function() {
+                  var array = []
+                  if (resource && attributes[i].multiValued) {
+                    array = resource[attributes[i].name];
+                  } else {
+                    array.push(resource[attributes[i].name]);
+                  }
+                  var counter = 0;
+                  return function() {
+                    return array[counter++];
+                  };
+                }(); 
+                
+                var next = getNext();
+                do {
+                  var random = Math.floor(Math.random() * 10000000);
+                  var fieldSet = $("<fieldset></fieldset>", {name: attributes[i].name, id : random});
+                  var nextSelect = $("<select></select>",{id : random});
+                  var fieldContainer = $("<div></div>",{id : random});
+                  
+                  drawComplex(attributes[i].subAttributes, nextSelect, fieldContainer, next);
+                  
+                  fieldSet.append($("<legend></legend>", { text : attributes[i].name }).append($("<img></img>", {
+                    "src" : "/images/Delete-icon.png",
+                    "class" : "addRemoveIconSmall",
+                    "align" : "top",
+                    "id" : random
+                  })).click(removeClicked(selection, attributes[i], random)));
+                  fieldSet.append(fieldContainer);
+                  fieldSet.append(nextSelect);
+                  fieldSet.append($("<img></img>", { "src" : "/images/Add-icon.png", 
+                                                     "class" : "addRemoveIcon", 
+                                                     "align" : "top",
+                                                     "id" : random}).click(addClicked(nextSelect, attributes[i].subAttributes, fieldContainer)));
+                  current.append(fieldSet);                  
+                } while (next = getNext());
+                
               } else {
-                current.append($("<label></label>", {
-                  text : attributes[i].name
-                }), $("<input></input>", {
-                  type : "text",
-                  name : attributes[i].name,
-                  disabled : attributes[i].readOnly,
-                  value : (resource ? resource[attributes[i].name] : "")
-                }), $("<p></p>", {
-                  "text" : attributes[i].description,
-                  "class" : "truncate"
-                }).click(toggleTruncate()));
+                var random = Math.floor(Math.random() * 10000000);
+                var input = $("<input></input>", { type : "text",
+                                                   name : attributes[i].name,
+                                                   disabled : attributes[i].readOnly,
+                                                   value : (resource ? resource[attributes[i].name] : ""),
+                                                   id : random});
+                current.append($("<label></label>", { text : attributes[i].name,
+                                                      id : random})); 
+                current.append(input);
+                if (resource && !attributes[i].readOnly) {
+                  // this is edit track change
+                  current.append($("<img>", { "src" : "/images/Delete-icon.png",
+                                              "class" : "addRemoveIcon",
+                                              "align" : "top",
+                                              id : random}).click(removeClicked(selection, attributes[i], random)));
+                }
+                current.append($("<p></p>", { "text" : attributes[i].description,
+                                              "class" : "truncate",
+                                              id : random}).click(toggleTruncate()));
               }
 
               if (attributes[i].multiValued !== undefined
@@ -185,18 +211,16 @@ $(document).ready(
           }
         }
       };
-      drawComplex(config.attributes, $("#newAttributes"), $("#currentAttributes"), "");
+      drawComplex(config.attributes, $("#newAttributes"), $("#currentAttributes"));
 
       
       $("#addAttribute").click(
-          addClicked($("#newAttributes"), config.attributes,
-              $("#currentAttributes"),""));
+          addClicked($("#newAttributes"), config.attributes, $("#currentAttributes")));
 
       $("#reset").click( function() {
             $("#currentAttributes").empty();
             $("#newAttributes").empty();
-            drawComplex(config.attributes, $("#newAttributes"),
-                $("#currentAttributes"), "");
+            drawComplex(config.attributes, $("#newAttributes"), $("#currentAttributes"));
             $('#create-result').hide();
           });
       
@@ -205,10 +229,9 @@ $(document).ready(
         prettyPrint();
       };
       
-      $("#createResource").click(function () {
+      var packageResource = function(input, fieldsets) {
         var addData = { "schemas": [ "urn:scim:schemas:core:1.0" ] };
         
-        var input = $("#currentAttributes").children("input")
         var i = 0;
         while (input[i] !== undefined) {
           var val = $(input[i]).val();
@@ -217,7 +240,6 @@ $(document).ready(
           i++;
         }
         
-        var fieldsets = $("#currentAttributes fieldset");
         var i = 0;
         while (fieldsets[i] !== undefined) {
           var name = $(fieldsets[i]).attr("name");
@@ -244,15 +266,16 @@ $(document).ready(
           i++
         }
         
-        
-        
+        return addData;
+      };
+      
+      $("#createResource").click(function () {
+        var addData = packageResource($("#currentAttributes").children("input"),$("#currentAttributes fieldset"));
         
         $.post("/Viewer/Add", 
             { type: currentType, data: JSON.stringify(addData) }, 
             handleAddResult)
           .error(handleError);
-        
-        return false;
       });
       
       
@@ -296,6 +319,23 @@ $(document).ready(
         $("#include-attribute").append(selected);
         $("#included-attributes").sortOptions();
       });
+      
+      $("#reset-listform").click(function() {
+        $('#list-result').empty();
+        
+        $("#filter-attribute").empty();
+        $("#sort-attribute").empty();
+        $("#include-attribute").empty();
+        $("#included-attributes").empty();
+        addFilterAttributes(config.attributes, $("#filter-attribute"));
+        addFilterAttributes(config.attributes, $("#sort-attribute"));
+        addFilterAttributes(config.attributes, $("#include-attribute"));
+        $("#filter-attribute").sortOptions();
+        $("#filter-attribute").selectOptions("");
+        $("#sort-attribute").sortOptions();
+        $("#sort-attribute").selectOptions("");
+        $("#include-attribute").sortOptions();
+      });
 
       $("#filter-attribute").sortOptions();
       $("#filter-attribute").selectOptions("");
@@ -305,10 +345,74 @@ $(document).ready(
       
       
       
+      var handleEditResult = function (data) {
+        $("#list").click();
+        $('#editDialog').modal("hide");
+      };
+      
       var editClicked = function(resource) {
         return function() {
+          $("#update").click( function() {
+            var patch = { "schemas": [ "urn:scim:schemas:core:1.0" ], meta:{attributes:[]} };
+            var remove = patch.meta.attributes;
+            var resultResource = packageResource($("#editContent").children("input"),$("#editContent fieldset"));
+
+            var createPatch = function(before, after, patch, attributes, prefix){
+            for (var i=0; i<attributes.length; i++) {
+                if(!after[attributes[i].name] && !before[attributes[i].name]) {
+                  // nothing nothing
+                  continue;
+                } else if(after[attributes[i].name] && !before[attributes[i].name]) {
+                  // new attribute
+                  patch[attributes[i].name] = after[attributes[i].name];
+                } else if(!after[attributes[i].name] && before[attributes[i].name]) {
+                  // remove attribute
+                  remove.push(prefix + attributes[i].name);
+                } else {
+                  // both has attribute
+                  if (attributes[i].type === "complex") {
+                    if (attributes[i].multiValued) {
+                      // TODO this is hard
+                    } else {
+                      // complex do recursion
+                      patch[attributes[i].name] = {};
+                      createPatch(before[attributes[i].name], 
+                                  after[attributes[i].name], 
+                                  patch[attributes[i].name],
+                                  attributes[i].subAttributes,
+                                  prefix + attributes[i].name + ".")
+                    }
+                  } else if (after[attributes[i].name] != before[attributes[i].name]) {
+                    // attribute has changed update it
+                    patch[attributes[i].name] = after[attributes[i].name];
+                  }
+                }
+              }
+            };
+            createPatch(resource, resultResource, patch, config.attributes, "");
+            
+          
+            var etag = ((resource.meta && resource.meta.version) ? resource.meta.version : "");
+            $.post("/Viewer/Edit", 
+              { type: currentType, operation: "PATCH", data: JSON.stringify(patch), id: resource.id, etag: etag }, 
+              handleEditResult)
+            .error(handleError);
+            
+            $("#update").unbind("click");
+          });
+          
+          $("#replace").click( function() {
+            var addData = packageResource($("#editContent").children("input"),$("#editContent fieldset"));
+            var etag = ((resource.meta && resource.meta.version) ? resource.meta.version : "");
+            
+            $.post("/Viewer/Edit", { type: currentType, operation: "PUT", data: JSON.stringify(addData), id: addData.id, etag: etag }, 
+                handleEditResult).error(handleError);     
+            
+              $("#replace").unbind("click");
+          });
+          
           $('#editDialog').modal();
-          drawComplex(config.attributes, $('#editSelect'), $("#editContent"), "", resource);
+          drawComplex(config.attributes, $('#editSelect'), $("#editContent"), resource);
         };
       };
       var handleDeleteResult = function(data) {
@@ -326,7 +430,7 @@ $(document).ready(
       
       var handleResult = function(data) {
         data = JSON.parse(data);
-        $('#list-result').text("");
+        $('#list-result').empty();
         
         for ( var i = 0; i < data.Resources.length; i++) {
           var meta = data.Resources[i].meta;
@@ -395,6 +499,27 @@ $(document).ready(
       $('#editDialog').on('hidden', function () {
         $('#editContent').empty();
         $('#editSelect').empty();
-      })
-
+      });
+      
+      $("#addEditAttribute").click(
+          addClicked($("#editSelect"), config.attributes, $("#editContent")));
+      
+      //
+      // Bulk
+      //
+      var handleBulkResult = function(data){
+        $("#bulk-result").text(data).show();
+        prettyPrint();
+      };
+      $("#sendBulk").click(function () {
+        var bulkData = $("#bulkData").val();
+        
+        $.post("/Viewer/Bulk", 
+            { data: bulkData }, 
+            handleBulkResult)
+          .error(handleError);
+        
+        return false;
+      });
+      
     });
