@@ -3,6 +3,7 @@ package info.simplecloud.scimproxy.storage;
 import info.simplecloud.core.Group;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
+import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
 import info.simplecloud.scimproxy.storage.mongodb.MongoDBStorage;
@@ -228,5 +229,17 @@ public class StorageDelegator {
 	public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException {
 		storage.replaceGroup(id, scimGroup);
 	}
+
+	public void storeCSPMapping(CSP csp, String id, String cspId, String version) {
+		storage.storeCSPMapping(csp, id, cspId, version);
+	}
 	
+	public String getCSPVersionForId(CSP csp, String id) throws ResourceNotFoundException {
+		return storage.getCSPVersionForId(csp, id);
+	}
+
+	public String getCSPExternalIdForId(CSP csp, String id) throws ResourceNotFoundException {
+		return storage.getCSPExternalIdForId(csp, id);
+	}
+
 }

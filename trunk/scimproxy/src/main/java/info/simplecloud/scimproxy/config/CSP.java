@@ -16,6 +16,7 @@ public class CSP {
 	public static String AUTH_BASIC = "basic";
 
 	
+	private String id = "";
 	private String url = "";
 	private String authentication ="";
 	private String username = "";
@@ -220,6 +221,14 @@ public class CSP {
 	
 	public String getSaveExternalId() {
 		return this.saveExternalId;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }

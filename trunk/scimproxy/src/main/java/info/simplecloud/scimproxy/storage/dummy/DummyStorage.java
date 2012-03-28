@@ -4,6 +4,7 @@ import info.simplecloud.core.ComplexTypeComparator;
 import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownAttribute;
+import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.storage.IStorage;
 import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 
@@ -317,5 +318,24 @@ public class DummyStorage implements IStorage {
         deleteGroup(id);
         groups.add(scimGroup);
     }
+
+
+	@Override
+	public String getCSPVersionForId(CSP csp, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getCSPExternalIdForId(CSP csp, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void storeCSPMapping(CSP csp, String id, String cspId, String version) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
