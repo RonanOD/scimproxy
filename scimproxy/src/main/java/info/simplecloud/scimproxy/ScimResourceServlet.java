@@ -98,9 +98,6 @@ public class ScimResourceServlet extends RestServlet {
 
     
     protected User internalUserPatch(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException, UnknownAttribute {
-
-        User scimUser = new User(resource.getData(), encoding);
-        
         // verify that user have not been changed since latest get and this operation
         User oldUser = null;
 		try {
@@ -120,27 +117,27 @@ public class ScimResourceServlet extends RestServlet {
         }
 
         // patch user
-        scimUser.patch(resource.getData(), encoding);
+        oldUser.patch(resource.getData(), encoding);
         
         // set a new version number on the user that we are about to change
-        Meta meta = scimUser.getMeta();
+        Meta meta = oldUser.getMeta();
         if (meta == null) {
             meta = new Meta();
         }
 
         meta.setVersion(Util.generateVersionString());
-    	meta.setLocation(HttpGenerator.getLocation(scimUser, server));
+    	meta.setLocation(HttpGenerator.getLocation(oldUser, server));
 
-        scimUser.setMeta(meta);
+    	oldUser.setMeta(meta);
         
-        getUserDelegator(authUser.getSessionId()).replaceUser(resource.getId(), scimUser);
+        getUserDelegator(authUser.getSessionId()).replaceUser(resource.getId(), oldUser);
         
         // editing user in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.patch(new User(resource.getData(), encoding));
 
-        log.trace("Updated user " + scimUser);
+        log.trace("Updated user " + oldUser);
 
-        return scimUser;
+        return oldUser;
 	}
 
 
