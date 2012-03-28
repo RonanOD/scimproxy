@@ -116,6 +116,7 @@ public abstract class Resource extends ComplexType {
                 }
             }
         }
+        patch.setMeta(null);
 
         for (Object extension : this.extensions) {
             if (extension == this) {
