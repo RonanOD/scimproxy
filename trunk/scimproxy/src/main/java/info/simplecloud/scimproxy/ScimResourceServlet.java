@@ -224,8 +224,7 @@ public class ScimResourceServlet extends RestServlet {
 
     
     protected Group internalGroupPatch(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException, UnknownAttribute {
-        Group scimGroup = new Group(resource.getData(), encoding);
-
+        
         // verify that group have not been changed since latest get and this operation
         Group oldGroup = getUserDelegator(authUser.getSessionId()).getGroup(resource.getId());
         
@@ -239,30 +238,30 @@ public class ScimResourceServlet extends RestServlet {
         }
 
         // patch group
-        scimGroup.patch(resource.getData(), encoding);
+        oldGroup.patch(resource.getData(), encoding);
         // generate new version number
-        getUserDelegator(authUser.getSessionId()).updateVersionNumber(scimGroup);
+        getUserDelegator(authUser.getSessionId()).updateVersionNumber(oldGroup);
 
         
         // set a new version number on the user that we are about to change
-        Meta meta = scimGroup.getMeta();
+        Meta meta = oldGroup.getMeta();
         if (meta == null) {
             meta = new Meta();
         }
         meta.setVersion(Util.generateVersionString());
-    	meta.setLocation(HttpGenerator.getLocation(scimGroup, server));
+    	meta.setLocation(HttpGenerator.getLocation(oldGroup, server));
 
-    	scimGroup.setMeta(meta);
+    	oldGroup.setMeta(meta);
 
-    	getUserDelegator(authUser.getSessionId()).replaceGroup(resource.getId(), scimGroup);
+    	getUserDelegator(authUser.getSessionId()).replaceGroup(resource.getId(), oldGroup);
 
         
         // editing group in downstream CSP, any communication errors is handled in triggered and ignored here
         trigger.patch(new Group(resource.getData(), encoding));
 
-        log.trace("Update group " + scimGroup);
+        log.trace("Update group " + oldGroup);
 
-        return scimGroup;
+        return oldGroup;
 	}
 
     public void internalGroupDelete(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws ResourceNotFoundException, PreconditionException {

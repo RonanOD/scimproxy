@@ -74,7 +74,7 @@ $(document).ready(
             var nextSelect = $("<select></select>", { id : random });
             fieldSet.append($("<legend></legend>", { text : attribute.name, id : random })
                 .append($("<img></img>", {
-              "src" : "/images/Delete-icon.png",
+              "src" : "images/Delete-icon.png",
               "class" : "addRemoveIconSmall",
               "align" : "top",
               "id" : random
@@ -89,7 +89,7 @@ $(document).ready(
 
             fieldSet.append(nextSelect).append(
                 $("<img></img>", {
-                  "src" : "/images/Add-icon.png",
+                  "src" : "images/Add-icon.png",
                   "class" : "addRemoveIcon",
                   "align" : "top",
                   "id" : random
@@ -104,7 +104,7 @@ $(document).ready(
               disabled : attribute.readOnly,
               id : random
             }), $("<img></img>", {
-              "src" : "/images/Delete-icon.png",
+              "src" : "images/Delete-icon.png",
               "class" : "addRemoveIcon",
               "align" : "top",
               "id" : random
@@ -165,14 +165,14 @@ $(document).ready(
                   drawComplex(attributes[i].subAttributes, nextSelect, fieldContainer, next);
                   
                   fieldSet.append($("<legend></legend>", { text : attributes[i].name }).append($("<img></img>", {
-                    "src" : "/images/Delete-icon.png",
+                    "src" : "images/Delete-icon.png",
                     "class" : "addRemoveIconSmall",
                     "align" : "top",
                     "id" : random
                   })).click(removeClicked(selection, attributes[i], random)));
                   fieldSet.append(fieldContainer);
                   fieldSet.append(nextSelect);
-                  fieldSet.append($("<img></img>", { "src" : "/images/Add-icon.png", 
+                  fieldSet.append($("<img></img>", { "src" : "images/Add-icon.png", 
                                                      "class" : "addRemoveIcon", 
                                                      "align" : "top",
                                                      "id" : random}).click(addClicked(nextSelect, attributes[i].subAttributes, fieldContainer)));
@@ -191,7 +191,7 @@ $(document).ready(
                 current.append(input);
                 if (resource && !attributes[i].readOnly) {
                   // this is edit track change
-                  current.append($("<img>", { "src" : "/images/Delete-icon.png",
+                  current.append($("<img>", { "src" : "images/Delete-icon.png",
                                               "class" : "addRemoveIcon",
                                               "align" : "top",
                                               id : random}).click(removeClicked(selection, attributes[i], random)));
@@ -206,16 +206,13 @@ $(document).ready(
                 selection.addOption(attributes[i].name, attributes[i].name);
               }
             } else if (!attributes[i].readOnly) {
-              selection.addOption(attributes[i].name, attributes[i].name);
+              selection.append($("<option>",{value: attributes[i].name, text:attributes[i].name}));
             }
           }
         }
       };
       drawComplex(config.attributes, $("#newAttributes"), $("#currentAttributes"));
 
-      
-      $("#addAttribute").click(
-          addClicked($("#newAttributes"), config.attributes, $("#currentAttributes")));
 
       $("#reset").click( function() {
             $("#currentAttributes").empty();
@@ -272,7 +269,7 @@ $(document).ready(
       $("#createResource").click(function () {
         var addData = packageResource($("#currentAttributes").children("input"),$("#currentAttributes fieldset"));
         
-        $.post("/Viewer/Add", 
+        $.post("Viewer/Add", 
             { type: currentType, data: JSON.stringify(addData) }, 
             handleAddResult)
           .error(handleError);
@@ -393,7 +390,7 @@ $(document).ready(
             
           
             var etag = ((resource.meta && resource.meta.version) ? resource.meta.version : "");
-            $.post("/Viewer/Edit", 
+            $.post("Viewer/Edit", 
               { type: currentType, operation: "PATCH", data: JSON.stringify(patch), id: resource.id, etag: etag }, 
               handleEditResult)
             .error(handleError);
@@ -405,13 +402,16 @@ $(document).ready(
             var addData = packageResource($("#editContent").children("input"),$("#editContent fieldset"));
             var etag = ((resource.meta && resource.meta.version) ? resource.meta.version : "");
             
-            $.post("/Viewer/Edit", { type: currentType, operation: "PUT", data: JSON.stringify(addData), id: addData.id, etag: etag }, 
+            $.post("Viewer/Edit", { type: currentType, operation: "PUT", data: JSON.stringify(addData), id: addData.id, etag: etag }, 
                 handleEditResult).error(handleError);     
             
               $("#replace").unbind("click");
           });
           
           $('#editDialog').modal();
+          $("#addEditAttribute").unbind("click");
+          $("#addEditAttribute").click(
+              addClicked($("#editSelect"), config.attributes, $("#editContent")));
           drawComplex(config.attributes, $('#editSelect'), $("#editContent"), resource);
         };
       };
@@ -421,7 +421,7 @@ $(document).ready(
       var deleteClicked = function(deleteId, deleteEtag) {
         return function() {
         
-        $.post("/Viewer/Delete", 
+        $.post("Viewer/Delete", 
             { type: currentType, id: deleteId, etag: deleteEtag }, 
             handleDeleteResult)
           .error(handleError);
@@ -429,6 +429,10 @@ $(document).ready(
       };
       
       var handleResult = function(data) {
+        if (data.indexOf("Error") != -1) {
+          alert(data);
+          return;
+        }
         data = JSON.parse(data);
         $('#list-result').empty();
         
@@ -441,9 +445,9 @@ $(document).ready(
                       $('<pre>', {"class" : 'prettyprint, full',"text" : JSON.stringify(data.Resources[i], null, "  ")})),
                     $("<div>",{"class" : "span2"}).append(
                       $("<div>", {"class":"row-fluid"}).append($("<div>",{"class" : "span12"}).append(
-                        $("<img>", {"src" : "/images/edit.png","class" : "actionIcon"}).click(editClicked(data.Resources[i])))),
+                        $("<img>", {"src" : "images/edit.png","class" : "actionIcon"}).click(editClicked(data.Resources[i])))),
                       $("<div>", {"class":"row-fluid"}).append($("<div>",{"class" : "span12"}).append(
-                        $("<img>", {"src" : "/images/delete-user.png","class" : "actionIcon"}).click(deleteClicked(data.Resources[i].id,version)))))));
+                        $("<img>", {"src" : "images/delete-user.png","class" : "actionIcon"}).click(deleteClicked(data.Resources[i].id,version)))))));
         }
 
         prettyPrint();
@@ -451,7 +455,7 @@ $(document).ready(
 
       var handleError = function(event) {
         // TODO pass error to authenticate page
-        document.location = "/authenticate.html";
+        document.location = "authenticate.html";
       };
       
 
@@ -479,7 +483,7 @@ $(document).ready(
         }
         var attributeList = includeAttibutes.join(",");
 
-        $.post("/Viewer/List", {
+        $.post("Viewer/List", {
           type : currentType,
           filter : theFilter,
           sort : listSort,
@@ -501,8 +505,7 @@ $(document).ready(
         $('#editSelect').empty();
       });
       
-      $("#addEditAttribute").click(
-          addClicked($("#editSelect"), config.attributes, $("#editContent")));
+      
       
       //
       // Bulk
@@ -514,7 +517,7 @@ $(document).ready(
       $("#sendBulk").click(function () {
         var bulkData = $("#bulkData").val();
         
-        $.post("/Viewer/Bulk", 
+        $.post("Viewer/Bulk", 
             { data: bulkData }, 
             handleBulkResult)
           .error(handleError);

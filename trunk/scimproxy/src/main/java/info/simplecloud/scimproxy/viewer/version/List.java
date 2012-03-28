@@ -54,7 +54,9 @@ public class List extends HttpServlet {
         GetMethod method = new GetMethod(baseUrl + indata.get("type"));
         method.setQueryString(query);
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+        
         method.setRequestHeader("Accept", "application/json");
+        method.setRequestHeader("Content-Type", "application/json");
         method.setRequestHeader("Authorization", creds);
 
         int responseCode = client.executeMethod(method);
