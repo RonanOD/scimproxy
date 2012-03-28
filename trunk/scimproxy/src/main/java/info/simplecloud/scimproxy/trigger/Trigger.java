@@ -7,6 +7,7 @@ import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.config.Config;
+import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +31,81 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Trigger handles all communication to other server, usually down stream
  * servers that listen to all changes done to the storage.
+ * 
+ * 
+ * 	EXPLAINATION OF THE DIFFERENT PROVISIONING STRATEGIES 
+ * 
+ *    - Name: slave
+ *    - Description: The CSP is a slave and we keep track of the CSP:s id and versioning.
+ *    - Strategy:
+ *    		- Save id and version in local database when resource is created.
+ *    		- When DELETE, PUT and PATCH is called take CPS:s id and version and use that to make the calls.
+ *    		- Any potential errors or sync problems log and throws exceptions. If version is out of sync they have changed it. 
+ *    		- Rollback all local changes and possible other CPS calls (is that possible?).
+ *    - Exceptions:
+ *    		- Send all exception to caller.
+ * 
+ *    
+ *    - Name: sync
+ *    - Description: The downstream CSP is kept in sync but any changes made directly on CSP have presence over us. We just log problems and don't do any more updates on that resource. 
+ *                   We keep track if CSP:s id and version.
+ *    - Strategy:
+ *    		- Save id and version in local database when resource is created.
+ *    		- When DELETE, PUT and PATCH is called take CPS:s id and version and use that to make the calls.
+ *    		- If version does not match, log it as a warning, don't display any errors.
+ *    - Exceptions:
+ *    		- None
+ * 
+ * 
+ *    - Name: slave-storing-externalid
+ *    - Description: The CSP is a slave but we do not keep track of CPS:s id and version. We add our externalid and sends it during POST.
+ *    - Strategy:
+ *    		- Store our ID in the externalId before POST.
+ *    		- When DELETE, PUT and PATCH is called, search for resource using externalid at CSP and take id and version from them to make all calls.
+ *    		- It would be possible for CSP to change it's data, but it will be replaced on all changes without questions. 
+ *    - Exceptions:
+ *    		- None
+ * 
+ * 
+ *    - Name: sync-storing-externalid
+ *    - Description: The downstream CSP is kept in sync but any changes made directly on CSP have presence over us. We just log problems and don't do any more updates on that resource.
+ *                   We add our externalid and sends it during POST. 
+ *    - Strategy:
+ *    		- Store our ID in the externalId before POST.
+ *    		- When DELETE, PUT and PATCH is called, search for resource using externalid at CSP and take id and version from them to make all calls.
+ *    		- If version does not match, log it as a warning, don't display any errors.
+ *    - Exceptions:
+ *    		- None
+ *
+ * 
+ * cps configurations and provisioning strategies	
+ * 	- when creating store id/version. configurable if we set externalid or not. 
+ * 	- exploring:
+ * 		- use stored id
+ * 	- conflict strategy when saved version don't match
+ * 		- overwrite (overwrite) 
+ * 			- make a new get to get updated version and re-send request. 
+ * 		- skip when conflict (ignore) 
+ * 			- log problem and ignore it.
+ * 		- throw exception (fail)
+ * 			- treat it as an exception and answer 500 to caller.
+ * 		- throw exception and rollback (rollback)
+ * 			- treat is as an exception and answer 500 to caller.
+ * 			- remove the existing changed in database 
+ * 			- find a way to rollback other CSP:s 
+ * 
+ * 
+ * 
+ * FOR MEETING:
+ * - Problems like how should conflicts be resolved, does it require rollback of other CSP:s by proxy? Should client get an internal 500 for some?
+ * 
+ * - Use instead:
+ * 		- Reverse proxy
+ * 
+ * 
+ * TODO:	
+ * 	- make new get request and replace view			
+ * 
  */
 public class Trigger {
 
@@ -55,6 +131,9 @@ public class Trigger {
             		String tmpUsr = tmp.getUser(Resource.ENCODING_JSON);
 	        		User user = new User(tmpUsr, Resource.ENCODING_JSON);
 	        		id = user.getId();
+	        		if(!"false".equalsIgnoreCase(csp.getSaveExternalId())) {
+		        		user.setExternalId(id);
+	        		}
 	        		user.setActive(true);
 	        		user.setId(null); // reset id for salesforce
 					resourceString = user.getUser(csp.getPreferedEncoding());
@@ -65,6 +144,9 @@ public class Trigger {
             		String tmpUsr = tmp.getGroup(Resource.ENCODING_JSON);
 	        		Group group = new Group(tmpUsr, Resource.ENCODING_JSON);
 	        		id = group.getId();
+	        		if(!"false".equalsIgnoreCase(csp.getSaveExternalId())) {
+		        		group.setExternalId(id);
+	        		}
 	        		group.setId(null); // reset id for salesforce
 	        		resourceString = group.getGroup(csp.getPreferedEncoding());
 	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Groups";
@@ -200,13 +282,10 @@ public class Trigger {
                 byte[] responseBody = method.getResponseBody();
 
                 if (statusCode != 200) {
+                	// handle different error types
                     log.error("Failed to delete resource " + id + " downstreams at " + csp.getUrl());
                 }
                 
-                log.debug("Response from " + csp.getUrl());
-                log.debug("- Code : " + Integer.toString(statusCode) + " - " + method.getStatusLine());
-                log.debug("- Content: \n" + new String(responseBody));
-
             } catch (HttpException e) {
                 log.error("Fatal protocol violation: " + e.getMessage());
                 e.printStackTrace();
@@ -311,9 +390,6 @@ public class Trigger {
                     csp.setVersionForId(id, version);
                 }
 
-                log.debug("Response from " + csp.getUrl());
-                log.debug("- Code : " + Integer.toString(statusCode) + " - " + method.getStatusLine());
-                log.debug("- Content: \n" + new String(responseBody));
             } catch (HttpException e) {
                 log.error("Fatal protocol violation: " + e.getMessage());
                 e.printStackTrace();
@@ -353,12 +429,14 @@ public class Trigger {
 	        	if(resource instanceof User) {
 	        		User user = (User)resource;
 	        		id = user.getId();
+	        		user.setId(csp.getExternalIdForId(id));
 	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Users/";
 					resourceString = user.getUser(csp.getPreferedEncoding());
 	        	}
 	        	else if(resource instanceof Group) {
 	        		Group group = (Group)resource;
 	        		id = group.getId();
+	        		group.setId(csp.getExternalIdForId(id));
 	                endpoint = csp.getUrl() + getVersionPath(csp) + "/Groups/";
 					resourceString = group.getGroup(csp.getPreferedEncoding());
 	        	}
@@ -415,10 +493,6 @@ public class Trigger {
                     csp.setVersionForId(id, version);
                 }
                 
-                log.debug("Response from " + csp.getUrl());
-                log.debug("- Code : " + Integer.toString(statusCode) + " - " + method.getStatusLine());
-                log.debug("- Content: \n" + new String(responseBody));
-
             } catch (HttpException e) {
                 log.error("Fatal protocol violation: " + e.getMessage());
                 e.printStackTrace();
@@ -437,9 +511,32 @@ public class Trigger {
             }
         }
     }
+    
+    
+    private Resource getResourceFromCSP(Resource resource) throws ResourceNotFoundException {
+    	
+     	// return it if only one, otherwise log and throw exception
+    	
+    	return new User();
+    }
 
 	public void changePassword(User scimUser, String password) {
         log.info("Change password on User " + scimUser.getId() + " downstream not implemented.");
+	}
+	
+	
+	private void handleCSPErrors() {
+		 /* 		- overwrite (overwrite) 
+		 * 			- make a new get to get updated version and re-send request. 
+		 * 		- skip when conflict (ignore) 
+		 * 			- log problem and ignore it.
+		 * 		- throw exception (fail)
+		 * 			- treat it as an exception and answer 500 to caller.
+		 * 		- throw exception and rollback (rollback)
+		 * 			- treat is as an exception and answer 500 to caller.
+		 * 			- remove the existing changed in database 
+		 * 			- find a way to rollback other CSP:s 
+		 */ 
 	}
 
 

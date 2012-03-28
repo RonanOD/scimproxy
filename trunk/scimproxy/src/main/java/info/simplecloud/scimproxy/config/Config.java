@@ -99,6 +99,7 @@ public class Config {
         try {
             XMLConfiguration config = null;
             if ("".equals(confStr)) {
+            	log.info("Reading log file from " + CONFIG_FILE);
                 config = new XMLConfiguration(CONFIG_FILE);
             } else {
 
@@ -157,6 +158,15 @@ public class Config {
                 for (int i = 0; i < downProp.size(); i++) {
                     CSP csp = new CSP();
                     csp.setUrl(config.getString("down-stream.csp(" + i + ").url"));
+                    csp.setPreferedEncoding(config.getString("down-stream.csp(" + i + ").preferedEncoding"));
+                    
+                    // overwrite - get latest and just overwrite.
+                    // log - log that user is updated on down stream servers.
+                    // fail - throw exception.
+
+                    csp.setOverrideBehaviour(config.getString("down-stream.csp(" + i + ").overrideBehaviour"));
+                    csp.setSaveExternalId(config.getString("down-stream.csp(" + i + ").saveExternalId"));
+                    
                     csp.setPreferedEncoding(config.getString("down-stream.csp(" + i + ").preferedEncoding"));
                     csp.setVersion(config.getString("down-stream.csp(" + i + ").version"));
 

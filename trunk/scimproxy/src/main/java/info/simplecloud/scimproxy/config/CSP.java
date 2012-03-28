@@ -14,6 +14,7 @@ public class CSP {
 
 	public static final String AUTH_OAUTH2 = "OAuth2";
 	public static String AUTH_BASIC = "basic";
+
 	
 	private String url = "";
 	private String authentication ="";
@@ -26,6 +27,9 @@ public class CSP {
 	private String oAuth2GrantType = "";
 	private String preferedEncoding = "JSON";
 	private String version = "";
+	
+	private String overrideBehaviour = "";
+	private String saveExternalId = "";
 	
 	private HashMap<String, String> resourceIdMapping = new HashMap<String, String>();
 	private HashMap<String, String> versionMapping = new HashMap<String, String>();
@@ -201,5 +205,21 @@ public class CSP {
             throw new RuntimeException("Failed to read response from authorizationServer at " + this.getOAuthAuthorizationServer(), e);
 		}
     }
+
+	public void setOverrideBehaviour(String overrideBehaviour) {
+		this.overrideBehaviour = overrideBehaviour;
+	}
+
+	public String getOverrideBehaviour() {
+		return this.overrideBehaviour;
+	}
+
+	public void setSaveExternalId(String saveExternalId) {
+		this.saveExternalId = saveExternalId;
+	}
+	
+	public String getSaveExternalId() {
+		return this.saveExternalId;
+	}
 
 }

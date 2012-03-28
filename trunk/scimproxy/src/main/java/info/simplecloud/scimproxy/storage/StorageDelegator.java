@@ -228,7 +228,5 @@ public class StorageDelegator {
 	public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException {
 		storage.replaceGroup(id, scimGroup);
 	}
-
-
 	
 }
