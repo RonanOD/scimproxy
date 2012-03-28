@@ -157,6 +157,7 @@ public class Config {
             if (downProp != null) {
                 for (int i = 0; i < downProp.size(); i++) {
                     CSP csp = new CSP();
+                    csp.setId(config.getString("down-stream.csp(" + i + ").id"));
                     csp.setUrl(config.getString("down-stream.csp(" + i + ").url"));
                     csp.setPreferedEncoding(config.getString("down-stream.csp(" + i + ").preferedEncoding"));
                     

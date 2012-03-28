@@ -2,6 +2,7 @@ package info.simplecloud.scimproxy.storage;
 
 import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
+import info.simplecloud.scimproxy.config.CSP;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,5 +74,11 @@ public interface IStorage {
 	public void replaceUser(String id, User scimUser) throws ResourceNotFoundException;
 
 	public void replaceGroup(String id, Group scimGroup) throws ResourceNotFoundException;
+
+	public void storeCSPMapping(CSP csp, String id, String cspId, String version);
+
+	public String getCSPVersionForId(CSP csp, String id) throws ResourceNotFoundException;
+
+	public String getCSPExternalIdForId(CSP csp, String id) throws ResourceNotFoundException;
 
 }

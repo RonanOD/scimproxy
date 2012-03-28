@@ -3,6 +3,7 @@ package info.simplecloud.scimproxy.storage.mongodb;
 import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownEncoding;
+import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.storage.IStorage;
 import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.storage.dummy.DummyStorage;
@@ -448,6 +449,56 @@ public class MongoDBStorage implements IStorage {
 		DB db = mongo.getDB("scimproxy");
 		DBCollection collection = db.getCollection("group");
 		return collection;
+	}
+
+	private DBCollection getTriggerCollection() {
+		DB db = mongo.getDB("scimproxy");
+		DBCollection collection = db.getCollection("trigger");
+		return collection;
+	}
+
+	@Override
+	public void storeCSPMapping(CSP csp, String id, String cspId, String version) {
+		// create a document to store key and value
+        BasicDBObject doc = new BasicDBObject();
+
+        doc.put("csp", csp.getId());
+        doc.put("id", id);
+        doc.put("cspId", id);
+        doc.put("version", version);
+
+		// save in database
+		getTriggerCollection().insert(doc);
+	}
+
+	@Override
+	public String getCSPVersionForId(CSP csp, String id) throws ResourceNotFoundException {
+        BasicDBObject query = new BasicDBObject();
+        query.put("csp", csp.getId());
+        query.put("id", id);
+        DBCursor cur = getTriggerCollection().find(query);
+
+        if(cur.hasNext()) {
+        	return (String) cur.next().get("version");
+        }
+        else {
+			throw new ResourceNotFoundException();
+        }
+	}
+
+	@Override
+	public String getCSPExternalIdForId(CSP csp, String id)  throws ResourceNotFoundException  {
+        BasicDBObject query = new BasicDBObject();
+        query.put("csp", csp.getId());
+        query.put("id", id);
+        DBCursor cur = getTriggerCollection().find(query);
+
+        if(cur.hasNext()) {
+        	return (String) cur.next().get("cspId");
+        }
+        else {
+			throw new ResourceNotFoundException();
+        }
 	}
 
 }
