@@ -46,6 +46,7 @@ public class Delete extends HttpServlet {
             method.setRequestHeader("ETag", indata.get("etag"));
         }
         method.setRequestHeader("Authorization", creds);
+        method.setRequestHeader("Content-Type", "application/json");
 
         int responseCode = client.executeMethod(method);
         if(responseCode == 200) {            
