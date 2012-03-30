@@ -190,9 +190,9 @@ public class CSP {
             PostMethod method = new PostMethod(this.getOAuthAuthorizationServer());
             method.setRequestHeader(new Header("Content-type", "application/x-www-form-urlencoded"));
 
-            String url = "grant_type=" + oAuth2GrantType + "&client_id=" + oAuth2ClientId + "&username=" + username + "&password=" + password;
+            String url = "grant_type=" + oAuth2GrantType + "&client_id=" + oAuth2ClientId + "&username=" + username + "&password=" + password  + "&client_secret=" + oAuth2ClientSecret;
             method.setRequestBody(url);
-
+            
             int responseCode = client.executeMethod(method);
             String responseBody = method.getResponseBodyAsString();
             if (responseCode != 200) {

@@ -27,7 +27,7 @@ public class Configuration extends HttpServlet {
         HttpClient client = new HttpClient();
         client.getParams().setAuthenticationPreemptive(false);
 
-        GetMethod method = new GetMethod(baseUrl + "ServiceProviderConfig");
+        GetMethod method = new GetMethod(baseUrl + "ServiceProviderConfigs");
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setRequestHeader("Accept", "application/json");
         if(creds != null){            

@@ -1,6 +1,9 @@
 package info.simplecloud.scimproxy.viewer.version;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
@@ -27,15 +30,15 @@ public class Bulk extends HttpServlet {
             System.out.println("Error, missing base url");
             return;
         }
-
-        Map<String, String> indata = Helper.readJsonPostData(req);
+        
+        Map<String, String> indata = readJsonPostData(req);
 
         HttpClient client = new HttpClient();
         client.getParams().setAuthenticationPreemptive(false);
 
         PostMethod method = new PostMethod(baseUrl + "Bulk");
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-        method.setRequestHeader("Accept", "application/json");
+        method.setRequestHeader("Content-Type", "application/json");
         method.setRequestHeader("Authorization", creds);
         method.setRequestBody(indata.get("data"));
 
@@ -47,4 +50,32 @@ public class Bulk extends HttpServlet {
             resp.getWriter().print(method.getResponseBodyAsString());
         }
     }
+    
+    public static Map<String, String> readJsonPostData(HttpServletRequest req) {
+        try {
+            BufferedReader br = req.getReader();
+            String line;
+            String all = "";
+            while ((line = br.readLine()) != null) {
+                all += line + "\n";
+            }
+
+            Map<String, String> result = new HashMap<String, String>();
+            String[] parameters = all.split("&");
+            for (String parameter : parameters) {
+                if(parameter.split("=").length == 2){                    
+                    String name = parameter.split("=")[0];
+                    String value = parameter.split("=")[1];
+                    if (!value.trim().isEmpty()) {
+                        result.put(name, URLDecoder.decode(value).trim());
+                    }
+                }
+            }
+
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException("failed to read json from post request", e);
+        }
+    }
+
 }
