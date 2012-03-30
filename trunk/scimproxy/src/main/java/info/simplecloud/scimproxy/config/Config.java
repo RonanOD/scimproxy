@@ -59,6 +59,8 @@ public class Config {
 
     private List<CSP>           downStreamCSP      = new ArrayList<CSP>();
 
+    private boolean forceEtags = true;
+    
     private String storageType = "";
 
 
@@ -150,6 +152,7 @@ public class Config {
                 }
             }
 
+            setForceEtags(config.getBoolean("server.forceEtags"));
             setBulkMaxOperations(config.getInt("bulk.maxOperations"));
             setBulkMaxPayloadSize(config.getInt("bulk.maxPayloadSize"));
 
@@ -234,6 +237,14 @@ public class Config {
 
 	public void setAuthenticationMethods(ArrayList<String> authenticationMethods) {
 		this.authenticationMethods = authenticationMethods;
+	}
+
+	public void setForceEtags(boolean forceEtags) {
+		this.forceEtags = forceEtags;
+	}
+
+	public boolean isForceEtags() {
+		return forceEtags;
 	}
 
 }

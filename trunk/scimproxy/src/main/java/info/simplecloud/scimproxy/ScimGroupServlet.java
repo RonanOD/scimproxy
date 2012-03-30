@@ -160,7 +160,7 @@ public class ScimGroupServlet extends ScimResourceServlet {
 
         String groupId = Util.getGroupIdFromUri(req.getRequestURI());
         String query = Util.getContent(req);
-        String etag = req.getHeader("ETag");
+        String etag = req.getHeader("If-Match");
         
         if (query != null && !"".equals(query) && groupId != null) {
 
@@ -200,7 +200,7 @@ public class ScimGroupServlet extends ScimResourceServlet {
 	public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String groupId = Util.getGroupIdFromUri(req.getRequestURI());
         String query = Util.getContent(req);
-        String etag = req.getHeader("ETag");
+        String etag = req.getHeader("If-Match");
         
         if (!"".equals(query) && groupId != null && etag != null && !"".equals(etag)) {
 
@@ -242,7 +242,7 @@ public class ScimGroupServlet extends ScimResourceServlet {
 
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String groupId = Util.getGroupIdFromUri(req.getRequestURI());
-        String etag = req.getHeader("ETag");
+        String etag = req.getHeader("If-Match");
         
         log.trace("Trying to deleting group " + groupId + ".");
 		

@@ -7,6 +7,7 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.authentication.AuthenticateUser;
+import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.exception.PreconditionException;
 import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.storage.StorageDelegator;
@@ -59,21 +60,24 @@ public class ScimResourceServlet extends RestServlet {
 
         User scimUser = new User(resource.getData().toString(), encoding);
         // verify that user have not been changed since latest get and this operation
-        User oldUser = null;
-		try {
-			oldUser = getUserDelegator(authUser.getSessionId()).getUser(resource.getId());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        // TODO: should return precondition exception if oldUser is not found or don't have a version.
-        if(oldUser != null) {
-        	if(oldUser.getMeta() != null) {
-        		if(resource.getVersion() == null || !resource.getVersion().equals(oldUser.getMeta().getVersion())) {
-        			throw new PreconditionException();
-        		}
-        	}
+
+        if(Config.getInstance().isForceEtags()) {
+            User oldUser = null;
+    		try {
+    			oldUser = getUserDelegator(authUser.getSessionId()).getUser(resource.getId());
+    		} catch (Exception e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+            
+            // TODO: should return precondition exception if oldUser is not found or don't have a version.
+            if(oldUser != null) {
+            	if(oldUser.getMeta() != null) {
+            		if(resource.getVersion() == null || !resource.getVersion().equals(oldUser.getMeta().getVersion())) {
+            			throw new PreconditionException();
+            		}
+            	}
+            }
         }
 
         // set a new version number on the user that we are about to change
@@ -98,23 +102,26 @@ public class ScimResourceServlet extends RestServlet {
 
     
     protected User internalUserPatch(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws UnknownEncoding, InvalidUser, ResourceNotFoundException, PreconditionException, UnknownAttribute {
+
         // verify that user have not been changed since latest get and this operation
-        User oldUser = null;
+    	User oldUser = null;
 		try {
 			oldUser = getUserDelegator(authUser.getSessionId()).getUser(resource.getId());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        // TODO: should return precondition exception if oldUser is not found or don't have a version.
-        if(oldUser != null) {
-        	if(oldUser.getMeta() != null) {
-        		if(!resource.getVersion().equals(oldUser.getMeta().getVersion())) {
-        			throw new PreconditionException();
-        		}
-        	}
-        }
+
+		if(Config.getInstance().isForceEtags()) {
+	        // TODO: should return precondition exception if oldUser is not found or don't have a version.
+	        if(oldUser != null) {
+	        	if(oldUser.getMeta() != null) {
+	        		if(!resource.getVersion().equals(oldUser.getMeta().getVersion())) {
+	        			throw new PreconditionException();
+	        		}
+	        	}
+	        }
+	   }
 
         // patch user
         oldUser.patch(resource.getData(), encoding);
@@ -149,18 +156,24 @@ public class ScimResourceServlet extends RestServlet {
 			throw new ResourceNotFoundException();
 		}
 
-        String version = scimUser.getMeta().getVersion();
-        if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
+		if(Config.getInstance().isForceEtags()) {
+	        String version = scimUser.getMeta().getVersion();
+	        if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
+	        	getUserDelegator(authUser.getSessionId()).deletetUser(resource.getId());
+	            // deleting user in downstream CSP, any communication errors is handled in triggered and ignored here
+	        	trigger.delete(scimUser);
+	        }
+	        else {
+	        	throw new PreconditionException();
+	        }
+		}
+		else {
         	getUserDelegator(authUser.getSessionId()).deletetUser(resource.getId());
             // deleting user in downstream CSP, any communication errors is handled in triggered and ignored here
         	trigger.delete(scimUser);
-        }
-        else {
-        	throw new PreconditionException();
-        }
-        
+		}
+		
         log.trace("Deleted user " + scimUser);
-
     }
 
 
@@ -190,17 +203,19 @@ public class ScimResourceServlet extends RestServlet {
 
         Group scimGroup = new Group(resource.getData().toString(), encoding);
 
-        // verify that group have not been changed since latest get and this operation
-        Group oldGroup = getUserDelegator(authUser.getSessionId()).getGroup(resource.getId());
-        
-        // TODO: should return precondition exception if oldUser is not found or don't have a version.
-        if(oldGroup != null) {
-        	if(oldGroup.getMeta() != null) {
-        		if(!resource.getVersion().equals(oldGroup.getMeta().getVersion())) {
-        			throw new PreconditionException();
-        		}
-        	}
-        }
+		if(Config.getInstance().isForceEtags()) {
+	        // verify that group have not been changed since latest get and this operation
+	        Group oldGroup = getUserDelegator(authUser.getSessionId()).getGroup(resource.getId());
+	        
+	        // TODO: should return precondition exception if oldUser is not found or don't have a version.
+	        if(oldGroup != null) {
+	        	if(oldGroup.getMeta() != null || resource.getVersion() != null) {
+	        		if(resource.getVersion() == null || !resource.getVersion().equals(oldGroup.getMeta().getVersion())) {
+	        			throw new PreconditionException();
+	        		}
+	        	}
+	        }
+		}
 
         // set a new version number on the user that we are about to change
         Meta meta = scimGroup.getMeta();
@@ -227,16 +242,18 @@ public class ScimResourceServlet extends RestServlet {
         
         // verify that group have not been changed since latest get and this operation
         Group oldGroup = getUserDelegator(authUser.getSessionId()).getGroup(resource.getId());
-        
-        // TODO: should return precondition exception if oldUser is not found or don't have a version.
-        if(oldGroup != null) {
-        	if(oldGroup.getMeta() != null) {
-        		if(!resource.getVersion().equals(oldGroup.getMeta().getVersion())) {
-        			throw new PreconditionException();
-        		}
-        	}
-        }
 
+        if(Config.getInstance().isForceEtags()) {
+	        // TODO: should return precondition exception if oldUser is not found or don't have a version.
+	        if(oldGroup != null) {
+	        	if(oldGroup.getMeta() != null) {
+	        		if(!resource.getVersion().equals(oldGroup.getMeta().getVersion())) {
+	        			throw new PreconditionException();
+	        		}
+	        	}
+	        }
+		}
+		
         // patch group
         oldGroup.patch(resource.getData(), encoding);
         // generate new version number
@@ -267,15 +284,23 @@ public class ScimResourceServlet extends RestServlet {
     public void internalGroupDelete(ResourceJob resource, String server, String encoding, AuthenticateUser authUser) throws ResourceNotFoundException, PreconditionException {
 
     	Group scimGroup = getUserDelegator(authUser.getSessionId()).getGroup(resource.getId());
-        String version = scimGroup.getMeta().getVersion();
-        if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
+    	
+		if(Config.getInstance().isForceEtags()) {
+	        String version = scimGroup.getMeta().getVersion();
+	        if (resource.getVersion() != null && !"".equals(resource.getVersion()) && resource.getVersion().equals(version)) {
+	        	getUserDelegator(authUser.getSessionId()).deletetGroup(resource.getId());
+	            // deleting group in downstream CSP, any communication errors is handled in triggered and ignored here
+	        	trigger.delete(scimGroup);
+	        }
+	        else {
+	        	throw new PreconditionException();
+	        }
+		}
+		else {
         	getUserDelegator(authUser.getSessionId()).deletetGroup(resource.getId());
             // deleting group in downstream CSP, any communication errors is handled in triggered and ignored here
         	trigger.delete(scimGroup);
-        }
-        else {
-        	throw new PreconditionException();
-        }
+		}
         
         log.trace("Removed group " + scimGroup);
     }
