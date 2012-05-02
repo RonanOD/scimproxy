@@ -103,7 +103,8 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
         JSONObject result = internalJsonObject == null ? new JSONObject() : internalJsonObject;
 
         for (String name : complexObject.getNames()) {
-            if ((includeAttributes != null && !includeAttributes.isEmpty()) && !beginsWith(name, includeAttributes)) {
+            if (((includeAttributes != null && !includeAttributes.isEmpty()) && !beginsWith(name, includeAttributes))
+                    || "password".equalsIgnoreCase(name)) {
                 // We have a list of attributes and this one is not in it.
                 continue;
             }
@@ -133,7 +134,8 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
         try {
             for (String name : complex.getNames()) {
-                if ("schemas".equals(name) || (includeAttributes != null && !includeAttributes.isEmpty()) && !beginsWith(name, includeAttributes)) {
+                if ("schemas".equals(name) || "password".equalsIgnoreCase(name)
+                        || (includeAttributes != null && !includeAttributes.isEmpty()) && !beginsWith(name, includeAttributes)) {
                     // We have a list of attributes and this one is not in it.
                     continue;
                 }
@@ -147,7 +149,8 @@ public class ComplexHandler implements IDecodeHandler, IEncodeHandler, IMerger {
 
                 Object internalXmlObject = HandlerHelper.createInternalXmlObject(xmlObject, name);
 
-                Object encodedValue = encoder.encodeXml(value, stripLevel(includeAttributes, name), metaData.getInternalMetaData(), internalXmlObject);
+                Object encodedValue = encoder.encodeXml(value, stripLevel(includeAttributes, name), metaData.getInternalMetaData(),
+                        internalXmlObject);
                 String setterName = "set";
                 setterName += name.substring(0, 1).toUpperCase();
                 setterName += name.substring(1);
