@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>Viewer - Simple Cloud Identity Management</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="/css/prettify.css" />
+</head>
+<body>
+	<div id="container">
+		<div id="header">
+			<h1>Simple Cloud Identity Management</h1>
+		</div>
+		<div id="navigation">
+			<ul>
+				<li><a href="#list">List</a></li> 
+				<li><a href="#add">Add</a></li>
+  				<li><a href="#edit">Edit</a></li>
+				<li><a href="#delete">Delete</a></li> 
+				<li><a href="#bulk">Bulk</a></li>
+				<li><a href="#configuration">Configuration</a></li> 
+			</ul>
+		</div>
+	
+	
+		<div id="content">
+			<div id="listSection" class="section">
+				<h2>List resources</h2>
+				<form action="Viewer/List" id="listForm" method="post">
+					<table>
+						<tr>
+							<td class="left"><label>Type:</label></td>
+							<td> 
+								<select id="listType">
+									<option>Users</option>
+									<option>Groups</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Filter:</label></td>
+							<td><input id="listFilter" class="textInput" type="text"/></td>
+						</tr>
+						<tr>
+							<td class="left"><label>Sort:</label></td>
+							<td><input id="listSort" class="textInput" type="text"/></td>
+						</tr>
+						<tr>
+							<td class="left"><label>Encoding:</label></td>
+							<td>
+								<select id="listSortOrder">
+									<option>ascending</option>
+									<option>descending</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Attributes:</label></td>
+							<td><input id="listAttributes" class="textInput" type="text" /></td>
+						</tr>
+						<tr>
+							<td class="left"></td>
+							<td class="bottomRight"><input type="submit" value="List"/></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			
+			<div id="addSection" class="section">
+				<h2>Add resource</h2>
+				<form action="Viewer/Add" id="addForm" method="post">
+					<table>
+						<tr>
+							<td class="left"><label>Type:</label></td>
+							<td> 
+								<select id="addType">
+									<option>Users</option>
+									<option>Groups</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Encoding:</label></td>
+							<td> 
+								<select id="addEncoding">
+									<option>json</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Resource:</label></td>
+							<td><textarea id="addData" rows="10" cols="50"></textarea></td>
+						</tr>
+						<tr>
+							<td class="left"></td>
+							<td class="bottomRight"><input type="submit" value="Add"/></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			
+			<div id="editSection" class="section">
+				<h2>Edit resource</h2>
+				<form action="Viewer/Edit" id="editForm" method="post">
+					<table>
+						<tr>
+							<td class="left"><label>Type:</label></td>
+							<td>
+								<select id="editType">
+									<option>Users</option>
+									<option>Groups</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Operation:</label></td>
+							<td> 
+								<select id="editOperation">
+									<option>PUT</option>
+									<option>PATCH</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Id:</label></td>
+							<td><input class="textInput" id="editId" type="text"/></td>
+						</tr>
+						<tr>
+							<td class="left"><label>Etag:</label></td>
+							<td><input class="textInput" id="editEtag" type="text"/></td>
+						</tr>
+						<tr>
+							<td class="left"><label>Data:</label></td>
+							<td><textarea id="editData" rows="10" cols="50"></textarea></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td class="bottomRight"><input type="submit" value="Update"/></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			
+			<div id="deleteSection" class="section">
+				<h2>Delete resource</h2>
+				<form action="Viewer/Delete" id="deleteForm" method="post">
+					<table>
+						<tr>
+							<td class="left"><label>Type:</label></td>
+							<td>
+								<select id="deleteType">
+									<option>Users</option>
+									<option>Groups</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Id</label></td>
+							<td><input class="textInput" id="deleteId" type="text"/></td>
+						</tr>
+						<tr>
+							<td class="left"><label>Etag</label></td>
+							<td><input class="textInput" id="deleteEtag" type="text"/></td>
+						</tr>
+						<tr>
+							<td class="left"></td>
+							<td class="bottomRight"><input type="submit" value="Delete"/></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			
+			<div id="bulkSection" class="section">
+				<h2>Bulk operation</h2>
+				<form action="Viewer/Bulk" id="bulkForm" method="post">
+					<table>
+						<tr>
+							<td class="left"><label>Encoding:</label></td>
+							<td> 
+								<select id="addEncoding">
+									<option>json</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="left"><label>Bulk data:</label></td>
+							<td><textarea id="bulkData" rows="15" cols="60"></textarea></td>
+						</tr>
+						<tr>
+							<td class="left"></td>
+							<td class="bottomRight"><input type="submit" value="Send"/></td>
+						</tr>
+					</table>
+				</form>
+
+			</div>
+			<div id="configurationSection" class="section">
+				<h2>Configuration</h2>
+			</div>
+
+			<div id="result">
+			</div>
+			
+		</div>
+		
+		<div id="footer">
+			<a href="http://code.google.com/p/scimproxy/">SCIM Viewer</a>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.url.js"></script>
+	<script type="text/javascript" src="/js/prettify/prettify.js"></script>
+	<script type="text/javascript" src="/js/viewer.js"></script>
+</body>
+</html>

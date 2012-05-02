@@ -89,7 +89,8 @@ public class ScimAuthorizationServer extends HttpServlet {
         
         // Access Token Request
         // grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
-
+        Config.getInstance();
+        
         AuthenticateUser user = null;
         if (code != null) {
             user = AuthenticationUsers.getInstance().getUserWithCode(code);
@@ -131,7 +132,7 @@ public class ScimAuthorizationServer extends HttpServlet {
         
         String accessToken = new String(Hex.encodeHex(tokenBytes));
         user.setAccessToken(accessToken);
-
+        resp.setHeader("Content-Type", "application/json");
         try {
             JSONObject responce = new JSONObject();
             responce.put("access_token", accessToken);

@@ -104,6 +104,15 @@
 		<servlet-name>AuthorizationServer</servlet-name>
 		<url-pattern>/AuthorizationServer/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Bind</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.ScimUserBind</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Bind</servlet-name>
+		<url-pattern>/Bind/*</url-pattern>
+	</servlet-mapping>
 
 	<filter>
 		<filter-name>MethodOverrideFilter</filter-name>
@@ -168,6 +177,15 @@
 	<servlet-mapping>
 		<servlet-name>ViewerBulk</servlet-name>
 		<url-pattern>/Viewer/Bulk</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ViewerCompliance</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.viewer.version.Compliance</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ViewerCompliance</servlet-name>
+		<url-pattern>/Viewer/Compliance</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>

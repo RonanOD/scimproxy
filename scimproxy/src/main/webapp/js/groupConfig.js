@@ -18,7 +18,17 @@ var groupConfig = {
        "readOnly":true, 
        "required":true, 
        "caseExact":false 
-    }, 
+    },
+    {
+      "name":"externalId",
+      "type":"string",
+      "multiValued":false,
+      "description":"Unique identifier for the Resource as defined by the Service Consumer. The externalId may simplify identification of the Resource between Service Consumer and Service provider by allowing the Consumer to refer to the Resource with its own identifier, obviating the need to store a local mapping between the local identifier of the Resource and the identifier used by the Service Provider. Each Resource MAY include a non-empty externalId value. The value of the externalId attribute is always issued be the Service Consumer and can never be specified by the Service Provider. This identifier MUST be unique across the Service Consumer's entire set of Resources. It MUST be a stable, non-reassignable identifier that does not change when the same Resource is returned in subsequent requests. The Service Provider MUST always interpret the externalId as scoped to the Service Consumer's tenant.",
+      "schema":"urn:scim:schemas:core:1.0",
+      "readOnly":false,
+      "required":false,
+      "caseExact":false
+    },
     {
       "name":"displayName",
       "type":"string",

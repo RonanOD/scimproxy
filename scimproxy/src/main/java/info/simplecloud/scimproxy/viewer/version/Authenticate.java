@@ -35,7 +35,7 @@ public class Authenticate extends HttpServlet {
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setParameter("grant_type", "authorization_code");
         method.setParameter("code", code);
-        method.setParameter("redirect_uri", getRequestedURL(req) + "/Viewer/Authenticate/");
+        method.setParameter("redirect_uri", getRequestedURL(req) + "Viewer/Authenticate/");
         String credsPrefix = "Bearer ";
         System.out.println("authSelection step2: " + req.getSession().getAttribute("authSelection"));
         if ("OAuth2-v10".equalsIgnoreCase((String) req.getSession().getAttribute("authSelection"))) {
@@ -54,7 +54,7 @@ public class Authenticate extends HttpServlet {
             JSONObject accessResponse = new JSONObject(responseBody);
             req.getSession().setAttribute("Creds", credsPrefix + accessResponse.getString("access_token"));
             System.out.println("credsPrefix: " + credsPrefix);
-            resp.sendRedirect(getRequestedURL(req) + "/viewer.html");
+            resp.sendRedirect(getRequestedURL(req) + "viewer.html");
         } catch (JSONException e) {
             throw new RuntimeException("failed to read responce form authorizationServer", e);
         }
@@ -75,7 +75,7 @@ public class Authenticate extends HttpServlet {
             String creds = req.getParameter("Username") + ":" + req.getParameter("Password");
             creds = "Basic " + new String(Base64.encodeBase64(creds.getBytes()));
             req.getSession().setAttribute("Creds", creds);
-            resp.sendRedirect(getRequestedURL(req) + "/viewer.html");
+            resp.sendRedirect(getRequestedURL(req) + "viewer.html");
         } else if ("OAuth2-v10".equals(authSelection)) {
             try {
                 HttpClient client = new HttpClient();
@@ -101,7 +101,7 @@ public class Authenticate extends HttpServlet {
                 JSONObject accessResponse = new JSONObject(responseBody);
 
                 req.getSession().setAttribute("Creds", "OAuth " + accessResponse.getString("access_token"));
-                resp.sendRedirect(getRequestedURL(req) + "/viewer.html");
+                resp.sendRedirect(getRequestedURL(req) + "viewer.html");
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException("Failed to read response from authorizationServer at", e);
@@ -115,13 +115,13 @@ public class Authenticate extends HttpServlet {
             authorizationServer.append("?");
             authorizationServer.append("response_type=").append("code").append("&");
             authorizationServer.append("client_id=").append(req.getParameter("ClientId")).append("&");
-            authorizationServer.append("redirect_uri=").append(getRequestedURL(req)).append("/Viewer/Authenticate/");
+            authorizationServer.append("redirect_uri=").append(getRequestedURL(req)).append("Viewer/Authenticate/");
             resp.sendRedirect(authorizationServer.toString());
         }
     }
 
     private String getRequestedURL(HttpServletRequest req) {
         StringBuffer full = req.getRequestURL();
-        return full.substring(0, full.indexOf("/Viewer/Authenticate"));
+        return full.substring(0, full.indexOf("Viewer/Authenticate"));
     }
 }
