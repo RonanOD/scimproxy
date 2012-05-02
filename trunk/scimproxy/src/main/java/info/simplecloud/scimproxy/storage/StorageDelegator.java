@@ -68,6 +68,7 @@ public class StorageDelegator {
 	 * @return
 	 */
 	public static StorageDelegator getInstance(String sessionId) {
+	    sessionId = "1";
 		if(USER_INSTANCES.get(sessionId) == null) {
 			USER_INSTANCES.put(sessionId, new StorageDelegator(sessionId));
         }
@@ -165,6 +166,9 @@ public class StorageDelegator {
 		return storage.getGroupForId(groupId);
 	}
 	
+	public ArrayList<User> getUserList() throws ResourceNotFoundException {
+        return storage.getUserList();
+    }
 	
 	public ArrayList<User> getUserList(String sortBy, String sortOrder, String filter, int index, int count) throws ResourceNotFoundException {
 		return storage.getUserList(sortBy, sortOrder, filter, index, count);

@@ -41,6 +41,7 @@ $(document).ready(
       $("#listUsers").click(setCurrentType("Users", userConfig, "List Users"));
       $("#listGroups").click(setCurrentType("Groups", groupConfig, "List Groups"));
       $("#bulk").click(setCurrentType("Bulk", groupConfig, "Bulk"));
+      $("#compliance").click(setCurrentType("Compliance Test", groupConfig, "Compliance Test"));
       
       //
       // ADD
@@ -430,7 +431,7 @@ $(document).ready(
       
       var handleResult = function(data) {
         if (data.indexOf("Error") != -1) {
-          alert(data);
+         // alert(data);
           return;
         }
         data = JSON.parse(data);
