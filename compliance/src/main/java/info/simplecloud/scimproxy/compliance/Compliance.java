@@ -6,7 +6,6 @@ import info.simplecloud.scimproxy.compliance.test.PostTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,10 +20,6 @@ public class Compliance extends HttpServlet {
 	// TODO: l18n and remove hardcoded text strings in code
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		
-		ResourceBundle rb = ResourceBundle.getBundle("src.main.resources.i18n");
-
-		System.out.println(rb.getString("hello"));
 		
 		String host = req.getParameter("url");
 
