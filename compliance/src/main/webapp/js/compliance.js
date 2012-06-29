@@ -36,8 +36,8 @@ $(document).ready(
 	        var totalTests = data.stats.failed + data.stats.success;
 
         	$("#compliance-statistics").append("<p>Tests: " + totalTests + "</p>");
-        	$("#compliance-statistics").append("<p>Success: "+ data.stats.failed + "</p>");
-        	$("#compliance-statistics").append("<p>Failed: " + data.stats.success + "</p>");
+        	$("#compliance-statistics").append("<p>Success: "+ data.stats.success + "</p>");
+        	$("#compliance-statistics").append("<p>Failed: " + data.stats.failed + "</p>");
 	        
 	        // Create and draw the visualization.
 	        new google.visualization.PieChart(document.getElementById('compliance-chart')).draw(chartData, options);
