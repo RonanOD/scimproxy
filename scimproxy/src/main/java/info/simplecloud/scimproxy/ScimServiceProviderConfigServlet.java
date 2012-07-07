@@ -31,6 +31,9 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
         		    "\"maxOperations\":" + Config.getInstance().getBulkMaxOperations() + "," +
         		    "\"maxPayloadSize\":" + Config.getInstance().getBulkMaxPayloadSize() +
         		  "}," +
+        		  "\"xmlDataFormat\": {" +
+        		    "\"supported\":true" +
+        		  "}," +
         		  "\"filter\": {" +
         		    "\"supported\":true," +
         		    "\"maxResults\": 200" +
