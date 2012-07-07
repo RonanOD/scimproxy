@@ -1,23 +1,23 @@
 package info.simplecloud.scimproxy.compliance.exception;
 
-import info.simplecloud.scimproxy.compliance.Result;
+import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 
 public class CritialComplienceException extends Exception {
 
-	private Result result = null;
+	private TestResult result = null;
 
 	private static final long serialVersionUID = 1L;
 	
 	
-	public CritialComplienceException(Result result) {
+	public CritialComplienceException(TestResult result) {
 		this.result = result;
 	}
 
-	public void setResult(Result result) {
+	public void setResult(TestResult result) {
 		this.result = result;
 	}
 
-	public Result getResult() {
+	public TestResult getResult() {
 		return result;
 	}
 	
