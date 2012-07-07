@@ -152,7 +152,7 @@ public class Config {
                 }
             }
 
-            setForceEtags(config.getBoolean("server.forceEtags"));
+            //setForceEtags(config.getBoolean("server.forceEtags"));
             setBulkMaxOperations(config.getInt("bulk.maxOperations"));
             setBulkMaxPayloadSize(config.getInt("bulk.maxPayloadSize"));
 
