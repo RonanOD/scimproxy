@@ -1,7 +1,7 @@
 package info.simplecloud.scimproxy.compliance.test;
 
 import info.simplecloud.scimproxy.compliance.CSP;
-import info.simplecloud.scimproxy.compliance.Result;
+import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 
 import java.util.ArrayList;
 
@@ -13,6 +13,6 @@ public abstract class Test {
 		this.csp = csp;
 	}
 	
-	public abstract ArrayList<Result> run();
+	public abstract ArrayList<TestResult> run();
 	
 }

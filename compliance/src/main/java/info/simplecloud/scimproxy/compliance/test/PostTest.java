@@ -7,7 +7,7 @@ import info.simplecloud.core.exceptions.InvalidUser;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
-import info.simplecloud.scimproxy.compliance.Result;
+import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +25,8 @@ public class PostTest extends Test {
 		super(csp);
 	}
 
-	public ArrayList<Result> run() {
-		ArrayList<Result> results = new ArrayList<Result>();
+	public ArrayList<TestResult> run() {
+		ArrayList<TestResult> results = new ArrayList<TestResult>();
 		
 		// simple user
         User scimUser = new User();
@@ -80,7 +80,7 @@ public class PostTest extends Test {
 	 * @return The test Result.
 	 */
 	@SuppressWarnings("deprecation")
-	public Result create(String enc, Resource resource, boolean useUrlToSetAcceptContentType) {
+	public TestResult create(String enc, Resource resource, boolean useUrlToSetAcceptContentType) {
         String resourceString = null;
         String endpoint = null;
         PostMethod method = null;
@@ -149,26 +149,26 @@ public class PostTest extends Test {
             	}
             	
             	if(verify(cspResource)) {
-               		return new Result(Result.SUCCESS, "Create " + resourceType + " in " + enc, "Success", ComplienceUtils.getWire(method, resourceString));
+               		return new TestResult(TestResult.SUCCESS, "Create " + resourceType + " in " + enc, "Success", ComplienceUtils.getWire(method, resourceString));
             	}
             	else {
-               		return new Result(Result.ERROR, "Create " + resourceType + " in " + enc, "Missing id or meta.location.", ComplienceUtils.getWire(method, resourceString));
+               		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Missing id or meta.location.", ComplienceUtils.getWire(method, resourceString));
             	}
             }
             else {
-           		return new Result(Result.ERROR, "Create " + resourceType + " in " + enc, "Failed. Server did not respond with 201.", ComplienceUtils.getWire(method, resourceString));
+           		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Failed. Server did not respond with 201.", ComplienceUtils.getWire(method, resourceString));
             }
 
         } catch (HttpException e) {
-       		return new Result(Result.ERROR, "Create " + resourceType + " in " + enc, "Failed. Fatal http protocol violation.", ComplienceUtils.getWire(method, resourceString));
+       		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Failed. Fatal http protocol violation.", ComplienceUtils.getWire(method, resourceString));
         } catch (IOException e) {
-       		return new Result(Result.ERROR, "Create " + resourceType + " in " + enc, "Failed. Fatal http transport violation.", ComplienceUtils.getWire(method, resourceString));
+       		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Failed. Fatal http transport violation.", ComplienceUtils.getWire(method, resourceString));
         } catch (UnknownEncoding e) {
-       		return new Result(Result.ERROR, "Create " + resourceType + " in " + enc, "Failed. Returned unknown encoding.", ComplienceUtils.getWire(method, resourceString));
+       		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Failed. Returned unknown encoding.", ComplienceUtils.getWire(method, resourceString));
         } catch (InvalidUser e) {
-       		return new Result(Result.ERROR, "Create " + resourceType + " in " + enc, "Failed. Failed to parse resource.", ComplienceUtils.getWire(method, resourceString));
+       		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Failed. Failed to parse resource.", ComplienceUtils.getWire(method, resourceString));
         } catch (Exception e) {
-       		return new Result(Result.ERROR, "Create " + resourceType + " in " + enc, "Failed. Unknown error.", ComplienceUtils.getWire(method, resourceString));
+       		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Failed. Unknown error.", ComplienceUtils.getWire(method, resourceString));
 		} finally {
             // Release the connection.
 			if(method != null) {

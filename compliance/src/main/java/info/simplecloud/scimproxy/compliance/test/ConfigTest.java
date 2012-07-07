@@ -2,9 +2,9 @@ package info.simplecloud.scimproxy.compliance.test;
 
 import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
-import info.simplecloud.scimproxy.compliance.Result;
 import info.simplecloud.scimproxy.compliance.Schema;
 import info.simplecloud.scimproxy.compliance.ServiceProviderConfig;
+import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 import info.simplecloud.scimproxy.compliance.exception.CritialComplienceException;
 
 import org.apache.commons.httpclient.Header;
@@ -23,7 +23,7 @@ public class ConfigTest {
 	 * @return The test Result.
 	 * @throws Exception Throws CritialComplienceException if we could not read configuration from server, otherwise fatal exceptions.
 	 */
-	public Result getConfiguration(CSP csp) throws Exception {
+	public TestResult getConfiguration(CSP csp) throws Exception {
         String url = csp.getUrl() + csp.getVersion() + "/ServiceProviderConfigs";
 
         GetMethod method = null;
@@ -50,7 +50,7 @@ public class ConfigTest {
             }
         }
         catch (Exception e) {
-        	throw new CritialComplienceException(new Result(Result.CRITICAL, "Read ServiceProviderConfig", "Could not get ServiceProviderConfig at url " + url, ComplienceUtils.getWire(method, "")));
+        	throw new CritialComplienceException(new TestResult(TestResult.CRITICAL, "Read ServiceProviderConfig", "Could not get ServiceProviderConfig at url " + url, ComplienceUtils.getWire(method, "")));
         }
 
         try {
@@ -86,11 +86,11 @@ public class ConfigTest {
 
     		csp.setSpc(spc);
     		
-    		return new Result(Result.SUCCESS, "Read ServiceProviderConfig", "success", ComplienceUtils.getWire(method, ""));
+    		return new TestResult(TestResult.SUCCESS, "Read ServiceProviderConfig", "success", ComplienceUtils.getWire(method, ""));
     		
         }
         catch (Exception e) {
-        	throw new CritialComplienceException(new Result(Result.CRITICAL, "Parse ServiceProviderConfig", "Could not parse the json format returned from ServiceProviderConfig. " + e.getMessage(), ComplienceUtils.getWire(method, "")));
+        	throw new CritialComplienceException(new TestResult(TestResult.CRITICAL, "Parse ServiceProviderConfig", "Could not parse the json format returned from ServiceProviderConfig. " + e.getMessage(), ComplienceUtils.getWire(method, "")));
         }
 	}
 	
@@ -102,7 +102,7 @@ public class ConfigTest {
 	 * @return The test Result.
 	 * @throws Exception Throws CritialComplienceException if we could not read configuration from server, otherwise fatal exceptions.
 	 */
-	public Result getSchema(String type, CSP csp) throws Exception {
+	public TestResult getSchema(String type, CSP csp) throws Exception {
         String url = csp.getUrl() + csp.getVersion() + "/Schemas/" + type;
 
         GetMethod method = null;
@@ -129,7 +129,7 @@ public class ConfigTest {
             }
         }
         catch (Exception e) {
-        	throw new CritialComplienceException(new Result(Result.CRITICAL, "Get schema for " + type, "Could not get " + type + " Schema at url " + url, ComplienceUtils.getWire(method, "")));
+        	throw new CritialComplienceException(new TestResult(TestResult.CRITICAL, "Get schema for " + type, "Could not get " + type + " Schema at url " + url, ComplienceUtils.getWire(method, "")));
         }
 
         try {
@@ -154,10 +154,10 @@ public class ConfigTest {
     			csp.setGroupSchema(schema);
     		}
             
-    		return new Result(Result.SUCCESS, "Read schema for " + type, "success", ComplienceUtils.getWire(method, ""));
+    		return new TestResult(TestResult.SUCCESS, "Read schema for " + type, "success", ComplienceUtils.getWire(method, ""));
         }
         catch (Exception e) {
-        	throw new CritialComplienceException(new Result(Result.CRITICAL, "Parse schema for " + type, "Could not parse the json format returned when getting " + type + " schema. " + e.getMessage(), ComplienceUtils.getWire(method, "")));
+        	throw new CritialComplienceException(new TestResult(TestResult.CRITICAL, "Parse schema for " + type, "Could not parse the json format returned when getting " + type + " schema. " + e.getMessage(), ComplienceUtils.getWire(method, "")));
         }
 	}
 	
