@@ -1,0 +1,494 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="css/prettify.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <title>SCIM, System for Cross-domain Identity Management</title>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">SCIM</a>
+          <ul class="nav">
+            <li><a href="#overview" data-toggle="tab">Overview</a></li>
+            <li><a href="#specifications" data-toggle="tab">Specifications</a></li>
+            <li><a href="#resources" data-toggle="tab">Resources</a></li>
+            <li><a href="#complianceTest" data-toggle="tab">Compliance Test</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="tabbable">
+      <div class="tab-content">
+        <div class="tab-pane active" id="overview">
+            <h1>Overview</h1>
+            <p class="text">
+              The System for Cross-domain Identity Management (SCIM) specification 
+              is designed to make managing user identity in cloud based applications 
+              and services easier. The specification suite seeks to build upon 
+              experience with existing schemas and deployments, placing specific 
+              emphasis on simplicity of development and integration, while applying 
+              existing authentication, authorization, and privacy models. It's 
+              intent is to reduce the cost and complexity of user management operations 
+              by providing a common user schema and extension model, as well as binding 
+              documents to provide patterns for exchanging this schema using standard 
+              protocols. In essence, make it fast, cheap, and easy to move users 
+              in to, out of, and around the cloud.
+            </p>
+            <p class="text">
+              Information on this overview page is not normative.
+            </p>
+            
+            <h2>Model</h2>
+            <p class="text">
+              SCIM is build on a object model with inheritance the resource is 
+              the common denominator and all SCIM objects are derived from it. 
+              As can be seen in the image below SCIM has three object that directly 
+              inherits form the Resource object. The ServiceProviderConfiguration 
+              and Schema is used for discovery and contains no user information. 
+              The CoreResource is has where the user and group data and is contained 
+              within its two children User and Group.    
+            <p>
+            <img src="img/model.png" />
+            
+            <h2>Example User</h2>
+            <p class="text">
+              This is an example of how a SCIM user can be encoded it does not 
+              contain the full set of attributes available. This user is encoded 
+              as JSON however it is optional to also support XML. 
+            </p>
+            <p class="text">
+              In the example user one can see the different types of data that can 
+              be used to create SCIM users. Simple types like strings for <i>id</i>, 
+              <i>username</i>, etc. Complex types, i.e. attributes that has sub 
+              attributes, for <i>name</i> and address. Multivalued types for e-mail, 
+              phonenumber, address, etc 
+            </p>
+            <pre class="prettyprint">
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "id":"2819c223-7f76-453a-919d-413861904646",
+  "externalId":"bjensen",
+  "meta":{
+    "created":"2011-08-01T18:29:49.793Z",
+    "lastModified":"2011-08-01T18:29:49.793Z",
+    "location":"https://example.com/v1/Users/2819c223...",
+    "version":"W\/\"f250dd84f0671c3\""
+  },
+  "name":{
+    "formatted":"Ms. Barbara J Jensen III",
+    "familyName":"Jensen",
+    "givenName":"Barbara"
+  },
+  "userName":"bjensen",
+  "phoneNumbers":[
+    {
+      "value":"555-555-8377",
+      "type":"work"
+    }
+  ],
+  "emails":[
+    {
+      "value":"bjensen@example.com",
+      "type":"work"
+    }
+  ]
+}</pre>
+            
+            <h2>Example Group</h2>
+            <p class="text">
+              In addition to the user concept the SCIM core also contains the a 
+              group concept to model organisational structure in provisioned 
+              objects. Groups can contain users or other groups 
+            </p>
+            <pre class="prettyprint">
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "id":"2819c223-7f76-453a-919d-413861904646",
+  "displayName": "Tour Guides",
+  "members":[
+    {
+      "value":"2819c223-7f76-453a-919d-413861904646",
+      "displayName":"Babs Jensen",
+      "type":"User"
+    },
+    {
+      "value":"2819c223-7f76-453a-919d-413861904646",
+      "displayName":"Mandy Pepperidge",
+      "type":"User"
+    }
+  ]
+}</pre>
+            
+            
+            <h2>Operations</h2>
+            <p class="text">
+              For manipulation and of Resource SCIM provides a REST API with a 
+              rich but simple set of operation, everything from patching a specific 
+              attribute on a specific user to doing massive bulk updates.
+            </p>
+            <ul>
+              <li>Create = POST https://example.com/{v}/{resource}</li>
+              <li>Read = GET https://example.com/{v}/{resource}/{id}</li>
+              <li>Update = PUT https://example.com/{v}/{resource}/{id}</li>
+              <li>Delete = DELETE https://example.com/{v}/{resource}/{id}</li>
+              <li>Update = PATCH https://example.com/{v}/{resource}/{id}</li>
+              <li>Search = https://example.com/{v}/{resource}?ﬁlter={attribute}{op}{value}&sortBy={attributeName}&sortOrder={ascending|descending}</li>
+              <li>Bulk</li>
+            </ul>
+            
+            <h2>Discovery</h2>
+            <p class="text">
+              To simplify interoperability SCIM provides two end points form discovering 
+              of supported optional features and specific attribute details.
+            </p>
+            <ul>
+              <li>GET /ServiceProviderConﬁg<p>Spec compliance, auth schemes, data models</p></li>
+              <li>GET /Schemas<p>Introspect resources and attribute extensions</p></li>
+            </ul>
+            
+            <h2>Create Request</h2>
+            <p class="text">
+              Creating Resource is done with POSTs towards there respective end 
+              points. In the example below we see the creation of a User. As can 
+              be seen in this and later examples the URL contains a version number 
+              so that later versions can co-exists. available versions can be dynamically 
+              discovered with the ServiceProviderConﬁg end point.   
+            </p>
+            <pre class="prettyprint">
+POST /v1/Users  HTTP/1.1
+Host: example.com
+Accept: application/json
+Authorization: Bearer h480djs93hd8
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "userName":"bjensen",
+  "externalId":"bjensen",
+  "name":{
+    "formatted":"Ms. Barbara J Jensen III",
+    "familyName":"Jensen",
+    "givenName":"Barbara"
+  }
+}</pre>
+            <h2>Create Response</h2>
+            <p class="text">
+              I response to a create request there comes a response the response 
+              contains the created user and HTTP code 201 to indicate that the 
+              Resource has been created. Note that the returned user contains more 
+              data then was posted, id and meta data has been added. Then there 
+              is the location header that indicates where the user can be found 
+              in subsiding request. 
+            </p>
+            <pre class="prettyprint">
+HTTP/1.1 201 Created
+Content-Type: application/json
+Location: https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "id":"2819c223-7f76-453a-919d-413861904646",
+  "externalId":"bjensen",
+  "meta":{
+    "created":"2011-08-01T21:32:44.882Z",
+    "lastModified":"2011-08-01T21:32:44.882Z",
+    "location":"https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646",
+    "version":"W\/\"e180ee84f0671b1\""
+  },
+  "name":{
+    "formatted":"Ms. Barbara J Jensen III",
+    "familyName":"Jensen",
+    "givenName":"Barbara"
+  },
+  "userName":"bjensen"
+}</pre>
+            
+            <h2>Get Request</h2>
+            <p class="text">
+              Fetching resources is done with HTTP get towards the desired Resource 
+              end point with the id in the path. In this example a user is fetched 
+              and at the end of the URL we can see the postfix '.json' this is 
+              for clients that cannot see the accept header to specify desired 
+              response format. 
+            </p>
+            <pre class="prettyprint">
+GET /v1/Users/2819c223-7f76-453a-919d-413861904646.json  
+Host: example.com
+Accept: application/json
+Authorization: Bearer h480djs93hd8</pre>
+
+            <h2>Get Response</h2>
+            <p class="text">
+              The response of a GET contains the Resource. The Etag header can be used to prevent concurrent modifications.  
+            </p>
+            <pre class="prettyprint">
+HTTP/1.1 200 OK
+Content-Type: application/json
+Location: https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646
+Etag: W/"e180ee84f0671b1"
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "id":"2819c223-7f76-453a-919d-413861904646",
+  "externalId":"bjensen",
+  "meta":{
+    "created":"2011-08-01T21:32:44.882Z",
+    "lastModified":"2011-08-01T21:32:44.882Z",
+    "location":"https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646",
+    "version":"W\/\"e180ee84f0671b1\""
+  },
+  "name":{ ...</pre>
+            
+
+            <h2>Filter Request</h2>
+            <p class="text">
+              In addition to getting single Resources it is also possible to fetch 
+              sets of Resources by querying the Resource end point without the 
+              id for a specific user. To not have to read all users a filter can 
+              be applied to the resources. SCIM has support for filter operations 
+              equals, contains, starts with and more. In addition to filter the 
+              response it is also possible to ask the service provider to sort the 
+              Resources in the response.   
+            </p>
+            <ul>
+              <li>https://example.com/{resource}?ﬁlter={attribute} {op} {value} & sortBy={attributeName}&sortOrder={ascending|descending}&attributes={attributes}</p></li>
+              <li>https://example.com/Users?ﬁlter=title pr and userType eq “Employee”&sortBy=title&sortOrder=ascending&attributes=title,username</p></li>
+            </ul>
+            <h2>Filter Response</h2>
+            <p class="text">
+              The result of a set request is a list of resources.
+            </p>
+            <pre class="prettyprint">
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "totalResults":2,
+  "Resources":[
+    {
+      "id":"c3a26dd3-27a0-4dec-a2ac-ce211e105f97",
+      "title":"Assistant VP",
+      "userName":"bjensen"
+    },
+    {
+      "id":"a4a25dd3-17a0-4dac-a2ac-ce211e125f57",
+      "title":"VP",
+      "userName":"jsmith"
+    }
+  ]
+}</pre>
+              
+        </div>
+        <div class="tab-pane" id="specifications">
+          <h1>Specifications</h1>
+          <h2>1.latest</h2>
+          <p><a href="/specs/draft-scim-scenarios-04.html">Simple Cloud Identity Management: Scenarios Doc - draft</a></p>
+          <p><a href="/specs/draft-scim-core-schema-00.html">Simple Cloud Identity Management: Core Schema 1.0 - draft</a></p>
+          <p><a href="/specs/draft-scim-api-00.html">Simple Cloud Identity Management: REST API 1.0 - draft</a></p>
+          <p><a href="/specs/draft-scim-saml2-binding-02.html">Simple Cloud Identity Management: SAML 2.0 Binding - draft</a></p>
+          <h2>1.0</h2>
+          <p><a href="/specs/draft-scim-scenarios-04.html">Simple Cloud Identity Management: Scenarios Doc - draft 4</a></p>
+          <p><a href="/specs/draft-scim-core-schema-00.html">Simple Cloud Identity Management: Core Schema 1.0</a></p>
+          <p><a href="/specs/draft-scim-api-00.html">Simple Cloud Identity Management: REST API 1.0</a></p>
+          <p><a href="/specs/draft-scim-saml2-binding-02.html">Simple Cloud Identity Management: SAML 2.0 Binding - draft 1</a></p>
+        </div>
+        <div class="tab-pane" id="resources">
+            <h1>Resourse</h1>
+            
+            <h3>XML Schemas</h3>
+            <p>
+              To generate code SCIM provides two XML Schemas. One for the 
+              <a href="/specs/schema/scim-core.xsd" target="_Blank">Core</a> and one for the 
+              <a href="/specs/schema/scim-enterprise.xsd" target="_Blank">Enterprise extension</a>. 
+            </p>
+            
+            <h3>Project Hosting</h3>
+            <p>
+              The development of the scim specification had been don 
+              <a href="http://code.google.com/p/scim/" target="_Blank">here</a>. This is where 
+              you can find the version tracking for the 1.x specification. 
+            </p>
+            
+            <h3>Mailing Lists</h3>
+            <p>
+              SCIM 1.x is developed on <a href="http://groups.google.com/group/cloud-directory" target="_Blank">this</a> 
+              list. Here you can find details on how certain desitions around the 
+              specification or ask questions about the 1.x specification.
+            </p>
+            <p>
+              SCIM 2.x will be developed under IETF so fo discussions and questuins regarding 
+              version 2.x <a href="http://www.ietf.org/mail-archive/web/scim/current/maillist.html" target="_Blank">this</a> 
+              is the mailing list.
+              
+            </p>
+            <h3>OWF Agreements</h3>
+            <p>
+              SCIM 1.x is developed under OWF Agreements currently the following partisipating campanies has signed it:
+            </p>
+            <ul>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/salesforce.pdf" target="_Blank">Salesforce</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/cisco.pdf" target="_Blank">Cisco</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/unboundid.jpg" target="_Blank">UnboundID</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/sailpoint.pdf" target="_Blank">Sailpoint</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/technologynexus.pdf" target="_Blank">Technology Nexus</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/pingidentity.pdf" target="_Blank">Ping Identity</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/CANARIE.pdf" target="_Blank">Canarie</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/OWFBCPSOFT001.pdf" target="_Blank">BCPSOFT</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/OWF_CLA_WSO2.pdf" target="_Blank">WSO2</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/SCIM_OWF_IDmachines.BMP" target="_Blank">IDmachines</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/adp.pdf" target="_Blank">ADP</a></li>
+              <li><a href="http://scim.googlecode.com/svn/trunk/owf/courion.pdf" target="_Blank">Courion</a></li>
+            </ul>
+            <h3>Implementations</h3>
+            <div class="row-fluid header">
+              <div class="span2">Project Name</div>
+              <div class="span2">Client</div>
+              <div class="span2">Server</div>
+              <div class="span2">OSS</div>
+              <div class="span2">Host</div>
+              <div class="span2">URL</div>
+            </div>
+            <p>
+              TBD
+            </p>
+        </div>
+        <div class="tab-pane" id="complianceTest">
+    
+			<div class="well">
+				<h1>Compliance Test</h1>
+				<form class="form-search">
+					<input type="text" placeholder="https://scim-server" id="complianceUrl" class="input span5">
+  					<button type="submit" class="btn btn-primary" id="sendCompliance">Go!</button>
+				</form>
+			</div>
+          
+            <div class="wrapper"><div class="content" id="spinner-container" ></div></div>  
+            
+            <div class="hide" id="result-container">
+              <div class="well" >
+                <div class="row-fluid">
+                  <div class="span6"><div id="compliance-chart"></div></div>
+                  <div class="span6">
+                    <h2>Results</h2>
+                    <div id="compliance-statistics-text"></div>
+                  </div>
+                </div>
+              </div>
+    		  <div class="well" id="compliance-result-container"></div>      
+            </div>
+            
+  			<div id="compliance-error-container" class="alert alert-error hide">
+  				<div id="compliance-error"></div>
+  			</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="modal hide fade" id="authenticationDialog">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">×</button>
+      <h3>Select Authentication</h3>
+    </div>
+    <div class="modal-body">
+      
+      <form class="form-horizontal"> 
+        <div class="control-group">  
+          <label class="control-label" for="basicUsername">Method</label>  
+          <div class="controls">
+            <select id="authMethod">
+              <option value="basicAuth">HTTP-Basic</option>
+              <option value="oauthAuth">OAuth 2.0</option>
+            </select>  
+          </div>  
+        </div>
+        <div class="control-group">  
+          <label class="control-label" for="username">Username</label>  
+          <div class="controls">  
+            <input id="username" type="text">  
+          </div>  
+        </div> 
+        <div class="control-group">  
+          <label class="control-label" for="password">Password</label>  
+          <div class="controls">  
+            <input  id="password" type="password">  
+          </div>  
+        </div> 
+        <div id="oauthAuth" class="authMethod">
+          <div class="control-group">  
+            <label class="control-label" for="oauthClientId">ClientId</label>  
+            <div class="controls">  
+              <input  id="oauthClientId" type="text">  
+            </div>  
+          </div> 
+          <div class="control-group">  
+            <label class="control-label" for="oauthClientSecret">Client Secret</label>  
+            <div class="controls">  
+              <input  id="oauthClientSecret" type="text">  
+            </div>  
+          </div> 
+          <div class="control-group">  
+            <label class="control-label" for="oauthAuthorizationServer">Authorization Server</label>  
+            <div class="controls">  
+              <input  id="oauthAuthorizationServer" type="text">  
+            </div>  
+          </div> 
+        </div>
+      </form>
+      
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+      <a href="#" class="btn btn-primary" id="continueWithAuth">Continue</a>
+    </div>
+  </div>
+  
+  <script id="testTemplate" type="text/template">
+  {{#results}}
+  <div class="row-fluid my-row {{color}}">
+    <div class="row-fluid result-row">
+      <div class="span10">
+        <strong>{{name}}</strong>
+      </div>
+      <div class="span1">
+        <span class="label {{status_label}}" rel="tooltip" title="{{message}}">{{status_text}}</span>
+      </div>
+      <div class="span1">
+        <span index="{{index}}" class="label label-info float-right">Wire <i class="icon-chevron-right icon-white arrow"></i></span>
+      </div>
+    </div>
+    <div class="row-fluid hidden" id="{{index}}">
+      <div class="span12">
+        <pre class="prettyprint">{{wire}}</pre>
+      </div>
+    </div>
+  </div>
+  {{/results}}
+  </script>
+  
+  <script id="statisticsTemplate" type="text/template">
+  <div class="alert alert-info">Tests: {{total}} </div>
+  <div class="alert alert-success">Success: {{success}}</div>
+  <div class="alert alert-error">Failed: {{failed}}</div>
+  </script>
+  
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/jquery.base64.min.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap-tab.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap-popover.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap-dropdown.js"></script>
+  <script type="text/javascript" src="prettify/prettify.js"></script>
+  <script type="text/javascript" src="js/compliance.js"></script>
+  <script type="text/javascript" src="spin/spin.min.js"></script>
+  <script type="text/javascript" src="spin/jquery.spin.js"></script>
+  <script type="text/javascript" src="mustache/mustache.js"></script>
+  <script type="text/javascript">
+  	prettyPrint();
+    google.load('visualization', '1', {packages: ['corechart']});
+  </script>
+</body>
+</html>
