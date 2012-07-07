@@ -77,7 +77,7 @@
 		<servlet-name>ServiceProviderConfig</servlet-name>
 		<url-pattern>/v1/ServiceProviderConfigs.xml</url-pattern>
 	</servlet-mapping>
-
+	
 	<servlet>
 		<servlet-name>Bulk</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimBulkServlet</servlet-class>
@@ -96,17 +96,17 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>TestSuite</servlet-name>
+		<servlet-name>Compliance</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>info.simplecloud.scimproxy.test</param-value>
+			<param-value>info.simplecloud.scimproxy.compliance</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>TestSuite</servlet-name>
-		<url-pattern>/v1/TestSuite/*</url-pattern>
+		<servlet-name>Compliance</servlet-name>
+		<url-pattern>/compliance/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
