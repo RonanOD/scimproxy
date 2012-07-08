@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="css/prettify.css" />
+  <title>SCIM, System for Cross-domain Identity Management</title>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">SCIM</a>
+          <ul class="nav">
+            <li><a href="#overview" data-toggle="tab">Overview</a></li>
+            <li><a href="#specifications" data-toggle="tab">Specifications</a></li>
+            <li><a href="#resources" data-toggle="tab">Resources</a></li>
+            <li><a href="#complianceTest" data-toggle="tab">Compliance Test</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="tabbable">
+      <div class="tab-content">
+        <div class="tab-pane active" id="overview">
+            <h1>Overview</h1>
+            <p>
+              The Simple Cloud Identity Management (SCIM) specification is designed to make managing user identity in cloud based applications and services easier. The specification suite seeks to build upon experience with existing schemas and deployments, placing specific emphasis on simplicity of development and integration, while applying existing authentication, authorization, and privacy models. It's intent is to reduce the cost and complexity of user management operations by providing a common user schema and extension model, as well as binding documents to provide patterns for exchanging this schema using standard protocols. In essence, make it fast, cheap, and easy to move users in to, out of, and around the cloud.
+            </p>
+            
+            <h2>Model</h2>
+            <img src="img/model.png" />
+            
+            <h2>Example User</h2>
+            <pre class="prettyprint">
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "id":"2819c223-7f76-453a-919d-413861904646,
+  "externalId":"bjensen",
+  "meta":{
+    "created":"2011-08-01T18:29:49.793Z",
+    "lastModified":"2011-08-01T18:29:49.793Z",
+    "location":"https://example.com/v1/Users/2819c223...",
+    "version":"W\/\"f250dd84f0671c3\""
+  },
+  "name":{
+    "formatted":"Ms. Barbara J Jensen III",
+    "familyName":"Jensen",
+    "givenName":"Barbara"
+  },
+  "userName":"bjensen",
+  "phoneNumbers":[
+    {
+      "value":"555-555-8377",
+      "type":"work"
+    }
+  ],
+  "emails":[
+    {
+      "value":"bjensen@example.com",
+      "type":"work"
+    }
+  ]
+}</pre>
+            
+            <h2>Example Group</h2>
+            <pre class="prettyprint">
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "id":"2819c223-7f76-453a-919d-413861904646,
+  "displayName": "Tour Guides",
+  "members":[
+    {
+      "value":"2819c223-7f76-453a-919d-413861904646",
+      "displayName":"Babs Jensen",
+      "type":"User"
+    },
+    {
+      "value":"2819c223-7f76-453a-919d-413861904646",
+      "displayName":"Mandy Pepperidge",
+      "type":"User"
+    }
+  ]
+}</pre>
+            
+            
+            <h2>Operations</h2>
+            <ul>
+              <li>Create = POST https://example.com/{v}/{resource}</li>
+              <li>Read = GET https://example.com/{v}/{resource}/{id}</li>
+              <li>Update = PUT https://example.com/{v}/{resource}/{id}</li>
+              <li>Delete = DELETE https://example.com/{v}/{resource}/{id}</li>
+              <li>Update = PATCH https://example.com/{v}/{resource}/{id}</li>
+              <li>Search = https://example.com/{v}/{resource}?ﬁlter={attribute}{op}{value}&sortBy={attributeName}&sortOrder={ascending|descending}</li>
+              <li>Bulk</li>
+            </ul>
+            
+            <h2>Discovery</h2>
+            <ul>
+              <li>GET /ServiceProviderConﬁg<p>Spec compliance, auth schemes, data models</p></li>
+              <li>GET /Schemas<p>Introspect resources and attribute extensions</p></li>
+            </ul>
+            
+            <h2>Create Request</h2>
+            <pre class="prettyprint">
+POST /Users  HTTP/1.1
+Host: example.com
+Accept: application/json
+Authorization: Bearer h480djs93hd8
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "userName":"bjensen",
+  "externalId":"bjensen",
+  "name":{
+    "formatted":"Ms. Barbara J Jensen III",
+    "familyName":"Jensen",
+    "givenName":"Barbara"
+  }
+}</pre>
+            <h2>Create Response</h2>
+            <pre class="prettyprint">
+HTTP/1.1 201 Created
+Content-Type: application/json
+Location: https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "id":"2819c223-7f76-453a-919d-413861904646",
+  "externalId":"bjensen",
+  "meta":{
+    "created":"2011-08-01T21:32:44.882Z",
+    "lastModified":"2011-08-01T21:32:44.882Z",
+    "location":"https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646",
+    "version":"W\/\"e180ee84f0671b1\""
+  },
+  "name":{
+    "formatted":"Ms. Barbara J Jensen III",
+    "familyName":"Jensen",
+    "givenName":"Barbara"
+  },
+  "userName":"bjensen"
+}</pre>
+            
+            <h2>Get Request</h2>
+            <pre class="prettyprint">
+GET /Users/2819c223-7f76-453a-919d-413861904646.json  
+Host: example.com
+Accept: application/json
+Authorization: Bearer h480djs93hd8</pre>
+            <h2>Get Response</h2>
+            <pre class="prettyprint">
+HTTP/1.1 200 OK
+Content-Type: application/json
+Location: https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "id":"2819c223-7f76-453a-919d-413861904646",
+  "externalId":"bjensen",
+  "meta":{
+    "created":"2011-08-01T21:32:44.882Z",
+    "lastModified":"2011-08-01T21:32:44.882Z",
+    "location":"https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646",
+    "version":"W\/\"e180ee84f0671b1\""
+  },
+  "name":{ ...</pre>
+            
+
+            <h2>Filter Request</h2>
+            <ul>
+              <li>https://example.com/{resource}?ﬁlter={attribute} {op} {value} & sortBy={attributeName}&sortOrder={ascending|descending}&attributes={attributes}</p></li>
+              <li>https://example.com/Users?ﬁlter=title pr and userType eq “Employee”&sortBy=title&sortOrder=ascending&attributes=title,username</p></li>
+            </ul>
+            <h2>Filter Response</h2>
+            <pre class="prettyprint">
+{
+  "schemas":["urn:scim:schemas:core:1.0"],
+  "totalResults":2,
+  "Resources":[
+    {
+      "id":"c3a26dd3-27a0-4dec-a2ac-ce211e105f97",
+      "title":"Assistant VP",
+      "userName":"bjensen"
+    },
+    {
+      "id":"a4a25dd3-17a0-4dac-a2ac-ce211e125f57",
+      "title":"VP",
+      "userName":"jsmith"
+    }
+  ]
+}</pre>
+              
+        </div>
+        <div class="tab-pane" id="specifications">
+          <h1>Specifications</h1>
+          <h2>1.latest</h2>
+          <p><a href="/specs/draft-scim-scenarios-04.html">Simple Cloud Identity Management: Scenarios Doc - draft</a></p>
+          <p><a href="/specs/draft-scim-core-schema-00.html">Simple Cloud Identity Management: Core Schema 1.0 - draft</a></p>
+          <p><a href="/specs/draft-scim-api-00.html">Simple Cloud Identity Management: REST API 1.0 - draft</a></p>
+          <p><a href="/specs/draft-scim-saml2-binding-02.html">Simple Cloud Identity Management: SAML 2.0 Binding - draft</a></p>
+          <h2>1.0</h2>
+          <p><a href="/specs/draft-scim-scenarios-04.html">Simple Cloud Identity Management: Scenarios Doc - draft 4</a></p>
+          <p><a href="/specs/draft-scim-core-schema-00.html">Simple Cloud Identity Management: Core Schema 1.0</a></p>
+          <p><a href="/specs/draft-scim-api-00.html">Simple Cloud Identity Management: REST API 1.0</a></p>
+          <p><a href="/specs/draft-scim-saml2-binding-02.html">Simple Cloud Identity Management: SAML 2.0 Binding - draft 1</a></p>
+        </div>
+        <div class="tab-pane" id="resources">
+            <h1>Specifications</h1>
+            
+            <p>
+              XML Schema (.xsd's): <a href="/specs/schema/scim-core.xsd">Core</a> and <a href="/specs/schema/scim-enterprise.xsd">Enterprise extension</a>
+            </p>
+            <p>
+              <a href="http://code.google.com/p/scim/">Project and Spec Hosting</a>
+            </p>
+            <p>
+              <a href="http://groups.google.com/group/cloud-directory">Mailing List (SCIM 1.x)</a>
+            </p>
+            <p>
+              <a href="http://www.ietf.org/mail-archive/web/scim/current/maillist.html">Mailing List (IETF SCIM 2.x)</a>
+            </p>
+            <p>
+              <a href="http://scim.googlecode.com/svn/trunk/owf/">OWF Agreements</a>
+            </p>
+        </div>
+        <div class="tab-pane" id="complianceTest">
+    
+			<div class="well">
+				<h1>Compliance Test</h1>
+				<form class="form-search">
+					<input type="text" placeholder="https://scim-server" id="complianceUrl" class="input span5">
+  					<button type="submit" class="btn btn-primary" id="sendCompliance">Go!</button>
+				</form>
+			</div>
+			
+			<div class="well" id="compliance-result-container" style="display: none;">
+				
+				<div class="row">
+  					<div class="span2" id="compliance-chart"></div>
+  					<div class="span4 offset4" id="compliance-statistics-container">
+						<h2>Results</h2>
+						<h5 id="compliance-statistics"></h5>
+					</div>
+				</div>
+				
+				<div class="well">
+					<table class="table table-condensed">
+						<thead>
+	    					<tr>
+		      					<th>Test</th>
+	      						<th>Result</th>
+	    					</tr>
+	  					</thead>
+	  					<tbody id="compliance-result">
+	  					</tbody>
+					</table>
+					<h6>Hover Failed tests to get detailed information.</h6>
+				</div>
+			</div>
+			<div id="compliance-error-container" class="alert alert-error" style="display: none;">
+				<div id="compliance-error"></div>
+			</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script id="fileTemplate" type="text/template">
+  <div class="span5 cell right_wall truncate">
+    <a href="{{link}}" class="file"><img src="{{icon}}" class="file"/></a>
+    <div class="inner_cell"><a href="{{link}}" class="file filename">{{name}}</a></div>
+    <input type="text" class="fileInput hidden" value="{{name}}"/>
+  </div>
+  <div class="span4 cell right_wall truncate"><div class="inner_cell"><a href="{{link}}" class="file">{{modified}}</a></div></div>
+  <div class="span1 cell right_wall truncate"><div class="inner_cell"><a href="{{link}}" class="file">{{size}}</a></div></div>
+  <div class="span2 cell truncate"><div class="inner_cell"><a href="{{link}}" class="file">{{kind}}</a></div></div>
+  </script>
+  
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/jquery.base64.min.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap-tab.js"></script>
+  <script type="text/javascript" src="bootstrap/js/bootstrap-popover.js"></script>
+  <script type="text/javascript" src="prettify/prettify.js"></script>
+  <script type="text/javascript" src="js/compliance.js"></script>
+  <script type="text/javascript">
+  	prettyPrint();
+    google.load('visualization', '1', {packages: ['corechart']});
+  </script>
+</body>
+</html>
