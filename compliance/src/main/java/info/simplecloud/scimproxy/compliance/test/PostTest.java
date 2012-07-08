@@ -18,6 +18,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 
 public class PostTest extends Test {
 	
@@ -147,12 +148,13 @@ public class PostTest extends Test {
             	else if(resource instanceof Group) {
             		cspResource = new Group(new String(responseBody), enc);
             	}
-            	
-            	if(verify(cspResource)) {
+
+            	try {
+            		verify(cspResource);
                		return new TestResult(TestResult.SUCCESS, "Create " + resourceType + " in " + enc, "Success", ComplienceUtils.getWire(method, resourceString));
             	}
-            	else {
-               		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Missing id or meta.location.", ComplienceUtils.getWire(method, resourceString));
+            	catch (Exception e) {
+               		return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, e.getMessage(), ComplienceUtils.getWire(method, resourceString));
             	}
             }
             else {
@@ -182,17 +184,12 @@ public class PostTest extends Test {
 	 * @param r The Resource.
 	 * @return true if id and location is present, otherwise false.
 	 */
-	private boolean verify(Resource r) {
-		
-		if(r.getId() == null || "".equals(r.getId().trim())) {
-			return false;
-		}
-		
-		if(r.getMeta().getLocation() == null || "".equals(r.getMeta().getLocation().trim())) {
-			return false;
-		}
-		
-		return true;
+	private void verify(Resource r) throws AssertionError {
+
+		Assert.assertNotNull("Missing resource", r);
+		Assert.assertNotNull("Missing id", r.getId());
+		Assert.assertNotNull("Missing metadata", r.getMeta());
+		Assert.assertNotNull("Missing metadata location", r.getMeta().getLocation());
 	}
 	
 }
