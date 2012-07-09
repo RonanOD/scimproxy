@@ -41,7 +41,7 @@ public class Compliance extends HttpServlet {
         testResults.add(new TestResult(2, "Test Number Two", "bla bla bla", "Wire stuff sadfaslädk..."));
         testResults.add(new TestResult(3, "Test Number Three", "bla bla bla", "Wire stuff sadfaslädk..."));
         testResults.add(new TestResult(4, "Test Number four", "bla bla bla", "Wire stuff sadfaslädk..."));
-        return new Result(new Statistics(34, 3), testResults, "oauthAuth".equalsIgnoreCase(authMethod), "Basic");
+        return new Result(new Statistics(34, 3), testResults, "basicAuth".equalsIgnoreCase(authMethod), "Basic");
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
