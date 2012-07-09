@@ -26,7 +26,36 @@
     </div>
     <div class="tabbable">
       <div class="tab-content">
-        <div class="tab-pane active" id="overview">
+        <div class="tab-pane active">
+          <div class="hero-unit">
+            <h1>System for Cross-domain Identity Management</h1>
+            <p>
+              Designed to make managing user identity in cloud based applications and services easier</p>
+            <p>
+            <a class="btn btn-primary btn-large" href="#overview" data-toggle="tab">
+                Learn more
+            </a>
+            </p>
+          </div>
+          <div class="row">
+            <div class="span4">
+              <h2>Overview</h2>
+               <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn" href="#overview" data-toggle="tab">View details &raquo;</a></p>
+            </div>
+            <div class="span4">
+              <h2>Specifications</h2>
+               <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+              <p><a class="btn" href="#specifications" data-toggle="tab">View details &raquo;</a></p>
+           </div>
+            <div class="span4">
+              <h2>Resources</h2>
+              <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+              <p><a class="btn" href="#resources" data-toggle="tab">View details &raquo;</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" id="overview">
             <h1>Overview</h1>
             <p class="text">
               The System for Cross-domain Identity Management (SCIM) specification 
@@ -54,7 +83,7 @@
               and Schema is used for discovery and contains no user information. 
               The CoreResource is where the user and group data is contained, 
               within its two children User and Group.    
-            <p>
+            </p>
             <img src="img/model.png" />
             
             <h2>Example User</h2>
@@ -257,8 +286,8 @@ Etag: W/"e180ee84f0671b1"
               Resources in the response.   
             </p>
             <ul>
-              <li>https://example.com/{resource}?ﬁlter={attribute} {op} {value} & sortBy={attributeName}&sortOrder={ascending|descending}&attributes={attributes}</p></li>
-              <li>https://example.com/Users?ﬁlter=title pr and userType eq “Employee”&sortBy=title&sortOrder=ascending&attributes=title,username</p></li>
+              <li>https://example.com/{resource}?ﬁlter={attribute} {op} {value} & sortBy={attributeName}&sortOrder={ascending|descending}&attributes={attributes}</li>
+              <li>https://example.com/Users?ﬁlter=title pr and userType eq “Employee”&sortBy=title&sortOrder=ascending&attributes=title,username</li>
             </ul>
             <h2>Filter Response</h2>
             <p class="text">
@@ -326,22 +355,9 @@ Etag: W/"e180ee84f0671b1"
             </p>
             <h3>OWF Agreements</h3>
             <p>
-              SCIM 1.x is developed under OWF Agreements currently the following partisipating campanies has signed it:
+              SCIM 1.x is developed under OWF Agreements <a href="http://scim.googlecode.com/svn/trunk/owf/" target="_Blank">here</a>
+              is a list of companies that has signed the OWF Agreement.
             </p>
-            <ul>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/salesforce.pdf" target="_Blank">Salesforce</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/cisco.pdf" target="_Blank">Cisco</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/unboundid.jpg" target="_Blank">UnboundID</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/sailpoint.pdf" target="_Blank">Sailpoint</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/technologynexus.pdf" target="_Blank">Technology Nexus</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/pingidentity.pdf" target="_Blank">Ping Identity</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/CANARIE.pdf" target="_Blank">Canarie</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/OWFBCPSOFT001.pdf" target="_Blank">BCPSOFT</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/OWF_CLA_WSO2.pdf" target="_Blank">WSO2</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/SCIM_OWF_IDmachines.BMP" target="_Blank">IDmachines</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/adp.pdf" target="_Blank">ADP</a></li>
-              <li><a href="http://scim.googlecode.com/svn/trunk/owf/courion.pdf" target="_Blank">Courion</a></li>
-            </ul>
         </div>
         <div class="tab-pane" id="complianceTest">
     
@@ -374,6 +390,10 @@ Etag: W/"e180ee84f0671b1"
         </div>
       </div>
     </div>
+    <hr>
+    <footer>
+      <p>&copy; System for Cross-domain Identity Management 2012</p>
+    </footer>
   </div>
   
   
