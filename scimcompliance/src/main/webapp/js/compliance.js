@@ -81,6 +81,7 @@ $(document).ready(
           new google.visualization.PieChart(document
               .getElementById('compliance-chart')).draw(chartData, options);
 
+          prettyPrint();
           $("#result-container").show();
         }
       };
@@ -106,6 +107,7 @@ $(document).ready(
         $('#authenticationDialog').modal("hide");
         $("#result-container").hide();
         $("#compliance-error").hide();
+        $("#compliance-error-container").hide();
 
         $("#spinner-container").spin({
           lines : 13,

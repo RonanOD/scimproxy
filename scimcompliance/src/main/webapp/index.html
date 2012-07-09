@@ -47,12 +47,12 @@
             
             <h2>Model</h2>
             <p class="text">
-              SCIM is build on a object model with inheritance the resource is 
+              SCIM is build on a object model with inheritance the Resource is 
               the common denominator and all SCIM objects are derived from it. 
-              As can be seen in the image below SCIM has three object that directly 
+              As can be seen in the image below SCIM has currently three objects that directly 
               inherits form the Resource object. The ServiceProviderConfiguration 
               and Schema is used for discovery and contains no user information. 
-              The CoreResource is has where the user and group data and is contained 
+              The CoreResource is where the user and group data is contained, 
               within its two children User and Group.    
             <p>
             <img src="img/model.png" />
@@ -60,15 +60,15 @@
             <h2>Example User</h2>
             <p class="text">
               This is an example of how a SCIM user can be encoded it does not 
-              contain the full set of attributes available. This user is encoded 
-              as JSON however it is optional to also support XML. 
+              contain the full set of attributes available. It is encoded 
+              as JSON however it is possible to also support XML. 
             </p>
             <p class="text">
               In the example user one can see the different types of data that can 
-              be used to create SCIM users. Simple types like strings for <i>id</i>, 
+              be used to create SCIM objects. Simple types like strings for <i>id</i>, 
               <i>username</i>, etc. Complex types, i.e. attributes that has sub 
-              attributes, for <i>name</i> and address. Multivalued types for e-mail, 
-              phonenumber, address, etc 
+              attributes, for <i>name</i> and <i>address</i>. Multivalued types for <i>e-mail</i>, 
+              <i>phonenumber</i>, <i>address</i>, etc. 
             </p>
             <pre class="prettyprint">
 {
@@ -103,7 +103,7 @@
             
             <h2>Example Group</h2>
             <p class="text">
-              In addition to the user concept the SCIM core also contains the a 
+              In addition to the user concept the SCIM core includes the 
               group concept to model organisational structure in provisioned 
               objects. Groups can contain users or other groups 
             </p>
@@ -149,17 +149,19 @@
               of supported optional features and specific attribute details.
             </p>
             <ul>
-              <li>GET /ServiceProviderConﬁg<p>Spec compliance, auth schemes, data models</p></li>
-              <li>GET /Schemas<p>Introspect resources and attribute extensions</p></li>
+              <li>GET /ServiceProviderConﬁg<p>Specification compliance, authentication schemes, data models.</p></li>
+              <li>GET /Schemas<p>Introspect resources and attribute extensions.</p></li>
             </ul>
             
             <h2>Create Request</h2>
             <p class="text">
               Creating Resource is done with POSTs towards there respective end 
-              points. In the example below we see the creation of a User. As can 
-              be seen in this and later examples the URL contains a version number 
-              so that later versions can co-exists. available versions can be dynamically 
-              discovered with the ServiceProviderConﬁg end point.   
+              points. In the example below we see the creation of a User.
+            </p> 
+            <p class="text">  
+              As can be seen in this and later examples the URL contains a version number 
+              so that different versions of the SCIM API can co-exists. Available versions can be dynamically 
+              discovered via the ServiceProviderConﬁg end point.
             </p>
             <pre class="prettyprint">
 POST /v1/Users  HTTP/1.1
@@ -178,12 +180,12 @@ Authorization: Bearer h480djs93hd8
 }</pre>
             <h2>Create Response</h2>
             <p class="text">
-              I response to a create request there comes a response the response 
-              contains the created user and HTTP code 201 to indicate that the 
+              Responses contains the created Resource and HTTP code 201 to indicate that the 
               Resource has been created. Note that the returned user contains more 
-              data then was posted, id and meta data has been added. Then there 
-              is the location header that indicates where the user can be found 
-              in subsiding request. 
+              data then was posted, <i>id</i> and <i>meta</i> data has been added 
+              by the service provider to make a complete User object. Then there 
+              is the location header that indicates where the user can be fetched 
+              in subsequent request.
             </p>
             <pre class="prettyprint">
 HTTP/1.1 201 Created
@@ -209,10 +211,10 @@ Location: https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646
             
             <h2>Get Request</h2>
             <p class="text">
-              Fetching resources is done with HTTP get towards the desired Resource 
+              Fetching resources is done with HTTP GET towards the desired Resource 
               end point with the id in the path. In this example a user is fetched 
-              and at the end of the URL we can see the postfix '.json' this is 
-              for clients that cannot see the accept header to specify desired 
+              and at the end of the URL we can see the postfix '.json', the postfix is 
+              for clients that cannot set the HTTP Accept header to specify desired 
               response format. 
             </p>
             <pre class="prettyprint">
@@ -223,7 +225,8 @@ Authorization: Bearer h480djs93hd8</pre>
 
             <h2>Get Response</h2>
             <p class="text">
-              The response of a GET contains the Resource. The Etag header can be used to prevent concurrent modifications.  
+              The response of a GET contains the Resource. The Etag header can be 
+              used to prevent concurrent modifications of Resources.  
             </p>
             <pre class="prettyprint">
 HTTP/1.1 200 OK
@@ -247,9 +250,9 @@ Etag: W/"e180ee84f0671b1"
             <p class="text">
               In addition to getting single Resources it is also possible to fetch 
               sets of Resources by querying the Resource end point without the 
-              id for a specific user. To not have to read all users a filter can 
-              be applied to the resources. SCIM has support for filter operations 
-              equals, contains, starts with and more. In addition to filter the 
+              id for a specific Resources. To not have to read all users a filter can 
+              be applied to the Resources. SCIM has support for filter operations 
+              equals, contains, starts with, and more. In addition to filtering the 
               response it is also possible to ask the service provider to sort the 
               Resources in the response.   
             </p>
@@ -305,22 +308,21 @@ Etag: W/"e180ee84f0671b1"
             
             <h3>Project Hosting</h3>
             <p>
-              The development of the scim specification had been don 
+              The development of the scim specification had been done 
               <a href="http://code.google.com/p/scim/" target="_Blank">here</a>. This is where 
-              you can find the version tracking for the 1.x specification. 
+              you can find the version tracking for the 1.x specification, and out come from interop events. 
             </p>
             
             <h3>Mailing Lists</h3>
             <p>
               SCIM 1.x is developed on <a href="http://groups.google.com/group/cloud-directory" target="_Blank">this</a> 
               list. Here you can find details on how certain desitions around the 
-              specification or ask questions about the 1.x specification.
+              specification where made or ask questions about the 1.x specification.
             </p>
             <p>
-              SCIM 2.x will be developed under IETF so fo discussions and questuins regarding 
+              SCIM 2.x will be developed under IETF so for discussions and questions regarding 
               version 2.x <a href="http://www.ietf.org/mail-archive/web/scim/current/maillist.html" target="_Blank">this</a> 
               is the mailing list.
-              
             </p>
             <h3>OWF Agreements</h3>
             <p>
@@ -340,18 +342,6 @@ Etag: W/"e180ee84f0671b1"
               <li><a href="http://scim.googlecode.com/svn/trunk/owf/adp.pdf" target="_Blank">ADP</a></li>
               <li><a href="http://scim.googlecode.com/svn/trunk/owf/courion.pdf" target="_Blank">Courion</a></li>
             </ul>
-            <h3>Implementations</h3>
-            <div class="row-fluid header">
-              <div class="span2">Project Name</div>
-              <div class="span2">Client</div>
-              <div class="span2">Server</div>
-              <div class="span2">OSS</div>
-              <div class="span2">Host</div>
-              <div class="span2">URL</div>
-            </div>
-            <p>
-              TBD
-            </p>
         </div>
         <div class="tab-pane" id="complianceTest">
     
@@ -397,7 +387,7 @@ Etag: W/"e180ee84f0671b1"
       <form class="form-horizontal"> 
         <div class="control-group">  
           <label class="control-label" for="basicUsername">Method</label>  
-          <div class="controls">
+          <div class="controls" id="authMethodContainer">
             <select id="authMethod">
               <option value="basicAuth">HTTP-Basic</option>
               <option value="oauthAuth">OAuth 2.0</option>
@@ -472,6 +462,12 @@ Etag: W/"e180ee84f0671b1"
   <div class="alert alert-info">Tests: {{total}} </div>
   <div class="alert alert-success">Success: {{success}}</div>
   <div class="alert alert-error">Failed: {{failed}}</div>
+  </script>
+  
+  <script id="authMethodTemplate" type="text/template">
+  <select id="authMethod">
+    <option value="{{value}}">{{name}}</option>
+  </select>
   </script>
   
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
