@@ -13,19 +13,17 @@ import info.simplecloud.scimproxy.compliance.test.PutTest;
 import info.simplecloud.scimproxy.compliance.test.SortTest;
 import info.simplecloud.scimproxy.compliance.test.UserCache;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 
 @Path("/test")
@@ -107,8 +105,9 @@ public class Compliance extends HttpServlet {
         	if (e instanceof CritialComplienceException) {
         		results.add(((CritialComplienceException) e).getResult());
         	} else {
-        		throw new ServletException("Unexpected exception. ", e );
+        		results.add(new TestResult(TestResult.ERROR, "Unknown Test", e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
         	}
+        	
         }
         int success = 0;
         int fail = 0;
