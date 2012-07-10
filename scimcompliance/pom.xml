@@ -114,6 +114,11 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<configuration>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<connectors>
+			            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+			            	<port>8888</port>
+			        	</connector>
+			        </connectors>
 					<contextPath>/</contextPath>
 					<requestLog implementation="org.mortbay.jetty.NCSARequestLog">
 						<filename>target/yyyy_mm_dd.request.log</filename>
