@@ -138,4 +138,5 @@ $(document).ready(
       $("#sendCompliance").click(sendRequest);
       $("#continueWithAuth").click(sendRequest);
       $("#authMethod").change(authMethodChanged).change();
+      $("#help").tooltip({placement:"bottom"});
     });

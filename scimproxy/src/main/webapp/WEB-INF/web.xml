@@ -15,7 +15,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Users</servlet-name>
-		<url-pattern>/v1/Users</url-pattern>
+		<url-pattern>/v1/Users*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Users</servlet-name>
@@ -28,7 +28,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Groups</servlet-name>
-		<url-pattern>/v1/Groups</url-pattern>
+		<url-pattern>/v1/Groups*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Groups</servlet-name>
