@@ -1,9 +1,11 @@
 package info.simplecloud.scimproxy.compliance.test;
 
 import info.simplecloud.core.Group;
+import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.InvalidUser;
+import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
@@ -48,7 +50,7 @@ public class PostTest extends Test {
         results.add(create("json", scimGroup, false));
 
         // run same tests but now with XML
-		if(csp.getSpc().hasXmlDataFormat()) {
+		if(this.csp.getSpc().hasXmlDataFormat()) {
 			// user
 	        scimUser.setUserName("AliceXml");
 			results.add(create("xml", scimUser, false));
@@ -136,6 +138,7 @@ public class PostTest extends Test {
                 Resource cspResource = null;
             	if(resource instanceof User) {
             		cspResource = new User(serverResp, enc);
+            		this.cache.addCachedUser(new CachedUser(cspResource.getId(), null));
             	}
             	else if(resource instanceof Group) {
             		cspResource = new Group(new String(responseBody), enc);
