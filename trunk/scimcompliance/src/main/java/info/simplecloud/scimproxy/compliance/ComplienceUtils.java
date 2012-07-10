@@ -5,7 +5,6 @@ import info.simplecloud.core.User;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
@@ -148,7 +147,6 @@ public class ComplienceUtils {
 			e.printStackTrace();
 		}
 		
-		r = Base64.encodeBase64String(r.getBytes());
 		return r;
 	}
 		    

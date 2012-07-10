@@ -6,6 +6,16 @@ div.result-row {
 	height: 30px;	
 }
 
+img.help {
+	width: 30px;
+	height: 30px;
+	float: right;
+	opacity:0.4;
+}
+img.help:HOVER {
+	opacity:1;
+}
+
 div.hidden {
 	display: none;
 }
