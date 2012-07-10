@@ -86,8 +86,8 @@ public class Compliance extends HttpServlet {
             // stop if fails)
             ConfigTest configTest = new ConfigTest();
             results.add(configTest.getConfiguration(csp));
-            results.add(configTest.getSchema("Users", csp));
-            results.add(configTest.getSchema("Groups", csp));
+            results.add(configTest.getSchema("User", csp));
+            results.add(configTest.getSchema("Group", csp));
 
             // TODO: add the required attributes in userSchema and groupSchema
             // that server wanted
