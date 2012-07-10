@@ -1,5 +1,8 @@
 package info.simplecloud.scimproxy.compliance;
 
+import info.simplecloud.core.User;
+
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.codec.binary.Base64;
@@ -16,6 +19,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.io.FileUtils;
 
 public class ComplienceUtils {
 
@@ -82,6 +86,16 @@ public class ComplienceUtils {
         return versionPath;
     }
     
+    
+    public static User getUser() {
+        try {
+            String fullUser = FileUtils.readFileToString(new File("src/main/resources/user_full.json"));
+            return new User(fullUser, User.ENCODING_JSON);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 	/**
 	 * Gets the raw request, headers and body that's sent to the server.

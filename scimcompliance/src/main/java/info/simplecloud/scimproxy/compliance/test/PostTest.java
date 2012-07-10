@@ -9,39 +9,31 @@ import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 
 public class PostTest extends Test {
 	
-	public PostTest(CSP csp) {
-		super(csp);
+	public PostTest(CSP csp, UserCache cache) {
+		super(csp, cache);
 	}
 
-	public ArrayList<TestResult> run() {
-		ArrayList<TestResult> results = new ArrayList<TestResult>();
+	public List<TestResult> run() {
+	    List<TestResult> results = new ArrayList<TestResult>();
 		
 		// simple user
         User scimUser = new User();
         Group scimGroup = new Group();
         
         // full user
-        String fullUser = "";
-        User scimUserFull = null;
-		try {
-			fullUser = FileUtils.readFileToString(new File("src/main/resources/user_full.json"));
-	        scimUserFull = new User(fullUser, User.ENCODING_JSON);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        User scimUserFull = ComplienceUtils.getUser();
 
 		// user
         scimUser.setUserName("AliceJson");
