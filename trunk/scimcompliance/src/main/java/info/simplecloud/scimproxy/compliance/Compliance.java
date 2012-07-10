@@ -5,7 +5,13 @@ import info.simplecloud.scimproxy.compliance.enteties.Statistics;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 import info.simplecloud.scimproxy.compliance.exception.CritialComplienceException;
 import info.simplecloud.scimproxy.compliance.test.ConfigTest;
+import info.simplecloud.scimproxy.compliance.test.DeleteTest;
+import info.simplecloud.scimproxy.compliance.test.FilterTest;
+import info.simplecloud.scimproxy.compliance.test.PatchTest;
 import info.simplecloud.scimproxy.compliance.test.PostTest;
+import info.simplecloud.scimproxy.compliance.test.PutTest;
+import info.simplecloud.scimproxy.compliance.test.SortTest;
+import info.simplecloud.scimproxy.compliance.test.UserCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +21,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -32,9 +37,10 @@ public class Compliance extends HttpServlet {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Result runTests(@FormParam("url") String url, @FormParam("username") String username,
-            @FormParam("password") String password, @FormParam("clientId") String clientId, @FormParam("clientSecret") String clientSecret,
-            @FormParam("authorizationServer") String authorizationServer, @FormParam("authMethod") String authMethod) throws InterruptedException {
+    public Result runTests(@FormParam("url") String url, @FormParam("username") String username, @FormParam("password") String password,
+            @FormParam("clientId") String clientId, @FormParam("clientSecret") String clientSecret,
+            @FormParam("authorizationServer") String authorizationServer, @FormParam("authMethod") String authMethod)
+            throws InterruptedException {
         Thread.sleep(2000);
         List<TestResult> testResults = new ArrayList<TestResult>();
         testResults.add(new TestResult(1, "Test Number One", "bla bla bla", "Wire stuff sadfaslädk..."));
@@ -102,7 +108,15 @@ public class Compliance extends HttpServlet {
             // that server wanted
 
             // start mandatory test suite (JSON)
-            results.addAll(new PostTest(csp).run());
+
+            UserCache cache = new UserCache();
+
+            results.addAll(new PostTest(csp, cache).run());
+            results.addAll(new DeleteTest(csp, cache).run());
+            results.addAll(new FilterTest(csp, cache).run());
+            results.addAll(new PatchTest(csp, cache).run());
+            results.addAll(new PutTest(csp, cache).run());
+            results.addAll(new SortTest(csp, cache).run());
 
             int nbrSuccess = 0;
             int nbrFailed = 0;
