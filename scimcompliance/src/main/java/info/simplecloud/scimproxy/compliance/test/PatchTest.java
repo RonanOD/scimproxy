@@ -9,7 +9,7 @@ import java.util.List;
 
 public class PatchTest extends Test{
 
-    public PatchTest(CSP csp, UserCache cache, GroupCache groupCache) {
+    public PatchTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
         super(csp, cache, groupCache);
     }
 

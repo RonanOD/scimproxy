@@ -21,7 +21,7 @@ import org.junit.Assert;
 
 public class PostTest extends Test {
 	
-	public PostTest(CSP csp, UserCache cache, GroupCache groupCache) {
+	public PostTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
 		super(csp, cache, groupCache);
 	}
 
@@ -136,10 +136,11 @@ public class PostTest extends Test {
                 Resource cspResource = null;
             	if(resource instanceof User) {
             		cspResource = new User(serverResp, enc);
-            		this.userCache.addCachedUser(new CachedUser(cspResource.getId(), cspResource.getMeta().getVersion()));
+            		this.userCache.addCachedResource(new CachedUser(cspResource.getId(), cspResource.getMeta().getVersion()));
             	}
             	else if(resource instanceof Group) {
             		cspResource = new Group(new String(responseBody), enc);
+            		this.groupCache.addCachedResource(new CachedGroup(cspResource.getId(), cspResource.getMeta().getVersion()));
             	}
 
             	try {

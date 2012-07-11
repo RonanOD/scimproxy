@@ -22,7 +22,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 
 public class SortTest extends Test {
 
-    public SortTest(CSP csp, UserCache cache, GroupCache groupCache) {
+    public SortTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
         super(csp, cache, groupCache);
     }
 

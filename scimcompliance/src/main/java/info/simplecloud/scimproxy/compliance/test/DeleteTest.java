@@ -15,7 +15,7 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 
 public class DeleteTest extends Test {
 
-	public DeleteTest(CSP csp, UserCache cache, GroupCache groupCache) {
+	public DeleteTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
 		super(csp, cache, groupCache);
 	}
 
@@ -25,44 +25,32 @@ public class DeleteTest extends Test {
 
 		CachedUser cachedUser;
 		while(this.userCache.size() > 0) {
-			cachedUser = this.userCache.removeCashedUser();
-			results.add(delete(cachedUser.getId(), cachedUser.getEtag(), "Delete User Test"));
+			cachedUser = (CachedUser) this.userCache.removeCachedResource();
+			results.add(delete(cachedUser.getId(), cachedUser.getEtag(), "/Users/", "Delete user", 200));
+			results.add(delete(cachedUser.getId(), cachedUser.getEtag(), "/Users/", "Delete non-existing user", 404));
+		}
+		CachedResource group;
+		while(this.groupCache.size() > 0) {
+			group = this.groupCache.removeCachedResource();
+			results.add(delete(group.getId(), group.getEtag(), "/Groups/", "Delete group", 200));
+			results.add(delete(group.getId(), group.getEtag(), "/Groups/", "Delete non-existing group", 404));
 		}
 		return results;
 	}
 
-	private TestResult delete(String id, String etag, String test) {
-		DeleteMethod method = new DeleteMethod(csp.getUrl() + csp.getVersion() + "/Users/" + id);
+	private TestResult delete(String id, String etag, String path, String test, int expectedCode) {
+		DeleteMethod method = new DeleteMethod(csp.getUrl() + csp.getVersion() + path + id);
 		ComplienceUtils.configureMethod(method);
 		method.setRequestHeader(new Header("Accept", "application/json"));
 		method.setRequestHeader(new Header("If-Match", etag));
 		HttpClient client = ComplienceUtils.getHttpClientWithAuth(csp, method);
 		String resourcesString = "<no resource>";
 		
-		// First, for real
 		try {
             int statusCode = client.executeMethod(method);
 
-            if (statusCode != 200) {
-                return new TestResult(TestResult.ERROR, test , "Failed. Server did not respond with 200 OK.", ComplienceUtils.getWire(
-                        method, resourcesString));
-            } else {
-                resourcesString = method.getResponseBodyAsString();
-            }
-        } catch (HttpException e) {
-            return new TestResult(TestResult.ERROR, test, "Failed, http error: " + e.getMessage(), ComplienceUtils.getWire(method,
-                    resourcesString));
-        } catch (IOException e) {
-            return new TestResult(TestResult.ERROR, test, "Failed, io error: " + e.getMessage(), ComplienceUtils.getWire(method,
-                    resourcesString));
-        }
-
-		// Expect a 404
-		try {
-            int statusCode = client.executeMethod(method);
-
-            if (statusCode != 404) {
-                return new TestResult(TestResult.ERROR, test , "Failed. Server did not respond with 404 OK.", ComplienceUtils.getWire(
+            if (statusCode != expectedCode) {
+                return new TestResult(TestResult.ERROR, test , "Failed. Server did not respond with " + expectedCode + ".", ComplienceUtils.getWire(
                         method, resourcesString));
             } else {
                 resourcesString = method.getResponseBodyAsString();
