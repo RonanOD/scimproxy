@@ -22,8 +22,8 @@ import org.apache.commons.httpclient.methods.GetMethod;
 
 public class SortTest extends Test {
 
-    public SortTest(CSP csp, UserCache cache) {
-        super(csp, cache);
+    public SortTest(CSP csp, UserCache cache, GroupCache groupCache) {
+        super(csp, cache, groupCache);
     }
 
     @Override

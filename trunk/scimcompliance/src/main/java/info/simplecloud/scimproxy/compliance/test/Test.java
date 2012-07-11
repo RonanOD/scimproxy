@@ -8,11 +8,13 @@ import java.util.List;
 public abstract class Test {
 
 	CSP csp = new CSP();
-    UserCache cache;
+    UserCache userCache;
+    GroupCache groupCache;
 
-	public Test(CSP csp, UserCache cache) {
+	public Test(CSP csp, UserCache cache, GroupCache groupCache) {
 		this.csp = csp;
-		this.cache = cache;
+		this.userCache = cache;
+		this.groupCache = groupCache;
 	}
 	
 	public abstract List<TestResult> run();

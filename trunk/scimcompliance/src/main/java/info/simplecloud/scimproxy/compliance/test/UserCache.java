@@ -13,4 +13,8 @@ public class UserCache {
     public void addCachedUser(CachedUser cachedUser) {
         this.cachedUsers.add(cachedUser);
     }
+    
+    public int size() {
+    	return this.cachedUsers.size();
+    }
 }

@@ -8,8 +8,8 @@ import java.util.List;
 
 public class PutTest extends Test {
 
-    public PutTest(CSP csp, UserCache cache) {
-        super(csp, cache);
+    public PutTest(CSP csp, UserCache cache, GroupCache groupCache) {
+        super(csp, cache, groupCache);
     }
 
     @Override

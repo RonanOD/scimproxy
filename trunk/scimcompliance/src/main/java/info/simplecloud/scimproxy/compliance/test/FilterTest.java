@@ -9,8 +9,8 @@ import java.util.List;
 
 public class FilterTest extends Test {
 
-    public FilterTest(CSP csp, UserCache cache) {
-        super(csp, cache);
+    public FilterTest(CSP csp, UserCache cache, GroupCache groupCache) {
+        super(csp, cache, groupCache);
     }
 
     @Override

@@ -9,8 +9,8 @@ import java.util.List;
 
 public class PatchTest extends Test{
 
-    public PatchTest(CSP csp, UserCache cache) {
-        super(csp, cache);
+    public PatchTest(CSP csp, UserCache cache, GroupCache groupCache) {
+        super(csp, cache, groupCache);
     }
 
     @Override
