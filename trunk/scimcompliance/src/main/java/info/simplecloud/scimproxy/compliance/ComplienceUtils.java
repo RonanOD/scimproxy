@@ -1,6 +1,7 @@
 package info.simplecloud.scimproxy.compliance;
 
 import info.simplecloud.core.User;
+import info.simplecloud.scimproxy.compliance.enteties.AuthMetod;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,19 +36,13 @@ public class ComplienceUtils {
         // Create an instance of HttpClient.
         HttpClient client = new HttpClient();
         
-        if ("basic".equalsIgnoreCase(csp.getAuthentication())) {
+        if (AuthMetod.AUTH_BASIC.equalsIgnoreCase(csp.getAuthentication())) {
             client.getParams().setAuthenticationPreemptive(true);
             Credentials defaultcreds = new UsernamePasswordCredentials(csp.getUsername(), csp.getPassword());
             client.getState().setCredentials(AuthScope.ANY, defaultcreds);
         }
 
-        if ("oauth2".equalsIgnoreCase(csp.getAuthentication())) {
-            client.getParams().setAuthenticationPreemptive(false);
-            method.setRequestHeader("Authorization", "Bearer " + csp.getAccessToken());
-            
-        }
-
-        if ("oauth2-v10".equalsIgnoreCase(csp.getAuthentication())) {
+        if (AuthMetod.AUTH_OAUTH.equalsIgnoreCase(csp.getAuthentication())) {
             client.getParams().setAuthenticationPreemptive(false);
             method.setRequestHeader("Authorization", "OAuth " + csp.getAccessTokenUserPass());
         }

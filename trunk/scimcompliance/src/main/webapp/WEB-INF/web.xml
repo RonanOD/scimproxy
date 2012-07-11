@@ -24,4 +24,13 @@
 		<url-pattern>/compliance/*</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>Cookie</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.compliance.tmp</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Cookie</servlet-name>
+		<url-pattern>/cookie</url-pattern>
+	</servlet-mapping>
+	
 </web-app>

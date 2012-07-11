@@ -362,7 +362,7 @@ Etag: W/"e180ee84f0671b1"
         <div class="tab-pane" id="complianceTest">
     
 			<div class="well">
-                <img alt="help" src="img/help.png" class="help" id="help" rel="tooltip" title="The SCIM Compliance the client is bulit upon the SCIM Proxy core developed by Nexussafe. In case of problems contact samuel.erdtman@nexussafe.com or erik.wahlstrom@nexussafe.com">
+                <img alt="help" src="img/help.png" class="help" id="help" rel="tooltip" title="The SCIM Compliance client is bulit upon the SCIM Proxy core developed by Nexussafe. In case of problems contact samuel.erdtman@nexussafe.com or erik.wahlstrom@nexussafe.com">
 				<h1>Compliance Test</h1>
         
 				<form class="form-search">
@@ -487,9 +487,9 @@ Etag: W/"e180ee84f0671b1"
   </script>
   
   <script id="authMethodTemplate" type="text/template">
-  <select id="authMethod">
-    <option value="{{value}}">{{name}}</option>
-  </select>
+  {{#authMethods}}
+  <option value="{{value}}">{{name}}</option>
+  {{/authMethods}}
   </script>
   
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
