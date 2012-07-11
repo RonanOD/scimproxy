@@ -6,7 +6,9 @@ import info.simplecloud.scimproxy.compliance.enteties.Statistics;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 import info.simplecloud.scimproxy.compliance.exception.CritialComplienceException;
 import info.simplecloud.scimproxy.compliance.test.ConfigTest;
+import info.simplecloud.scimproxy.compliance.test.DeleteTest;
 import info.simplecloud.scimproxy.compliance.test.FilterTest;
+import info.simplecloud.scimproxy.compliance.test.GroupCache;
 import info.simplecloud.scimproxy.compliance.test.PatchTest;
 import info.simplecloud.scimproxy.compliance.test.PostTest;
 import info.simplecloud.scimproxy.compliance.test.PutTest;
@@ -86,14 +88,15 @@ public class Compliance extends HttpServlet {
             // TODO: add the required attributes in userSchema and groupSchema
             // that server wanted
 
-            UserCache cache = new UserCache();
+            UserCache userCache = new UserCache();
+            GroupCache groupCache = new GroupCache();
 
-            results.addAll(new PostTest(csp, cache).run());
-            // results.addAll(new DeleteTest(csp, cache).run());
-            results.addAll(new FilterTest(csp, cache).run());
-            results.addAll(new PatchTest(csp, cache).run());
-            results.addAll(new PutTest(csp, cache).run());
-            results.addAll(new SortTest(csp, cache).run());
+            results.addAll(new PostTest(csp, userCache, groupCache).run());
+            results.addAll(new DeleteTest(csp, userCache, groupCache).run());
+            results.addAll(new FilterTest(csp, userCache, groupCache).run());
+            results.addAll(new PatchTest(csp, userCache, groupCache).run());
+            results.addAll(new PutTest(csp, userCache, groupCache).run());
+            results.addAll(new SortTest(csp, userCache, groupCache).run());
 
         } catch (Throwable e) {
             if (e instanceof CritialComplienceException) {
