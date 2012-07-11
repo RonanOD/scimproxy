@@ -22,4 +22,8 @@ public class ResourceCache<T extends CachedResource> {
 	public int size() {
 		return this.resources.size();
 	}
+
+	public T borrowCachedResource() {
+		return !this.resources.isEmpty() ? this.resources.get(0) : null;
+	}
 }
