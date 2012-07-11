@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PutTest extends Test {
 
-    public PutTest(CSP csp, UserCache cache, GroupCache groupCache) {
+    public PutTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
         super(csp, cache, groupCache);
     }
 

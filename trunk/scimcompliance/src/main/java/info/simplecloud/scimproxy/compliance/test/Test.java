@@ -8,10 +8,10 @@ import java.util.List;
 public abstract class Test {
 
 	CSP csp = new CSP();
-    UserCache userCache;
-    GroupCache groupCache;
+    ResourceCache<CachedUser> userCache;
+    ResourceCache<CachedGroup> groupCache;
 
-	public Test(CSP csp, UserCache cache, GroupCache groupCache) {
+	public Test(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
 		this.csp = csp;
 		this.userCache = cache;
 		this.groupCache = groupCache;

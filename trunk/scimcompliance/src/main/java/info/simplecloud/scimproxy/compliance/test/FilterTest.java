@@ -9,7 +9,7 @@ import java.util.List;
 
 public class FilterTest extends Test {
 
-    public FilterTest(CSP csp, UserCache cache, GroupCache groupCache) {
+    public FilterTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
         super(csp, cache, groupCache);
     }
 
