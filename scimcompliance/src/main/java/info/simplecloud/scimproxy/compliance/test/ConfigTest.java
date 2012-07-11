@@ -4,6 +4,7 @@ import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
 import info.simplecloud.scimproxy.compliance.Schema;
 import info.simplecloud.scimproxy.compliance.ServiceProviderConfig;
+import info.simplecloud.scimproxy.compliance.enteties.AuthMetod;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 import info.simplecloud.scimproxy.compliance.exception.CritialComplienceException;
 
@@ -91,7 +92,7 @@ public class ConfigTest {
                 tmp = authArray.getJSONObject(i);
                 String name = tmp.optString("name");
                 if(name != null) {
-                    spc.addAuthenticationScheme(name);
+                    spc.addAuthenticationScheme(AuthMetod.getMetod(name));
                 }
             }
 

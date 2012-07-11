@@ -6,10 +6,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Statistics {
     @XmlElement(name = "success")
-    private int success = 0;
+    int success = 0;
 
     @XmlElement(name = "failed")
-    private int failed      = 0;
+    int failed  = 0;
 
     public Statistics() {
     }

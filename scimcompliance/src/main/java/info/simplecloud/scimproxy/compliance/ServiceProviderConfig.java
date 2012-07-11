@@ -1,21 +1,23 @@
 package info.simplecloud.scimproxy.compliance;
 
+import info.simplecloud.scimproxy.compliance.enteties.AuthMetod;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceProviderConfig {
 
-    private boolean      patch                 = false;
-    private boolean      bulk                  = false;
-    private int          bulkMaxOperations     = 0;
-    private int          bulkMaxPayloadSize    = 0;
-    private boolean      filter                = false;
-    private int          filderMaxResults      = 0;
-    private boolean      changePassword        = false;
-    private boolean      sort                  = false;
-    private boolean      etag                  = false;
-    private boolean      xmlDataFormat         = false;
-    private List<String> authenticationSchemes = new ArrayList<String>();
+    private boolean         patch                 = false;
+    private boolean         bulk                  = false;
+    private int             bulkMaxOperations     = 0;
+    private int             bulkMaxPayloadSize    = 0;
+    private boolean         filter                = false;
+    private int             filderMaxResults      = 0;
+    private boolean         changePassword        = false;
+    private boolean         sort                  = false;
+    private boolean         etag                  = false;
+    private boolean         xmlDataFormat         = false;
+    private List<AuthMetod> authenticationSchemes = new ArrayList<AuthMetod>();
 
     public void setPatch(boolean patch) {
         this.patch = patch;
@@ -97,11 +99,11 @@ public class ServiceProviderConfig {
         return xmlDataFormat;
     }
 
-    public void addAuthenticationScheme(String authenticationScheme) {
+    public void addAuthenticationScheme(AuthMetod authenticationScheme) {
         this.authenticationSchemes.add(authenticationScheme);
     }
 
-    public List<String> getAuthenticationSchemes() {
+    public List<AuthMetod> getAuthenticationSchemes() {
         return authenticationSchemes;
     }
 }

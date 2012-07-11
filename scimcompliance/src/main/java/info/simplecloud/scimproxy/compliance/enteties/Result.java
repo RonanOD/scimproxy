@@ -10,27 +10,36 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Result {
 
     @XmlElement(name = "authRequired")
-    private boolean          authRequired = false;
+    boolean          authRequired = false;
 
     @XmlElement(name = "authMethods")
-    private List<String>     authMethods  = new ArrayList<String>();
+    List<AuthMetod>  authMethods  = new ArrayList<AuthMetod>();
 
     @XmlElement(name = "results")
-    private List<TestResult> results      = new ArrayList<TestResult>();
+    List<TestResult> results      = new ArrayList<TestResult>();
 
     @XmlElement(name = "statistics")
-    private Statistics       statistics;
+    Statistics       statistics;
+
+    @XmlElement(name = "error_message")
+    String           errorMessage;
 
     public Result() {
+        
+    }
+    
+    public Result(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
-    public Result(Statistics statistics, List<TestResult> results, boolean authRequired, String... authMethods) {
+    public Result(Statistics statistics, List<TestResult> results) {
         this.statistics = statistics;
-        this.authRequired = authRequired;
         this.results = results;
-        for (String authMethod : authMethods) {
-            this.authMethods.add(authMethod);
-        }
+    }
+
+    public Result(List<AuthMetod> authMethods) {
+        this.authRequired = true;
+        this.authMethods = authMethods;
     }
 
 }

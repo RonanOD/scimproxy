@@ -45,7 +45,9 @@ $(document).ready(
         $("#spinner-container").empty();
 
         if (data.authRequired === "true") {
-          // TODO filter methods
+          var template = $('#authMethodTemplate').html();
+          var html = Mustache.to_html(template, data);
+          $("#authMethod").html = html;
           $('#authenticationDialog').modal("show");
         } else {
           data.index = getIndex();

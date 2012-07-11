@@ -1,11 +1,9 @@
 package info.simplecloud.scimproxy.compliance.test;
 
 import info.simplecloud.core.Group;
-import info.simplecloud.core.MetaData;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.InvalidUser;
-import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.core.exceptions.UnknownEncoding;
 import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
