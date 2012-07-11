@@ -47,9 +47,10 @@ public class PatchTest extends Test{
 		ComplienceUtils.configureMethod(method);
 		method.setRequestHeader(new Header("Accept", "application/json"));
 		method.setRequestHeader(new Header("If-Match", resource.getEtag()));
+		
 		StringRequestEntity body = null;
 		try {
-			body = new StringRequestEntity(scimUser.getUser(encoding), encoding, "UTF-8");
+			body = new StringRequestEntity(scimUser.getUser(encoding), "application/" + encoding, "UTF-8");
 		} catch (Exception e) {
 			return new TestResult(TestResult.ERROR, test , "Failed. " + e.getMessage(), ExceptionUtils.getFullStackTrace(e));
 		}
