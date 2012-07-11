@@ -211,7 +211,7 @@ public class ScimUserServlet extends ScimResourceServlet {
 
         String userId = Util.getUserIdFromUri(req.getRequestURI());
         String query = Util.getContent(req);
-        String etag = req.getHeader("ETag");
+        String etag = req.getHeader("If-Match");
         
         if (query != null && !"".equals(query) && userId != null) {
 
@@ -262,7 +262,7 @@ public class ScimUserServlet extends ScimResourceServlet {
     public void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String userId = Util.getUserIdFromUri(req.getRequestURI());
         String query = Util.getContent(req);
-        String etag = req.getHeader("ETag");
+        String etag = req.getHeader("If-Match");
 
         boolean isPassword = Util.isChangePassword(req.getRequestURI());
 
@@ -338,7 +338,7 @@ public class ScimUserServlet extends ScimResourceServlet {
      */
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String userId = Util.getUserIdFromUri(req.getRequestURI());
-        String etag = req.getHeader("ETag");
+        String etag = req.getHeader("If-Match");
 
         log.trace("Trying to deleting user " + userId + ".");
 
