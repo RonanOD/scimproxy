@@ -5,15 +5,16 @@ import info.simplecloud.scimproxy.compliance.enteties.Result;
 import info.simplecloud.scimproxy.compliance.enteties.Statistics;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 import info.simplecloud.scimproxy.compliance.exception.CritialComplienceException;
+import info.simplecloud.scimproxy.compliance.test.CachedGroup;
+import info.simplecloud.scimproxy.compliance.test.CachedUser;
 import info.simplecloud.scimproxy.compliance.test.ConfigTest;
 import info.simplecloud.scimproxy.compliance.test.DeleteTest;
 import info.simplecloud.scimproxy.compliance.test.FilterTest;
-import info.simplecloud.scimproxy.compliance.test.GroupCache;
 import info.simplecloud.scimproxy.compliance.test.PatchTest;
 import info.simplecloud.scimproxy.compliance.test.PostTest;
 import info.simplecloud.scimproxy.compliance.test.PutTest;
+import info.simplecloud.scimproxy.compliance.test.ResourceCache;
 import info.simplecloud.scimproxy.compliance.test.SortTest;
-import info.simplecloud.scimproxy.compliance.test.UserCache;
 
 import java.util.ArrayList;
 
@@ -88,15 +89,15 @@ public class Compliance extends HttpServlet {
             // TODO: add the required attributes in userSchema and groupSchema
             // that server wanted
 
-            UserCache userCache = new UserCache();
-            GroupCache groupCache = new GroupCache();
+            ResourceCache<CachedUser> userCache = new ResourceCache<CachedUser>();
+            ResourceCache<CachedGroup> groupCache = new ResourceCache<CachedGroup>();
 
             results.addAll(new PostTest(csp, userCache, groupCache).run());
-            results.addAll(new DeleteTest(csp, userCache, groupCache).run());
             results.addAll(new FilterTest(csp, userCache, groupCache).run());
             results.addAll(new PatchTest(csp, userCache, groupCache).run());
             results.addAll(new PutTest(csp, userCache, groupCache).run());
             results.addAll(new SortTest(csp, userCache, groupCache).run());
+            results.addAll(new DeleteTest(csp, userCache, groupCache).run());
 
         } catch (Throwable e) {
             if (e instanceof CritialComplienceException) {

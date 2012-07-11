@@ -14,10 +14,6 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.io.FileUtils;
 
@@ -99,50 +95,38 @@ public class ComplienceUtils {
 	 * @return
 	 */
 	public static String getWire(HttpMethodBase method, String body) {
-		String r = ">>>>>>";
+		StringBuffer r = new StringBuffer(">>>>>>\n\n");
 		
-		if(method instanceof PostMethod) {
-			r += "POST ";
-		}
-		if(method instanceof GetMethod) {
-			r += "GET ";
-		}
-		if(method instanceof PutMethod) {
-			r += "PUT ";
-		}
-		if(method instanceof DeleteMethod) {
-			r += "DELETE ";
-		}
-		// TODO, create a new method for PATCH (override open the POST method and change value, check open source code)
+		r.append(method.getName() + " ");
 
 		String q = "";
 		if(method.getQueryString() != null) {
 			q = "?" + method.getQueryString();
 		}
-		r+= method.getPath() + q + " HTTP/1.1\n";
+		r.append(method.getPath() + q + " HTTP/1.1\n");
 		
 		Header[] headers = method.getRequestHeaders();
 		for (Header header : headers) {
-			r+= header.getName() + ": " + header.getValue() + "\n";
+			r.append(header.getName() + ": " + header.getValue() + "\n");
 		}
 		
-		r += body + "\n\n";
+		r.append(body + "\n\n");
 
-		r += "<<<<<<\n\n";
+		r.append("<<<<<<\n\n");
 
-		r+= method.getStatusLine() + "\n"; 
+		r.append(method.getStatusLine() + "\n"); 
 		Header[] respHeaders = method.getResponseHeaders();
 		for (Header header : respHeaders) {
-			r+= header.getName() + ": " + header.getValue() + "\n";
+			r.append(header.getName() + ": " + header.getValue() + "\n");
 		}
 		try {
-			r += method.getResponseBodyAsString();
+			r.append(method.getResponseBodyAsString());
 		} catch (IOException e) {
-			r += "COULD NOT PARSE RESPONSE BODY\n";
+			r.append("COULD NOT PARSE RESPONSE BODY\n");
 			e.printStackTrace();
 		}
 		
-		return r;
+		return r.toString();
 	}
 		    
 }
