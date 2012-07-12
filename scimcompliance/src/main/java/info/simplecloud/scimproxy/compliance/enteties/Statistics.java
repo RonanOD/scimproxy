@@ -10,12 +10,16 @@ public class Statistics {
 
     @XmlElement(name = "failed")
     int failed  = 0;
+    
+    @XmlElement(name = "skipped")
+    int skipped  = 0;
 
     public Statistics() {
     }
 
-    public Statistics(int success, int failed) {
+    public Statistics(int success, int failed, int skipped) {
         this.success = success;
         this.failed = failed;
+        this.skipped = skipped;
     }
 }

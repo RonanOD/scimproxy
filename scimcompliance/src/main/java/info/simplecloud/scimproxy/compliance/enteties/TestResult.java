@@ -6,10 +6,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class TestResult {
 
-    public static int WARNING     = 1;
+	public static int WARNING     = 1;
     public static int ERROR       = 2;
     public static int CRITICAL    = 3;
     public static int SUCCESS     = 4;
+    public static int SKIPPED     = 5;
 
     @XmlElement(name = "name")
     String            name        = "";
@@ -35,11 +36,24 @@ public class TestResult {
         this.message = message;
         this.wire = wire;
 
-        this.statusText = (status == SUCCESS ? "Success" : "Failed");
-        this.statusLabel = (status == SUCCESS ? "label-success" : "label-important");
+        if (status == SUCCESS) {
+        	this.statusText = "Success";
+        	this.statusLabel = "label-success";
+        } else if (status == SKIPPED) {
+        	this.statusText = "Skipped";
+        	this.statusLabel = "label-info";
+        } else {
+        	this.statusText = "Failed";
+        	this.statusLabel = "label-important";
+        }
+        	
     }
 
     public boolean isSuccess() {
-        return "Success".equals(statusText);
+        return "Success".equals(this.statusText);
     }
+
+	public boolean isSkipped() {
+		return "Skipped".equals(this.statusText);
+	}
 }

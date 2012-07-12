@@ -60,11 +60,13 @@ $(document).ready(
 
           var success = parseInt(data.statistics.success);
           var failed = parseInt(data.statistics.failed);
+          var skipped = parseInt(data.statistics.skipped);
           template = $('#statisticsTemplate').html();
           html = Mustache.to_html(template, {
             total : failed + success,
             success : success,
-            failed : failed
+            failed : failed,
+            skipped : skipped
           });
           $("#compliance-statistics-text").html(html);
 
@@ -74,12 +76,12 @@ $(document).ready(
               width : "100%",
               height : "100%"
             },
-            colors : [ 'darkgrey', 'lightgrey' ],
+            colors : [ 'darkgrey', 'lightgrey', 'grey' ],
             backgroundColor : "whiteSmoke"
           };
           var chartData = google.visualization.arrayToDataTable([
               [ 'Result', 'Number' ], [ 'Failed', failed ],
-              [ 'Success', success ] ]);
+              [ 'Success', success ], [ 'Skipped', skipped ] ]);
           new google.visualization.PieChart(document
               .getElementById('compliance-chart')).draw(chartData, options);
 

@@ -14,6 +14,7 @@ import info.simplecloud.scimproxy.compliance.test.PatchTest;
 import info.simplecloud.scimproxy.compliance.test.PostTest;
 import info.simplecloud.scimproxy.compliance.test.PutTest;
 import info.simplecloud.scimproxy.compliance.test.ResourceCache;
+import info.simplecloud.scimproxy.compliance.test.SkippingTest;
 import info.simplecloud.scimproxy.compliance.test.SortTest;
 
 import java.util.ArrayList;
@@ -98,6 +99,8 @@ public class Compliance extends HttpServlet {
             results.addAll(new PutTest(csp, userCache, groupCache).run());
             results.addAll(new SortTest(csp, userCache, groupCache).run());
             results.addAll(new DeleteTest(csp, userCache, groupCache).run());
+            // TODO: Remove
+            results.addAll(new SkippingTest(csp, userCache, groupCache).run());
 
         } catch (Throwable e) {
             if (e instanceof CritialComplienceException) {
@@ -108,14 +111,17 @@ public class Compliance extends HttpServlet {
         }
         int success = 0;
         int fail = 0;
+        int skipped = 0;
 
         for (TestResult result : results) {
             if (result.isSuccess()) {
                 success++;
+            } else if (result.isSkipped()) {
+            	skipped++;
             } else {
                 fail++;
             }
         }
-        return new Result(new Statistics(success, fail), results);
+        return new Result(new Statistics(success, fail, skipped), results);
     }
 }
