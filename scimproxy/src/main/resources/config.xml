@@ -29,16 +29,15 @@
 	</auth>
 	<storages>
 		<storage>
-			<type>mongodb</type>
+			<type>dummy</type>
 		</storage>
 	</storages>
 	<bulk>
 		<maxOperations>1000</maxOperations>
 		<maxPayloadSize>1048576</maxPayloadSize>
 	</bulk>
-	<down-stream>
+<!-- 	<down-stream>
 		<csp>
-			<id>server</id>
 			<url>http://176.34.103.70:8080/</url>
 			<preferedEncoding>JSON</preferedEncoding>
 			<version>v1</version>
@@ -50,4 +49,5 @@
 			</auth>
 		</csp>
 	</down-stream>
+	 -->
 </config>

@@ -36,15 +36,6 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>Schema</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.ScimSchemaServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Schema</servlet-name>
-		<url-pattern>/v1/Schemas/*</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
 		<servlet-name>Schemas</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.ScimSchemasServlet</servlet-class>
 	</servlet>
@@ -59,6 +50,10 @@
 	<servlet-mapping>
 		<servlet-name>Schemas</servlet-name>
 		<url-pattern>/v1/Schemas.xml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Schemas</servlet-name>
+		<url-pattern>/v1/Schemas/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -94,6 +89,15 @@
 		<servlet-name>Bulk</servlet-name>
 		<url-pattern>/v1/Bulk.json</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Compliance</servlet-name>
+		<servlet-class>info.simplecloud.scimproxy.compliance.Compliance</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Compliance</servlet-name>
+		<url-pattern>/compliance</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>Compliance</servlet-name>
@@ -108,6 +112,7 @@
 		<servlet-name>Compliance</servlet-name>
 		<url-pattern>/compliance/*</url-pattern>
 	</servlet-mapping>
+	
 	
 	<servlet>
 		<servlet-name>AuthorizationServer</servlet-name>
@@ -175,30 +180,12 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>ViewerConfiguration</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.viewer.version.Configuration</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ViewerConfiguration</servlet-name>
-		<url-pattern>/Viewer/Configuration</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
 		<servlet-name>ViewerBulk</servlet-name>
 		<servlet-class>info.simplecloud.scimproxy.viewer.version.Bulk</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ViewerBulk</servlet-name>
 		<url-pattern>/Viewer/Bulk</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>ViewerCompliance</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.viewer.version.Compliance</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ViewerCompliance</servlet-name>
-		<url-pattern>/Viewer/Compliance</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>

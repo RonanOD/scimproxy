@@ -60,7 +60,7 @@ public class ScimGroupServletPutTest {
         request.setHeader("Content-Length", Integer.toString(scimGroup.getGroup(Group.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimGroup.getGroup(Group.ENCODING_JSON));
-        request.setHeader("ETag", etag);
+        request.setHeader("If-Match", etag);
 
         response.parse(tester.getResponses(request.generate()));
 

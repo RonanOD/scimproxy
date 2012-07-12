@@ -50,7 +50,7 @@ public class Edit extends HttpServlet {
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
         method.setRequestHeader("Accept", "application/json");
         method.setRequestHeader("Content-Type", "application/json");
-        method.setRequestHeader("ETag", indata.get("etag"));
+        method.setRequestHeader("If-Match", indata.get("etag"));
         method.setRequestHeader("Authorization", creds);
         method.setRequestBody(indata.get("data"));
         int responseCode = client.executeMethod(method);

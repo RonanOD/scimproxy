@@ -73,7 +73,7 @@ public class ScimUserBind extends HttpServlet {
             writer.write("<title>ScimProxy User Bind</title>");
             writer.write("</head>");
             writer.write("<body>");
-            writer.write("<h1>Wellcome " + user.getUserName() + "</h1>");
+            writer.write("<h1>Welcome " + user.getUserName() + "</h1>");
             writer.write("<pre>" + user.getUser("json") + "</pre>");
             writer.write("</body>");
             writer.write("</html>");

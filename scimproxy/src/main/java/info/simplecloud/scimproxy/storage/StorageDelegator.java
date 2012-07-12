@@ -76,6 +76,7 @@ public class StorageDelegator {
 	}
 
 	public static StorageDelegator getInstance(String sessionId, String test) {
+		sessionId = "1";
 		if(USER_INSTANCES.get(sessionId) == null) {
 			USER_INSTANCES.put(sessionId, new StorageDelegator(sessionId, test));
         }

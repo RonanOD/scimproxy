@@ -3,6 +3,7 @@ package info.simplecloud.scimproxy.storage.mongodb;
 import info.simplecloud.core.Group;
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownEncoding;
+import info.simplecloud.core.types.MultiValuedType;
 import info.simplecloud.scimproxy.config.CSP;
 import info.simplecloud.scimproxy.storage.IStorage;
 import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
@@ -348,6 +349,25 @@ public class MongoDBStorage implements IStorage {
 	            getUserCollection().remove(cur.next());
 	            found = true;
 	        }
+	        /*
+			// get eventual groups and remove user from group
+			User user = getUserForId(id);
+			if(user.getGroups() != null && user.getGroups().size() > 0) {
+				for(int i=0; i<user.getGroups().size(); i++) {
+					String groupId = user.getGroups().get(i).getValue();
+					Group group = getGroupForId(groupId);
+					if(group.getMembers() != null && group.getMembers().size() > 0) {
+						for(int j=0; j<group.getMembers().size(); j++) {
+							if(group.getMembers().get(j).getValue().equals(id)) {
+								group.getMembers().remove(j);
+								break;
+							}
+						}
+						replaceGroup(groupId, group);
+					}
+				}
+			}
+	        */
 		}
 		if (!found) {
 			throw new ResourceNotFoundException();
@@ -400,6 +420,31 @@ public class MongoDBStorage implements IStorage {
 			document.put("Group", dbObject);
 			// save in database
 			getGroupCollection().insert(document);
+			
+			// get all users in this group and make sure that this group is added to the user.
+			List<MultiValuedType<String>> users = group.getMembers();
+			if(users != null && users.size() > 0) {
+				for (MultiValuedType<String> multiValuedType : users) {
+					String userId = multiValuedType.getValue();
+					try {
+						User user = getUserForId(userId);
+						if(user.getGroups() == null) {
+							ArrayList<MultiValuedType<String>> al = new ArrayList<MultiValuedType<String>>();
+							al.add(new MultiValuedType<String>(group.getId(), "direct", group.getDisplayName(), false));
+							user.setGroups(al);
+						}
+						else {
+							user.getGroups().add(new MultiValuedType<String>(group.getId(), "direct", group.getDisplayName(), false));
+						}
+						replaceUser(userId, user);
+					} catch (ResourceNotFoundException e) {
+						// THIS SHOULD NOT HAPPEND. CAN't ADD GROUP WITH USER THAT DOES NOT EXIST
+						// throw this instead of just print out
+						e.printStackTrace();
+					}
+				}
+			}
+			
 		} catch (UnknownEncoding e) {
 			// TODO, THROW THIS!
 			e.printStackTrace();
@@ -410,7 +455,7 @@ public class MongoDBStorage implements IStorage {
 	public void deleteGroup(String id) throws ResourceNotFoundException {
 		boolean found = false;
 		if (id != null && !"".equals(id.trim())) {
-			
+						
 	        BasicDBObject query = new BasicDBObject();
 	        query.put("Group.id", id);
 	        DBCursor cur = getGroupCollection().find(query);
@@ -419,6 +464,26 @@ public class MongoDBStorage implements IStorage {
 	            getGroupCollection().remove(cur.next());
 	            found = true;
 	        }
+	        
+			// first remove the group from all users...
+			Group group = getGroupForId(id);
+			List<MultiValuedType<String>> users = group.getMembers();
+			if(users != null && users.size() > 0) {
+				for (MultiValuedType<String> multiValuedType : users) {
+					String userId = multiValuedType.getValue();
+					User user = getUserForId(userId);
+					if(user.getGroups() != null) {
+						for (int i=0; i<user.getGroups().size(); i++) {
+							if(id.equals(user.getGroups().get(i).getValue())) {
+								user.getGroups().remove(i);
+								break;
+							}
+						}
+					}
+					replaceUser(user.getId(), user);
+				}
+			}
+	        
 		}
 		if (!found) {
 			throw new ResourceNotFoundException();
