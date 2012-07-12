@@ -36,18 +36,4 @@
 		<maxOperations>1000</maxOperations>
 		<maxPayloadSize>1048576</maxPayloadSize>
 	</bulk>
-<!-- 	<down-stream>
-		<csp>
-			<url>http://176.34.103.70:8080/</url>
-			<preferedEncoding>JSON</preferedEncoding>
-			<version>v1</version>
-			<overrideBehaviour>true</overrideBehaviour>
-            <saveExternalId>true</saveExternalId>
-			<auth type="basic">
-				<username>usr</username>
-				<password>pw</password>
-			</auth>
-		</csp>
-	</down-stream>
-	 -->
 </config>

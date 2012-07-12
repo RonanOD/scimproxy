@@ -91,6 +91,16 @@ public abstract class Resource extends ComplexType {
         return encoder.encode(this, attributes);
 
     }
+    
+    public String getResourcePatch(String encoding, List<String> attributes) throws UnknownEncoding {
+        IUserEncoder encoder = encoders.get(encoding.toLowerCase());
+        if (encoder == null) {
+            throw new UnknownEncoding(encoding);
+        }
+
+        return encoder.encode(this, attributes);
+
+    }
 
     public static List<Resource> getResources(String users, String encoding, List<Resource> resources, Class<?> type)
             throws UnknownEncoding, InvalidUser {

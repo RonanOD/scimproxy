@@ -19,7 +19,10 @@ public class AuthMetod {
         authMetods.put("oauth 2", new AuthMetod(NAME_AUTH_OAUTH, AUTH_OAUTH));
         authMetods.put("oauth2.0", new AuthMetod(NAME_AUTH_OAUTH, AUTH_OAUTH));
         authMetods.put("oauth 2.0", new AuthMetod(NAME_AUTH_OAUTH, AUTH_OAUTH));
+        authMetods.put("oauth2-v10", new AuthMetod(NAME_AUTH_OAUTH, AUTH_OAUTH));
+        
         authMetods.put("basic", new AuthMetod(NAME_AUTH_BASIC, AUTH_BASIC));
+        authMetods.put("http basic", new AuthMetod(NAME_AUTH_BASIC, AUTH_BASIC));
     }
 
     public static AuthMetod getMetod(String method) {

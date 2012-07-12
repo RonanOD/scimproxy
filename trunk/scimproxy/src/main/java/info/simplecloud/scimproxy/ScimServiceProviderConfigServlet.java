@@ -47,9 +47,6 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
         		  "\"etag\": {" +
         		    "\"supported\":true" +
         		  "}," +
-        		  "\"xmlDataFormat\": {" +
-      		    	"\"supported\":true" +
-      		      "}," +
         		  "\"authenticationSchemes\": [" +
         		    "{" +
         		      "\"name\": \"HTTP Basic\"," +

@@ -1,9 +1,11 @@
 package info.simplecloud.scimproxy.compliance.test;
 
+import info.simplecloud.core.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResourceCache<T extends CachedResource> {
+public class ResourceCache<T extends Resource> {
 
 	List<T> resources = new ArrayList<T>();
 

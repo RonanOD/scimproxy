@@ -54,7 +54,7 @@ public class ConfigTest {
                 throw new Exception(); // catching in next row
             }
         } catch (Exception e) {
-            throw new CritialComplienceException(new TestResult(TestResult.CRITICAL, "Read ServiceProviderConfig",
+            throw new CritialComplienceException(new TestResult(TestResult.ERROR, "Read ServiceProviderConfig",
                     "Could not get ServiceProviderConfig at url " + url, ComplienceUtils.getWire(method, "")));
         }
 
@@ -77,13 +77,13 @@ public class ConfigTest {
 
             tmp = jsonObj.optJSONObject("changePassword");
             spc.setChangePassword(tmp == null ? false : tmp.optBoolean("supported"));
-            
+
             tmp = jsonObj.optJSONObject("sort");
             spc.setSort(tmp == null ? false : tmp.getBoolean("supported"));
-            
+
             tmp = jsonObj.optJSONObject("etag");
             spc.setEtag(tmp == null ? false : tmp.getBoolean("supported"));
-            
+
             tmp = jsonObj.optJSONObject("xmlDataFormat");
             spc.setXmlDataFormat(tmp == null ? false : tmp.getBoolean("supported"));
 
@@ -91,7 +91,7 @@ public class ConfigTest {
             for (int i = 0; i < authArray.length(); i++) {
                 tmp = authArray.getJSONObject(i);
                 String name = tmp.optString("name");
-                if(name != null) {
+                if (name != null) {
                     spc.addAuthenticationScheme(AuthMetod.getMetod(name));
                 }
             }
@@ -101,7 +101,7 @@ public class ConfigTest {
             return new TestResult(TestResult.SUCCESS, "Read ServiceProviderConfig", "success", ComplienceUtils.getWire(method, ""));
 
         } catch (Exception e) {
-            throw new CritialComplienceException(new TestResult(TestResult.CRITICAL, "Parse ServiceProviderConfig",
+            throw new CritialComplienceException(new TestResult(TestResult.ERROR, "Parse ServiceProviderConfig",
                     "Could not parse the json format returned from ServiceProviderConfig. " + e.getMessage(), ComplienceUtils.getWire(
                             method, "")));
         }
@@ -148,7 +148,7 @@ public class ConfigTest {
                 throw new Exception(); // caching next row
             }
         } catch (Exception e) {
-            throw new CritialComplienceException(new TestResult(TestResult.CRITICAL, "Get schema for " + type, "Could not get " + type
+            throw new CritialComplienceException(new TestResult(TestResult.ERROR, "Get schema for " + type, "Could not get " + type
                     + " Schema at url " + url, ComplienceUtils.getWire(method, "")));
         }
 
@@ -174,7 +174,7 @@ public class ConfigTest {
 
             return new TestResult(TestResult.SUCCESS, "Read schema for " + type, "success", ComplienceUtils.getWire(method, ""));
         } catch (Exception e) {
-            throw new CritialComplienceException(new TestResult(TestResult.CRITICAL, "Parse schema for " + type,
+            throw new CritialComplienceException(new TestResult(TestResult.ERROR, "Parse schema for " + type,
                     "Could not parse the json format returned when getting " + type + " schema. " + e.getMessage(),
                     ComplienceUtils.getWire(method, "")));
         }

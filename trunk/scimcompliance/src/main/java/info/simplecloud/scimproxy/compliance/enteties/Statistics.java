@@ -17,9 +17,15 @@ public class Statistics {
     public Statistics() {
     }
 
-    public Statistics(int success, int failed, int skipped) {
-        this.success = success;
-        this.failed = failed;
-        this.skipped = skipped;
+    public void incSkipped() {
+        this.skipped++;
+    }
+
+    public void incSuccess() {
+        this.success++;
+    }
+
+    public void incFailed() {
+        this.failed++;
     }
 }

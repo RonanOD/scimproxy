@@ -15,7 +15,11 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Users</servlet-name>
-		<url-pattern>/v1/Users*</url-pattern>
+		<url-pattern>/v1/Users.json</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Users</servlet-name>
+		<url-pattern>/v1/Users.xml</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Users</servlet-name>
@@ -28,7 +32,11 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Groups</servlet-name>
-		<url-pattern>/v1/Groups*</url-pattern>
+		<url-pattern>/v1/Groups.json</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Groups</servlet-name>
+		<url-pattern>/v1/Groups.xml</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Groups</servlet-name>
@@ -89,30 +97,6 @@
 		<servlet-name>Bulk</servlet-name>
 		<url-pattern>/v1/Bulk.json</url-pattern>
 	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>Compliance</servlet-name>
-		<servlet-class>info.simplecloud.scimproxy.compliance.Compliance</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Compliance</servlet-name>
-		<url-pattern>/compliance</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>Compliance</servlet-name>
-		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-		<init-param>
-			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>info.simplecloud.scimproxy.compliance</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Compliance</servlet-name>
-		<url-pattern>/compliance/*</url-pattern>
-	</servlet-mapping>
-	
 	
 	<servlet>
 		<servlet-name>AuthorizationServer</servlet-name>

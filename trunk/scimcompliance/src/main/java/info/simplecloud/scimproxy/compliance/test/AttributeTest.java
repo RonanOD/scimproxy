@@ -8,18 +8,18 @@ import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PutTest extends Test {
+public class AttributeTest extends Test {
 
-    public PutTest(CSP csp, ResourceCache<User> userCache, ResourceCache<Group> groupCache) {
+    public AttributeTest(CSP csp, ResourceCache<User> userCache, ResourceCache<Group> groupCache) {
         super(csp, userCache, groupCache);
     }
 
     @Override
     public List<TestResult> run() {
-        List<TestResult> results = new ArrayList<TestResult>();
+        List<TestResult> result = new ArrayList<TestResult>();
 
         
-        return results;
+        return result;
     }
 
 }

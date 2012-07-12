@@ -2153,10 +2153,12 @@ button.btn.small, input[type="submit"].btn.small {
 .alert-error .alert-heading {
   color: #b94a48;
 }
+
 .alert-info {
   background-color: #d9edf7;
   border-color: #bce8f1;
 }
+
 .alert-info, .alert-info .alert-heading {
   color: #3a87ad;
 }
