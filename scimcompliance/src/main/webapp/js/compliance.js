@@ -76,9 +76,10 @@ $(document).ready(
               width : "100%",
               height : "100%"
             },
-            colors : [ 'darkgrey', 'lightgrey', 'grey' ],
+            colors : [ 'darkgrey', 'lightgrey', 'grey'],
             backgroundColor : "whiteSmoke"
           };
+
           var chartData = google.visualization.arrayToDataTable([
               [ 'Result', 'Number' ], [ 'Failed', failed ],
               [ 'Success', success ], [ 'Skipped', skipped ] ]);
@@ -129,7 +130,7 @@ $(document).ready(
           top : 'auto',
           left : 'auto'
         });
-        $.post("/compliance/test", data, handleResponse);// .error(handleError);
+        $.post("/compliance/test", data, handleResponse).error(handleError);
 
         $("#username").val("");
         $("#password").val("");

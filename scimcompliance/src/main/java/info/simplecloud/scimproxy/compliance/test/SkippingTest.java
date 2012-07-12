@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy.compliance.test;
 
+import info.simplecloud.core.Group;
+import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 
@@ -8,7 +10,7 @@ import java.util.List;
 
 public class SkippingTest extends Test {
 
-	public SkippingTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
+	public SkippingTest(CSP csp, ResourceCache<User> cache, ResourceCache<Group> groupCache) {
 		super(csp, cache, groupCache);
 	}
 

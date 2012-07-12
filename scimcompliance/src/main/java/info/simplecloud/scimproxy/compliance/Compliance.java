@@ -1,12 +1,13 @@
 package info.simplecloud.scimproxy.compliance;
 
+import info.simplecloud.core.Group;
+import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.compliance.enteties.AuthMetod;
 import info.simplecloud.scimproxy.compliance.enteties.Result;
 import info.simplecloud.scimproxy.compliance.enteties.Statistics;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 import info.simplecloud.scimproxy.compliance.exception.CritialComplienceException;
-import info.simplecloud.scimproxy.compliance.test.CachedGroup;
-import info.simplecloud.scimproxy.compliance.test.CachedUser;
+import info.simplecloud.scimproxy.compliance.test.AttributeTest;
 import info.simplecloud.scimproxy.compliance.test.ConfigTest;
 import info.simplecloud.scimproxy.compliance.test.DeleteTest;
 import info.simplecloud.scimproxy.compliance.test.FilterTest;
@@ -76,8 +77,6 @@ public class Compliance extends HttpServlet {
             // stop if fails)
             ConfigTest configTest = new ConfigTest();
             results.add(configTest.getConfiguration(csp));
-            results.add(configTest.getSchema("User", csp));
-            results.add(configTest.getSchema("Group", csp));
 
             if ((AuthMetod.AUTH_BASIC.equalsIgnoreCase(authMethod) && StringUtils.isEmpty(username) && StringUtils.isEmpty(password))
                     || (AuthMetod.AUTH_OAUTH.equalsIgnoreCase(authMethod) && StringUtils.isEmpty(username) && StringUtils.isEmpty(password)
@@ -87,17 +86,21 @@ public class Compliance extends HttpServlet {
                 return new Result(spc.getAuthenticationSchemes());
             }
 
+            results.add(configTest.getSchema("Users", csp));
+            results.add(configTest.getSchema("Groups", csp));
+
             // TODO: add the required attributes in userSchema and groupSchema
             // that server wanted
 
-            ResourceCache<CachedUser> userCache = new ResourceCache<CachedUser>();
-            ResourceCache<CachedGroup> groupCache = new ResourceCache<CachedGroup>();
+            ResourceCache<User> userCache = new ResourceCache<User>();
+            ResourceCache<Group> groupCache = new ResourceCache<Group>();
 
             results.addAll(new PostTest(csp, userCache, groupCache).run());
             results.addAll(new FilterTest(csp, userCache, groupCache).run());
             results.addAll(new PatchTest(csp, userCache, groupCache).run());
             results.addAll(new PutTest(csp, userCache, groupCache).run());
             results.addAll(new SortTest(csp, userCache, groupCache).run());
+            results.addAll(new AttributeTest(csp, userCache, groupCache).run());
             results.addAll(new DeleteTest(csp, userCache, groupCache).run());
             // TODO: Remove
             results.addAll(new SkippingTest(csp, userCache, groupCache).run());
@@ -109,19 +112,22 @@ public class Compliance extends HttpServlet {
                 results.add(new TestResult(TestResult.ERROR, "Unknown Test", e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
             }
         }
-        int success = 0;
-        int fail = 0;
-        int skipped = 0;
 
+        Statistics statistics = new Statistics();
         for (TestResult result : results) {
-            if (result.isSuccess()) {
-                success++;
-            } else if (result.isSkipped()) {
-            	skipped++;
-            } else {
-                fail++;
+
+            switch (result.getStatus()) {
+            case TestResult.ERROR:
+                statistics.incFailed();
+                break;
+            case TestResult.SUCCESS:
+                statistics.incSuccess();
+                break;
+            case TestResult.SKIPPED:
+                statistics.incSkipped();
+                break;
             }
         }
-        return new Result(new Statistics(success, fail, skipped), results);
+        return new Result(statistics, results);
     }
 }

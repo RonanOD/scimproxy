@@ -56,3 +56,10 @@ div.header {
 	font-weight: bolder;
 	background: whiteSmoke;	
 }
+
+
+.alert-tests {
+  background-color: #cccccc;
+  border-color: #aaaaaa;
+  color: black;
+}

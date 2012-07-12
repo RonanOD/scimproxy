@@ -22,43 +22,34 @@ import org.apache.commons.httpclient.methods.GetMethod;
 
 public class SortTest extends Test {
 
-    public SortTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
-        super(csp, cache, groupCache);
+    public SortTest(CSP csp, ResourceCache<User> userCache, ResourceCache<Group> groupCache) {
+        super(csp, userCache, groupCache);
     }
 
     @Override
     public List<TestResult> run() {
         List<TestResult> results = new ArrayList<TestResult>();
 
-        ServiceProviderConfig spc = csp.getSpc();
+        results.add(doSort("Sort users in ascending order in XML", new Header("Accept", "application/xml"), "ascending", "XML", "/Users", "userName"));
+        results.add(doSort("Sort users in descending order in XML", new Header("Accept", "application/xml"), "descending", "XML", "/Users", "userName"));
+        results.add(doSort("Sort groups in ascending order in XML", new Header("Accept", "application/xml"), "ascending", "XML", "/Groups", "displayName"));
+        results.add(doSort("Sort groups in descending order in XML", new Header("Accept", "application/xml"), "descending", "XML", "/Groups", "displayName"));
 
-        if (spc.hasXmlDataFormat()) {
-            results.add(doSort("Sort users in ascending order in XML", new Header("Accept", "application/xml"), "ascending", "XML",
-                    "/Users", "userName"));
-            results.add(doSort("Sort users in descending order in XML", new Header("Accept", "application/xml"), "descending", "XML",
-                    "/Users", "userName"));
-            results.add(doSort("Sort groups in ascending order in XML", new Header("Accept", "application/xml"), "ascending", "XML",
-                    "/Groups", "displayName"));
-            results.add(doSort("Sort groups in descending order in XML", new Header("Accept", "application/xml"), "descending", "XML",
-                    "/Groups", "displayName"));
-        }
-
-        results.add(doSort("Sort users in ascending order in JSON", new Header("Accept", "application/json"), "ascending", "JSON",
-                "/Users", "userName"));
-        results.add(doSort("Sort users in descending order in JSON", new Header("Accept", "application/json"), "descending", "JSON",
-                "/Users", "userName"));
-        results.add(doSort("Sort groups in ascending order in JSON", new Header("Accept", "application/json"), "ascending", "JSON",
-                "/Groups", "displayName"));
-        results.add(doSort("Sort groups in descending order in JSON", new Header("Accept", "application/json"), "descending", "JSON",
-                "/Groups", "displayName"));
+        results.add(doSort("Sort users in ascending order in JSON", new Header("Accept", "application/json"), "ascending", "JSON", "/Users", "userName"));
+        results.add(doSort("Sort users in descending order in JSON", new Header("Accept", "application/json"), "descending", "JSON", "/Users", "userName"));
+        results.add(doSort("Sort groups in ascending order in JSON", new Header("Accept", "application/json"), "ascending", "JSON", "/Groups", "displayName"));
+        results.add(doSort("Sort groups in descending order in JSON", new Header("Accept", "application/json"), "descending", "JSON", "/Groups", "displayName"));
 
         return results;
     }
 
     private TestResult doSort(String testName, Header accept, String order, String encoding, String endpoint, String attribute) {
-
-        GetMethod method = new GetMethod(csp.getUrl() + csp.getVersion() + endpoint
-                + String.format("?sortBy=%s&sortOrder=%s", attribute, order));
+        ServiceProviderConfig spc = csp.getSpc();
+        if (!spc.hasXmlDataFormat() && Resource.ENCODING_XML.equals(encoding)) {
+            return new TestResult(TestResult.SKIPPED, testName,"ServiceProvider does not support XML.", "<empty>");
+        }
+        
+        GetMethod method = new GetMethod(csp.getUrl() + csp.getVersion() + endpoint + String.format("?sortBy=%s&sortOrder=%s", attribute, order));
 
         ComplienceUtils.configureMethod(method);
         method.setRequestHeader(accept);
@@ -80,11 +71,11 @@ public class SortTest extends Test {
                     resourcesList = Group.getGroups(resourcesString, encoding);
                 }
 
-                if(resourcesList.size() == 0) {
-                    return new TestResult(TestResult.ERROR, testName, "Failed. No resource in responce",
-                            ComplienceUtils.getWire(method, resourcesString));
+                if (resourcesList.size() == 0) {
+                    return new TestResult(TestResult.ERROR, testName, "Failed. No resource in responce", ComplienceUtils.getWire(method,
+                            resourcesString));
                 }
-                
+
                 Resource previous = (Resource) resourcesList.get(0);
                 for (int i = 1; i < resourcesList.size(); i++) {
                     Resource current = (Resource) resourcesList.get(i);
