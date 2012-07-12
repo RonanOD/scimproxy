@@ -3,7 +3,6 @@ package info.simplecloud.scimproxy.compliance.test;
 import info.simplecloud.core.Group;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
-import info.simplecloud.core.types.Meta;
 import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
@@ -21,40 +20,45 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class PutTest extends Test {
 
-	public PutTest(CSP csp, ResourceCache<CachedUser> cache, ResourceCache<CachedGroup> groupCache) {
+	public PutTest(CSP csp, ResourceCache<User> cache, ResourceCache<Group> groupCache) {
 		super(csp, cache, groupCache);
 	}
 
 	@Override
 	public List<TestResult> run() {
 		List<TestResult> results = new ArrayList<TestResult>();
-		User user = ComplienceUtils.getUser();
-		CachedUser cachedUser = this.userCache.borrowCachedResource();
-		user.setId(cachedUser.getId());
-		user.setMeta(new Meta());
-		user.getMeta().setVersion(cachedUser.getEtag());
+		User user = this.userCache.borrowCachedResource();
 
-		results.add(putUser(user, cachedUser, "PUT User JSON", "/Users/", User.ENCODING_JSON));
+		user.setDisplayName("Bob");
+		results.add(putUser(user, "PUT User JSON", "/Users/", User.ENCODING_JSON));
+
 		user.setDisplayName("Bobert");
-		user.getMeta().setVersion(cachedUser.getEtag());
-		results.add(putUser(user, cachedUser, "PUT User XML", "/Users/", User.ENCODING_XML));
+		results.add(putUser(user, "PUT User XML", "/Users/", User.ENCODING_XML));
 
-		// Groups
-		CachedGroup cachedGroup = this.groupCache.borrowCachedResource();
-		Group group = new Group();
+		Group group = this.groupCache.borrowCachedResource();
+
 		group.setDisplayName("TheTeam");
-		group.setId(cachedGroup.getId());
-		group.setMeta(new Meta());
-		group.getMeta().setVersion(cachedGroup.getEtag());
+		results.add(put(group, "PUT Group JSON", "/Groups/", User.ENCODING_JSON));
 
-		results.add(putGroup(group, cachedGroup, "PUT Group JSON", "/Groups/", User.ENCODING_JSON));
 		group.setDisplayName("2ndTeam");
-		group.getMeta().setVersion(cachedGroup.getEtag());
-		results.add(putGroup(group, cachedGroup, "PUT Group XML", "/Groups/", User.ENCODING_XML));
+		results.add(put(group, "PUT Group XML", "/Groups/", User.ENCODING_XML));
+
 		return results;
 	}
 
-	private TestResult putGroup(Group group, CachedResource cachedResource, String test, String path, String encoding) {
+	private TestResult put(Resource resource, String test, String path, String encoding) {
+		if(!this.csp.getSpc().hasXmlDataFormat() && Resource.ENCODING_XML.equals(encoding)) {
+            return new TestResult(TestResult.SKIPPED, test, "ServiceProvider does not support XML.", "<empty>");
+        }
+		if (resource instanceof Group) {
+			return putGroup((Group) resource, test, path, encoding);
+		} else if (resource instanceof User){
+			return putUser((User) resource, test, path, encoding);
+		}
+		return null;
+	}
+
+	private TestResult putGroup(Group group, String test, String path, String encoding) {
 		PutMethod method = getMethod(group, path, encoding);
 
 		StringRequestEntity body = null;
@@ -76,7 +80,7 @@ public class PutTest extends Test {
 		Group responsegroup;
 		try {
 			responsegroup = new Group(responseBody, encoding);
-			cachedResource.setEtag(responsegroup.getMeta().getVersion());
+			group.getMeta().setVersion(responsegroup.getMeta().getVersion());
 		} catch (Exception e) {
 			return new TestResult(TestResult.ERROR, test, "Failed. Could not parse group. " + e.getMessage(),
 					ComplienceUtils.getWire(method, body.getContent()));
@@ -89,7 +93,7 @@ public class PutTest extends Test {
 		return new TestResult(TestResult.SUCCESS, test, "", ComplienceUtils.getWire(method, body.getContent()));
 	}
 
-	private TestResult putUser(User user, CachedResource cachedResource, String test, String path, String encoding) {
+	private TestResult putUser(User user, String test, String path, String encoding) {
 
 		PutMethod method = getMethod(user, path, encoding);
 
@@ -112,7 +116,7 @@ public class PutTest extends Test {
 		User responseUser;
 		try {
 			responseUser = new User(responseBody, encoding);
-			cachedResource.setEtag(responseUser.getMeta().getVersion());
+			user.getMeta().setVersion(responseUser.getMeta().getVersion());
 		} catch (Exception e) {
 			return new TestResult(TestResult.ERROR, test, "Failed. Could not parse user. " + e.getMessage(),
 					ComplienceUtils.getWire(method, body.getContent()));
