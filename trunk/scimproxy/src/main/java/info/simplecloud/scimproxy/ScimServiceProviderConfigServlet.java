@@ -47,6 +47,9 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
         		  "\"etag\": {" +
         		    "\"supported\":true" +
         		  "}," +
+        		  "\"xmlDataFormat\": {" +
+      		    	"\"supported\":true" +
+      		      "}," +
         		  "\"authenticationSchemes\": [" +
         		    "{" +
         		      "\"name\": \"HTTP Basic\"," +
@@ -63,12 +66,12 @@ public class ScimServiceProviderConfigServlet extends HttpServlet {
          		    	"\"type\":\"OAuth2\"" +
          		    "}," +
          		    "{" +
-     		    	"\"name\": \"OAuth2-v10\"," +
-     		    	"\"description\": \"OAuth2 v10 \"," +
-     		    	"\"specUrl\":\"http://tools.ietf.org/html/draft-ietf-oauth-v2-10\"," +
-     		    	"\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "/AuthorizationServer/\"," +
-     		    	"\"type\":\"OAuth2-v10\"" +
-     		    "}" +
+	     		    	"\"name\": \"OAuth2-v10\"," +
+	     		    	"\"description\": \"OAuth2 v10 \"," +
+	     		    	"\"specUrl\":\"http://tools.ietf.org/html/draft-ietf-oauth-v2-10\"," +
+	     		    	"\"documentationUrl\":\"" + HttpGenerator.getServer(req) + "/AuthorizationServer/\"," +
+	     		    	"\"type\":\"OAuth2-v10\"" +
+	     		    "}" +
         		  "]" +
         		"}";
         	

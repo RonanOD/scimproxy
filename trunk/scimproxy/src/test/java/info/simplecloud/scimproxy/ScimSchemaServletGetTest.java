@@ -16,7 +16,7 @@ public class ScimSchemaServletGetTest {
     @BeforeClass
     public static void setUp() throws Exception {
         tester = new ServletTester();
-        tester.addServlet(ScimSchemaServlet.class, "/v1/Schemas/*");
+        tester.addServlet(ScimSchemasServlet.class, "/v1/Schemas/*");
         tester.addServlet(DefaultServlet.class, "/");
         tester.start();
     }
@@ -27,7 +27,7 @@ public class ScimSchemaServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Schemas/User");
+        request.setURI("/v1/Schemas/Users");
         response.parse(tester.getResponses(request.generate()));
         String r = response.getContent();
 
@@ -40,7 +40,7 @@ public class ScimSchemaServletGetTest {
         request.setVersion("HTTP/1.0");
         request.setHeader("Authorization", "Basic dXNyOnB3");
 
-        request.setURI("/v1/Schemas/Group");
+        request.setURI("/v1/Schemas/Groups");
         response.parse(tester.getResponses(request.generate()));
         String r = response.getContent();
 
@@ -53,7 +53,7 @@ public class ScimSchemaServletGetTest {
         request.setHeader("Authorization", "Basic dXNyOnB3");
         request.setHeader("Accept", "application/json");
 
-        request.setURI("/v1/Schemas/User");
+        request.setURI("/v1/Schemas/Users");
         response.parse(tester.getResponses(request.generate()));
         String r = response.getContent();
 
@@ -68,7 +68,7 @@ public class ScimSchemaServletGetTest {
         request.setHeader("Authorization", "Basic dXNyOnB3");
         request.setHeader("Accept", "application/xml");
 
-        request.setURI("/v1/Schemas/User");
+        request.setURI("/v1/Schemas/Users");
         response.parse(tester.getResponses(request.generate()));
         String r = response.getContent();
 

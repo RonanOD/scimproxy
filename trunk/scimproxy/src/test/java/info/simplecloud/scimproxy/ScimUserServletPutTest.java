@@ -61,7 +61,7 @@ public class ScimUserServletPutTest {
         request.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request.setHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setContent(scimUser.getUser(User.ENCODING_JSON));
-        request.setHeader("ETag", etag);
+        request.setHeader("If-Match", etag);
 
         response.parse(tester.getResponses(request.generate()));
 

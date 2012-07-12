@@ -512,8 +512,31 @@ public class Trigger {
         }
     }
     
+    
+    private Resource getResourceFromCSP(Resource resource) throws ResourceNotFoundException {
+    	
+     	// return it if only one, otherwise log and throw exception
+    	
+    	return new User();
+    }
+
 	public void changePassword(User scimUser, String password) {
         log.info("Change password on User " + scimUser.getId() + " downstream not implemented.");
+	}
+	
+	
+	private void handleCSPErrors() {
+		 /* 		- overwrite (overwrite) 
+		 * 			- make a new get to get updated version and re-send request. 
+		 * 		- skip when conflict (ignore) 
+		 * 			- log problem and ignore it.
+		 * 		- throw exception (fail)
+		 * 			- treat it as an exception and answer 500 to caller.
+		 * 		- throw exception and rollback (rollback)
+		 * 			- treat is as an exception and answer 500 to caller.
+		 * 			- remove the existing changed in database 
+		 * 			- find a way to rollback other CSP:s 
+		 */ 
 	}
 
 	

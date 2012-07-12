@@ -75,7 +75,7 @@ public class ScimUserServletPatchTest {
         request2.setContent(scimUser.getUser(User.ENCODING_JSON));
         request2.setHeader("Content-Length", Integer.toString(scimUser.getUser(User.ENCODING_JSON).length()));
         request2.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        request2.setHeader("ETag", scimUser.getMeta().getVersion());
+        request2.setHeader("If-Match", scimUser.getMeta().getVersion());
         response2.parse(tester.getResponses(request2.generate()));
 
         Assert.assertEquals(200, response2.getStatus());

@@ -43,7 +43,7 @@ public class Delete extends HttpServlet {
         
         //method.setRequestHeader("X-HTTP-Method-Override", "Delete");
         if(indata.get("etag") != null) {
-            method.setRequestHeader("ETag", indata.get("etag"));
+            method.setRequestHeader("If-Match", indata.get("etag"));
         }
         method.setRequestHeader("Authorization", creds);
         method.setRequestHeader("Content-Type", "application/json");

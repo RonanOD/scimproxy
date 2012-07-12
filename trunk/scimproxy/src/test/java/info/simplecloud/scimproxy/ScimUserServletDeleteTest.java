@@ -64,7 +64,7 @@ public class ScimUserServletDeleteTest {
 
         request.setMethod("DELETE");
         request.setVersion("HTTP/1.0");
-        request.setHeader("ETag", scimUser.getMeta().getVersion());
+        request.setHeader("If-Match", scimUser.getMeta().getVersion());
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertTrue(response.getMethod() == null);

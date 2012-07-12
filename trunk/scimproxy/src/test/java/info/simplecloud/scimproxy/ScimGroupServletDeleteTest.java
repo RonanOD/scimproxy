@@ -45,7 +45,7 @@ public class ScimGroupServletDeleteTest {
     }
 
     @Test
-    public void deleteUser() throws Exception {
+    public void deleteGroup() throws Exception {
 
         request.setMethod("GET");
         request.setVersion("HTTP/1.0");
@@ -63,7 +63,7 @@ public class ScimGroupServletDeleteTest {
 
         request.setMethod("DELETE");
         request.setVersion("HTTP/1.0");
-        request.setHeader("ETag", scimGroup.getMeta().getVersion());
+        request.setHeader("If-Match", scimGroup.getMeta().getVersion());
         response.parse(tester.getResponses(request.generate()));
 
         Assert.assertTrue(response.getMethod() == null);
