@@ -77,7 +77,8 @@ $(document).ready(
               height : "100%"
             },
             colors : [ "#f2dede", "#dff0d8", "#d9edf7"  ],
-            backgroundColor : "whiteSmoke"
+            backgroundColor : "whiteSmoke",
+            pieSliceTextStyle : [{color:"black"},{color:"red"},{color:"blue"}]
           };
 
           var chartData = google.visualization.arrayToDataTable([
