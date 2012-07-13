@@ -76,7 +76,7 @@ $(document).ready(
               width : "100%",
               height : "100%"
             },
-            colors : [ 'darkgrey', 'lightgrey', 'grey'],
+            colors : [ "#f2dede", "#dff0d8", "#d9edf7"  ],
             backgroundColor : "whiteSmoke"
           };
 
