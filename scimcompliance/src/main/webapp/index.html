@@ -30,7 +30,7 @@
           <div class="hero-unit">
             <h1>System for Cross-domain Identity Management</h1>
             <p>
-              Designed to make managing user identity in cloud based applications and services easier</p>
+               Designed to make managing user identity in cloud based applications and services easier</p>
             <p>
             <a class="btn btn-primary btn-large" href="#overview" data-toggle="tab">
                 Learn more
@@ -40,18 +40,18 @@
           <div class="row">
             <div class="span4">
               <h2>Overview</h2>
-               <p>SCIM is created to simplify user management in the cloud by creating a Schema for representing users and groups and a REST API for all the necessary CRUD operations.</p>
+               <p>SCIM is created to simplify user management in the cloud by creating a schema for representing users and groups and a REST API for all the necessary CRUD operations.</p>
               <p><a class="btn" href="#overview" data-toggle="tab">View details &raquo;</a></p>
             </div>
             <div class="span4">
               <h2>Specifications</h2>
-               <p>For a complete view of the SCIM schema and protocol see the respective specification</p>
+               <p>For a complete view of the SCIM schema and the API, see the respective specification</p>
               <p><a class="btn" href="#specifications" data-toggle="tab">View details &raquo;</a></p>
            </div>
             <div class="span4">
-              <h2>Resources</h2>
-              <p>During the development of the SCIM specification a lot of resources has been create everything form XML schemas to intellectual properties agreements under the OWA agreement.</p>
-              <p><a class="btn" href="#resources" data-toggle="tab">View details &raquo;</a></p>
+              <h2>Compliance</h2>
+              <p>Test your SCIM implementation using the online compliance test.</p>
+              <p><a class="btn" href="#complianceTest" data-toggle="tab">View details &raquo;</a></p>
             </div>
           </div>
         </div>
@@ -76,21 +76,21 @@
             
             <h2>Model</h2>
             <p class="text">
-              SCIM is build on a object model with inheritance the Resource is 
-              the common denominator and all SCIM objects are derived from it. 
-              As can be seen in the image below SCIM has currently three objects that directly 
-              inherits form the Resource object. The ServiceProviderConfiguration 
+              SCIM is build on a object model where a Resource is 
+              a common denominator and all SCIM objects are derived from it. 
+              SCIM currently has three objects that directly 
+              inherits from the Resource object. The ServiceProviderConfiguration 
               and Schema is used for discovery and contains no user information. 
               The CoreResource is where the user and group data is contained, 
-              within its two children User and Group.    
+              with it's two children resources User and Group.    
             </p>
             <img src="img/model.png" />
             
             <h2>Example User</h2>
             <p class="text">
-              This is an example of how a SCIM user can be encoded it does not 
+              This is an example of how a SCIM user can be encoded. It does not 
               contain the full set of attributes available. It is encoded 
-              as JSON however it is possible to also support XML. 
+              as JSON however XML is also defined in the specification. 
             </p>
             <p class="text">
               In the example user one can see the different types of data that can 
@@ -133,7 +133,7 @@
             <h2>Example Group</h2>
             <p class="text">
               In addition to the user concept the SCIM core includes the 
-              group concept to model organisational structure in provisioned 
+              group concept to model organizationational structure in provisioned 
               objects. Groups can contain users or other groups 
             </p>
             <pre class="prettyprint">
@@ -158,14 +158,14 @@
             
             <h2>Operations</h2>
             <p class="text">
-              For manipulation and of Resource SCIM provides a REST API with a 
+              For manipulation of resources, SCIM provides a REST API with a 
               rich but simple set of operation, everything from patching a specific 
               attribute on a specific user to doing massive bulk updates.
             </p>
             <ul>
               <li>Create = POST https://example.com/{v}/{resource}</li>
               <li>Read = GET https://example.com/{v}/{resource}/{id}</li>
-              <li>Update = PUT https://example.com/{v}/{resource}/{id}</li>
+              <li>Replace = PUT https://example.com/{v}/{resource}/{id}</li>
               <li>Delete = DELETE https://example.com/{v}/{resource}/{id}</li>
               <li>Update = PATCH https://example.com/{v}/{resource}/{id}</li>
               <li>Search = https://example.com/{v}/{resource}?ﬁlter={attribute}{op}{value}&sortBy={attributeName}&sortOrder={ascending|descending}</li>
@@ -174,8 +174,8 @@
             
             <h2>Discovery</h2>
             <p class="text">
-              To simplify interoperability SCIM provides two end points form discovering 
-              of supported optional features and specific attribute details.
+              To simplify interoperability, SCIM provides two end points to discover 
+              supported features and specific attribute details.
             </p>
             <ul>
               <li>GET /ServiceProviderConﬁg<p>Specification compliance, authentication schemes, data models.</p></li>
@@ -184,8 +184,8 @@
             
             <h2>Create Request</h2>
             <p class="text">
-              Creating Resource is done with POSTs towards there respective end 
-              points. In the example below we see the creation of a User.
+              To creating a resource, send a HTTP POST request towards the resources respective end 
+              point. In the example below we see the creation of a User.
             </p> 
             <p class="text">  
               As can be seen in this and later examples the URL contains a version number 
@@ -199,21 +199,19 @@ Accept: application/json
 Authorization: Bearer h480djs93hd8
 {
   "schemas":["urn:scim:schemas:core:1.0"],
-  "userName":"bjensen",
   "externalId":"bjensen",
+  "userName":"bjensen",
   "name":{
-    "formatted":"Ms. Barbara J Jensen III",
     "familyName":"Jensen",
     "givenName":"Barbara"
   }
 }</pre>
             <h2>Create Response</h2>
             <p class="text">
-              Responses contains the created Resource and HTTP code 201 to indicate that the 
-              Resource has been created. Note that the returned user contains more 
+              A response contains the created Resource and HTTP code 201 to indicate that the 
+              Resource has been created successfully. Note that the returned user contains more 
               data then was posted, <i>id</i> and <i>meta</i> data has been added 
-              by the service provider to make a complete User object. Then there 
-              is the location header that indicates where the user can be fetched 
+              by the service provider to make a complete User object. A location header indicates where the resource can be fetched 
               in subsequent request.
             </p>
             <pre class="prettyprint">
@@ -231,7 +229,6 @@ Location: https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646
     "version":"W\/\"e180ee84f0671b1\""
   },
   "name":{
-    "formatted":"Ms. Barbara J Jensen III",
     "familyName":"Jensen",
     "givenName":"Barbara"
   },
@@ -240,11 +237,9 @@ Location: https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646
             
             <h2>Get Request</h2>
             <p class="text">
-              Fetching resources is done with HTTP GET towards the desired Resource 
-              end point with the id in the path. In this example a user is fetched 
-              and at the end of the URL we can see the postfix '.json', the postfix is 
-              for clients that cannot set the HTTP Accept header to specify desired 
-              response format. 
+              Fetching resources is done by sending an HTTP GET request towards the desired Resource 
+              end point. In this example a user is fetched 
+              and at the end of the URL we can see the postfixed '.json'. It's another method for clients to indicate desired response format a part from the accept header.
             </p>
             <pre class="prettyprint">
 GET /v1/Users/2819c223-7f76-453a-919d-413861904646.json  
@@ -254,7 +249,7 @@ Authorization: Bearer h480djs93hd8</pre>
 
             <h2>Get Response</h2>
             <p class="text">
-              The response of a GET contains the Resource. The Etag header can be 
+              The response of a GET contains the Resource. The Etag header can, in later requests, be 
               used to prevent concurrent modifications of Resources.  
             </p>
             <pre class="prettyprint">
@@ -319,37 +314,34 @@ Etag: W/"e180ee84f0671b1"
               
                 <h2>SCIM 1.1</h2>
                 <p class="text">
-                  This is the secound official relese it does not breake any compatebilety 
+                  The second official release of the SCIM specification. It does not break any compatibility 
                   with 1.0 the changes is only cleanup and clarifications on issus found during 
-                  interop testing (see the project page for details on how interop tests has been done).
+                  interop testing (see the project page under resources for details on how interop tests has been done).
                 </p>
                 <ul>
                   <li>
                     <a href="/specs/draft-scim-scenarios-04.html">Scenarios Doc - draft</a>
                     <p class="text">
-                      The senario document was created to guid the development of the 
+                      The senario document was created to guide the development of the 
                       specification and is not normative.
                     </p>
                   </li>
                   <li>
                     <a href="/specs/draft-scim-core-schema-00.html">Core Schema 1.1</a> <span class="label label-success">Active</span>
                     <p class="text">
-                      The Core Schema document specifies how to encode users and group for 
-                      distribution throught the SCIM REST API to different scim complien service providers.  
+                      The Core Schema provides a platform neutral schema and extension model for representing users and groups in JSON and XML formats.
                     </p>
                   </li>
                   <li>
-                    <a href="/specs/draft-scim-api-00.html"> REST API 1.1</a> <span class="label label-success">Active</span>
+                    <a href="/specs/draft-scim-api-00.html">REST API 1.1</a> <span class="label label-success">Active</span>
                     <p class="text">
-                      The REST API specifies ho the packaged resource is to be distributed 
-                      and updated over HTTP.
+                      The SCIM Protocol is an application-level, REST protocol for provisioning and managing identity data on the web.
                     </p>
                   </li>
                   <li>
                     <a href="/specs/draft-scim-saml2-binding-02.html">SAML 2.0 Binding - draft</a>
                     <p class="text">
-                      The SAML 2.0 binding document specifies how to package the SCIM user 
-                      resource in SAML assertions.
+                      Defines a binding of SCIM schema to SAML messages and assertions.
                     </p>
                   </li>
                 </ul>
@@ -359,36 +351,32 @@ Etag: W/"e180ee84f0671b1"
             <div class="well">
             <h2>SCIM 1.0</h2>
               <p class="text">
-                This was the first official release of the SCIM specifications, it was 
-                released in december 2011 by consencus from the developing group. 
+                The first official release of the SCIM specifications released in december 2011. 
               </p>
               <ul>
                 <li>
                   <a href="/specs/draft-scim-scenarios-04.html">Scenarios Doc - draft 4</a>
                   <p class="text">
-                    The senario document was created to guid the development of the 
-                    specification and is not normative.
+					  The senario document was created to guide the development of the 
+                      specification and is not normative.                  
                   </p>
                 </li>
                 <li>
                   <a href="/specs/draft-scim-core-schema-00.html">Core Schema 1.0</a>
                   <p class="text">
-                    The Core Schema document specifies how to encode users and group for 
-                    distribution throught the SCIM REST API to different scim complien service providers.  
+                      The Core Schema provides a platform neutral schema and extension model for representing users and groups in JSON and XML formats.
                   </p>
                 </li>
                 <li>
                   <a href="/specs/draft-scim-api-00.html">REST API 1.0</a>
                   <p class="text">
-                    The REST API specifies ho the packaged resource is to be distributed 
-                    and updated over HTTP.
+                      The SCIM Protocol is an application-level, REST protocol for provisioning and managing identity data on the web.
                   </p>
                 </li>
                 <li>
                   <a href="/specs/draft-scim-saml2-binding-02.html">SAML 2.0 Binding - draft 1</a>
                   <p class="text">
-                    The SAML 2.0 binding document specifies how to package the SCIM user 
-                    resource in SAML assertions.
+                      Defines a binding of SCIM schema to SAML messages and assertions.
                   </p>
                 </li>
               </ul>
@@ -408,32 +396,30 @@ Etag: W/"e180ee84f0671b1"
             
             <h3>Project Hosting</h3>
             <p>
-              The development of the scim specification had been done 
+              The original development of the scim specification was done 
               <a href="http://code.google.com/p/scim/" target="_Blank">here</a>. This is where 
               you can find the version tracking for the 1.x specification, and out come from interop events. 
             </p>
             
             <h3>Mailing Lists</h3>
             <p>
-              SCIM 1.x is developed on <a href="http://groups.google.com/group/cloud-directory" target="_Blank">this</a> 
-              list. Here you can find details on how certain desitions around the 
-              specification where made or ask questions about the 1.x specification.
+              SCIM 1.x was developed on <a href="http://groups.google.com/group/cloud-directory" target="_Blank">this</a> 
+              list.
             </p>
             <p>
-              SCIM 2.x will be developed under IETF so for discussions and questions regarding 
-              version 2.x <a href="http://www.ietf.org/mail-archive/web/scim/current/maillist.html" target="_Blank">this</a> 
+              SCIM 2.x is developed under IETF so for discussions and questions regarding 
+              version 2.x use <a href="http://www.ietf.org/mail-archive/web/scim/current/maillist.html" target="_Blank">this</a> 
               is the mailing list.
             </p>
             <h3>OWF Agreements</h3>
             <p>
-              SCIM 1.x is developed under OWF Agreements <a href="http://scim.googlecode.com/svn/trunk/owf/" target="_Blank">here</a>
-              is a list of companies that has signed the OWF Agreement.
+              SCIM 1.x is developed under the Open Web Foundation. Signed agreements can be found <a href="http://scim.googlecode.com/svn/trunk/owf/" target="_Blank">here</a>.
             </p>
         </div>
         <div class="tab-pane" id="complianceTest">
     
 			<div class="well">
-                <img alt="help" src="img/help.png" class="help" id="help" rel="tooltip" title="The SCIM Compliance client is bulit upon the SCIM Proxy core developed by Nexussafe. In case of problems contact samuel.erdtman@nexussafe.com or erik.wahlstrom@nexussafe.com">
+                <img alt="help" src="img/help.png" class="help" id="help" rel="tooltip" title="The SCIM Compliance tests uses the open source project SCIMProxy. In case of problems contact samuel.erdtman@nexussafe.com or erik.wahlstrom@nexussafe.com">
 				<h1>Compliance Test</h1>
         
 				<form class="form-search">
@@ -463,10 +449,6 @@ Etag: W/"e180ee84f0671b1"
         </div>
       </div>
     </div>
-    <hr>
-    <footer>
-      <p>&copy; System for Cross-domain Identity Management 2012</p>
-    </footer>
   </div>
   
   
