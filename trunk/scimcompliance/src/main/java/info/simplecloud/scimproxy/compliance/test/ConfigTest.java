@@ -98,7 +98,7 @@ public class ConfigTest {
 
             csp.setSpc(spc);
 
-            return new TestResult(TestResult.SUCCESS, "Read ServiceProviderConfig", "success", ComplienceUtils.getWire(method, ""));
+            return new TestResult(TestResult.SUCCESS, "Read ServiceProviderConfig", "", ComplienceUtils.getWire(method, ""));
 
         } catch (Exception e) {
             throw new CritialComplienceException(new TestResult(TestResult.ERROR, "Parse ServiceProviderConfig",
@@ -172,7 +172,7 @@ public class ConfigTest {
                 csp.setGroupSchema(schema);
             }
 
-            return new TestResult(TestResult.SUCCESS, "Read schema for " + type, "success", ComplienceUtils.getWire(method, ""));
+            return new TestResult(TestResult.SUCCESS, "Read schema for " + type, "", ComplienceUtils.getWire(method, ""));
         } catch (Exception e) {
             throw new CritialComplienceException(new TestResult(TestResult.ERROR, "Parse schema for " + type,
                     "Could not parse the json format returned when getting " + type + " schema. " + e.getMessage(),

@@ -63,3 +63,7 @@ div.header {
   border-color: #aaaaaa;
   color: black;
 }
+
+.clickable {
+	cursor: pointer;	
+}

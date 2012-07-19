@@ -147,7 +147,7 @@ public class PostTest extends Test {
 
                 try {
                     verify(cspResource);
-                    return new TestResult(TestResult.SUCCESS, "Create " + resourceType + " in " + enc, "Success", ComplienceUtils.getWire(
+                    return new TestResult(TestResult.SUCCESS, "Create " + resourceType + " in " + enc, "", ComplienceUtils.getWire(
                             method, resourceString));
                 } catch (Exception e) {
                     return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, e.getMessage(),

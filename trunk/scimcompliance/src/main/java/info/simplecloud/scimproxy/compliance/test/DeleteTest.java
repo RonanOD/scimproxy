@@ -6,6 +6,7 @@ import info.simplecloud.core.exceptions.UnknownAttribute;
 import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
+import info.simplecloud.scimproxy.compliance.enteties.Wire;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class DeleteTest extends Test {
                 results.add(delete(cachedGroup.getId(), (String) cachedGroup.getAttribute("meta.version"), "/Groups/", "Delete non-existing group", 404));
             }
         } catch (UnknownAttribute e) {
-            results.add(new TestResult(TestResult.ERROR, "Delete tests failed", "Failed, internal error: " + e.getMessage(), "<empty>"));
+            results.add(new TestResult(TestResult.ERROR, "Delete tests failed", "Failed, internal error: " + e.getMessage(), Wire.EMPTY));
         }
         
         return results;

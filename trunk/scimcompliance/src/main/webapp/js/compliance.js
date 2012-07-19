@@ -21,15 +21,12 @@ $(document).ready(
       };
 
       var toggleWire = function(event) {
-        if ($(event.currentTarget).find(".arrow")
-            .hasClass('icon-chevron-right')) {
-          $(event.currentTarget).find(".arrow").removeClass(
-              "icon-chevron-right");
+        if ($(event.currentTarget).find(".arrow").hasClass('icon-chevron-right')) {
+          $(event.currentTarget).find(".arrow").removeClass("icon-chevron-right");
           $(event.currentTarget).find(".arrow").addClass("icon-chevron-down");
           $("#" + $(event.currentTarget).attr("index")).slideDown("slow");
         } else {
-          $(event.currentTarget).find(".arrow")
-              .removeClass("icon-chevron-down");
+          $(event.currentTarget).find(".arrow").removeClass("icon-chevron-down");
           $(event.currentTarget).find(".arrow").addClass("icon-chevron-right");
           $("#" + $(event.currentTarget).attr("index")).slideUp("slow");
         }
@@ -48,7 +45,11 @@ $(document).ready(
           var template = $('#authMethodTemplate').html();
           var html = Mustache.to_html(template, data);
           $("#authMethod").html = html;
-          $('#authenticationDialog').modal("show");
+          
+          $("#authenticationAlert").show();
+          $("#settingsArrow").removeClass("icon-chevron-right");
+          $("#settingsArrow").addClass("icon-chevron-down");
+          $("#settings").slideDown();
         } else {
           data.index = getIndex();
           data.color = getColor();
@@ -78,7 +79,7 @@ $(document).ready(
             },
             colors : [ "#f2dede", "#dff0d8", "#d9edf7"  ],
             backgroundColor : "whiteSmoke",
-            pieSliceTextStyle : [{color:"black"},{color:"red"},{color:"blue"}]
+            pieSliceTextStyle : {color:"#999999"}
           };
 
           var chartData = google.visualization.arrayToDataTable([
@@ -110,7 +111,7 @@ $(document).ready(
           authorizationServer : $("#oauthAuthorizationServer").val()
         };
 
-        $('#authenticationDialog').modal("hide");
+        $("#authenticationAlert").hide();
         $("#result-container").hide();
         $("#compliance-error").hide();
         $("#compliance-error-container").hide();
@@ -133,16 +134,11 @@ $(document).ready(
         });
         $.post("/compliance/test", data, handleResponse).error(handleError);
 
-        $("#username").val("");
-        $("#password").val("");
-        $("#oauthClientId").val("");
-        $("#oauthClientSecret").val("");
-        $("#oauthAuthorizationServer").val("");
         return false;
       };
+      
 
+      $("#toggleSettings").click(function(){toggleWire({currentTarget:$("#toggleSettings")})});
       $("#sendCompliance").click(sendRequest);
-      $("#continueWithAuth").click(sendRequest);
       $("#authMethod").change(authMethodChanged).change();
-      $("#help").tooltip({placement:"bottom"});
     });
