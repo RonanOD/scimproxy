@@ -29,7 +29,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 
 @Path("/test")
@@ -105,12 +104,10 @@ public class Compliance extends HttpServlet {
             // TODO: Remove
             results.addAll(new SkippingTest(csp, userCache, groupCache).run());
 
+        } catch (CritialComplienceException e) {
+            results.add(((CritialComplienceException) e).getResult());
         } catch (Throwable e) {
-            if (e instanceof CritialComplienceException) {
-                results.add(((CritialComplienceException) e).getResult());
-            } else {
-                results.add(new TestResult(TestResult.ERROR, "Unknown Test", e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
-            }
+            results.add(new TestResult(TestResult.ERROR, "Unknown Test", e.getMessage(), ComplienceUtils.getWire(e)));
         }
 
         Statistics statistics = new Statistics();

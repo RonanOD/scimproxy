@@ -2,6 +2,7 @@ package info.simplecloud.scimproxy.compliance;
 
 import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.compliance.enteties.AuthMetod;
+import info.simplecloud.scimproxy.compliance.enteties.Wire;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class ComplienceUtils {
 
@@ -94,39 +96,38 @@ public class ComplienceUtils {
 	 * @param body The request body that was sent.
 	 * @return
 	 */
-	public static String getWire(HttpMethodBase method, String body) {
-		StringBuffer r = new StringBuffer(">>>>>>\n\n");
+	public static Wire getWire(HttpMethodBase method, String body) {
+		StringBuffer toServer = new StringBuffer();
+		StringBuffer fromServer = new StringBuffer();
 		
-		r.append(method.getName() + " ");
-
-		String q = "";
-		if(method.getQueryString() != null) {
-			q = "?" + method.getQueryString();
+		toServer.append(method.getName()).append(" ");
+		toServer.append(method.getPath());
+		if (method.getQueryString() != null) {
+		    toServer.append("?").append(method.getQueryString());
 		}
-		r.append(method.getPath() + q + " HTTP/1.1\n");
+		toServer.append(" HTTP/1.1\n");
+		for (Header header : method.getRequestHeaders()) {
+		    toServer.append(header.getName()).append(": ").append(header.getValue()).append("\n");
+		}
+		toServer.append(body);
 		
-		Header[] headers = method.getRequestHeaders();
-		for (Header header : headers) {
-			r.append(header.getName() + ": " + header.getValue() + "\n");
-		}
 		
-		r.append(body + "\n\n");
-
-		r.append("<<<<<<\n\n");
-
-		r.append(method.getStatusLine() + "\n"); 
-		Header[] respHeaders = method.getResponseHeaders();
-		for (Header header : respHeaders) {
-			r.append(header.getName() + ": " + header.getValue() + "\n");
-		}
 		try {
-			r.append(method.getResponseBodyAsString());
+		    fromServer.append(method.getStatusLine()).append("\n"); 
+		    for (Header header : method.getResponseHeaders()) {
+		        fromServer.append(header.getName()).append(": ").append(header.getValue()).append("\n");
+		    }
+		    fromServer.append(method.getResponseBodyAsString());
 		} catch (IOException e) {
-			r.append("COULD NOT PARSE RESPONSE BODY\n");
+		    fromServer.append("COULD NOT PARSE RESPONSE BODY\n");
 			e.printStackTrace();
 		}
 		
-		return r.toString();
+		return new Wire(toServer.toString(), fromServer.toString());
 	}
-		    
+
+
+    public static Wire getWire(Throwable e) {
+        return new Wire(ExceptionUtils.getFullStackTrace(e), "");
+    }  
 }

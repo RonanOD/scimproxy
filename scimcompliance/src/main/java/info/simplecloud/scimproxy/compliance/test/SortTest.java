@@ -10,6 +10,7 @@ import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
 import info.simplecloud.scimproxy.compliance.ServiceProviderConfig;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
+import info.simplecloud.scimproxy.compliance.enteties.Wire;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class SortTest extends Test {
     private TestResult doSort(String testName, Header accept, String order, String encoding, String endpoint, String attribute) {
         ServiceProviderConfig spc = csp.getSpc();
         if (!spc.hasXmlDataFormat() && Resource.ENCODING_XML.equals(encoding)) {
-            return new TestResult(TestResult.SKIPPED, testName,"ServiceProvider does not support XML.", "<empty>");
+            return new TestResult(TestResult.SKIPPED, testName,"ServiceProvider does not support XML.", Wire.EMPTY);
         }
         
         GetMethod method = new GetMethod(csp.getUrl() + csp.getVersion() + endpoint + String.format("?sortBy=%s&sortOrder=%s", attribute, order));

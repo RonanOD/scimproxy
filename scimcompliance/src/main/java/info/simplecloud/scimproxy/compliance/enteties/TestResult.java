@@ -26,7 +26,7 @@ public class TestResult {
     String                  statusLabel  = "label-important";
 
     @XmlElement(name = "wire")
-    String                  wire         = "";
+    Wire                    wire;
 
     private int             status;
 
@@ -34,7 +34,7 @@ public class TestResult {
 
     }
 
-    public TestResult(int status, String name, String message, String wire) {
+    public TestResult(int status, String name, String message, Wire wire) {
         this.name = name;
         this.message = message;
         this.wire = wire;

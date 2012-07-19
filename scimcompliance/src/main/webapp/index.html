@@ -419,13 +419,79 @@ Etag: W/"e180ee84f0671b1"
         <div class="tab-pane" id="complianceTest">
     
 			<div class="well">
-                <img alt="help" src="img/help.png" class="help" id="help" rel="tooltip" title="The SCIM Compliance tests uses the open source project SCIMProxy. In case of problems contact samuel.erdtman@nexussafe.com or erik.wahlstrom@nexussafe.com">
-				<h1>Compliance Test</h1>
-        
-				<form class="form-search">
-					<input type="text" placeholder="https://scim-server" id="complianceUrl" class="input span5">
-  					<button type="submit" class="btn btn-primary" id="sendCompliance">Go!</button>
-				</form>
+              <div class="row-fluid">
+                <div class="span12">
+                  <h1>Compliance Test</h1>
+  				  <form class="form-search">
+  					<input type="text" placeholder="https://scim-server" id="complianceUrl" class="input span5">
+    		        <button type="submit" class="btn btn-primary" id="sendCompliance">Go!</button>
+  				  </form>
+                </div>
+              </div>
+              <div class="row-fluid">
+                <div class="span12">
+                  <span class="label label float-right clickable" index="settings" id="toggleSettings">Settings <i id="settingsArrow" class="icon-chevron-right icon-white arrow"></i></span>
+                </div>
+              </div>
+              <div class="row-fluid hide" id="settings">
+                
+                <div class="span6">
+                  <h3>Static attributes</h3>
+                  <form class="form-inline well">
+                    <input type="text" class="input-small" placeholder="attribute">
+                    <input type="text" class="input-small" placeholder="value">
+                  </form>
+                </div>
+                <div class="span6">
+                  <h3>Authentication</h3>
+                  <div class="alert alert-error hide" id="authenticationAlert">
+                    Authentication required!
+                  </div>
+                  <form class="form-horizontal well"> 
+                    <div class="control-group">  
+                      <label class="control-label" for="basicUsername">Method</label>  
+                      <div class="controls" id="authMethodContainer">
+                        <select id="authMethod">
+                          <option value="basicAuth">HTTP-Basic</option>
+                          <option value="oauthAuth">OAuth 2.0</option>
+                        </select>  
+                      </div>  
+                    </div>
+                    <div class="control-group">  
+                      <label class="control-label" for="username">Username</label>  
+                      <div class="controls">  
+                        <input id="username" type="text">  
+                      </div>  
+                    </div> 
+                    <div class="control-group">  
+                      <label class="control-label" for="password">Password</label>  
+                      <div class="controls">  
+                        <input  id="password" type="password">  
+                      </div>  
+                    </div> 
+                    <div id="oauthAuth" class="authMethod">
+                      <div class="control-group">  
+                        <label class="control-label" for="oauthClientId">ClientId</label>  
+                        <div class="controls">  
+                          <input  id="oauthClientId" type="text">  
+                        </div>  
+                      </div> 
+                      <div class="control-group">  
+                        <label class="control-label" for="oauthClientSecret">Client Secret</label>  
+                        <div class="controls">  
+                          <input  id="oauthClientSecret" type="text">  
+                        </div>  
+                      </div> 
+                      <div class="control-group">  
+                        <label class="control-label" for="oauthAuthorizationServer">Authorization Server</label>  
+                        <div class="controls">  
+                          <input  id="oauthAuthorizationServer" type="text">  
+                        </div>  
+                      </div> 
+                    </div>
+                  </form>
+                </div>
+              </div>
 			</div>
           
             <div class="wrapper"><div class="content" id="spinner-container" ></div></div>  
@@ -451,65 +517,6 @@ Etag: W/"e180ee84f0671b1"
     </div>
   </div>
   
-  
-  <div class="modal hide fade" id="authenticationDialog">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal">×</button>
-      <h3>Select Authentication</h3>
-    </div>
-    <div class="modal-body">
-      
-      <form class="form-horizontal"> 
-        <div class="control-group">  
-          <label class="control-label" for="basicUsername">Method</label>  
-          <div class="controls" id="authMethodContainer">
-            <select id="authMethod">
-              <option value="basicAuth">HTTP-Basic</option>
-              <option value="oauthAuth">OAuth 2.0</option>
-            </select>  
-          </div>  
-        </div>
-        <div class="control-group">  
-          <label class="control-label" for="username">Username</label>  
-          <div class="controls">  
-            <input id="username" type="text">  
-          </div>  
-        </div> 
-        <div class="control-group">  
-          <label class="control-label" for="password">Password</label>  
-          <div class="controls">  
-            <input  id="password" type="password">  
-          </div>  
-        </div> 
-        <div id="oauthAuth" class="authMethod">
-          <div class="control-group">  
-            <label class="control-label" for="oauthClientId">ClientId</label>  
-            <div class="controls">  
-              <input  id="oauthClientId" type="text">  
-            </div>  
-          </div> 
-          <div class="control-group">  
-            <label class="control-label" for="oauthClientSecret">Client Secret</label>  
-            <div class="controls">  
-              <input  id="oauthClientSecret" type="text">  
-            </div>  
-          </div> 
-          <div class="control-group">  
-            <label class="control-label" for="oauthAuthorizationServer">Authorization Server</label>  
-            <div class="controls">  
-              <input  id="oauthAuthorizationServer" type="text">  
-            </div>  
-          </div> 
-        </div>
-      </form>
-      
-    </div>
-    <div class="modal-footer">
-      <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-      <a href="#" class="btn btn-primary" id="continueWithAuth">Continue</a>
-    </div>
-  </div>
-  
   <script id="testTemplate" type="text/template">
   {{#results}}
   <div class="row-fluid my-row {{color}}">
@@ -521,12 +528,21 @@ Etag: W/"e180ee84f0671b1"
         <span class="label {{status_label}}" rel="tooltip" title="{{message}}">{{status_text}}</span>
       </div>
       <div class="span1">
-        <span index="{{index}}" class="label label-info float-right">Wire <i class="icon-chevron-right icon-white arrow"></i></span>
+        <span index="{{index}}" class="label label-info float-right clickable">Wire <i class="icon-chevron-right icon-white arrow"></i></span>
       </div>
     </div>
-    <div class="row-fluid hidden" id="{{index}}">
-      <div class="span12">
-        <pre class="prettyprint">{{wire}}</pre>
+	<div class="row-fluid hidden" id="{{index}}">
+      <div class="row-fluid">
+        <div class="span12">
+          <h6>to server &gt;&gt;</h6>
+          <pre class="prettyprint">{{wire.to_server}}</pre>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span12">
+          <h6>&lt;&lt; from server</h6>
+          <pre class="prettyprint">{{wire.from_server}}</pre>
+        </div>
       </div>
     </div>
   </div>
