@@ -101,8 +101,6 @@ public class Compliance extends HttpServlet {
             results.addAll(new SortTest(csp, userCache, groupCache).run());
             results.addAll(new AttributeTest(csp, userCache, groupCache).run());
             results.addAll(new DeleteTest(csp, userCache, groupCache).run());
-            // TODO: Remove
-            results.addAll(new SkippingTest(csp, userCache, groupCache).run());
 
         } catch (CritialComplienceException e) {
             results.add(((CritialComplienceException) e).getResult());
