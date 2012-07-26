@@ -30,7 +30,7 @@
           <div class="hero-unit">
             <h1>System for Cross-domain Identity Management</h1>
             <p>
-               Designed to make managing user identity in cloud based applications and services easier</p>
+               Designed to make managing user identity in cloud-based applications and services easier</p>
             <p>
             <a class="btn btn-primary btn-large" href="#overview" data-toggle="tab">
                 Learn more
@@ -40,12 +40,12 @@
           <div class="row">
             <div class="span4">
               <h2>Overview</h2>
-               <p>SCIM is created to simplify user management in the cloud by creating a schema for representing users and groups and a REST API for all the necessary CRUD operations.</p>
+               <p>The SCIM standard was created to simplify user management in the cloud by defining a schema for representing users and groups and a REST API for all the necessary CRUD operations.</p>
               <p><a class="btn" href="#overview" data-toggle="tab">View details &raquo;</a></p>
             </div>
             <div class="span4">
               <h2>Specifications</h2>
-               <p>For a complete view of the SCIM schema and the API, see the respective specification</p>
+               <p>For a complete view of the SCIM schema and the API, please refer to the specification</p>
               <p><a class="btn" href="#specifications" data-toggle="tab">View details &raquo;</a></p>
            </div>
             <div class="span4">
@@ -59,15 +59,15 @@
             <h1>Overview</h1>
             <p class="text">
               The System for Cross-domain Identity Management (SCIM) specification 
-              is designed to make managing user identity in cloud based applications 
+              is designed to make managing user identities in cloud-based applications 
               and services easier. The specification suite seeks to build upon 
               experience with existing schemas and deployments, placing specific 
               emphasis on simplicity of development and integration, while applying 
-              existing authentication, authorization, and privacy models. It's 
+              existing authentication, authorization, and privacy models. Its 
               intent is to reduce the cost and complexity of user management operations 
               by providing a common user schema and extension model, as well as binding 
               documents to provide patterns for exchanging this schema using standard 
-              protocols. In essence, make it fast, cheap, and easy to move users 
+              protocols. In essence: make it fast, cheap, and easy to move users 
               in to, out of, and around the cloud.
             </p>
             <p class="text">
@@ -76,27 +76,25 @@
             
             <h2>Model</h2>
             <p class="text">
-              SCIM is build on a object model where a Resource is 
-              a common denominator and all SCIM objects are derived from it. 
+              SCIM is built on a object model where a Resource is 
+              the common denominator and all SCIM objects are derived from it. 
               SCIM currently has three objects that directly 
-              inherits from the Resource object. The ServiceProviderConfiguration 
-              and Schema is used for discovery and contains no user information. 
-              The CoreResource is where the user and group data is contained, 
-              with it's two children resources User and Group.    
+              inherit from the Resource object. The ServiceProviderConfiguration 
+              and Schema are used for discovery and contain no user information. 
+              The CoreResource object is where user and group data are contained, 
+              within its two child resources, User and Group.    
             </p>
             <img src="img/model.png" />
             
             <h2>Example User</h2>
             <p class="text">
-              This is an example of how a SCIM user can be encoded. It does not 
-              contain the full set of attributes available. It is encoded 
-              as JSON however XML is also defined in the specification. 
+              This is an example of how user data can be encoded as a SCIM object in JSON. XML encoding is also defined in the specification.
             </p>
             <p class="text">
-              In the example user one can see the different types of data that can 
+              While this example does not contain the full set of attributes available, notice the different types of data that can 
               be used to create SCIM objects. Simple types like strings for <i>id</i>, 
-              <i>username</i>, etc. Complex types, i.e. attributes that has sub 
-              attributes, for <i>name</i> and <i>address</i>. Multivalued types for <i>e-mail</i>, 
+              <i>username</i>, etc. Complex types, i.e. attributes that have sub-attributes,
+			  for <i>name</i> and <i>address</i>. Multivalued types for <i>e-mail</i>, 
               <i>phonenumber</i>, <i>address</i>, etc. 
             </p>
             <pre class="prettyprint">
@@ -132,9 +130,9 @@
             
             <h2>Example Group</h2>
             <p class="text">
-              In addition to the user concept the SCIM core includes the 
-              group concept to model organizationational structure in provisioned 
-              objects. Groups can contain users or other groups 
+              In addition to users, the SCIM core includes the 
+              group concept.  Groups are used to model the organizationational structure of provisioned 
+              objects. Groups can contain users or other groups .
             </p>
             <pre class="prettyprint">
 {
@@ -159,8 +157,8 @@
             <h2>Operations</h2>
             <p class="text">
               For manipulation of resources, SCIM provides a REST API with a 
-              rich but simple set of operation, everything from patching a specific 
-              attribute on a specific user to doing massive bulk updates.
+              rich but simple set of operations, which support everything from patching a specific 
+              attribute on a specific user to doing massive bulk updates:
             </p>
             <ul>
               <li>Create = POST https://example.com/{v}/{resource}</li>
@@ -175,7 +173,7 @@
             <h2>Discovery</h2>
             <p class="text">
               To simplify interoperability, SCIM provides two end points to discover 
-              supported features and specific attribute details.
+              supported features and specific attribute details:
             </p>
             <ul>
               <li>GET /ServiceProviderConﬁg<p>Specification compliance, authentication schemes, data models.</p></li>
@@ -184,12 +182,12 @@
             
             <h2>Create Request</h2>
             <p class="text">
-              To creating a resource, send a HTTP POST request towards the resources respective end 
+              To create a resource, send an HTTP POST request to the resource's respective end 
               point. In the example below we see the creation of a User.
             </p> 
             <p class="text">  
               As can be seen in this and later examples the URL contains a version number 
-              so that different versions of the SCIM API can co-exists. Available versions can be dynamically 
+              so that different versions of the SCIM API can co-exist. Available versions can be dynamically 
               discovered via the ServiceProviderConﬁg end point.
             </p>
             <pre class="prettyprint">
@@ -210,9 +208,9 @@ Authorization: Bearer h480djs93hd8
             <p class="text">
               A response contains the created Resource and HTTP code 201 to indicate that the 
               Resource has been created successfully. Note that the returned user contains more 
-              data then was posted, <i>id</i> and <i>meta</i> data has been added 
+              data then was posted, <i>id</i> and <i>meta</i> data have been added 
               by the service provider to make a complete User object. A location header indicates where the resource can be fetched 
-              in subsequent request.
+              in subsequent requests.
             </p>
             <pre class="prettyprint">
 HTTP/1.1 201 Created
@@ -237,9 +235,9 @@ Location: https://example.com/v1/Users/2819c223-7f76-453a-919d-413861904646
             
             <h2>Get Request</h2>
             <p class="text">
-              Fetching resources is done by sending an HTTP GET request towards the desired Resource 
-              end point. In this example a user is fetched 
-              and at the end of the URL we can see the postfixed '.json'. It's another method for clients to indicate desired response format a part from the accept header.
+              Fetching resources is done by sending a HTTP GET requests to the desired Resource 
+              end point, as in this example.  Note the  
+              postfixed '.json' at the end of the URL. This is another method for clients to indicate the desired response format, in addition to using the accept header.
             </p>
             <pre class="prettyprint">
 GET /v1/Users/2819c223-7f76-453a-919d-413861904646.json  
@@ -249,7 +247,7 @@ Authorization: Bearer h480djs93hd8</pre>
 
             <h2>Get Response</h2>
             <p class="text">
-              The response of a GET contains the Resource. The Etag header can, in later requests, be 
+              The response to a GET contains the Resource. The Etag header can, in subsequent requests, be 
               used to prevent concurrent modifications of Resources.  
             </p>
             <pre class="prettyprint">
@@ -272,10 +270,10 @@ Etag: W/"e180ee84f0671b1"
 
             <h2>Filter Request</h2>
             <p class="text">
-              In addition to getting single Resources it is also possible to fetch 
+              In addition to getting single Resources it is possible to fetch 
               sets of Resources by querying the Resource end point without the 
-              id for a specific Resources. To not have to read all users a filter can 
-              be applied to the Resources. SCIM has support for filter operations 
+              id of a specific Resource.  Typically, a fetch request will include a 
+              filter to be applied to the Resources. SCIM has support for the filter operations 
               equals, contains, starts with, and more. In addition to filtering the 
               response it is also possible to ask the service provider to sort the 
               Resources in the response.   
@@ -286,7 +284,7 @@ Etag: W/"e180ee84f0671b1"
             </ul>
             <h2>Filter Response</h2>
             <p class="text">
-              The result of a set request is a list of resources.
+              The response to a GET request is a list of matching resources:
             </p>
             <pre class="prettyprint">
 {
@@ -315,8 +313,8 @@ Etag: W/"e180ee84f0671b1"
                 <h2>SCIM 1.1</h2>
                 <p class="text">
                   The second official release of the SCIM specification. It does not break any compatibility 
-                  with 1.0 the changes is only cleanup and clarifications on issus found during 
-                  interop testing (see the project page under resources for details on how interop tests has been done).
+                  with 1.0.  The changes are only for cleanup and include clarifications on issues found during 
+                  interop testing (see the project page under Resources for details on how the interop tests were done).
                 </p>
                 <ul>
                   <li>
@@ -329,7 +327,7 @@ Etag: W/"e180ee84f0671b1"
                   <li>
                     <a href="/specs/draft-scim-core-schema-00.html">Core Schema 1.1</a> <span class="label label-success">Active</span>
                     <p class="text">
-                      The Core Schema provides a platform neutral schema and extension model for representing users and groups in JSON and XML formats.
+                      The Core Schema provides a platform-neutral schema and extension model for representing users and groups in JSON and XML formats.
                     </p>
                   </li>
                   <li>
@@ -351,7 +349,7 @@ Etag: W/"e180ee84f0671b1"
             <div class="well">
             <h2>SCIM 1.0</h2>
               <p class="text">
-                The first official release of the SCIM specifications released in december 2011. 
+                The first official release of the SCIM specifications, released in December 2011. 
               </p>
               <ul>
                 <li>
@@ -364,7 +362,7 @@ Etag: W/"e180ee84f0671b1"
                 <li>
                   <a href="/specs/draft-scim-core-schema-00.html">Core Schema 1.0</a>
                   <p class="text">
-                      The Core Schema provides a platform neutral schema and extension model for representing users and groups in JSON and XML formats.
+                      The Core Schema provides a platform-neutral schema and extension model for representing users and groups in JSON and XML formats.
                   </p>
                 </li>
                 <li>
@@ -389,16 +387,16 @@ Etag: W/"e180ee84f0671b1"
             
             <h3>XML Schemas</h3>
             <p>
-              To generate code SCIM provides two XML Schemas. One for the 
+              For generating code, SCIM provides two XML Schemas. One for the 
               <a href="/specs/schema/scim-core.xsd" target="_Blank">Core</a> and one for the 
               <a href="/specs/schema/scim-enterprise.xsd" target="_Blank">Enterprise extension</a>. 
             </p>
             
             <h3>Project Hosting</h3>
             <p>
-              The original development of the scim specification was done 
+              The original development of the SCIM specification was done 
               <a href="http://code.google.com/p/scim/" target="_Blank">here</a>. This is where 
-              you can find the version tracking for the 1.x specification, and out come from interop events. 
+              you can find the version tracking for the 1.x specification, and the outcomes of the interop events. 
             </p>
             
             <h3>Mailing Lists</h3>
@@ -407,9 +405,9 @@ Etag: W/"e180ee84f0671b1"
               list.
             </p>
             <p>
-              SCIM 2.x is developed under IETF so for discussions and questions regarding 
+              SCIM 2.x is developed under IETF. For discussions and questions regarding 
               version 2.x use <a href="http://www.ietf.org/mail-archive/web/scim/current/maillist.html" target="_Blank">this</a> 
-              is the mailing list.
+              as the mailing list.
             </p>
             <h3>OWF Agreements</h3>
             <p>
