@@ -2,8 +2,6 @@ package info.simplecloud.scimproxy;
 
 import info.simplecloud.core.User;
 import info.simplecloud.core.exceptions.UnknownEncoding;
-import info.simplecloud.scimproxy.authentication.Basic;
-import info.simplecloud.scimproxy.config.Config;
 import info.simplecloud.scimproxy.storage.ResourceNotFoundException;
 import info.simplecloud.scimproxy.storage.StorageDelegator;
 
@@ -42,12 +40,21 @@ public class ScimUserBind extends HttpServlet {
         }
 
         try {
-            ArrayList<User> users = StorageDelegator.getInstance("1").getUserList();
             User user = null;
-            for (User currentUser : users) {
-                if (currentUser.getUserName() != null && currentUser.getUserName().equalsIgnoreCase(creds.getUserName())) {
-                    user = currentUser;
-                    break;
+            try {                
+                user = StorageDelegator.getInstance("1").getUser(creds.getUserName());
+            } catch (ResourceNotFoundException e) {
+                // Ignore and it will go away
+            }
+            
+            if(user == null) {                
+                ArrayList<User> users = StorageDelegator.getInstance("1").getUserList();
+                
+                for (User currentUser : users) {
+                    if (currentUser.getUserName() != null && currentUser.getUserName().equalsIgnoreCase(creds.getUserName())) {
+                        user = currentUser;
+                        break;
+                    }
                 }
             }
 
