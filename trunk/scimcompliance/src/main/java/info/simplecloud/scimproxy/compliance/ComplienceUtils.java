@@ -42,7 +42,12 @@ public class ComplienceUtils {
 
         if (AuthMetod.AUTH_OAUTH.equalsIgnoreCase(csp.getAuthentication())) {
             client.getParams().setAuthenticationPreemptive(false);
-            method.setRequestHeader("Authorization", "OAuth " + csp.getAccessTokenUserPass());
+            method.setRequestHeader("Authorization", "Bearer " + csp.getAccessTokenUserPass());
+        }
+        
+        if (AuthMetod.AUTH_RAW.equalsIgnoreCase(csp.getAuthentication())) {
+            client.getParams().setAuthenticationPreemptive(false);
+            method.setRequestHeader("Authorization", csp.getAuthorizationHeader());
         }
 
         return client;
