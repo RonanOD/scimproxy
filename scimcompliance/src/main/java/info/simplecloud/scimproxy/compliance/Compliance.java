@@ -15,7 +15,6 @@ import info.simplecloud.scimproxy.compliance.test.PatchTest;
 import info.simplecloud.scimproxy.compliance.test.PostTest;
 import info.simplecloud.scimproxy.compliance.test.PutTest;
 import info.simplecloud.scimproxy.compliance.test.ResourceCache;
-import info.simplecloud.scimproxy.compliance.test.SkippingTest;
 import info.simplecloud.scimproxy.compliance.test.SortTest;
 
 import java.util.ArrayList;
@@ -42,8 +41,8 @@ public class Compliance extends HttpServlet {
     @Produces(MediaType.APPLICATION_JSON)
     public Result runTests(@FormParam("url") String url, @FormParam("username") String username, @FormParam("password") String password,
             @FormParam("clientId") String clientId, @FormParam("clientSecret") String clientSecret,
-            @FormParam("authorizationServer") String authorizationServer, @FormParam("authMethod") String authMethod)
-            throws InterruptedException, ServletException {
+            @FormParam("authorizationServer") String authorizationServer, @FormParam("authorizationHeader") String authorizationHeader,
+            @FormParam("authMethod") String authMethod) throws InterruptedException, ServletException {
 
         // TODO: remove when done coding!
         if (url == null || url.isEmpty()) {
@@ -67,6 +66,7 @@ public class Compliance extends HttpServlet {
         csp.setoAuth2ClientId(clientId);
         csp.setoAuth2ClientSecret(clientSecret);
         csp.setoAuth2GrantType("password");
+        csp.setAuthorizationHeader(authorizationHeader);
 
         ArrayList<TestResult> results = new ArrayList<TestResult>();
 

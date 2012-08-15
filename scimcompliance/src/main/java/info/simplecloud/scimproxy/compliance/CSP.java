@@ -40,6 +40,7 @@ public class CSP {
     private ServiceProviderConfig   spc                       = new ServiceProviderConfig();
     private Schema                  userSchema                = new Schema();
     private Schema                  groupSchema               = new Schema();
+    private String                  authorizationHeader       = "";
 
     public CSP() {
 
@@ -202,7 +203,7 @@ public class CSP {
             PostMethod method = new PostMethod(this.getOAuthAuthorizationServer());
             method.setRequestHeader(new Header("Content-type", "application/x-www-form-urlencoded"));
 
-            method.addRequestHeader("Authorization", "Basic " +  Base64.encodeBase64String((username + ":" + password).getBytes()));
+            method.addRequestHeader("Authorization", "Basic " + Base64.encodeBase64String((username + ":" + password).getBytes()));
             NameValuePair[] body = new NameValuePair[] { new NameValuePair("username", username), new NameValuePair("password", password),
                     new NameValuePair("client_id", oAuth2ClientId), new NameValuePair("client_secret", oAuth2ClientSecret),
                     new NameValuePair("grant_type", oAuth2GrantType) };
@@ -269,6 +270,14 @@ public class CSP {
 
     public Schema getGroupSchema() {
         return groupSchema;
+    }
+
+    public void setAuthorizationHeader(String authorizationHeader) {
+        this.authorizationHeader = authorizationHeader;
+    }
+
+    public String getAuthorizationHeader() {
+        return this.authorizationHeader;
     }
 
 }

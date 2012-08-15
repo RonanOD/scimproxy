@@ -96,7 +96,7 @@ $(document).ready(
       var authMethodChanged = function() {
         $("#authMethod option:selected").each(function() {
           $(".authMethod").hide();
-          $("#" + $(this).val()).show();
+          $("." + $(this).val()).show();
         });
       };
 
@@ -108,7 +108,8 @@ $(document).ready(
           password : $("#password").val(),
           clientId : $("#oauthClientId").val(),
           clientSecret : $("#oauthClientSecret").val(),
-          authorizationServer : $("#oauthAuthorizationServer").val()
+          authorizationServer : $("#oauthAuthorizationServer").val(),
+          authorizationHeader : $("#rawAuthorizationHeader").val()
         };
 
         $("#authenticationAlert").hide();

@@ -466,8 +466,11 @@ Etag: W/"e180ee84f0671b1"
                 <div class="span6">
                   <h3>Static attributes</h3>
                   <form class="form-inline well">
+                    <p>Under Construction!</p>
+                  <!-- 
                     <input type="text" class="input-small" placeholder="attribute">
                     <input type="text" class="input-small" placeholder="value">
+                   -->
                   </form>
                 </div>
                 <div class="span6">
@@ -481,23 +484,26 @@ Etag: W/"e180ee84f0671b1"
                       <div class="controls" id="authMethodContainer">
                         <select id="authMethod">
                           <option value="basicAuth">HTTP-Basic</option>
-                          <option value="oauthAuth">OAuth 2.0</option>
+                          <option value="oauthAuth">OAuth 2.0 (password grant)</option>
+                          <option value="rawAuth">Raw Authorization header</option>
                         </select>  
                       </div>  
                     </div>
-                    <div class="control-group">  
-                      <label class="control-label" for="username">Username</label>  
-                      <div class="controls">  
-                        <input id="username" type="text">  
-                      </div>  
-                    </div> 
-                    <div class="control-group">  
-                      <label class="control-label" for="password">Password</label>  
-                      <div class="controls">  
-                        <input  id="password" type="password">  
-                      </div>  
-                    </div> 
-                    <div id="oauthAuth" class="authMethod">
+                    <div id="basicAuth" class="authMethod basicAuth oauthAuth">
+                      <div class="control-group">  
+                        <label class="control-label" for="username">Username</label>  
+                        <div class="controls">  
+                          <input id="username" type="text">  
+                        </div>  
+                      </div> 
+                      <div class="control-group">  
+                        <label class="control-label" for="password">Password</label>  
+                        <div class="controls">  
+                          <input  id="password" type="password">  
+                        </div>  
+                      </div> 
+                    </div>
+                    <div id="oauthAuth" class="authMethod oauthAuth">
                       <div class="control-group">  
                         <label class="control-label" for="oauthClientId">ClientId</label>  
                         <div class="controls">  
@@ -515,7 +521,15 @@ Etag: W/"e180ee84f0671b1"
                         <div class="controls">  
                           <input  id="oauthAuthorizationServer" type="text">  
                         </div>  
-                      </div> 
+                      </div>
+                    </div>
+                    <div id="rawAuth" class="authMethod rawAuth">
+                      <div class="control-group">  
+                        <label class="control-label" for="rawAuthorizationHeader">Authorization Header</label>  
+                        <div class="controls">  
+                          <input id="rawAuthorizationHeader" type="text">  
+                        </div>  
+                      </div>  
                     </div>
                   </form>
                 </div>

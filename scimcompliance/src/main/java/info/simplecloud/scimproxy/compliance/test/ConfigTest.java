@@ -95,6 +95,7 @@ public class ConfigTest {
                     spc.addAuthenticationScheme(AuthMetod.getMetod(name));
                 }
             }
+            spc.addAuthenticationScheme(AuthMetod.getMetod("raw"));
 
             csp.setSpc(spc);
 
