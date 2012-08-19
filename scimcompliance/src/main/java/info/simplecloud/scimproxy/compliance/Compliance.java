@@ -35,8 +35,6 @@ public class Compliance extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    // TODO: l18n and remove hardcoded text strings in code
-
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Result runTests(@FormParam("url") String url, @FormParam("username") String username, @FormParam("password") String password,
@@ -45,14 +43,21 @@ public class Compliance extends HttpServlet {
             @FormParam("authMethod") String authMethod) throws InterruptedException, ServletException {
 
         // TODO: remove when done coding!
-        if (url == null || url.isEmpty()) {
-            url = "http://127.0.0.1:8080";
-        }
+//        if (url == null || url.isEmpty()) {
+//            url = "http://127.0.0.1:8080";
+//        }
+
+        ArrayList<TestResult> results = new ArrayList<TestResult>();
+
 
         String[] schemes = { "http", "https" };
         UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
         if (!urlValidator.isValid(url)) {
-            return new Result("Invalid service provider URL");
+        	results.add(new TestResult(TestResult.ERROR, "Invalid service provider URL.", "", ComplienceUtils.getWire(new Throwable())));
+            
+            Statistics statistics = new Statistics();
+            statistics.incFailed();
+            return new Result(statistics, results);
         }
 
         // create a CSP to use to connect to the server
@@ -67,8 +72,6 @@ public class Compliance extends HttpServlet {
         csp.setoAuth2ClientSecret(clientSecret);
         csp.setoAuth2GrantType("password");
         csp.setAuthorizationHeader(authorizationHeader);
-
-        ArrayList<TestResult> results = new ArrayList<TestResult>();
 
         // get the configuration
         try {

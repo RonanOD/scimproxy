@@ -25,6 +25,30 @@ public class PostTest extends Test {
         super(csp, userCache, groupCache);
     }
 
+    /*
+    public User getUser(String userName) {
+    	User user = new User();
+    	
+    	// set all mandatory attributes
+    	user.setUserName(userName);
+    	
+    	// set all of servers required attribute
+    	//
+    	// got a list of attributes
+    	// want a list of attributename, methodname, type, subattribs (and there values, including canonicalValues)
+    	// find out what methods exists and what type it is
+    	// set them
+    	
+    	return user;
+    }
+
+    public Group getGroup(String displayName) {
+    	Group group = new Group();
+    	group.setDisplayName(displayName);
+    	return group;
+    }
+    */
+
     public List<TestResult> run() {
         List<TestResult> results = new ArrayList<TestResult>();
 

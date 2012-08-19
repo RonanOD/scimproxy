@@ -1,8 +1,11 @@
 package info.simplecloud.scimproxy.compliance.test;
 
+import java.util.ArrayList;
+
 import info.simplecloud.scimproxy.compliance.CSP;
 import info.simplecloud.scimproxy.compliance.ComplienceUtils;
 import info.simplecloud.scimproxy.compliance.Schema;
+import info.simplecloud.scimproxy.compliance.SchemaAttribute;
 import info.simplecloud.scimproxy.compliance.ServiceProviderConfig;
 import info.simplecloud.scimproxy.compliance.enteties.AuthMetod;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
@@ -155,7 +158,6 @@ public class ConfigTest {
 
         try {
 
-            // TODO: add support for subAttributes and canonicalValues
             Schema schema = new Schema();
             JSONObject jsonObj = new JSONObject(configuration);
 
@@ -166,6 +168,50 @@ public class ConfigTest {
                     schema.addItem(authObj.getString("name"));
                 }
             }
+
+            // TODO: add support for subAttributes and canonicalValues
+            /*
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject resourceSchemaAttribute = (JSONObject) jsonArray.get(i);
+                
+                SchemaAttribute attribute = new SchemaAttribute();
+                attribute.setName(resourceSchemaAttribute.getString("name"));
+                attribute.setType(resourceSchemaAttribute.getString("type"));
+                attribute.setMultiValued(resourceSchemaAttribute.getBoolean("multiValued"));
+                attribute.setMultiValuedAttributeChildName(resourceSchemaAttribute.getString("multiValuedAttributeChildName"));
+                attribute.setDescription(resourceSchemaAttribute.getString("description"));
+                attribute.setSchema(resourceSchemaAttribute.getString("schema"));
+                attribute.setReadOnly(resourceSchemaAttribute.getBoolean("readOnly"));
+                attribute.setRequired(resourceSchemaAttribute.getBoolean("required"));
+                attribute.setCaseExact(resourceSchemaAttribute.getBoolean("caseExact"));
+
+                JSONArray subAttributes = resourceSchemaAttribute.getJSONArray("subAttributes");
+                if(subAttributes != null) {
+                    for(int j = 0; j < subAttributes.length(); j++) {
+                    	// TODO: get name, type, description, readOnly, required, caseExact, and list canonicalValues
+                    	SchemaAttribute sub = new SchemaAttribute();
+                    	
+                    	JSONObject item = (JSONObject)subAttributes.get(j);
+                    	
+                        sub.setName(item.getString("name"));
+                        sub.setType(item.getString("type"));
+                        sub.setDescription(item.getString("description"));
+                        sub.setReadOnly(item.getBoolean("readOnly"));
+                        sub.setRequired(item.getBoolean("required"));
+                        sub.setCaseExact(item.getBoolean("caseExact"));
+                        JSONArray canonicalValues = item.getJSONArray("canonicalValues");
+                        
+                        ArrayList<String> validCaconicalValues = new ArrayList<String>();
+                        for(int k=0; k< canonicalValues.length(); k++) {
+                        	// how to get array string
+                        	validCaconicalValues.add(  ((JSONObject)canonicalValues.getInt(i)).getString("") );
+                        }
+
+                    }
+               }
+                
+            }
+            */
 
             if ("Users".equalsIgnoreCase(type)) {
                 csp.setUserSchema(schema);
