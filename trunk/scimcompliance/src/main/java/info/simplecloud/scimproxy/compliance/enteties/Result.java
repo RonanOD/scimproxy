@@ -28,10 +28,10 @@ public class Result {
         
     }
     
-    public Result(String errorMessage) {
+/*    public Result(String errorMessage) {
         this.errorMessage = errorMessage;
     }
-
+*/
     public Result(Statistics statistics, List<TestResult> results) {
         this.statistics = statistics;
         this.results = results;
