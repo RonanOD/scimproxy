@@ -114,7 +114,7 @@ public class ComplienceUtils {
 		for (Header header : method.getRequestHeaders()) {
 		    toServer.append(header.getName()).append(": ").append(header.getValue()).append("\n");
 		}
-		toServer.append(body);
+		toServer.append("\n" + body);
 		
 		
 		try {
@@ -122,7 +122,7 @@ public class ComplienceUtils {
 		    for (Header header : method.getResponseHeaders()) {
 		        fromServer.append(header.getName()).append(": ").append(header.getValue()).append("\n");
 		    }
-		    fromServer.append(method.getResponseBodyAsString());
+		    fromServer.append("\n" + method.getResponseBodyAsString());
 		} catch (IOException e) {
 		    fromServer.append("COULD NOT PARSE RESPONSE BODY\n");
 			e.printStackTrace();
