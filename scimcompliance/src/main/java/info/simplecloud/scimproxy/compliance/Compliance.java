@@ -53,7 +53,7 @@ public class Compliance extends HttpServlet {
         String[] schemes = { "http", "https" };
         UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
         if (!urlValidator.isValid(url)) {
-        	results.add(new TestResult(TestResult.ERROR, "Invalid service provider URL.", "", ComplienceUtils.getWire(new Throwable())));
+        	results.add(new TestResult(TestResult.ERROR, "Invalid service provider URL.", "", null));
             
             Statistics statistics = new Statistics();
             statistics.incFailed();
