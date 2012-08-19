@@ -24,6 +24,7 @@ $(document).ready(
         if ($(event.currentTarget).find(".arrow").hasClass('icon-chevron-right')) {
           $(event.currentTarget).find(".arrow").removeClass("icon-chevron-right");
           $(event.currentTarget).find(".arrow").addClass("icon-chevron-down");
+          $("#" + $(event.currentTarget).attr("index")).removeClass("hidden");
           $("#" + $(event.currentTarget).attr("index")).slideDown("slow");
         } else {
           $(event.currentTarget).find(".arrow").removeClass("icon-chevron-down");
