@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,25 +68,11 @@ public class ScimAuthorizationServer extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        BufferedReader reader = req.getReader();
-        String line;
-        String all = "";
-        while ((line = reader.readLine()) != null) {
-            all += line;
-        }
-        String[] parameters = all.split("&");
-        String code = null;
-        String grant_type = null;
-        String redirect_uri = null;
-        for (String parameter : parameters) {
-            if (parameter.startsWith("code")) {
-                code = URLDecoder.decode(parameter.split("=")[1]);
-            } else if (parameter.startsWith("grant_type")) {
-                grant_type = URLDecoder.decode(parameter.split("=")[1]);
-            } else if (parameter.startsWith("redirect_uri")) {
-                redirect_uri = URLDecoder.decode(parameter.split("=")[1]);
-            }
-        }
+        
+        String code = req.getParameter("code");
+        String grant_type = req.getParameter("grant_type");
+        String redirect_uri = req.getParameter("redirect_uri");
+        
         
         // Access Token Request
         // grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
@@ -95,22 +82,21 @@ public class ScimAuthorizationServer extends HttpServlet {
         if (code != null) {
             user = AuthenticationUsers.getInstance().getUserWithCode(code);
         } else {
-            System.out.println("No code assuming basic credentials");
             String basicAuth = req.getHeader("Authorization");
+            if(basicAuth == null) {
+                System.out.println("Simulating basic auth");
+                String username = req.getParameter("username");
+                String password = req.getParameter("password");
+                basicAuth = "Basic " + Base64.encodeBase64String((username + ":" + password).getBytes());
+            }    
+            
             System.out.println("basicAuth: " + basicAuth);
-            if (basicAuth == null) {
-                resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
-                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
-                return;
-            }
-
             Basic basic = new Basic();
             if (!basic.authenticate(basicAuth)) {
                 resp.setHeader("WWW-authenticate", "basic  realm='scimproxy'");
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
                 return;
             }
-            
             user = basic.getAuthUser();
         }
         

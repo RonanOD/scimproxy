@@ -41,15 +41,15 @@ public class ScimUserBind extends HttpServlet {
 
         try {
             User user = null;
-            try {                
+            try {
                 user = StorageDelegator.getInstance("1").getUser(creds.getUserName());
             } catch (ResourceNotFoundException e) {
                 // Ignore and it will go away
             }
-            
-            if(user == null) {                
+
+            if (user == null) {
                 ArrayList<User> users = StorageDelegator.getInstance("1").getUserList();
-                
+
                 for (User currentUser : users) {
                     if (currentUser.getUserName() != null && currentUser.getUserName().equalsIgnoreCase(creds.getUserName())) {
                         user = currentUser;
@@ -73,7 +73,7 @@ public class ScimUserBind extends HttpServlet {
 
             // Success!!!
             resp.setStatus(HttpServletResponse.SC_OK);
-            
+
             PrintWriter writer = resp.getWriter();
             writer.write("<html>");
             writer.write("<head> ");
