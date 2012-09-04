@@ -68,7 +68,7 @@ public class ScimAuthorizationServer extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String code = req.getParameter("code");
-        //String grant_type = req.getParameter("grant_type");
+        String grant_type = req.getParameter("grant_type");
         //String redirect_uri = req.getParameter("redirect_uri");
 
         // Access Token Request
@@ -76,21 +76,45 @@ public class ScimAuthorizationServer extends HttpServlet {
         Config.getInstance();
 
         AuthenticateUser user = null;
-        if (code != null) {
-            user = AuthenticationUsers.getInstance().getUserWithCode(code);
-        } else {
+        if("code".equalsIgnoreCase(grant_type)) {
+            if (code != null) {
+                user = AuthenticationUsers.getInstance().getUserWithCode(code);
+            }
+        } else if ("password".equalsIgnoreCase(grant_type)) {
             String username = req.getParameter("username");
             String password = req.getParameter("password");
+            
+            // for the future
+            String client_creds_header = req.getHeader("Authorization");
+            String client_id = req.getParameter("client_id");
+            String client_secret = req.getParameter("client_secret");
+            
             String basicAuth = "Basic " + Base64.encodeBase64String((username + ":" + password).getBytes());
 
-            System.out.println("basicAuth: " + basicAuth);
+            System.out.println("password basicAuth: " + basicAuth);
             Basic basic = new Basic();
             if (!basic.authenticate(basicAuth)) {
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
             user = basic.getAuthUser();
+        } else if ( "client_credentials".equalsIgnoreCase(grant_type)) {
+            String client_creds_header = req.getHeader("Authorization");
+            if(client_creds_header == null) {
+                String client_id = req.getParameter("client_id");
+                String client_secret = req.getParameter("client_secret");
+                client_creds_header = "Basic " + Base64.encodeBase64String((client_id + ":" + client_secret).getBytes());                
+            }
+
+            System.out.println("client_credentials basicAuth: " + client_creds_header);
+            Basic basic = new Basic();
+            if (!basic.authenticate(client_creds_header)) {
+                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            user = basic.getAuthUser();
         }
+        
 
         if (user == null) {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
