@@ -8,6 +8,7 @@ import info.simplecloud.scimproxy.storage.StorageDelegator;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +25,6 @@ public class ScimUserBind extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String basicAuth = req.getHeader("Authorization");
         if (basicAuth == null) {
             resp.setHeader("WWW-authenticate", "basic  realm='scimproxy-userbind'");
@@ -40,32 +40,34 @@ public class ScimUserBind extends HttpServlet {
         }
 
         try {
-            User user = null;
+            List<User> users = new ArrayList<User>();
             try {
-                user = StorageDelegator.getInstance("1").getUser(creds.getUserName());
+                User user = StorageDelegator.getInstance("1").getUser(creds.getUserName());
+                if (user != null) {
+                    users.add(user);
+                }
             } catch (ResourceNotFoundException e) {
                 // Ignore and it will go away
             }
 
-            if (user == null) {
-                ArrayList<User> users = StorageDelegator.getInstance("1").getUserList();
+            ArrayList<User> allUsers = StorageDelegator.getInstance("1").getUserList();
 
-                for (User currentUser : users) {
-                    if (currentUser.getUserName() != null && currentUser.getUserName().equalsIgnoreCase(creds.getUserName())) {
-                        user = currentUser;
-                        break;
-                    }
+            for (User currentUser : allUsers) {
+                if (currentUser.getUserName() != null && currentUser.getUserName().equalsIgnoreCase(creds.getUserName())) {
+                    users.add(currentUser);
                 }
             }
-
-            if (user == null) {
-                resp.setHeader("WWW-authenticate", "basic  realm='scimproxy-userbind'");
-                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
-                return;
+            
+            User foundUser = null;
+            for(User user : users) {               
+                String password = user.getPassword();
+                if (password != null && password.equals(creds.getPassword())) {
+                    foundUser = user;
+                    break;
+                }
             }
-
-            String password = user.getPassword();
-            if (password == null || !password.equals(creds.getPassword())) {
+            
+            if(foundUser == null) {                
                 resp.setHeader("WWW-authenticate", "basic  realm='scimproxy-userbind'");
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
                 return;
@@ -80,8 +82,8 @@ public class ScimUserBind extends HttpServlet {
             writer.write("<title>ScimProxy User Bind</title>");
             writer.write("</head>");
             writer.write("<body>");
-            writer.write("<h1>Welcome " + user.getUserName() + "</h1>");
-            writer.write("<pre>" + user.getUser("json") + "</pre>");
+            writer.write("<h1>Welcome " + foundUser.getUserName() + "</h1>");
+            writer.write("<pre>" + foundUser.getUser("json") + "</pre>");
             writer.write("</body>");
             writer.write("</html>");
 
@@ -96,7 +98,6 @@ public class ScimUserBind extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authenticate.");
             return;
         }
-
     }
 
     public UsernamePasswordCredentials parseBasicString(String token) {
