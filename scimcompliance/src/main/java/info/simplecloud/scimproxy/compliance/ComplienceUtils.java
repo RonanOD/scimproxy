@@ -6,6 +6,8 @@ import info.simplecloud.scimproxy.compliance.enteties.Wire;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.security.GeneralSecurityException;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
@@ -15,7 +17,9 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -30,8 +34,32 @@ public class ComplienceUtils {
      * @param method 
      * @return A http client handle with auth tokens already configured.
      */
-    public static HttpClient getHttpClientWithAuth(CSP csp, HttpMethodBase method) {
+    @SuppressWarnings("deprecation")
+	public static HttpClient getHttpClientWithAuth(CSP csp, HttpMethodBase method) {
         // Create an instance of HttpClient.
+    	
+		try {
+	    	URL url = new URL(csp.getUrl());
+	    	
+	    	if("https".equalsIgnoreCase(url.getProtocol())) {
+	    		
+	    		int port = 443;
+	    		if(url.getPort() != -1) {
+	    			port = url.getPort();
+	    		}
+	    		
+				Protocol.registerProtocol("https", 
+						new Protocol("https", new EasySSLProtocolSocketFactory(), port));
+	    	}
+	    	
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
         HttpClient client = new HttpClient();
         
         if (AuthMetod.AUTH_BASIC.equalsIgnoreCase(csp.getAuthentication())) {
