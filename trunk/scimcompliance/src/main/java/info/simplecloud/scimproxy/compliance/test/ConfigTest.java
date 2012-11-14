@@ -1,5 +1,7 @@
 package info.simplecloud.scimproxy.compliance.test;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 
 import info.simplecloud.scimproxy.compliance.CSP;
@@ -13,7 +15,9 @@ import info.simplecloud.scimproxy.compliance.exception.CritialComplienceExceptio
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
