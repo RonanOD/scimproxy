@@ -29,24 +29,36 @@ public class PutTest extends Test {
         List<TestResult> results = new ArrayList<TestResult>();
         User user = this.userCache.borrowCachedResource();
 
-        user.setDisplayName("Bob");
+        if(user != null) {
+        	user.setDisplayName("Bob");
+        }
         results.add(putUser(user, "PUT User JSON", "/Users/", User.ENCODING_JSON));
 
-        user.setDisplayName("Bobert");
+        if(user != null) {
+        	user.setDisplayName("Bobert");
+        }
         results.add(putUser(user, "PUT User XML", "/Users/", User.ENCODING_XML));
 
         Group group = this.groupCache.borrowCachedResource();
 
-        group.setDisplayName("TheTeam");
+        if(group != null) {
+            group.setDisplayName("TheTeam");
+        }
         results.add(put(group, "PUT Group JSON", "/Groups/", User.ENCODING_JSON));
 
-        group.setDisplayName("2ndTeam");
+        if(group != null) {
+        	group.setDisplayName("2ndTeam");
+        }
         results.add(put(group, "PUT Group XML", "/Groups/", User.ENCODING_XML));
 
         return results;
     }
 
     private TestResult put(Resource resource, String test, String path, String encoding) {
+        if (resource == null) {
+            return new TestResult(TestResult.ERROR, test, "No resource was created, can't do PUT.", Wire.EMPTY);
+        }
+
         if (!this.csp.getSpc().hasXmlDataFormat() && Resource.ENCODING_XML.equals(encoding)) {
             return new TestResult(TestResult.SKIPPED, test, "ServiceProvider does not support XML.", Wire.EMPTY);
         }
@@ -59,7 +71,12 @@ public class PutTest extends Test {
     }
 
     private TestResult putGroup(Group group, String test, String path, String encoding) {
-        PutMethod method = getMethod(group, path, encoding);
+        
+        if (group == null) {
+            return new TestResult(TestResult.ERROR, test, "No resource was created, can't do PUT.", Wire.EMPTY);
+        }
+
+    	PutMethod method = getMethod(group, path, encoding);
 
         StringRequestEntity body = null;
         try {
@@ -92,6 +109,9 @@ public class PutTest extends Test {
     }
 
     private TestResult putUser(User user, String test, String path, String encoding) {
+        if (user == null) {
+            return new TestResult(TestResult.ERROR, test, "No resource was created, can't do PUT.", Wire.EMPTY);
+        }
 
         PutMethod method = getMethod(user, path, encoding);
 
