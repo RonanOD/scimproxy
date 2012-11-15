@@ -46,21 +46,26 @@ public class PatchTest extends Test {
         results.add(remove("Remove displayName from User with PATCH using XML encoding", user, Resource.ENCODING_JSON, "displayName",
                 "/Users/"));
 
+        String userId = "";
+        if(user != null) {
+        	userId = user.getId();
+        }
+        
         Group group = this.groupCache.borrowCachedResource();
         List<MultiValuedType<String>> members = new ArrayList<MultiValuedType<String>>();
-        members.add(new MultiValuedType<String>(user.getId(), "User", false, false));
+        members.add(new MultiValuedType<String>(userId, "User", false, false));
         results.add(add("Add member to group with PATCH using JSON encoding", group, Resource.ENCODING_JSON, "members", members, "/Groups/"));
         members = new ArrayList<MultiValuedType<String>>();
-        members.add(new MultiValuedType<String>(user.getId(), "User", false, true));
+        members.add(new MultiValuedType<String>(userId, "User", false, true));
         results.add(add("Remove member from group with PATCH using JSON encoding", group, Resource.ENCODING_JSON, "members", members,
                 "/Groups/"));
 
         group = this.groupCache.borrowCachedResource();
         members = new ArrayList<MultiValuedType<String>>();
-        members.add(new MultiValuedType<String>(user.getId(), "User", false, false));
+        members.add(new MultiValuedType<String>(userId, "User", false, false));
         results.add(add("Add member to group with PATCH using XML encoding", group, Resource.ENCODING_XML, "members", members, "/Groups/"));
         members = new ArrayList<MultiValuedType<String>>();
-        members.add(new MultiValuedType<String>(user.getId(), "User", false, true));
+        members.add(new MultiValuedType<String>(userId, "User", false, true));
         results.add(add("Remove member from group with PATCH using XML encoding", group, Resource.ENCODING_XML, "members", members,
                 "/Groups/"));
 
@@ -72,6 +77,10 @@ public class PatchTest extends Test {
         ServiceProviderConfig spc = csp.getSpc();
         if (!spc.hasPatch()) {
             return new TestResult(TestResult.SKIPPED, testName, "ServiceProvider does not support PATCH.", Wire.EMPTY);
+        }
+        
+        if (resource == null) {
+            return new TestResult(TestResult.ERROR, testName, "No resource was created, can't do PATCH.", Wire.EMPTY);
         }
 
         if (!spc.hasXmlDataFormat() && Resource.ENCODING_XML.equals(encoding)) {
@@ -126,6 +135,10 @@ public class PatchTest extends Test {
         ServiceProviderConfig spc = csp.getSpc();
         if (!spc.hasPatch()) {
             return new TestResult(TestResult.SKIPPED, testName, "ServiceProvider does not support PATCH.", Wire.EMPTY);
+        }
+
+        if (resource == null) {
+            return new TestResult(TestResult.ERROR, testName, "No resource was created, can't do PATCH.", Wire.EMPTY);
         }
 
         if (!spc.hasXmlDataFormat()) {
