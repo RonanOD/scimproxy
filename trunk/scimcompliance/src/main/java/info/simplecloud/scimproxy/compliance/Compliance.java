@@ -43,9 +43,9 @@ public class Compliance extends HttpServlet {
             @FormParam("authMethod") String authMethod) throws InterruptedException, ServletException {
 
         // TODO: remove when done coding!
-//        if (url == null || url.isEmpty()) {
-//            url = "http://127.0.0.1:8080";
-//        }
+        if (url == null || url.isEmpty()) {
+            url = "http://127.0.0.1:8080";
+        }
 
         ArrayList<TestResult> results = new ArrayList<TestResult>();
 
