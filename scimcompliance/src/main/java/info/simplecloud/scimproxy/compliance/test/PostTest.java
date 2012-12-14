@@ -197,6 +197,9 @@ public class PostTest extends Test {
         } catch (Exception e) {
             return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Failed. Unknown error.",
                     ComplienceUtils.getWire(method, resourceString));
+        } catch (AssertionError e) {
+            return new TestResult(TestResult.ERROR, "Create " + resourceType + " in " + enc, "Failed. Assertion error.",
+                    ComplienceUtils.getWire(method, resourceString));
         } finally {
             // Release the connection.
             if (method != null) {
