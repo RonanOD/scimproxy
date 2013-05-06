@@ -27,6 +27,7 @@
     	        	<li><a href="#overview" data-toggle="tab">Overview</a></li>
             		<li><a href="#specifications" data-toggle="tab">Specification</a></li>
             		<li><a href="#resources" data-toggle="tab">Resources</a></li>
+            		<li><a href="#implementations" data-toggle="tab">Implementations</a></li>
             		<li><a href="#complianceTest" data-toggle="tab">Compliance Test</a></li>
           		</ul>
       		</div>
@@ -57,6 +58,13 @@
                <p>For a complete view of the SCIM schema and the API, please refer to the specification.</p>
               <p><a class="btn" href="#specifications" data-toggle="tab">Read Specifications &raquo;</a></p>
            </div>
+            <div class="span4">
+              <h2>Implementations</h2>
+              <p>List of implementations</p>
+              <p><a class="btn" href="#implementations" data-toggle="tab">Implementations &raquo;</a></p>
+            </div>
+          </div>
+          <div class="row">
             <div class="span4">
               <h2>Compliance</h2>
               <p>Test your SCIM 1.1 implementation using the online compliance test.</p>
@@ -443,38 +451,249 @@ Etag: W/"e180ee84f0671b1"
           </div>
         </div>
         <div class="tab-pane" id="resources">
-            <h1>Resources</h1>
-            
-            <h3>Participate</h3>
-            <p>
-              SCIM 2.x is developed under the <a href="http://tools.ietf.org/wg/scim/">IETF</a>. 
-              To participate, discuss and ask questions regarding SCIM 2.x use <a href="http://www.ietf.org/mail-archive/web/scim/current/maillist.html">this</a> 
-              mailing list.
-            </p>
-            <h3>XML Schemas</h3>
-            <p>
-              For generating code and validating XML, SCIM provides two XML Schemas. One for 
-              <a href="/specs/schema/scim-core.xsd">Core</a> and one for the 
-              <a href="/specs/schema/scim-enterprise.xsd">Enterprise extension</a>. 
-            </p>
-            <h3>Presentations</h3>
-            <p>
-              An overview of SCIM was presented by Kelly Grizzle at IETF 84 it can be found <a href="http://tools.ietf.org/agenda/84/slides/slides-84-scim-1.pdf">here</a>. 
-            </p>
+     		<div class="well">
+        	
+	            <h1>Resources</h1>
+	            
+	            <h3>Participate</h3>
+	            <p>
+	              SCIM 2.x is developed under the <a href="http://tools.ietf.org/wg/scim/">IETF</a>. 
+	              To participate, discuss and ask questions regarding SCIM 2.x use <a href="http://www.ietf.org/mail-archive/web/scim/current/maillist.html">this</a> 
+	              mailing list.
+	            </p>
+	            <h3>XML Schemas</h3>
+	            <p>
+	              For generating code and validating XML, SCIM provides two XML Schemas. One for 
+	              <a href="/specs/schema/scim-core.xsd">Core</a> and one for the 
+	              <a href="/specs/schema/scim-enterprise.xsd">Enterprise extension</a>. 
+	            </p>
+	            <h3>Presentations</h3>
+	            <p>
+	              An overview of SCIM was presented by Kelly Grizzle at IETF 84 it can be found <a href="http://tools.ietf.org/agenda/84/slides/slides-84-scim-1.pdf">here</a>. 
+	            </p>
+	
+	            <h3>Historical SCIM 1.x artifacts</h3>
+	            <p>
+	              SCIM 1.x is developed under the Open Web Foundation. Signed agreements can be found <a href="http://scim.googlecode.com/svn/trunk/owf/">here</a>.
+	            </p>
+	            <p>
+	              SCIM 1.x was developed on <a href="http://groups.google.com/group/cloud-directory">this</a> 
+	              mailing list.
+	            </p>
+	            <p>
+	              The original development of the SCIM specification was done 
+	              <a href="http://code.google.com/p/scim/">here</a>. This is where 
+	              you can find the version tracking for the 1.x specification, and the outcomes of the interop events. 
+	            </p>
+	        </div>
+        </div>
+        <div class="tab-pane" id="implementations">
+	        <div class="well">
+	            <h1>Known SCIM 1.1 implementations</h1>
+	            <br/>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<td>
+								<b>Project Name</b>
+							</td>
+							<td>
+								<b>Client</b>
+							</td>
+							<td>
+								<b>Server</b>
+							</td>
+							<td>
+								<b>Open Source</b>
+							</td>
+							<td>
+								<b>Developer</b>
+							</td>
+							<td>
+								<b>URL</b>
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								Gluu
+							</td>
+							<td>
+								Unknown
+							</td>
+							<td>
+								Java
+							</td>
+							<td>
+								Unknown
+							</td>
+							<td>
+								Gluu.org
+							</td>
+							<td>
+								<a href="http://www.gluu.org/">http://www.gluu.org/</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								OpenSCIM
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								Yes, GPL V3
+							</td>
+							<td>
+								Google Code
+							</td>
+							<td>
+								<a href="http://code.google.com/p/openscim/">http://code.google.com/p/openscim/</a>
+							</td>
+						</tr>	
+						<tr>
+							<td>
+								SCIM Proxy
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								Yes, MIT License
+							</td>
+							<td>
+								Technology Nexus
+							</td>
+							<td>
+								<a href="http://code.google.com/p/scimproxy/">http://code.google.com/p/scimproxy/</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Nexus Access Manager
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								No
+							</td>
+							<td>
+								No
+							</td>
+							<td>
+								Technology Nexus
+							</td>
+							<td>
+								<a href="http://www.nexussafe.com/">http://www.nexussafe.com/</a>
+							</td>
+						</tr>	
+						<tr>
+							<td>
+								Unbound Reference SDK
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								Yes, client only. GPL, LGPL, or UnboundID Free License.
+							</td>
+							<td>
+								UnboundID
+							</td>
+							<td>
+								<a href="http://www.unboundid.com/scim/">http://www.unboundid.com/scim/</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								WSO2 Charon
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								Yes
+							</td>
+							<td>
+								Apache 2.0 License
+							</td>
+							<td>
+								WSO2
+							</td>
+							<td>
+								<a href="http://wso2.org/library/identity-server">http://wso2.org/library/identity-server</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+            <div class="well">
+              <div class="row-fluid">
+                <div class="span12">
+                  <span class="label label float-right clickable" index="addImplementation" id="toggleAddImplementation">Add implementation <i id="addImplementationArrow" class="icon-chevron-right icon-white arrow"></i></span>
+                </div>
+              </div>
+              <div class="row-fluid hide" id="addImplementation">
 
-            <h3>Historical SCIM 1.x artifacts</h3>
-            <p>
-              SCIM 1.x is developed under the Open Web Foundation. Signed agreements can be found <a href="http://scim.googlecode.com/svn/trunk/owf/">here</a>.
-            </p>
-            <p>
-              SCIM 1.x was developed on <a href="http://groups.google.com/group/cloud-directory">this</a> 
-              mailing list.
-            </p>
-            <p>
-              The original development of the SCIM specification was done 
-              <a href="http://code.google.com/p/scim/">here</a>. This is where 
-              you can find the version tracking for the 1.x specification, and the outcomes of the interop events. 
-            </p>
+   	        	Know of an implementation that should be listed? Send a <a href="mailto:erik.wahlstrom@nexussafe.com?subject=New+scim+implementation&body=Project+name:%0D%0AClient:%0D%0AServer:%0D%0AOpen Source:%0D%0ALicense:%0D%0ADeveloper:%0D%0AURL:">email</a> with information about name, type, license, developer and URL.
+<!-- 
+				<form class="form-horizontal">
+				  <legend>Add implementation</legend>
+        
+				  <div class="control-group">
+				    <label class="control-label" for="inputEmail">Project name</label>
+				    <div class="controls">
+				      <input type="text" id="inputEmail" placeholder="Project name">
+				    </div>
+				  </div>
+				  <div class="control-group">
+				    <div class="controls">
+				      <label class="checkbox">
+				        <input type="checkbox"> Client
+				      </label>
+				      <label class="checkbox">
+				        <input type="checkbox"> Server
+				      </label>
+				    </div>
+				  </div>
+				  <div class="control-group">
+				    <label class="control-label" for="inputPassword">Open Source</label>
+				    <div class="controls">
+				      <input type="password" id="inputPassword" placeholder="Yes/No. If yes enter license.">
+				    </div>
+				  </div>
+				  <div class="control-group">
+				    <label class="control-label" for="inputPassword">Developer</label>
+				    <div class="controls">
+				      <input type="password" id="inputPassword" placeholder="Developer">
+				    </div>
+				  </div>
+				  <div class="control-group">
+				    <label class="control-label" for="inputPassword">URL</label>
+				    <div class="controls">
+				      <input type="password" id="inputPassword" placeholder="URL">
+				    </div>
+				  </div>
+				  <div class="control-group">
+				    <div class="controls">
+				      <button type="submit" class="btn">Send</button>
+				    </div>
+				  </div>
+				</form>     -->          
+              
+              </div>
+           </div>
         </div>
         <div class="tab-pane" id="complianceTest">
     

@@ -140,6 +140,7 @@ $(document).ready(
       };
       
 
+      $("#toggleAddImplementation").click(function(){toggleWire({currentTarget:$("#toggleAddImplementation")})});
       $("#toggleSettings").click(function(){toggleWire({currentTarget:$("#toggleSettings")})});
       $("#sendCompliance").click(sendRequest);
       $("#authMethod").change(authMethodChanged).change();
