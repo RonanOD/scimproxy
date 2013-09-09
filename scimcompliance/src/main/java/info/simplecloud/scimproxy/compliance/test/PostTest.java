@@ -59,12 +59,13 @@ public class PostTest extends Test {
         // full user
         User scimUserFull = ComplienceUtils.getUser();
 
+        long nanoTime = System.nanoTime();
         // user
-        scimUser.setUserName("AliceJson");
+        scimUser.setUserName("J" + nanoTime);
         results.add(create("json", scimUser, false));
-        scimUser.setUserName("AliceUrlAcceptContentTypeJson");
+        scimUser.setUserName("Js" + nanoTime);
         results.add(create("json", scimUser, true));
-        scimUserFull.setUserName("AliceFullJson");
+        scimUserFull.setUserName("Jso" + nanoTime);
         results.add(create("json", scimUserFull, false));
 
         // group
@@ -74,11 +75,11 @@ public class PostTest extends Test {
         // run same tests but now with XML
         if (this.csp.getSpc().hasXmlDataFormat()) {
             // user
-            scimUser.setUserName("AliceXml");
+            scimUser.setUserName("X" + nanoTime);
             results.add(create("xml", scimUser, false));
-            scimUser.setUserName("AliceUrlAcceptContentTypeXml");
+            scimUser.setUserName("Xm" + nanoTime);
             results.add(create("xml", scimUser, true));
-            scimUserFull.setUserName("AliceFullXml");
+            scimUserFull.setUserName("Xml" + nanoTime);
             results.add(create("xml", scimUserFull, false));
 
             // group
