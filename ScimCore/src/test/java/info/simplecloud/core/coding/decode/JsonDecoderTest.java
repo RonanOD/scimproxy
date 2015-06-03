@@ -5,9 +5,37 @@ import info.simplecloud.core.exceptions.InvalidUser;
 
 import java.io.IOException;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 public class JsonDecoderTest {
+  private static final String USER_ROLES_JSON = "{" +
+      "  \"schemas\": [" +
+      "     \"urn:scim:schemas:core:1.0\"," +
+      "  ]," +
+      "  \"id\":\"1630297303850073\"," +
+      "  \"userName\": \"jbloggs\u0040test.com\"," +
+      "  \"roles\": [" +
+      "     {" +
+      "        \"value\": \"administrator\"," +
+      "        \"type\": \"work\"," +
+      "        \"primary\": true" +
+      "     }" +
+      "  ]," +
+      "  \"name\": {" +
+      "     \"familyName\": \"Bloggs\"," +
+      "     \"givenName\": \"Joseph\"" +
+      "  }," +
+      "  \"active\": true," +
+      "  \"emails\": [" +
+      "     {" +
+      "        \"primary\": true," +
+      "        \"type\": \"work\"," +
+      "        \"value\": \"jbloggs\u0040test.com\"" +
+      "     }" +
+      "  ]" +
+      "}";
 
     @Test(expected = InvalidUser.class)
     public void decodeInvalidUser() throws InvalidUser {
@@ -28,6 +56,15 @@ public class JsonDecoderTest {
         decoder.decode(jsonUser, user);
         
     }
+
+    @Test
+    public void decodeRoles() throws InvalidUser {
+        User user = new User("123");
+        JsonDecoder decoder = new JsonDecoder();
+
+        decoder.decode(USER_ROLES_JSON, user);
+        Assert.assertEquals("administrator", user.getRoles().get(0).getValue());
+    }    
 
     @Test
     public void decode() throws InvalidUser, IOException {

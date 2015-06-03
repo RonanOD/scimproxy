@@ -220,7 +220,7 @@ public class User extends Resource {
         return this.roles;
     }
 
-    @Attribute(name = "roles", handler = MultiValueHandler.class, internalName = "x509Certificate", internalHandler = Base64BinaryHandler.class)
+    @Attribute(name = "x509Certificates", handler = MultiValueHandler.class, internalName = "x509Certificate", internalHandler = Base64BinaryHandler.class)
     public List<MultiValuedType<String>> getX509Certificates() {
         return this.x509Certificates;
     }
