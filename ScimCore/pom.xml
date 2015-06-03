@@ -8,7 +8,7 @@
 	<name>SCIM Core</name>
 	<scm>
 		<url>https://github.com/RonanOD/scimproxy</url>
-		<connection>scm:git:git://github.com/RonanOD/scimproxy.git</connection>
+		<connection>scm:git:https://github.com/RonanOD/scimproxy.git</connection>
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,4 +72,3 @@
 		</plugins>
 	</build>
 </project>
-
