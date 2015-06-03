@@ -6,6 +6,18 @@
 	<packaging>jar</packaging>
 	<version>0.2-SNAPSHOT</version>
 	<name>SCIM Core</name>
+	<issueManagement>
+		<url>https://github.com/RonanOD/scimproxy</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<scm>
 		<url>https://github.com/RonanOD/scimproxy</url>
 		<connection>scm:git:https://github.com/RonanOD/scimproxy.git</connection>
@@ -71,4 +83,17 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>art01-snapshots</id>
+			<name>art01-snapshots</name>
+			<url>http://art01.corp.pingidentity.com:8080/artifactory/libs-snapshots-local</url>
+		</snapshotRepository>
+		<repository>
+			<id>art01-releases</id>
+			<name>art01-releases</name>
+			<url>http://art01.corp.pingidentity.com:8080/artifactory/libs-releases-local</url>
+		</repository>
+	</distributionManagement>
 </project>
