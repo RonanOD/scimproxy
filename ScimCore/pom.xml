@@ -3,7 +3,7 @@
 	<groupId>com.github.RonanOD</groupId>
 	<artifactId>scimcore</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4</version>
+	<version>0.5</version>
 	<name>SCIM Core</name>
 	<issueManagement>
 		<url>https://github.com/RonanOD/scimproxy</url>
