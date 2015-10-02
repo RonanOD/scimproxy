@@ -55,7 +55,7 @@ public class User extends Resource {
     private String                         locale;
     private String                         password;
     private String                         timezone;
-    private boolean                        active = true;
+    private Boolean                        active;
     private Name                           name;
     private List<MultiValuedType<String>>  phoneNumbers;
     private List<MultiValuedType<String>>  emails;
@@ -172,7 +172,11 @@ public class User extends Resource {
 
     @Attribute(name = "active", handler = BooleanHandler.class)
     public boolean getActive() {
-        return active;
+        if (active == null) {
+          return true;
+        } else {
+          return active.booleanValue();
+        }
     }
 
     @Attribute(name = "name", handler = ComplexHandler.class, type = Name.class)
@@ -266,7 +270,7 @@ public class User extends Resource {
     }
 
     public void setActive(boolean active) {
-        this.active = active;
+        this.active = Boolean.valueOf(active);
     }
 
     public void setName(Name name) {
